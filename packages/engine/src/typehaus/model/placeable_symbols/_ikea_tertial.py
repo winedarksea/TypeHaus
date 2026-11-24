@@ -74,17 +74,16 @@ def _tube(a: Vec, b: Vec, rx: float, ry: float, color: str, *, ring=CIRCLE,
         for i in range(n):
             p, q = k * n + i, k * n + (i + 1) % n
             triangles += [(p, q, p + n), (q, q + n, p + n)]
-    for k in (0, len(stations) - 1):
+    for k, flip in ((0, True), (len(stations) - 1, False)):  # caps wound with the sides
         positions.append(tuple(sum(positions[k * n + i][c] for i in range(n)) / n
                                for c in range(3)))
-        triangles += [(len(positions) - 1, k * n + i, k * n + (i + 1) % n) for i in range(n)]
-    return ("mesh", positions, outward(positions, triangles), None, color)
+        fan = [(len(positions) - 1, k * n + i, k * n + (i + 1) % n) for i in range(n)]
+        triangles += [(a, c, b) for a, b, c in fan] if flip else fan
+    return ("mesh", positions, triangles, None, color)
 
 
 def _plate(poly: list[Pt], x0: float, x1: float, color: str) -> Raw:
     """A convex (s, z) outline extruded from x0 to x1."""
-    area = sum(p[0] * q[1] - q[0] * p[1] for p, q in zip(poly, poly[1:] + poly[:1], strict=True))
-    poly = poly if area > 0 else poly[::-1]
     n = len(poly)
     positions = [(x, s, z) for x in (x0, x1) for s, z in poly]
     triangles = [(n, n + i, n + i + 1) for i in range(1, n - 1)]
@@ -92,7 +91,7 @@ def _plate(poly: list[Pt], x0: float, x1: float, color: str) -> Raw:
     for i in range(n):
         j = (i + 1) % n
         triangles += [(i, j, n + j), (i, n + j, n + i)]
-    return ("mesh", positions, outward(positions, triangles), None, color)
+    return ("mesh", positions, triangles, None, color)
 
 
 def _tilt(s: float, z: float) -> Pt:
@@ -122,9 +121,7 @@ def _shade(pivot: Vec) -> list[Raw]:
             ns, nz = _tilt(ny, -nu)
             positions.append((px, pivot[1] + s, pivot[2] + z))
             normals.append((nx, ns, nz))
-        # Flipping the lathe's axis mirrors it, so reverse each triangle's winding.
-        parts.append(("mesh", positions, [(a, c, b) for a, b, c in src["triangles"]],
-                      normals, color))
+        parts.append(("mesh", positions, src["triangles"], normals, color))
     return parts
 
 
@@ -209,6 +206,7 @@ def ikea_tertial_work_lamp(width: float, depth: float, height: float) -> Geometr
             continue
         _, positions, triangles, normals, color = part
         scaled = [(*plan(x, s), z * kz) for x, s, z in positions]
+        triangles = outward(scaled, triangles)  # wound here: the s -> -y mirror inverts a mesh
         if normals is None:
             out.append(mesh_part(scaled, triangles, color))
             continue

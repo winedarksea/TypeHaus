@@ -77,11 +77,12 @@ def _sweep(path: np.ndarray, ref: np.ndarray, radius: float) -> dict:
         for i in range(TUBE_SEG):
             a, b = ring * TUBE_SEG + i, ring * TUBE_SEG + (i + 1) % TUBE_SEG
             triangles += [(a, a + TUBE_SEG, b), (b, a + TUBE_SEG, b + TUBE_SEG)]
-    for end, sign in ((0, -1), (len(path) - 1, 1)):
+    for end, sign in ((0, -1), (len(path) - 1, 1)):  # caps wound with the sides
         centre, first = len(positions), end * TUBE_SEG
         positions.append(path[end])
         normals.append(sign * _unit(tangent[end]))
-        triangles += [(centre, first + i, first + (i + 1) % TUBE_SEG) for i in range(TUBE_SEG)]
+        fan = [(centre, first + i, first + (i + 1) % TUBE_SEG) for i in range(TUBE_SEG)]
+        triangles += fan if sign < 0 else [(a, c, b) for a, b, c in fan]
     return _raw(positions, normals, outward(positions, triangles), FINISH)
 
 
@@ -113,12 +114,13 @@ def _model(stem_rise: float):
     pivot = stem[-1] - YOKE_UP * up  # shade centre at the side pins
     back = pivot - PIVOT_A * aim
     rod, corner = SHADE_R * .94 + .12, 1.2  # yoke sides run just outside the body
-    left = [(-rod, 0), (-rod, YOKE_UP - corner)]
+    left = [(-rod, 0), (-rod, YOKE_UP - corner)]  # the bend starts at i=1, not repeating it
     left += [(-rod + corner - corner * math.cos(math.pi / 2 * i / 6),
-              YOKE_UP - corner + corner * math.sin(math.pi / 2 * i / 6)) for i in range(7)]
+              YOKE_UP - corner + corner * math.sin(math.pi / 2 * i / 6)) for i in range(1, 7)]
     yoke = np.array([pivot + x * EX + y * up for x, y in left + [(-x, y) for x, y in left[::-1]]])
-    globe = tuple((1.9 * math.sin(a), 1.2 + 1.9 * (1 - math.cos(a)))
-                  for a in np.linspace(.55, math.pi, 14))
+    bulb = [(1.9 * math.sin(a), 1.2 + 1.9 * (1 - math.cos(a)))
+            for a in np.linspace(.55, math.pi, 14)]
+    globe = ((0.0, bulb[0][1]), *bulb[:-1], (0.0, bulb[-1][1]))  # neck and crown on the axis
     raw = [_turned(BASE, FINISH, (0, 0, 0), np.eye(3)),
            _sweep(stem, EX, TUBE_R), _sweep(yoke, aim, .12),
            _turned(SHADE, FINISH, back, axes, closed=True),

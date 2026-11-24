@@ -46,9 +46,9 @@ def _tube(start: Point2, end: Point2, radius: float, color: str) -> Mesh:
     for i in range(SEGMENTS):
         j = (i + 1) % SEGMENTS
         triangles.extend(((i, i + SEGMENTS, j), (j, i + SEGMENTS, j + SEGMENTS)))
-    for offset in (0, SEGMENTS):
-        triangles.extend((offset, offset + i, offset + i + 1) for i in range(1, SEGMENTS - 1))
-    return positions, outward(positions, triangles), color
+    triangles.extend((0, i, i + 1) for i in range(1, SEGMENTS - 1))  # caps wound with the sides
+    triangles.extend((SEGMENTS, SEGMENTS + i + 1, SEGMENTS + i) for i in range(1, SEGMENTS - 1))
+    return positions, triangles, color
 
 
 def _along(point: Point2, axis: Point2, distance: float) -> Point2:
@@ -104,7 +104,7 @@ def ikea_nymane_wall_lamp(width: float, depth: float, height: float) -> Geometry
                                         place(HOUSING_W / 2, HOUSING_D, HOUSING_H))
     parts: list[Part] = [box(0, (hy0 + hy1) / 2, hz0, hz1, hx1 - hx0, hy0 - hy1, FINISH)]
     placed = [[place(*p) for p in positions] for positions, _, _ in meshes]
-    parts.extend(mesh_part(pts, tri, color)
+    parts.extend(mesh_part(pts, outward(pts, tri), color)  # the p -> -y mirror inverts
                  for pts, (_, tri, color) in zip(placed, meshes, strict=True))
     shade, lit = placed[2:]
     strokes = (polygon([(hx0, hy0), (hx1, hy0), (hx1, hy1), (hx0, hy1)], fill=FINISH),

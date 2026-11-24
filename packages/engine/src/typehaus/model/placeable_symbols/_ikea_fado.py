@@ -31,8 +31,9 @@ def ikea_fado_table_lamp(width: float, depth: float, height: float) -> Geometry:
     first = math.atan2(neck_r, centre - BASE_HEIGHT)  # angle from the sphere's bottom pole
     angles = [first + (math.pi - first) * i / ARC_STEPS for i in range(ARC_STEPS + 1)]
     # Meridians as (radius, height) fractions; the neck is closed by the base.
-    globe = tuple((math.sin(a), (centre - globe_r * math.cos(a)) / OVERALL_HEIGHT)
-                  for a in angles[:-1]) + ((0.0, 1.0),)
+    globe = ((0.0, BASE_HEIGHT / OVERALL_HEIGHT),) + tuple(
+        (math.sin(a), (centre - globe_r * math.cos(a)) / OVERALL_HEIGHT)
+        for a in angles[:-1]) + ((0.0, 1.0),)
     base = ((0.0, 0.0), (FOOT_RADIUS * .9 / globe_r, 0.0),
             (FOOT_RADIUS / globe_r, .1 / OVERALL_HEIGHT),
             (neck_r / globe_r, BASE_HEIGHT / OVERALL_HEIGHT),
