@@ -20,7 +20,6 @@ from typehaus.diff.ifc_bounds import (
     _parts_bounds,
 )
 from typehaus.diff.model import DiffElem
-from typehaus.emit.ifc.placeable_parts import device_parts
 from typehaus.model.ids import derive_child_guid
 from typehaus.resolve.box_members import member_footprint
 from typehaus.resolve.device_boxes import boxes_by_device
@@ -78,6 +77,8 @@ def _wall_geometry(
 
 def baseline_elems(model: ResolvedModel) -> list[DiffElem]:
     """Project every emitted occurrence onto the stable reconciliation vocabulary."""
+    from typehaus.emit.ifc.placeable_parts import device_parts  # IFC is out of the Pyodide core
+
     puid = model.plan.project.project_uuid
     elems: list[DiffElem] = []
     wall_by_tag = {w.tag: w for w in model.walls}
