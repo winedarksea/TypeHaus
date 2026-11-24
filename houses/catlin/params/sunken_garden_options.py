@@ -30,6 +30,12 @@ class SunkenGardenOption:
     def needs_court_guard(self) -> bool:
         return self.planting_layout == "against-wall"
 
+    @property
+    def has_brick_face(self) -> bool:
+        """The court's house face is a masonry wythe on W-SG-BRKBM (params/court_face.py);
+        else LP panel on the framed walkout (notes/court_face_lp_panel.md)."""
+        return self.cladding in ("brick", "fiber-cement")
+
 
 def _option() -> SunkenGardenOption:
     option = SunkenGardenOption(
@@ -45,8 +51,8 @@ def _option() -> SunkenGardenOption:
     if option.planting_layout not in {"reference", "yard-grade", "against-wall", "setback"}:
         raise ValueError("sunken_garden.planting_layout must be reference, yard-grade, "
                          "against-wall, or setback")
-    if option.cladding not in {"brick", "fiber-cement"}:
-        raise ValueError("sunken_garden.cladding must be brick or fiber-cement")
+    if option.cladding not in {"brick", "fiber-cement", "lp-panel"}:
+        raise ValueError("sunken_garden.cladding must be brick, fiber-cement or lp-panel")
     if option.has_raised_bed and option.raised_soil_height_in != 30.0:
         raise ValueError("proposed raised-bed variants require 30 inches of soil")
     if option.has_raised_bed and option.planting_width_in not in {24.0, 36.0}:

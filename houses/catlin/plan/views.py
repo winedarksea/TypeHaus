@@ -285,18 +285,5 @@ DETAIL_SLICES = [
          title="Typical exterior wall section, east (PBR)",
          cut_origin=pt(ft(0), ft(24, 8)), cut_direction="x",
          crop=(pt(ft(30), ft(-10)), pt(ft(38), ft(20, 6)))),
-    # The veneer's lintel and head flashing over D-B-SUNKEN's reveal (IRC R703.8.3, R703.8.5),
-    # cut through the door's centre (x 21'-4"): the L3x3x1/4 angle on the head, the sheet over
-    # it, the brick above, the tie row on the head cripples. The wall section above cuts at
-    # x=10', where neither reveal is, and cannot show it.
-    Slice(uid="H1459MWCKF", tag="SL-D-VENEER-HEAD", kind=SliceKind.DETAIL,
-         title="Veneer lintel and head flashing at the door reveal",
-         cut_origin=pt(ft(21, 4), ft(0)), cut_direction="y",
-         crop=(pt(inch(-15), inch(-30)), pt(inch(6), inch(-10)))),
-    # The veneer's base on the beam: the bond break and flashing under the first course
-    # (R703.8.5, BIA TN 28D), cut at x=12'-6" in the solid run west of the door's reveal.
-    Slice(uid="XQWZ2CJ90N", tag="SL-D-VENEER-BASE", kind=SliceKind.DETAIL,
-         title="Veneer base bond break and flashing on the court beam",
-         cut_origin=pt(ft(12, 6), ft(0)), cut_direction="y",
-         crop=(pt(inch(-18), inch(-112)), pt(inch(6), inch(-94)))),
+    # SL-D-VENEER-HEAD/-BASE are the brick option's (params/court_face.py).
 ]

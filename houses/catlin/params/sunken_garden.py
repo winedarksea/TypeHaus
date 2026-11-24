@@ -471,14 +471,17 @@ _brkbm_half = (SPEC.wall_thickness_in + _break_in) / 24.0  # half the 14" sectio
 # -6.0..-9.625" with W-SG-BRKBM, so the deck follows it 3/8" north rather than stop short of
 # it. The joists clear the brick VERTICALLY (top -13 1/3", soffit -11 1/4"); nothing grades
 # that gap — `structural.member_interference` ignores wall layers — so hold the two together.
-_VENEER_WYTHE_IN = 3.625                                   # BASEMENT_BRICK_VENEER, transcribed
-_y_porch_deck_n = _y_brkbm_conc_n - _VENEER_WYTHE_IN / 12.0  # -9.625"
+# ** A COURT DATUM, NOT THE CLADDING (2026-11-24). ** 3 5/8" was the brick's wythe; the court
+# and porch lines stay on it whatever the house face is (params/court_face.py), so switching
+# the cladding never moves the court.
+_COURT_FACE_DATUM_IN = 3.625                               # was BASEMENT_BRICK_VENEER's wythe
+_y_porch_deck_n = _y_brkbm_conc_n - _COURT_FACE_DATUM_IN / 12.0  # -9.625"
 # N-S: the court's north line is W-B-BRICK's south face less a stated 3/8" setback, -10".
 # The house cladding is at -6.75" (`HOUSE_NS_OUTBOARD_IN`), so 3.25" of open air. The side-wall
 # north-end nodes, the porch outline and the back-beam/column line all land on it. Closing
 # the 3/8" is an owner decision, not taken; a brick move now carries the court with it.
 _COURT_SETBACK_IN = 0.375
-_y_out_n = (_y_brkbm_conc_n * 12 - _VENEER_WYTHE_IN - _COURT_SETBACK_IN) / 12.0  # -0.833'
+_y_out_n = (_y_brkbm_conc_n * 12 - _COURT_FACE_DATUM_IN - _COURT_SETBACK_IN) / 12.0  # -0.833'
 _y_ax_n = _y_out_n  # side-wall north-end nodes (open ends terminate here → face at the gap)
 _y_in_n = _y_out_n  # porch deck north edge (back beams + column sit a SPEC offset south)
 # ============================================================================
@@ -821,10 +824,11 @@ NODES = [
     # `open_end` for the same reason N-SG-NW/-NE carry it: the beam dies INTO the side
     # walls 6" past their inside faces rather than meeting them at a shared node, so this
     # run terminates here and closes no loop.
-    Node(uid="SGN007AAAA", tag="N-SG-BMW", position=pt(ft(_x_ax_w), ft(_y_ax_brkbm)),
-         open_end=True),
-    Node(uid="SGN008AAAA", tag="N-SG-BME", position=pt(ft(_x_ax_e), ft(_y_ax_brkbm)),
-         open_end=True),
+    # Brick option only (params/court_face.py), with the beam they carry.
+    *([Node(uid="SGN007AAAA", tag="N-SG-BMW", position=pt(ft(_x_ax_w), ft(_y_ax_brkbm)),
+            open_end=True),
+       Node(uid="SGN008AAAA", tag="N-SG-BME", position=pt(ft(_x_ax_e), ft(_y_ax_brkbm)),
+            open_end=True)] if OPTION.has_brick_face else []),
 ]
 
 WALLS = [
@@ -942,12 +946,13 @@ WALLS = [
     # FT-B-S1..S4 — the exact contact this beam exists to remove — at 0 FAIL, because nothing
     # grades a thermal break for continuity. The face is pinned by
     # `test_the_veneer_beam_isolates_the_house_footing`; do not trust the sign.
-    FoundationWall(uid="SGW108AAAA", tag="W-SG-BRKBM", start_node="N-SG-BMW",
-                   end_node="N-SG-BME", assembly="SG_VENEER_BEAM_14",
-                   top_elevation=_veneer_beam_top, bottom_elevation=_veneer_beam_bottom,
-                   unbalanced_fill=inch(0),
-                   lateral_support="top_and_bottom",
-                   reinforcement=_VENEER_BEAM_STEEL),
+    # Brick option only: with LP panel on the framed walkout there is no wythe to carry.
+    *([FoundationWall(uid="SGW108AAAA", tag="W-SG-BRKBM", start_node="N-SG-BMW",
+                      end_node="N-SG-BME", assembly="SG_VENEER_BEAM_14",
+                      top_elevation=_veneer_beam_top, bottom_elevation=_veneer_beam_bottom,
+                      unbalanced_fill=inch(0),
+                      lateral_support="top_and_bottom",
+                      reinforcement=_VENEER_BEAM_STEEL)] if OPTION.has_brick_face else []),
     # Garden retaining run (to just above grade), the U south of the porch.
     #
     # ** THE FILL AGAINST THESE THREE IS AUTHORED. ** Left derived,
@@ -1339,7 +1344,8 @@ _BEDDING_UID = {"FT-SG-W1": "SGB002AAAA", "FT-SG-E1": "SGB003AAAA",
 # own, so their stone lets go into the retaining bed it abuts at the grade-beam line.
 _STONE_TO = {"FT-SG-W1": "FB-SG-W2", "FT-SG-E1": "FB-SG-E2"}
 # W2/E2 also take the house's court-face beds through FD-B-S-LEAD-W/E (2026-11-02).
-_STONE_FROM = {"FT-SG-W2": ("FB-SG-W1", "FB-SG-BRKBM", "FB-B-S1", "FB-B-S2", "FD-B-S-LEAD-W"),
+_STONE_FROM = {"FT-SG-W2": ("FB-SG-W1", *(("FB-SG-BRKBM",) if OPTION.has_brick_face else ()),
+                            "FB-B-S1", "FB-B-S2", "FD-B-S-LEAD-W"),
                "FT-SG-E2": ("FB-SG-E1", "FB-B-S3", "FB-B-S4", "FD-B-S-LEAD-E")}
 # ** THE COURT'S RELIEF IS AT W1 (2026-09-23), where FD-SG-OVERFLOW starts in its stone on the
 # west heel. The lip is the field profile's underside, -127 7/16": the body spills into that
@@ -1449,7 +1455,7 @@ FOOTING_BEDDING.append(
 # one concrete width (12") wide on the beam's concrete. Pipeless and with NO soakaway course
 # of its own, as FB-SG-W1/E1: flood water is kept off the basement. Its stone runs into
 # FB-SG-W1's at the west toe and lets go, as W1's does, into FB-SG-W2's course.
-FOOTING_BEDDING.append(
+FOOTING_BEDDING.extend([
     FootingBedding(
         uid="W0JG1DDWET", tag="FB-SG-BRKBM", host_ref="W-SG-BRKBM",
         width=inch(SPEC.wall_thickness_in),
@@ -1458,7 +1464,7 @@ FOOTING_BEDDING.append(
         drain_tile=False,
         discharge_ref="FB-SG-W2",
     )
-)
+] if OPTION.has_brick_face else [])
 
 # --- garden floor: a concrete RIM around an open gravel field ---------------------
 #
@@ -1518,14 +1524,19 @@ WALL_W_AXIS_X_FT = _x_ax_w          # W-SG-W1/W2's axis
 WALL_N_END_Y_FT = _y_wall_end       # W1/E1's north end, at the closure break
 
 
+# The rim's north edge: with the brick, `_y_in_n` voided back to the beam by FO-SG-BRKBM; with
+# no beam, on to 1/2" off the walkout curb's coated foam (-4.06" foam + 1/8" skin, -4.19").
+_y_slab_n = _y_in_n if OPTION.has_brick_face else -4.75 / 12.0
+# The toes' north ends: the beam's south face, or the rim's edge.
+_y_toe_n = _y_ax_brkbm - _brkbm_half if OPTION.has_brick_face else _y_slab_n
 GARDEN_SLAB = Slab(
     kind="pour",
     uid="SGS501AAAA", tag="SL-SG-FLOOR", assembly="GARDEN_COURT_SLAB",
     outline=(pt(ft(_x_in_w), ft(_y_in_s)), pt(ft(_x_in_e), ft(_y_in_s)),
-             pt(ft(_x_in_e), ft(_y_in_n)), pt(ft(_x_in_w), ft(_y_in_n))),
+             pt(ft(_x_in_e), ft(_y_slab_n)), pt(ft(_x_in_w), ft(_y_slab_n))),
     thickness=inch(SPEC.rim_thickness_in),
     top_elevation=_court_top,
-    openings=("FO-SG-FIELD", "FO-SG-STRUT", "FO-SG-BRKBM",
+    openings=("FO-SG-FIELD", "FO-SG-STRUT", *(("FO-SG-BRKBM",) if OPTION.has_brick_face else ()),
               "FO-SG-TOE-W", "FO-SG-TOE-E", "FO-SG-TOE-S",
               "FO-SG-TOE-N-W", "FO-SG-TOE-N-E"),
 )
@@ -1554,11 +1565,12 @@ GARDEN_FLOOR_OPENINGS = [
     # beam's south face (-18" since 2026-11-04). The OUTLINE stays on `_y_in_n` (-10") and is
     # voided here, because `code.R311_3_exterior_landing` reads outlines and ignores voids:
     # stopped at -18" the outline left D-B-SUNKEN with no landing.
-    FloorOpening(uid="SGO003AAAA", tag="FO-SG-BRKBM", purpose=FloorOpeningPurpose.CHASE,
-                 outline=(pt(ft(_x_in_w), ft(_y_ax_brkbm - _brkbm_half)),
-                          pt(ft(_x_in_e), ft(_y_ax_brkbm - _brkbm_half)),
-                          pt(ft(_x_in_e), ft(_y_ax_brkbm + _brkbm_half)),
-                          pt(ft(_x_in_w), ft(_y_ax_brkbm + _brkbm_half)))),
+    *([FloorOpening(uid="SGO003AAAA", tag="FO-SG-BRKBM", purpose=FloorOpeningPurpose.CHASE,
+                    outline=(pt(ft(_x_in_w), ft(_y_ax_brkbm - _brkbm_half)),
+                             pt(ft(_x_in_e), ft(_y_ax_brkbm - _brkbm_half)),
+                             pt(ft(_x_in_e), ft(_y_ax_brkbm + _brkbm_half)),
+                             pt(ft(_x_in_w), ft(_y_ax_brkbm + _brkbm_half))))]
+      if OPTION.has_brick_face else []),
     # --- the three retaining toes: the footings ARE the walking surface ------------
     #
     # ** ONE SLAB WITH FIVE HOLES, AND THE SLAB IS STILL THE THING THAT MATTERS. ** The rim
@@ -1626,13 +1638,13 @@ GARDEN_FLOOR_OPENINGS = [
     FloorOpening(uid="SGO007AAAA", tag="FO-SG-TOE-N-W", purpose=FloorOpeningPurpose.CHASE,
                  outline=(pt(ft(_x_in_w), ft(_y_ax_mid)),
                           pt(ft(_x_ax_w + _ret_toe_reach_ft), ft(_y_ax_mid)),
-                          pt(ft(_x_ax_w + _ret_toe_reach_ft), ft(_y_ax_brkbm - _brkbm_half)),
-                          pt(ft(_x_in_w), ft(_y_ax_brkbm - _brkbm_half)))),
+                          pt(ft(_x_ax_w + _ret_toe_reach_ft), ft(_y_toe_n)),
+                          pt(ft(_x_in_w), ft(_y_toe_n)))),
     FloorOpening(uid="SGO008AAAA", tag="FO-SG-TOE-N-E", purpose=FloorOpeningPurpose.CHASE,
                  outline=(pt(ft(_x_ax_e - _ret_toe_reach_ft), ft(_y_ax_mid)),
                           pt(ft(_x_in_e), ft(_y_ax_mid)),
-                          pt(ft(_x_in_e), ft(_y_ax_brkbm - _brkbm_half)),
-                          pt(ft(_x_ax_e - _ret_toe_reach_ft), ft(_y_ax_brkbm - _brkbm_half)))),
+                          pt(ft(_x_in_e), ft(_y_toe_n)),
+                          pt(ft(_x_ax_e - _ret_toe_reach_ft), ft(_y_toe_n)))),
 ]
 
 # ** THE OPEN CENTRE IS A USGA PUTTING-GREEN PROFILE, ISOLATED BEHIND ONE ASSEMBLY. **
@@ -3243,7 +3255,7 @@ BRKBM_OPENINGS = [
                  width=inch(63.3125), height=inch(17.75), sill_height=inch(0),
                  depth=inch(VENEER_BEAM_BREAK_IN), depth_from="exterior",
                  framing_required=False),
-]
+] if OPTION.has_brick_face else []
 BASEMENT_ELEMENTS = [*NODES, *WALLS, *GRADE_BEAMS, *FOOTINGS, *BRKBM_OPENINGS,
                      *FOOTING_BEDDING, *SEQUENCE_NOTES,
                      *GARDEN_FLOOR_OPENINGS, GARDEN_SLAB,
