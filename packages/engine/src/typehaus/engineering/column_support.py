@@ -263,7 +263,7 @@ def _column_states(ctx: EngineeringContext, pier: _Pier, wall_tag: str,
             f = dict(case.factors)
             steps = W.shear(params, max(couples, key=lambda k: k.pull), count, dowel_area, mu,
                             rough, PHI_SHEAR, REINFORCEMENT_FY_PSI, vn_max, capacity,
-                            f.get("W", 0.0), f.get("L", 0.0))
+                            f.get("W", 0.0), f.get("L", 0.0), col_fc, radius)
         return LimitState(f"{pier.tag}: {label}", demand, capacity, unit,
                           f"{citation} — governed by ASCE 7-16 §2.3.1 {case.label}: {how}",
                           combination=f"ASCE 7-16 §2.3.1 {case.label}",
