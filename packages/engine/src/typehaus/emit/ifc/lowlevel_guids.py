@@ -39,6 +39,7 @@ _MACHINE_MINTED = (
     "IfcRelConnectsStructuralActivity",
     "IfcRelConnectsStructuralMember",
     "IfcRelContainedInSpatialStructure",
+    "IfcRelCoversBldgElements",
     "IfcRelDeclares",
     "IfcRelDefinesByProperties",
     "IfcRelDefinesByType",
@@ -65,7 +66,7 @@ _RELATING = ("RelatingObject", "RelatingStructure", "RelatingMaterial", "Relatin
 _RELATED = ("RelatedObjects", "RelatedElements", "RelatedFeatureElement",
             "RelatedBuildingElement", "RelatedOpeningElement", "RelatedStructuralMember",
             "RelatedBuildings", "RelatedObject", "RelatedStructuralConnection",
-            "RelatedStructuralActivity", "RelatedDefinitions")
+            "RelatedStructuralActivity", "RelatedDefinitions", "RelatedCoverings")
 
 
 def pin_relationship_guids(f: Any, project_uuid: uuid.UUID) -> int:

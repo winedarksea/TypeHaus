@@ -33,10 +33,9 @@ the future.
   them in `prices.toml` beside `RETAINING_BLOCK_12`.
 
 - **Emit nondeterminism (found 2026-11-23).** The S-100 LOCATING dimension chain
-  (`emit/draw/structural_dimensions.py`) and the IFCRELCOVERSBLDGELEMENTS GUIDs
-  (`emit/ifc/lowlevel_guids.py`) vary with the hash seed. `haus handoff` works around it by
-  re-execing under `PYTHONHASHSEED=0` (`cli/cmd_handoff.py`). Find the set iteration and sort
-  it, then drop the re-exec.
+  (`emit/draw/structural_dimensions.py`) varies with the hash seed; `haus handoff` works around
+  it by re-execing under `PYTHONHASHSEED=0` (`cli/cmd_handoff.py`). Sort the set iteration and
+  drop the re-exec. (The IFC covering-relationship GUIDs are pinned since 2026-11-23.)
 
 ### Left out of decision #142 (metal-wall penetrations)
 
