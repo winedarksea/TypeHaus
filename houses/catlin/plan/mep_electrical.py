@@ -349,14 +349,6 @@ SECOND_DEVICES = [
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-S-BD1", face="right", distance_from_start=inch(33.875),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
-    # The reading can's own switch is at the bed (2026-11-08; ED-S-SUITE-LAMP-SW's idiom): 46"
-    # AFF on W-S-SS2, x=33'-8", over the twin's head third, 16"+ from ED-S-STUDY2-RC4 behind.
-    ElectricalDevice(uid="3RQFN92MPQ", tag="ED-S-BED1-SW-READ", kind=DeviceKind.SWITCH,
-                     type_ref="ED-T-LEV-SW1", circuit="CKT-LT-UPPER",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
-                     location=Location(attachment=WallAttachment(
-                         wall_ref="W-S-SS2", face="left", distance_from_start=inch(141),
-                         normal_gap=inch(0), rotation_offset=deg(180)))),
     # y follows W-S-BD1's south face: the wall is INT_2X4_RC (plan/storeys/second.py) with
     # the resilient channel on the BED1 side. The box's back sits ON the face and the box is
     # 2" deep, so the authored y is the face LESS 1": 17'-5 1/8" - 1" = 17'-4 1/8".
@@ -377,14 +369,6 @@ SECOND_DEVICES = [
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-S-BD2", face="right", distance_from_start=inch(33.875),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
-    # The reading cans' switch is at the bed (2026-11-08): 46" AFF on W-S-BD2 over the queen's
-    # east head corner, x=34'-7" (the bed stands 1" off W-S-E3).
-    ElectricalDevice(uid="5DG7KH9CA2", tag="ED-S-BED2-SW-READ", kind=DeviceKind.SWITCH,
-                     type_ref="ED-T-LEV-SW1", circuit="CKT-LT-UPPER",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
-                     location=Location(attachment=WallAttachment(
-                         wall_ref="W-S-BD2", face="right", distance_from_start=inch(155),
-                         normal_gap=inch(0), rotation_offset=deg(0)))),
     # Same 1/2" as ED-S-BED1-RC1, on W-S-BD2's south face, for the same reason.
     ElectricalDevice(uid="CED007K3AA", tag="ED-S-BED2-RC1", kind=DeviceKind.RECEPTACLE,
                      type_ref="ED-T-LEV-DUPLEX-20", circuit="CKT-RC-SECOND",
@@ -393,7 +377,7 @@ SECOND_DEVICES = [
                          wall_ref="W-S-BD2", face="right", distance_from_start=inch(46.125),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="CED008K1AA", tag="ED-S-BED3-LT", kind=DeviceKind.LIGHT,
-                     position=pt(ft(31, 3.5), ft(30)), type_ref="ED-T-LT-CAN4", circuit="CKT-LT-UPPER",
+                     position=pt(ft(25, 3), ft(31, 4)), type_ref="ED-T-LT-CAN4", circuit="CKT-LT-UPPER",
                      room="RM-S-BED3", controlled_by=("ED-S-BED3-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="CED008K2AA", tag="ED-S-BED3-SW", kind=DeviceKind.SWITCH,
@@ -402,14 +386,6 @@ SECOND_DEVICES = [
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-S-BW3", face="right", distance_from_start=inch(46),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
-    # The reading can's switch is at the bed (2026-11-08): 46" AFF on W-S-E4 at y=30'-4", just
-    # south of the full bed's head, on the open side.
-    ElectricalDevice(uid="6RW73D2Q06", tag="ED-S-BED3-SW-READ", kind=DeviceKind.SWITCH,
-                     type_ref="ED-T-LEV-SW1", circuit="CKT-LT-UPPER",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
-                     location=Location(attachment=WallAttachment(
-                         wall_ref="W-S-E4", face="left", distance_from_start=inch(44),
-                         normal_gap=inch(0), rotation_offset=deg(-180)))),
     ElectricalDevice(uid="CED008K3AA", tag="ED-S-BED3-RC1", kind=DeviceKind.RECEPTACLE,
                      type_ref="ED-T-LEV-DUPLEX-20", circuit="CKT-RC-SECOND",
                      # x=35'-0", 12" off the NE corner; 48" keeps the box above the bed's
@@ -418,10 +394,6 @@ SECOND_DEVICES = [
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-S-N1", face="left", distance_from_start=inch(12),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
-    ElectricalDevice(uid="CED009K1AA", tag="ED-S-SUITE-LT", kind=DeviceKind.LIGHT,
-                     position=pt(ft(2, 4.5), ft(9, 10.25)), type_ref="ED-T-LT-CAN4", circuit="CKT-LT-UPPER",
-                     room="RM-S-SUITE", controlled_by=("ED-S-SUITE-SW",),
-                     mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     # In the suite's east arm, beside D-S-SUITE (the hall door through the bearing wall).
     # On a bar mid-bay: seated on O-S-CLOSET's king its plate stood 3/16" off the casing.
     ElectricalDevice(uid="CED009K2AA", tag="ED-S-SUITE-SW", kind=DeviceKind.SWITCH,

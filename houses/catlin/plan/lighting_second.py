@@ -150,12 +150,12 @@ SECOND_LIGHTING = [
                          wall_ref="W-S-SN2", face="right", distance_from_start=inch(21),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="QTS0008AAA", tag="ED-S-SUITE-CAN2", kind=DeviceKind.LIGHT,
-                     position=pt(ft(5), ft(14)), type_ref="ED-T-LT-CAN4",
+                     position=pt(ft(2, 10.67), ft(14)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-UPPER", room="RM-S-SUITE",
                      controlled_by=("ED-S-SUITE-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="QTS0009AAA", tag="ED-S-SUITE-CAN3", kind=DeviceKind.LIGHT,
-                     position=pt(ft(8, 8.75), ft(16, 8)), type_ref="ED-T-LT-CAN4",
+                     position=pt(ft(7, 1.07), ft(14)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-UPPER", room="RM-S-SUITE",
                      controlled_by=("ED-S-SUITE-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
@@ -197,7 +197,7 @@ SECOND_LIGHTING = [
     # y=34'-3". The mirror is a plain Kohler K-26050 round under a 3-light Karlie on the
     # east wall, on the lavatory's centre line (plan/mirrors.py).
     ElectricalDevice(uid="QTS000HAAA", tag="ED-S-BATH1-CAN1", kind=DeviceKind.LIGHT,
-                     position=pt(m(1.22226), ft(30)), type_ref="ED-T-LT-CAN4",
+                     position=pt(ft(5, 5.5), ft(31, 4)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-UPPER", room="RM-S-BATH1",
                      controlled_by=("ED-S-BATH1-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
@@ -258,15 +258,10 @@ SECOND_LIGHTING = [
                      circuit="CKT-LT-UPPER", room="RM-S-STUDY2",
                      controlled_by=("ED-S-STUDY2-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
-    # CAN3/CAN4 (2026-10-31) over FURN-S-STUDY-TABLE, the room's desk, 12" either side of
-    # its centre in FS-ATTIC's 1'-4"..2'-8" bay: one ahead of each seat.
+    # CAN3 centred on LT/CAN2's row (y=3'-0", 42" pitch), none over FURN-S-STUDY-TABLE: a desk
+    # lamp (plan/lamps.py) takes the table, and no head is lit in the south glass after dark.
     ElectricalDevice(uid="HXYCRA72DT", tag="ED-S-STUDY2-CAN3", kind=DeviceKind.LIGHT,
-                     position=pt(ft(27, 10), ft(2)), type_ref="ED-T-LT-CAN4",
-                     circuit="CKT-LT-UPPER", room="RM-S-STUDY2",
-                     controlled_by=("ED-S-STUDY2-SW",),
-                     mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
-    ElectricalDevice(uid="T6R81NEGCB", tag="ED-S-STUDY2-CAN4", kind=DeviceKind.LIGHT,
-                     position=pt(ft(29, 10), ft(2)), type_ref="ED-T-LT-CAN4",
+                     position=pt(ft(27, 6), ft(3)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-UPPER", room="RM-S-STUDY2",
                      controlled_by=("ED-S-STUDY2-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
@@ -320,61 +315,24 @@ SECOND_LIGHTING = [
                          wall_ref="W-S-E1", face="left", distance_from_start=inch(66),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
 
-    # RM-S-BED1/2/3, one template laid off the furniture (2026-10-31): ED-S-BED*-LT in front
-    # of the PAX fronts, CAN2 over the open floor beside or past the bed foot, CAN3 over the
-    # desk ahead of its user, and CAN4 a reading can 21" off the headboard wall on its own
-    # switch leg (no bedside lamp in these rooms). BED2's centred queen gets a pair, CAN4 and
-    # CAN5, 2' either side of its centre; BED1's twin and BED3's full stand against a wall
-    # and take one, on the open side. Joist mid-bays throughout; no duct runs over these rooms.
+    # RM-S-BED1/2/3, one template (2026-11-24): ED-S-BED*-LT in front of the PAX fronts and
+    # CAN2 on one row in the open floor between the PAX leg and the bed, in a clear joist
+    # mid-bay, >= 18" off the PAX faces; none over a bed or a desk (both move). Plug-in
+    # reading and desk lamps (plan/lamps.py) take the task light. No duct runs over these rooms.
     ElectricalDevice(uid="QTS0010AAA", tag="ED-S-BED1-CAN2", kind=DeviceKind.LIGHT,
-                     position=pt(ft(30), ft(14)), type_ref="ED-T-LT-CAN4",
+                     position=pt(ft(31, 2.75), ft(14)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-UPPER", room="RM-S-BED1",
                      controlled_by=("ED-S-BED1-SW",),
-                     mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
-    ElectricalDevice(uid="QTS0011AAA", tag="ED-S-BED1-CAN3", kind=DeviceKind.LIGHT,
-                     position=pt(ft(34, 4), ft(15, 4)), type_ref="ED-T-LT-CAN4",
-                     circuit="CKT-LT-UPPER", room="RM-S-BED1",
-                     controlled_by=("ED-S-BED1-SW",),
-                     mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
-    ElectricalDevice(uid="QTS0012AAA", tag="ED-S-BED1-CAN4", kind=DeviceKind.LIGHT,
-                     position=pt(ft(33, 8.5), ft(12, 8)), type_ref="ED-T-LT-CAN4",
-                     circuit="CKT-LT-UPPER", room="RM-S-BED1",
-                     controlled_by=("ED-S-BED1-SW-READ",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="QTS0013AAA", tag="ED-S-BED2-CAN2", kind=DeviceKind.LIGHT,
-                     position=pt(ft(28, 8), ft(20, 8)), type_ref="ED-T-LT-CAN4",
+                     position=pt(ft(29), ft(22)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-UPPER", room="RM-S-BED2",
                      controlled_by=("ED-S-BED2-SW",),
-                     mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
-    ElectricalDevice(uid="QTS0014AAA", tag="ED-S-BED2-CAN3", kind=DeviceKind.LIGHT,
-                     position=pt(ft(27, 10.5), ft(25, 7.75)), type_ref="ED-T-LT-CAN4",
-                     circuit="CKT-LT-UPPER", room="RM-S-BED2",
-                     controlled_by=("ED-S-BED2-SW",),
-                     mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
-    ElectricalDevice(uid="QTS0015AAA", tag="ED-S-BED2-CAN4", kind=DeviceKind.LIGHT,
-                     position=pt(ft(30, 8), ft(24, 8)), type_ref="ED-T-LT-CAN4",
-                     circuit="CKT-LT-UPPER", room="RM-S-BED2",
-                     controlled_by=("ED-S-BED2-SW-READ",),
-                     mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
-    ElectricalDevice(uid="XSN6WX8VW4", tag="ED-S-BED2-CAN5", kind=DeviceKind.LIGHT,
-                     position=pt(ft(34, 8), ft(24, 8)), type_ref="ED-T-LT-CAN4",
-                     circuit="CKT-LT-UPPER", room="RM-S-BED2",
-                     controlled_by=("ED-S-BED2-SW-READ",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="QTS0016AAA", tag="ED-S-BED3-CAN2", kind=DeviceKind.LIGHT,
-                     position=pt(ft(27, 5), ft(32, 8)), type_ref="ED-T-LT-CAN4",
+                     position=pt(ft(27, 9), ft(31, 4)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-UPPER", room="RM-S-BED3",
                      controlled_by=("ED-S-BED3-SW",),
-                     mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
-    ElectricalDevice(uid="QTS0017AAA", tag="ED-S-BED3-CAN3", kind=DeviceKind.LIGHT,
-                     position=pt(ft(23, 1.5), ft(32, 8)), type_ref="ED-T-LT-CAN4",
-                     circuit="CKT-LT-UPPER", room="RM-S-BED3",
-                     controlled_by=("ED-S-BED3-SW",),
-                     mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
-    ElectricalDevice(uid="QTS0018AAA", tag="ED-S-BED3-CAN4", kind=DeviceKind.LIGHT,
-                     position=pt(ft(33, 8.5), ft(31, 4)), type_ref="ED-T-LT-CAN4",
-                     circuit="CKT-LT-UPPER", room="RM-S-BED3",
-                     controlled_by=("ED-S-BED3-SW-READ",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
 
     # The landing end of RM-S-HALL + the stairwell chandelier, hung over the ST-M2S
