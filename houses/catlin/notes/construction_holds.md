@@ -80,11 +80,10 @@ the model goes back to `plans/TODO.md` as a design item.
     R310 rests on an estimate until then). MMI: Z0364688R sill crest
     (ST-G-SERVICE tops at the +1.5" envelope).
   - Murphy Door: confirm the custom 32 x 82 RO flush-mount as modelled (FF datum, legs 78.0",
-    body 28 3/4 x 78 1/2 x 8 1/4, casing 36 1/2, passage 24 1/4), price/lead time. Frigidaire:
-    TTDRRVFRKIT vs TTDRRVFRKIT2.
+    body 28 3/4 x 78 1/2 x 8 1/4, casing 36 1/2, passage 24 1/4), price/lead time.
   - Broan: the derived 9 3/4" port 3-4 spacing; 8" flex on those centres. Weyerhaeuser: TJI 230
     row assumes a glue-nailed subfloor. BuildBlock: BB600 course height vs the 64" stem.
-  - Frigidaire TWINSPAIRKIT 1/8" seam; LG LDTS5552S side-mount with no sub-top. Carpet backing
+  - Frigidaire TWINSPAIRKIT 1/8" seam; freezer handle hand room 3/16" off W-M-PAN-S (floor sample); LG LDTS5552S side-mount with no sub-top. Carpet backing
     thickness (Z-bar answer holds to 0.10"); Mohawk on the 3/8" pad. WAC Roland on a flat 753
     cover; DVFR1W trim stand-off. Bypass/bifold 1/2" head allowance.
   - Plumber: the attic WC's 1 1/2" vent (UPC 904.1); basement WC re-route under the slab to

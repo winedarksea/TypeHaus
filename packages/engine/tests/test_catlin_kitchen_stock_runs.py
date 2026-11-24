@@ -51,8 +51,8 @@ def test_stock_north_modules_close_without_a_filler(catlin_plan, kitchen_objects
 
 def test_west_pantry_and_scribes_align_with_cold_uppers(catlin_plan, kitchen_objects):
     pantry = kitchen_objects["FURN-M-KIT-PANTRYC"]
-    freezer = kitchen_objects["FURN-M-KIT-OVER-FREEZER"]
-    refrigerator = kitchen_objects["FURN-M-KIT-OVER-FRIDGE"]
+    freezer = kitchen_objects["FURN-M-KIT-OVER-FRIDGE"]  # south upper
+    refrigerator = kitchen_objects["FURN-M-KIT-OVER-FREEZER"]  # north upper
     types = {item.tag: item for item in catlin_plan.library.furniture_types}
     assert pantry.type_ref == "SEKT-HIGH18-90"
     assert pantry.body_z1_m == pytest.approx(freezer.body_z1_m)
@@ -94,18 +94,19 @@ def test_stock_cold_uppers_preserve_hinge_clearance_and_appliance_joint(
         assert (cabinet.body_z0_m - appliance.body_z1_m) / INCH == pytest.approx(1)
         assert _bounds(cabinet)[2] == pytest.approx(243.26, abs=0.03125)
         assert f"{cabinet.tag}-ST" not in kitchen_objects
-    assert (_bounds(freezer)[1], _bounds(freezer)[3]) == pytest.approx((331.5, 361.5))
+    # Freezer north, fridge south since 2026-11-24; each upper rides over its own unit.
     assert (_bounds(refrigerator)[1], _bounds(refrigerator)[3]) == pytest.approx(
-        (361.5, 391.5)
+        (331.5, 361.5)
     )
+    assert (_bounds(freezer)[1], _bounds(freezer)[3]) == pytest.approx((361.5, 391.5))
     # Frigidaire's 3/16" outer sides and 1" rear (2026-11-01).
-    south = _bounds(kitchen_objects["APPL-M-FREEZER"])[1]
-    north = _bounds(kitchen_objects["APPL-M-FRIDGE"])[3]
+    south = _bounds(kitchen_objects["APPL-M-FRIDGE"])[1]
+    north = _bounds(kitchen_objects["APPL-M-FREEZER"])[3]
     assert south - _bounds(kitchen_objects["FURN-M-KIT-PANTRYC"])[3] == pytest.approx(0.1875)
     assert 394.625 - north == pytest.approx(0.1875)
     assert _bounds(kitchen_objects["APPL-M-FRIDGE"])[0] - 219.25 == pytest.approx(1.0)
-    assert _bounds(freezer)[1] - south == pytest.approx(2.9375)
-    assert north - _bounds(refrigerator)[3] == pytest.approx(2.9375)
+    assert _bounds(refrigerator)[1] - south == pytest.approx(2.9375)
+    assert north - _bounds(freezer)[3] == pytest.approx(2.9375)
     # The rail near the frame top needs its own band, independent of lower restraint.
     backing = catlin_plan.by_tag("BK-M-C5-COLD-TOP")
     assert backing.wall_ref == "W-M-C5"
@@ -114,12 +115,18 @@ def test_stock_cold_uppers_preserve_hinge_clearance_and_appliance_joint(
     assert rail_screw_elevation < backing.elevation.meters + backing.height.meters
 
 
-def test_refrigerator_rehinged_at_the_pair_seam_swings_clear_of_the_partition(kitchen_objects):
-    # Factory right hinge + TTDRRVFRKIT: the 90 deg zone mirrors to the seam (south) side.
-    swing = [ring for ring in kitchen_objects["APPL-M-FRIDGE"].recommended_clearances
-             if Polygon(ring).bounds[1] / INCH < 361.5625 - 3.0]
-    assert len(swing) == 1
-    assert Polygon(swing[0]).bounds[3] / INCH < 394.75  # W-M-PAN-S face
+def test_cold_pair_hinges_at_the_seam_on_factory_handing(catlin_plan, kitchen_objects):
+    # Freezer (factory left) north, fridge (factory right) south: each 90 deg zone crosses
+    # the seam, none reaches W-M-PAN-S, and no reversal kit is ordered.
+    seam = 361.5625
+    for tag, past_seam in (("APPL-M-FREEZER", lambda b: b[1] < seam - 2.5),
+                           ("APPL-M-FRIDGE", lambda b: b[3] > seam + 2.5)):
+        assert catlin_plan.by_tag(tag).door_hinge is None
+        bounds = [tuple(v / INCH for v in Polygon(r).bounds)
+                  for r in kitchen_objects[tag].recommended_clearances]
+        assert len([b for b in bounds if past_seam(b)]) == 1
+        assert max(b[3] for b in bounds) < 394.75  # W-M-PAN-S face
+    assert not any("TTDRR" in p for p in catlin_plan.by_tag("APPL-M-FRIDGE").install_parts)
 
 
 def test_sink_centres_on_fixed_window_and_drain_components_move_together(catlin_model_ro):

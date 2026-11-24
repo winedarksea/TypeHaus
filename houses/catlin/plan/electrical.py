@@ -459,16 +459,17 @@ MAIN_DEVICES = [
                          wall_ref="W-M-CLN", face="left",
                          distance_from_start=inch(43.5), normal_gap=inch(-2.46875),
                          rotation_offset=deg(180)))),
-    # Freezer beside the fridge (KRF1 at (18'-4 3/8", 31'-4 5/8")) on the centre wall's east
+    # Freezer beside the fridge (KRF1 at (18'-4 3/8", 29'-9 1/4")) on the centre wall's east
     # face; its own always-on CKT-FREEZER since 2026-11-19 (Frigidaire: one circuit each).
-    # This box stays behind its own appliance (freezer y 27'-4 9/16"..30'-1 7/16") — the
+    # This box stays behind its own appliance (freezer y 30'-1 9/16"..32'-10 7/16", north slot
+    # since 2026-11-24) — the
     # same constraint that decided which end of the bay the retired filler went to. Recessed
     # (Arlington IN BOX): the units stand 1" off the wall, less than a plug (C5-E2).
     ElectricalDevice(uid="CEE006AAAA", tag="ED-M-LIVING-KFZ1", kind=DeviceKind.RECEPTACLE,
                      type_ref="ED-T-LEV-DUPLEX-20-REC", circuit="CKT-FREEZER",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-C5", face="right", distance_from_start=inch(47.25),
+                         wall_ref="W-M-C5", face="right", distance_from_start=inch(66.625),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     # NEC 440.14 disconnects for the two ground-mounted condensers, on W-M-S2's exterior
     # face, side by side east of WIN-M-LIV-S1's rough opening (x 31'-5"..33'-11") and within

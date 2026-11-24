@@ -9311,3 +9311,14 @@ The owner's calls:
 - **Snow:** snow and perched water are not combined on the court.
 
 Every calc family now shows its working step by step. Each sheet carries its stated bases and a "not covered — who owns it" table, and a lint requires both.
+
+## Cold pair swapped: freezer north, fridge south (2026-11-24, owner)
+
+A review proposed putting PANTRYC between the columns to drop the reversal and pairing kits
+($550–730). Rejected: the pair stays together. Swapping the two columns instead puts both
+factory hinges on the seam (freezer left = south, fridge right = north), so TTDRRVFRKIT
+($460–580, bought in I1-101 to move the fridge hinge off W-M-PAN-S) is gone. TWINSPAIRKIT
+stays: it serves any side-by-side pair. One door at a time, as before. The open north door
+that blocks D-M-PANTRY is now the freezer's. KRF1/KFZ1 and the over-cabinets swapped
+positions with their units, in the same stud bays. Open: the freezer handle's hand room
+3/16" off the partition (no published projection; floor sample).

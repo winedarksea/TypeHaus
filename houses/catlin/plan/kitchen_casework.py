@@ -11,7 +11,7 @@ from typehaus.model import deg, ft, inch, mm, pt
 
 MAIN_KITCHEN_CASEWORK = [
     # West run — cold storage and pantry against the centre bearing wall, opening east.
-    # North to south: RM-M-PANTRY's south partition, refrigerator, freezer, closet pantry.
+    # North to south: RM-M-PANTRY's south partition, freezer, refrigerator, closet pantry.
     # Cabinets 24" deep (centre x=19'-3 3/8"); cold boxes 27" deep (centre 19'-5 3/4").
     #
     # ** THE RUN'S NORTH END IS A WALL, NOT A CABINET. ** RM-M-PANTRY's south partition
@@ -29,8 +29,8 @@ MAIN_KITCHEN_CASEWORK = [
     # — clear of W-M-PAN-E by 6 3/8" and south of the north counter run. ** DESIGN NOTE, and
     # no check catches it: ** that zone stands in front of D-M-PANTRY. The pantry
     # now pockets west: the closed refrigerator obstructed ~23 inches of the old west
-    # bypass opening. Shelves and cabinet positions stay fixed. An open fridge door
-    # blocks the pantry. It is the price of putting both on one aisle, and it is the price
+    # bypass opening. Shelves and cabinet positions stay fixed. The north unit's open door
+    # (the freezer since 2026-11-24, the less-used one) blocks the pantry. It is the price of putting both on one aisle, and it is the price
     # the owner is paying knowingly.
     # Product: the Frigidaire Professional single-door pair (plan/appliance_types.py).
     # The bay is y=27'-4 3/8"..32'-10 5/8", 66 1/4", with no appliance filler.
@@ -40,23 +40,23 @@ MAIN_KITCHEN_CASEWORK = [
     # beside them. Frigidaire does not publish
     # the handle projection, so the *real* proudness is 3 7/8" plus a handle nobody has measured
     # — a tape on a floor sample before the cabinet order, not a number to invent here.
+    # FREEZER NORTH, FRIDGE SOUTH, BOTH ON FACTORY HANDING (owner, 2026-11-24): the freezer's
+    # left hinge and the fridge's right hinge both land on the pair seam, so neither leaf
+    # swings toward W-M-PAN-S and no reversal kit is bought (I1-101 had reversed the fridge
+    # at the wall end). Open leaves cross the seam: one door at a time. The freezer's handle
+    # edge is 3/16" off the partition; Frigidaire publishes no handle projection, so put a
+    # tape on a floor sample for hand room before the order.
     Appliance(uid="A1Y5Q0RDXV", tag="APPL-M-FRIDGE", type_ref="APPL-FRIG-PRO-ALLFRIDGE",
               room="RM-M-LIVING", plugs_into=("ED-M-LIVING-KRF1",),
-              position=pt(ft(19, 5.75), ft(31, 6)), rotation=deg(90),
+              position=pt(ft(19, 5.75), ft(28, 9)), rotation=deg(90),
               # TWINSPAIRKIT rides on the refrigerator rather than the freezer arbitrarily —
               # it is one kit for the pair, and billing it twice would be wrong. It is what
               # makes two cabinets legal to stand against each other: the shared side walls
               # would otherwise sweat.
-              # HINGED AT THE PAIR SEAM (owner, I1-101): the factory right hinge opened the
-              # leaf 3.19" past the north side into W-M-PAN-S. TTDRRVFRKIT is Frigidaire's
-              # kit for a left-hinged refrigerator door (Resource Guide p. 23). The open door
-              # then stands in front of the freezer's handle edge: one door at a time.
-              door_hinge="left",
-              install_parts=("Frigidaire TWINSPAIRKIT twin pairing kit (anti-condensation heater, power supply, cord, clips)",
-                             "Frigidaire TTDRRVFRKIT Pro door reversal kit, refrigerator to left hinge (door, hinges, covers, stopper)")),
+              install_parts=("Frigidaire TWINSPAIRKIT twin pairing kit (anti-condensation heater, power supply, cord, clips)",)),
     Appliance(uid="ZH6G4SNPWT", tag="APPL-M-FREEZER", type_ref="APPL-FRIG-PRO-ALLFREEZER",
               room="RM-M-LIVING", plugs_into=("ED-M-LIVING-KFZ1",),
-              position=pt(ft(19, 5.75), ft(28, 9)), rotation=deg(90)),
+              position=pt(ft(19, 5.75), ft(31, 6)), rotation=deg(90)),
     # One 90-inch frame on 3 1/2-inch supports aligns with the cold uppers at 93 1/2.
     # Retain the 18-inch width: 1/2" south for the cold bay, its south end 3/8" inside W-M-C5's end.
     # The 30/40/20 fronts put the upper door joint at the cold-upper bottom, 73 1/2.
@@ -108,13 +108,13 @@ MAIN_KITCHEN_CASEWORK = [
               room="RM-M-LIVING",
               mount=Mount(kind=MountKind.WALL, elevation=inch(73.5)),
               location=Location(attachment=WallAttachment(
-                  wall_ref="W-M-C5", face="right", distance_from_start=inch(66.5),
+                  wall_ref="W-M-C5", face="right", distance_from_start=inch(36.5),
                   normal_gap=inch(0), rotation_offset=deg(0)))),
     Furniture(uid="Y4KJ6WB0ZC", tag="FURN-M-KIT-OVER-FREEZER", type_ref="SEKT-TS30-20",
               room="RM-M-LIVING",
               mount=Mount(kind=MountKind.WALL, elevation=inch(73.5)),
               location=Location(attachment=WallAttachment(
-                  wall_ref="W-M-C5", face="right", distance_from_start=inch(36.5),
+                  wall_ref="W-M-C5", face="right", distance_from_start=inch(66.5),
                   normal_gap=inch(0), rotation_offset=deg(0)))),
 
     # Pantry face x=297 3/8; 12 + 24 DW + 36 sink + 18 = 90 inches to the carousel.

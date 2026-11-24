@@ -281,12 +281,13 @@ MAIN_DEVICES = [
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
     # On the centre bearing wall's east face, behind APPL-M-FRIDGE, at 48" — above the
     # coil deck, so the plug is reachable without pulling the whole cabinet out. Fridge is
-    # y 30'-1 9/16"..32'-10 7/16". Recessed like KFZ1: 1" behind the unit takes no plug.
+    # y 27'-4 9/16"..30'-1 7/16" (south slot since 2026-11-24). Recessed like KFZ1: 1" behind
+    # the unit takes no plug.
     ElectricalDevice(uid="D9EBW2FJTX", tag="ED-M-LIVING-KRF1", kind=DeviceKind.RECEPTACLE,
                      type_ref="ED-T-LEV-DUPLEX-20-REC", circuit="CKT-FRIDGE",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-C5", face="right", distance_from_start=inch(66.625),
+                         wall_ref="W-M-C5", face="right", distance_from_start=inch(47.25),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     # Inside the sink base, 9" up (210.52(C)(4): 24" or more below the counter): the dishwasher's
     # cord. Follows APPL-M-DW on the sink base's west side — see storeys/main.py's OPENINGS

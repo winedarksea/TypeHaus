@@ -233,6 +233,12 @@ branch overlaps, ERV trunk/flex/ERV-R-BATH refusals, wall-hung port stub, WC arm
 - May have gone a bit too far with the cellular PVC backing for the siding mounted electrical items. Receptacles and lights shouldn't normally need that.
 - The furring/orientation/shelf placement around FX-S-SUITEBATH-TUBSH
 
+- If in st paul, and if the north side is the street, then the current garage is not set back far enough. Also if north is the "street" side, then the north street façade has about 6% openings against a 15% requirement.
+- The basement escape door leads into a court with no route up to the yard.
+- The ERV outdoor-air intake is only about 7.1 feet from the detached garage. Minnesota specifies 10 feet to another building on the same lot.
+- The sunken court’s claimed flood reserve uses the wrong storm depth. The design uses 4.3 inches for a 100-year, 24-hour storm. Saint Paul lists 7.4 inches. On the design’s 442 ft² failed-drain catchment, that produces about 273 ft³ against 267 ft³ below the door threshold. The open court alone contributes only about 171 ft³. The design decision is where balcony water goes if its gutter backs up.
+- The laundry pocket door omits the openings the selected LG WashTower requires. The schedule specifies a flush hollow-core slab. LG’s closet-installation detail for this ventless model calls for 48 in² of ventilation opening high and 24 in² low. (Note we probably don't need to detail this, the solid core is fine. The ERV system + undercut should maintain airflow)
+
 # Project Management
 
 **Built 2026-09-11** (decision #69, `docs/site-state-format.md`): visits, inspections,
