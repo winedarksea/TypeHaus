@@ -198,8 +198,9 @@ def _independent_check(record: EngineeringRecord) -> str:
     rows = [[oracle.note, oracle.section or "whole note", oracle.test or "—"]
             for oracle in record.oracle]
     return table(["Note (houses/<house>/notes/)", "Section", "Test that reproduces it"],
-                 rows) + \
-        "\n\nEach note is an independent hand pass, re-derived by the named test."
+                 rows) + (
+        "\n\nEach note is worked by hand from the drawings and the published sources; it "
+        "cites the code only to name what it oracles. The named test re-derives it.")
 
 
 def render_sheet(record: EngineeringRecord, register: EngineeringRegister, *,

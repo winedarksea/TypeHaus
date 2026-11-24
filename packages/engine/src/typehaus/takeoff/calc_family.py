@@ -425,7 +425,8 @@ def render_conventions(*, house: str) -> str:
             "does not become one by being printed.",
         ]),
         heading("Independent checks", 2),
-        "Each note a calculation's section 9 names is an independent hand pass, worked "
-        "without reference to the code that produced the sheet, and re-derived by a test "
-        "so that a calculation drifting from its note is caught.",
+        "Each note a calculation's section 9 names is a hand pass, worked by hand from the "
+        "drawings and the published sources. A note cites the program's code only to name "
+        "what it oracles; its arithmetic does not come from the code. A test re-derives the "
+        "note's numbers, so a calculation drifting from its note is caught.",
     )
