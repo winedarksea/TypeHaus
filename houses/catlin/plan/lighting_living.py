@@ -98,9 +98,9 @@ LIVING_LIGHTING = [
     # mid-bays, clear of the ERV returns at y=10'-0"/12'-8"), symmetric about the fire axis
     # y=7'-4". South row CAN3/CAN4/CAN7: gimbals 33" off the glazing, washing the curtains.
     # CAN2: the fire-axis gimbal, 31" off the fireplace wall, aimed at the mantel. North row
-    # CAND1-3: the day cans. No can over the movable furniture; the lamps read there.
-    # Scene groups: A accents CAN2/3/4/7 on -SW-ACCENT, C day CAND1-3 on -SW-DAY, both D315S
-    # relays; B retired 2026-11-24 (CAN5/6, ED-M-LIVING-LT); D coves via their Zigbee controllers.
+    # CAN5/CAN6/CAN8: warm A2 general light. ACCENT switches all seven.
+    # Scene groups: A accents + north row on -SW-ACCENT, C day CAND1/2 on -SW-DAY, both D315S
+    # relays; D coves via their Zigbee controllers.
     ElectricalDevice(uid="QTM0002AAA", tag="ED-M-LIVING-CAN2", kind=DeviceKind.LIGHT,
                      position=pt(ft(32, 10), ft(7, 4)), type_ref="ED-T-LT-CAN4-PREM-GIMBAL",
                      circuit="CKT-LT-MAIN", room="RM-M-LIVING",
@@ -121,26 +121,37 @@ LIVING_LIGHTING = [
                      circuit="CKT-LT-MAIN", room="RM-M-LIVING",
                      controlled_by=("ED-M-LIVING-SW-ACCENT",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
-    # The day layer: mark A1, 5000 K, the north row on the lattice (y=11'-4", the farthest from
-    # the south and east glazing). The puzzle table's day light is LAMP-M-LIV-PUZZLE.
+    ElectricalDevice(uid="V5B2H5DK1X", tag="ED-M-LIVING-CAN5", kind=DeviceKind.LIGHT,
+                     position=pt(ft(25, 6), ft(11, 4)), type_ref="ED-T-LT-CAN4-PREM",
+                     circuit="CKT-LT-MAIN", room="RM-M-LIVING",
+                     controlled_by=("ED-M-LIVING-SW-ACCENT",),
+                     mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
+    ElectricalDevice(uid="7TNC6FN0HF", tag="ED-M-LIVING-CAN6", kind=DeviceKind.LIGHT,
+                     position=pt(ft(29, 2), ft(11, 4)), type_ref="ED-T-LT-CAN4-PREM",
+                     circuit="CKT-LT-MAIN", room="RM-M-LIVING",
+                     controlled_by=("ED-M-LIVING-SW-ACCENT",),
+                     mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
+    ElectricalDevice(uid="K96ZBJ7FQR", tag="ED-M-LIVING-CAN8", kind=DeviceKind.LIGHT,
+                     position=pt(ft(32, 10), ft(11, 4)), type_ref="ED-T-LT-CAN4-PREM",
+                     circuit="CKT-LT-MAIN", room="RM-M-LIVING",
+                     controlled_by=("ED-M-LIVING-SW-ACCENT",),
+                     mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
+    # The day pair: A1 5000 K over FURN-M-PUZZLE-COFFEE-TABLE, N-S along its long axis on the
+    # room's centre line x=26'-10 3/8", 13 1/2" either side of the fire axis. The south can
+    # takes the clear bay north of the twice-sistered y=5'-4" joist (69 3/4"..78 7/8").
     ElectricalDevice(uid="QTM0019AAA", tag="ED-M-LIVING-CAND1", kind=DeviceKind.LIGHT,
-                     position=pt(ft(25, 6), ft(11, 4)), type_ref="ED-T-LT-CAN4-5000",
+                     position=pt(ft(26, 10.375), ft(6, 2.5)), type_ref="ED-T-LT-CAN4-5000",
                      circuit="CKT-LT-MAIN", room="RM-M-LIVING",
                      controlled_by=("ED-M-LIVING-SW-DAY",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="QTM001AAAA", tag="ED-M-LIVING-CAND2", kind=DeviceKind.LIGHT,
-                     position=pt(ft(29, 2), ft(11, 4)), type_ref="ED-T-LT-CAN4-5000",
-                     circuit="CKT-LT-MAIN", room="RM-M-LIVING",
-                     controlled_by=("ED-M-LIVING-SW-DAY",),
-                     mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
-    ElectricalDevice(uid="K96ZBJ7FQR", tag="ED-M-LIVING-CAND3", kind=DeviceKind.LIGHT,
-                     position=pt(ft(32, 10), ft(11, 4)), type_ref="ED-T-LT-CAN4-5000",
+                     position=pt(ft(26, 10.375), ft(8, 5.5)), type_ref="ED-T-LT-CAN4-5000",
                      circuit="CKT-LT-MAIN", room="RM-M-LIVING",
                      controlled_by=("ED-M-LIVING-SW-DAY",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     # The lounge station, a 3-gang on W-M-C1's east face: COVE (a plain hard-off left on), then
-    # D315S relays ACCENT and DAY. No dimmers: the cans run full or off, and the coves dim at
-    # their controllers.
+    # D315S relays ACCENT (gimbals + warm north row) and DAY (the puzzle pair). No dimmers: the
+    # cans run full or off, and the coves dim at their controllers.
     ElectricalDevice(uid="DS30ANGPH9", tag="ED-M-LIVING-SW-COVE", kind=DeviceKind.SWITCH,
                      type_ref="ED-T-LEV-SW1",
                      circuit="CKT-LT-MAIN", room="RM-M-LIVING",
