@@ -21,24 +21,32 @@ from typehaus import (
 from typehaus.model import Location, WallAttachment
 
 # --- Garage ---------------------------------------------------------------------------
-# Five Q shop lights on one switch by the service door, on CKT-LT-GARAGE (since 2026-10-31;
+# Six Q shop lights on one switch by the service door, on CKT-LT-GARAGE (since 2026-10-31;
 # CKT-LT-MAIN before), the garage's own lighting circuit in ED-G-PANEL, not the GFCI
 # receptacle circuit, which would drop the lights every time a tool trips one. Surface mounted at 8' —
 # nothing above the garage ceiling to recess a can into.
+# Layout (lighting review R6): two N-S rows beside the bays at x 9'/27' (LT1/LT2, LT4/LT5), on
+# truss mid-bays, clear of the opener rail and the open door panel; LT1 also lights the bench.
+# LT6 is one tube between the bays south of the opener head, over the middle aisle.
 GARAGE_LIGHTING = [
     ElectricalDevice(uid="QTG0001AAA", tag="ED-G-LT1", kind=DeviceKind.LIGHT,
-                     position=pt(ft(18), ft(50, 6)), type_ref="ED-T-LT-SHOP4",
+                     position=pt(ft(9), ft(52, 2.5)), rotation=deg(90), type_ref="ED-T-LT-SHOP4",
                      circuit="CKT-LT-GARAGE", room="RM-GARAGE",
                      controlled_by=("ED-G-SW",),
                      mount=Mount(kind=MountKind.CEILING, elevation=ft(8))),
     ElectricalDevice(uid="QTG0002AAA", tag="ED-G-LT2", kind=DeviceKind.LIGHT,
-                     position=pt(ft(18), ft(60, 6)), type_ref="ED-T-LT-SHOP4",
+                     position=pt(ft(9), ft(58, 2.5)), rotation=deg(90), type_ref="ED-T-LT-SHOP4",
                      circuit="CKT-LT-GARAGE", room="RM-GARAGE",
                      controlled_by=("ED-G-SW",),
                      mount=Mount(kind=MountKind.CEILING, elevation=ft(8))),
-    # A third shop light over ST-G-SERVICE, the service door's flight. The two above are at
-    # y=50'-6" and y=60'-6", the working half of the bay; the flight drops 2'-10" in five
-    # risers from the threshold and neither reaches within R303.8's 4' of it. Stepping
+    ElectricalDevice(uid="GBMWQMH8YJ", tag="ED-G-LT6", kind=DeviceKind.LIGHT,
+                     position=pt(ft(18), ft(52, 2.5)), rotation=deg(90), type_ref="ED-T-LT-SHOP4",
+                     circuit="CKT-LT-GARAGE", room="RM-GARAGE",
+                     controlled_by=("ED-G-SW",),
+                     mount=Mount(kind=MountKind.CEILING, elevation=ft(8))),
+    # A third shop light over ST-G-SERVICE, the service door's flight. The lights above
+    # stand at y 52'-2 1/2" and 58'-2 1/2", the working half of the bay; the flight drops 2'-10" in
+    # five risers from the threshold and none reaches within R303.8's 4' of it. Stepping
     # through the door onto a top tread in the dark is the reason the rule exists. (It reads as an
     # *exterior* stair rather than an interior one because `_stair_is_indoors` asks whether
     # a CONDITIONED room stands over it, and the garage is deliberately unconditioned. R303.7
@@ -51,15 +59,13 @@ GARAGE_LIGHTING = [
                      circuit="CKT-LT-GARAGE", room="RM-GARAGE",
                      controlled_by=("ED-G-SW",),
                      mount=Mount(kind=MountKind.CEILING, elevation=ft(8))),
-    # LT4/LT5 (2026-10-31): one over each bay at mid-depth, y=55'-6", south of where the open
-    # overhead door's panel stops (~59'-2") and clear of the opener head at x=18'-0".
     ElectricalDevice(uid="PQX96QHYWG", tag="ED-G-LT4", kind=DeviceKind.LIGHT,
-                     position=pt(ft(11), ft(55, 6)), type_ref="ED-T-LT-SHOP4",
+                     position=pt(ft(27), ft(52, 2.5)), rotation=deg(90), type_ref="ED-T-LT-SHOP4",
                      circuit="CKT-LT-GARAGE", room="RM-GARAGE",
                      controlled_by=("ED-G-SW",),
                      mount=Mount(kind=MountKind.CEILING, elevation=ft(8))),
     ElectricalDevice(uid="F64CZX32H8", tag="ED-G-LT5", kind=DeviceKind.LIGHT,
-                     position=pt(ft(25), ft(55, 6)), type_ref="ED-T-LT-SHOP4",
+                     position=pt(ft(27), ft(58, 2.5)), rotation=deg(90), type_ref="ED-T-LT-SHOP4",
                      circuit="CKT-LT-GARAGE", room="RM-GARAGE",
                      controlled_by=("ED-G-SW",),
                      mount=Mount(kind=MountKind.CEILING, elevation=ft(8))),
