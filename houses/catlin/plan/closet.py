@@ -99,14 +99,16 @@ MAIN_CLOSET = [
     # 24" hanging-clothes zone: CAN1 is ~6 5/8" from its edge at x 10'-5 3/8".
     # Nothing in the engine grades 410.16: re-measure after any move.
     # 1,300 lm over 41.9 sf at CU 0.60 x LLF 0.80 = 14.9 fc on the aisle, plus the PAX strips
-    # inside the frames. x stays on 11'/15', one can per side of the central frame.
+    # inside the frames. Each can is centred on its PAX frame (CAN1 SHOW, CAN2 HANG).
+    # The ~9" setback from the PAX faces is forced: NEC 410.16's storage clearance leaves a
+    # band only a few inches wide at y 15'-0", so advisory.luminaire_placement flags it knowingly.
     ElectricalDevice(uid="QTM000VAAA", tag="ED-M-CLOSET-CAN1", kind=DeviceKind.LIGHT,
                      position=pt(ft(12, 9), ft(15, 0.75)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-MAIN", room="RM-M-CLOSET",
                      controlled_by=("ED-M-CLOSET-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="1N2XSTDANE", tag="ED-M-CLOSET-CAN2", kind=DeviceKind.LIGHT,
-                     position=pt(inch(199.5), ft(15, 0.75)), type_ref="ED-T-LT-CAN4",
+                     position=pt(inch(192.4), ft(15, 0.75)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-MAIN", room="RM-M-CLOSET",
                      controlled_by=("ED-M-CLOSET-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),

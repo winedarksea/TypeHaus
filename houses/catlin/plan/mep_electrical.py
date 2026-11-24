@@ -148,10 +148,6 @@ BASEMENT_DEVICES = [
 ]
 
 MAIN_DEVICES = [
-    ElectricalDevice(uid="CED002K1AA", tag="ED-M-BED-LT", kind=DeviceKind.LIGHT,
-                     position=pt(ft(4), ft(3, 4)), type_ref="ED-T-LT-CAN4-PREM", circuit="CKT-LT-MAIN",
-                     room="RM-M-BED", controlled_by=("ED-M-BED-SW", "ED-M-BED-SW2"),
-                     mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     # The closet door's switch, and it follows D-M-BED. The door moved 16" east on
     # 2026-09-15 (storeys/main.py) and this box, 4" west of the OLD jamb at 12'-10", would
     # have been left orphaned mid-wall in the new bedside-table zone. 13'-8" keeps the same
@@ -173,8 +169,9 @@ MAIN_DEVICES = [
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-M-S1", face="left", distance_from_start=inch(120),
                          normal_gap=inch(0), rotation_offset=deg(180)))),
+    # The study's day layer (5000 K, lighting review 2026-11-23); night is the desk lamp.
     ElectricalDevice(uid="CED003K1AA", tag="ED-M-STUDY-LT", kind=DeviceKind.LIGHT,
-                     position=pt(ft(14, 11.5), ft(19, 4)), type_ref="ED-T-LT-CAN4", circuit="CKT-LT-MAIN",
+                     position=pt(ft(14, 11.5), ft(19, 4)), type_ref="ED-T-LT-CAN4-5000", circuit="CKT-LT-MAIN",
                      room="RM-M-STUDY-CLOSET", controlled_by=("ED-M-STUDY-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="CED003K2AA", tag="ED-M-STUDY-SW", kind=DeviceKind.SWITCH,

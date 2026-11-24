@@ -69,8 +69,8 @@ MAIN_LIGHTING = [
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
 
     # RM-M-BED (premium tier, 2026-10-31), on a 3-WAY with ED-M-BED-SW2 at D-M-BED2. A south
-    # row at y=3'-4": ED-M-BED-LT (plan/mep_electrical) over the reading chair's lap, CAN5 a
-    # gimbal washing the bookcases, CAN2 over the desk top ahead of the user. CAN3/CAN4 flank
+    # row at y=3'-4": CAN5 a gimbal washing the bookcases, CAN2 over the desk top ahead of
+    # the user (the armchair gets a floor lamp, not a can). CAN3/CAN4 flank
     # the bed at y=8'-8", 52" either side of its centre and off the mattress, in the one bay
     # the ERV returns leave free. Two bed sconces replaced the north reading bar.
     ElectricalDevice(uid="QTM000EAAA", tag="ED-M-BED-CAN2", kind=DeviceKind.LIGHT,
