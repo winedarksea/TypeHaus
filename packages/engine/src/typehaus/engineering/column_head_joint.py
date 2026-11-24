@@ -41,6 +41,7 @@ from typehaus.engineering.column_head_geometry import (
     relative_in,
     seat_centroid,
 )
+from typehaus.engineering.column_head_uplift import UpliftBuild
 from typehaus.engineering.item import (
     EngineeringRecord,
     LimitState,
@@ -156,6 +157,10 @@ def _one(ctx: EngineeringContext, pier: Any, frame_forces: dict[str, float] | No
                     "the storey shear at the head, M_wind / H — an upper bound on a "
                     "free-headed roof column")
     wind = max(wind_by_axis.values(), default=0.0)
+    bands = None if frame_forces else (pier.wind_deck_shear_lb, pier.wind_guard_shear_lb)
+    if bands is not None and not math.isclose(sum(bands), pier.wind_head_shear_lb or -1.0,
+                                              rel_tol=1e-9):
+        bands = None
     inputs += [Quantity("head_lateral_wind", wind, "lb", 1.0),
                Quantity("head_lateral_guard", guard, "lb", 1.0)]
 
@@ -164,7 +169,7 @@ def _one(ctx: EngineeringContext, pier: Any, frame_forces: dict[str, float] | No
                        "part tying the head to its beam")
     else:
         _connector_states(ctx, pier, connector, wind, wind_how, guard, states, missing,
-                          notes, inputs)
+                          notes, inputs, bands)
 
     fc = pier.specified_fc_psi or _presumptive_fc()
     _shear_state(pier, fc, wind, guard, states, missing, inputs,
@@ -222,7 +227,8 @@ def _presumptive_fc() -> float:
 
 def _connector_states(ctx: EngineeringContext, pier: Any, connector: Any, wind: float,
                       wind_how: str, guard: float, states: list[LimitState],
-                      missing: list[str], notes: list[str], inputs: list[Quantity]) -> None:
+                      missing: list[str], notes: list[str], inputs: list[Quantity],
+                      bands: tuple[float, float] | None = None) -> None:
     cd = connector.load_duration_factor
     lateral = connector.lateral_lb
     if lateral is None:
@@ -237,7 +243,7 @@ def _connector_states(ctx: EngineeringContext, pier: Any, connector: Any, wind: 
                 f"{connector.tie} {lateral:,.0f} lb as published (C_D {cd:g} already in it; "
                 f"{_credit(connector)}); {wind_how}; 0.6W",
                 combination=W.WIND_ASD[0], combination_factors=W.WIND_ASD[1],
-                working=W.lateral_wind(wind, lateral, connector.tie)))
+                working=W.lateral_wind(wind, lateral, connector.tie, bands)))
         if guard > 0.0:
             states.append(LimitState(
                 "connector lateral, guard", guard, lateral / cd, "lb",
@@ -246,9 +252,10 @@ def _connector_states(ctx: EngineeringContext, pier: Any, connector: Any, wind: 
                 combination=W.GUARD_ASD[0], combination_factors=W.GUARD_ASD[1],
                 working=W.lateral_guard(guard, lateral, cd, connector.tie)))
 
-    uplift = _net_uplift(ctx, pier, notes)
-    if uplift is None:
+    built = _net_uplift_build(ctx, pier, notes)
+    if built is None:
         return
+    uplift, build = built
     inputs.append(Quantity("net_uplift", uplift, "lb", 1.0))
     if connector.uplift_lb is None:
         missing.append(f"a published uplift capacity for {connector.tie}")
@@ -261,7 +268,7 @@ def _connector_states(ctx: EngineeringContext, pier: Any, connector: Any, wind: 
         + (f"{pier.roof_tributary_ft2:.1f} ft2 of roof" if pier.roof_tributary_ft2 > 0.0
            else f"{pier.statics_area_ft2 or pier.tributary_ft2:.1f} ft2 of sealed deck"),
         combination=W.UPLIFT_ASD[0], combination_factors=W.UPLIFT_ASD[1],
-        working=W.uplift(uplift, connector.uplift_lb, connector.tie)))
+        working=W.uplift(uplift, connector.uplift_lb, connector.tie, build)))
     if lateral is not None and wind > 0.0:
         share = 1 if connector.set_rated else connector.tie_count
         up_ratio = (max(uplift, 0.0) / share) / connector.uplift_lb
@@ -294,7 +301,15 @@ def _credit(connector: Any) -> str:
 
 
 def _net_uplift(ctx: EngineeringContext, pier: Any, notes: list[str]) -> float | None:
-    """0.6D + 0.6W on the roof this column carries, ASD lb up; ``None`` with no roof."""
+    """0.6D + 0.6W on the roof this column carries, ASD lb up; ``None`` with no roof. The
+    lateral kinds read this number; the sheet's build-up is :func:`_net_uplift_build`."""
+    built = _net_uplift_build(ctx, pier, notes)
+    return None if built is None else built[0]
+
+
+def _net_uplift_build(ctx: EngineeringContext, pier: Any, notes: list[str]
+                      ) -> tuple[float, UpliftBuild] | None:
+    """:func:`_net_uplift` with the surrogate's own numbers, for the sheet."""
     from typehaus.engineering.column_head_uplift import roof_q_h, sealed_deck_uplift
     from typehaus.engineering.pier_basis import design_roof_dead_psf
     from typehaus.wind_tables import (
@@ -314,7 +329,9 @@ def _net_uplift(ctx: EngineeringContext, pier: Any, notes: list[str]) -> float |
         f"UPLIFT is the roof_moment surrogate spent on plan area: 0.6 x {q_h:.3f} x "
         f"{GUST_EFFECT_RIGID} x {MAX_VERIFIED_CASE_AB} = {up:.3f} psf, a bound on any "
         f"published free-roof C_N, less 0.6 x {roof_dead:g} psf of roof dead.")
-    return (up - 0.6 * roof_dead) * pier.roof_tributary_ft2
+    net = (up - 0.6 * roof_dead) * pier.roof_tributary_ft2
+    return net, UpliftBuild("roof", "the roof's ridge", q_h, up, roof_dead,
+                            pier.roof_tributary_ft2, net)
 
 
 def _shear_state(pier: Any, fc: float, wind: float, guard: float, states: list[LimitState],
@@ -350,7 +367,9 @@ def _shear_state(pier: Any, fc: float, wind: float, guard: float, states: list[L
     states.append(LimitState(
         "A_v,min for Table 22.5.5.1(a)", a_v_min, a_v, "in2",
         f"§9.6.3.4 at s {cage.tie_spacing_in:g}\"; a circular tie counts twice "
-        f"(§22.5.10.5.3), #{cage.tie_bar}", is_detailing=True))
+        f"(§22.5.10.5.3), #{cage.tie_bar}", is_detailing=True,
+        working=W.tie_area(a_v_min, a_v, b_w, cage.tie_spacing_in, cage.tie_bar,
+                           _BAR[cage.tie_bar][0], fc, REINFORCEMENT_FY_PSI)))
 
 
 def _shear_section(pier: Any) -> tuple[float, float]:

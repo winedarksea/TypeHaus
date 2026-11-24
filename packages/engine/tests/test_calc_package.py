@@ -446,6 +446,9 @@ WORKED_KINDS = (
     "column_head_joint",
     "lateral_system",
     "wood_roof_post",
+    "deck_tie",
+    "deck_post",
+    "column_support",
 )
 
 

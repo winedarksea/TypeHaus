@@ -40,6 +40,7 @@ from dataclasses import dataclass
 from typing import Any
 
 from typehaus.engineering import deck_tie_anchor as anchor
+from typehaus.engineering import deck_tie_working as W  # noqa: N812
 from typehaus.engineering.deck_tie_basis import (
     DeckWind,
     Load,
@@ -48,12 +49,14 @@ from typehaus.engineering.deck_tie_basis import (
     loads_on,
     wall_ties,
 )
+from typehaus.engineering.deck_tie_working import Distribution, Governing
 from typehaus.engineering.item import (
     EngineeringRecord,
     LimitState,
     Oracle,
     Quantity,
     Status,
+    declare_sheet,
     item_id,
 )
 from typehaus.engineering.registry import EngineeringContext, calc, keys, oracled_by
@@ -85,6 +88,8 @@ TENSION_TIE_ROLES = frozenset({"post_tension_tie", "floor_tie_holdown"})
 #: ASCE 7-16 §2.3 / §2.4: strength wind is ASD wind / 0.6; a guard (live) takes 1.6.
 STRENGTH_FROM_ASD_WIND = 1.0 / 0.6
 STRENGTH_FROM_GUARD = 1.6
+
+declare_sheet(KIND, not_covered=W.NOT_COVERED, labels=W.LABELS, figure=W.figure)
 
 oracled_by(KIND, Oracle(note="north_entry_piers.md", section="§10",
                         test="tests/test_deck_tie.py"))
@@ -125,13 +130,9 @@ def compute(ctx: EngineeringContext) -> list[EngineeringRecord]:
     return [_one(ctx, deck) for deck in _tied_decks(ctx)]
 
 
-def distribute(joints: list[TieJoint], loads: list[Load], sign: float = 1.0,
-               carries: list[tuple[bool, bool]] | None = None) -> list[tuple[float, float]]:
-    """``(X_i, Y_i)`` per joint under ``sign`` times ``loads``; ``[]`` for a mechanism.
-
-    ``carries[i] = (x, y)``: the plan directions joint ``i`` resists (default both). Each
-    direction is shared among its own joints, about the centre of those joints, and the
-    moment by ``J = sum_x dy^2 + sum_y dx^2`` (equal stiffness where a joint carries)."""
+def distribution(joints: list[TieJoint], loads: list[Load], sign: float = 1.0,
+                 carries: list[tuple[bool, bool]] | None = None) -> Distribution | None:
+    """The case shared over the joints (see :func:`distribute`); ``None`` for a mechanism."""
     n = len(joints)
     carries = carries or [(True, True)] * n
     kx = [1.0 if c[0] else 0.0 for c in carries]
@@ -139,7 +140,7 @@ def distribute(joints: list[TieJoint], loads: list[Load], sign: float = 1.0,
     fx = sign * sum(load.fx for load in loads)
     fy = sign * sum(load.fy for load in loads)
     if (sum(kx) == 0.0 and abs(fx) > 1e-9) or (sum(ky) == 0.0 and abs(fy) > 1e-9):
-        return []
+        return None
     xr = sum(k * j.x_ft for k, j in zip(ky, joints, strict=True)) / (sum(ky) or 1.0)
     yr = sum(k * j.y_ft for k, j in zip(kx, joints, strict=True)) / (sum(kx) or 1.0)
     moment = sign * sum((load.x_ft - xr) * load.fy - (load.y_ft - yr) * load.fx
@@ -148,11 +149,24 @@ def distribute(joints: list[TieJoint], loads: list[Load], sign: float = 1.0,
              + sum(k * (j.x_ft - xr) ** 2 for k, j in zip(ky, joints, strict=True)))
     if polar <= 1e-9:
         if abs(moment) > 1e-6:
-            return []
+            return None
         polar = 1.0
-    return [(a * (fx / (sum(kx) or 1.0) - moment * (j.y_ft - yr) / polar),
-             b * (fy / (sum(ky) or 1.0) + moment * (j.x_ft - xr) / polar))
-            for a, b, j in zip(kx, ky, joints, strict=True)]
+    forces = [(a * (fx / (sum(kx) or 1.0) - moment * (j.y_ft - yr) / polar),
+               b * (fy / (sum(ky) or 1.0) + moment * (j.x_ft - xr) / polar))
+              for a, b, j in zip(kx, ky, joints, strict=True)]
+    return Distribution(forces, fx, fy, sum(kx) or 1.0, sum(ky) or 1.0, xr, yr, moment,
+                        polar, tuple(kx), tuple(ky))
+
+
+def distribute(joints: list[TieJoint], loads: list[Load], sign: float = 1.0,
+               carries: list[tuple[bool, bool]] | None = None) -> list[tuple[float, float]]:
+    """``(X_i, Y_i)`` per joint under ``sign`` times ``loads``; ``[]`` for a mechanism.
+
+    ``carries[i] = (x, y)``: the plan directions joint ``i`` resists (default both). Each
+    direction is shared among its own joints, about the centre of those joints, and the
+    moment by ``J = sum_x dy^2 + sum_y dx^2`` (equal stiffness where a joint carries)."""
+    shared = distribution(joints, loads, sign, carries)
+    return [] if shared is None else shared.forces
 
 
 def carries_of(joints: list[TieJoint], caps: list[Capacity]) -> list[tuple[bool, bool]]:
@@ -220,10 +234,8 @@ def capacity(joint: TieJoint) -> Capacity | str:
         # given no capacity: that direction is a tension tie's.
         return Capacity(f1, 0.0, cd,
                         f"heel vertical: F1 along the wall, one part per sense — an "
-                        f"owner-accepted reading OUTSIDE the published condition (the "
-                        f"figure bears along the grain; lag bearing across a vertical "
-                        f"stud's grain may be materially lower), C_M {c_m:g} ({wet}); "
-                        f"nothing across", cite, True)
+                        f"owner-accepted reading outside the published condition (the "
+                        f"basis table), C_M {c_m:g} ({wet}); nothing across", cite, True)
     along_heel = joint.heel_axis == joint.wall_axis
     return Capacity(f1 if along_heel else up, up if along_heel else f1, cd,
                     f"heel {joint.heel_axis}: F1 along it, uplift (mirrored) across, one "
@@ -251,7 +263,8 @@ def _deliveries(joints: list[TieJoint], caps: list[Capacity], wind_cases: dict
                     case[(joint.wall, side)] = case.get((joint.wall, side), 0.0) + value
             for key, value in case.items():
                 worst[key] = max(worst.get(key, 0.0), abs(value))
-    return [Quantity(f"delivered_{side}_{wall}", value, "lb", 0.1)
+    return [Quantity(f"delivered_{side}_{wall}", value, "lb", 0.1,
+                     label=f"worst force the ties put {side} wall {wall} (ASD)")
             for (wall, side), value in sorted(worst.items())]
 
 
@@ -267,16 +280,17 @@ def _split(joint: TieJoint, force: tuple[float, float]) -> tuple[float, float]:
 
 def _worst(joints: list[TieJoint], caps: list[Capacity], cases: list[list[Load]],
            divisor: float, factor: float, demands: dict[str, list[anchor.Demand]]
-           ) -> tuple[float, str] | None:
+           ) -> tuple[float, str, Governing] | None:
     """The worst joint ratio over every case and both senses; strength demands collected."""
-    best: tuple[float, str] | None = None
+    best: tuple[float, str, Governing] | None = None
     for loads in cases:
         for sign in (1.0, -1.0):
-            forces = distribute(joints, loads, sign, carries_of(joints, caps))
-            if not forces:
+            shared = distribution(joints, loads, sign, carries_of(joints, caps))
+            if shared is None:
                 return None
             label = " + ".join(load.label for load in loads)
-            for joint, cap, force in zip(joints, caps, forces, strict=True):
+            for index, (joint, cap, force) in enumerate(
+                    zip(joints, caps, shared.forces, strict=True)):
                 along, across = (abs(v) for v in _split(joint, force))
                 ratio = sum(f * divisor / c for f, c in ((along, cap.along_lb),
                                                           (across, cap.across_lb)) if c > 0.0)
@@ -291,7 +305,10 @@ def _worst(joints: list[TieJoint], caps: list[Capacity], cases: list[list[Load]]
                         f"{joint.model}, {cap.how}): {along:,.1f} lb along the wall / "
                         f"{cap.along_lb / divisor:,.1f} + {across:,.1f} lb across it / "
                         f"{cap.across_lb / divisor:,.1f} (0 = not carried here), under "
-                        f"{label}"))
+                        f"{label}"),
+                        Governing(ratio, joint, cap.along_lb, cap.across_lb, cap.how, index,
+                                  shared, tuple(joints), tuple(loads), sign, along, across,
+                                  divisor))
     return best
 
 
@@ -318,7 +335,9 @@ def _one(ctx: EngineeringContext, deck: Any) -> EngineeringRecord:
     wind_cases, guard_loads = loads_on(ctx, deck, wind)
     for axis, loads in wind_cases.items():
         for load in loads:
-            inputs.append(Quantity(f"{axis}:{load.label}", load.fx + load.fy, "lb", 0.1))
+            inputs.append(Quantity(
+                f"{axis}:{load.label}", load.fx + load.fy, "lb", 0.1,
+                label=f"force along plan {axis} (ASD): {load.label}"))
     demands: dict[str, list[anchor.Demand]] = {}
     for axis, name in (("y", "N-S wind"), ("x", "E-W wind")):
         worst = _worst(joints, good, [wind_cases[axis]], 1.0, STRENGTH_FROM_ASD_WIND, demands)
@@ -330,7 +349,8 @@ def _one(ctx: EngineeringContext, deck: Any) -> EngineeringRecord:
             f"tie interaction, {name}", worst[0], 1.0, "",
             f"{'; '.join(sorted({c.cite for c in good}))}, published at C_D "
             f"{good[0].duration:g}; {worst[1]}",
-            combination="ASCE 7-16 §2.4.1(5) 0.6W", combination_factors=(("W", 0.6),)))
+            combination=W.WIND_ASD[0], combination_factors=W.WIND_ASD[1],
+            working=W.interaction_steps(worst[2])))
     if guard_loads and not missing:
         worst = _worst(joints, good, [[load] for load in guard_loads], good[0].duration,
                        STRENGTH_FROM_GUARD, demands)
@@ -338,7 +358,9 @@ def _one(ctx: EngineeringContext, deck: Any) -> EngineeringRecord:
             states.append(LimitState(
                 "tie interaction, guard", worst[0], 1.0, "",
                 f"IRC R301.5's 200 lb at C_D 1.0 against the row over its C_D "
-                f"{good[0].duration:g}; {worst[1]}"))
+                f"{good[0].duration:g}; {worst[1]}",
+                combination=W.GUARD_ASD[0], combination_factors=W.GUARD_ASD[1],
+                working=W.interaction_steps(worst[2])))
     if not missing:
         inputs.extend(_deliveries(joints, good, wind_cases))
     groups: list[anchor.Group] = []
@@ -346,14 +368,7 @@ def _one(ctx: EngineeringContext, deck: Any) -> EngineeringRecord:
     inputs.extend(Quantity(f"anchor_fc_{state.name.split()[0]}", state.capacity, "psi", 1.0)
                   for state in states if "f'c for the tie's concrete anchors" in state.name)
 
-    notes = [
-        "NOT GRADED — the concrete member under the anchors (out-of-plane bending of the "
-        "wall top) and the tie block's own screws into the tied member are named in the "
-        "oracle note with a hand bound; the framed wall a tie lands on is graded as that "
-        "structure's bracing, not here.",
-        "The wood path from each load to the tied member is assumed to deliver it; the "
-        "distribution treats the deck as rigid in plan and every joint as equally stiff.",
-    ]
+    notes: list[str] = []
     notes += anchor.layout_notes(groups)
     notes.append(
         f"WIND HEIGHT: q_h {wind.q_h_psf:.2f} psf is read at the top of what stands on the "
@@ -362,12 +377,6 @@ def _one(ctx: EngineeringContext, deck: Any) -> EngineeringRecord:
     notes.append(
         "DELIVERED: the delivered_* quantities are each tie's worst force along and across "
         "the wall it lands on; that wall's own bracing record sums them (review M9).")
-    if any(_role(j) == "floor_tie_holdown" for j in joints):
-        notes.append(
-            "DTT2Z: ESR-2330 §4.1 covers dry interior service and excludes treated lumber; the "
-            "catalog's deck-to-house lateral detail (C-C-2026 p. 326) sells it for decks but "
-            "publishes no wet row. Graded on the dry row x C_M 0.70 — a reading outside the "
-            "report.")
     notes += [f"DRY SERVICE at {j.member}/{j.wall} (C_M {DRY_SERVICE_CM:g}, NDS 2018 "
               f"§11.3.3 / Table 11.3.3): a service-condition judgement the engineer of "
               f"record confirms. Basis: {j.service_basis}"
@@ -380,7 +389,11 @@ def _one(ctx: EngineeringContext, deck: Any) -> EngineeringRecord:
                f"{', '.join(sorted({j.wall for j in joints}))}"
                + (f" — {worst_state.name} governs at {worst_state.ratio:.2f}"
                   if worst_state else ""))
-    return _record(ident, deck.tag, tags, status, states, inputs, missing, summary, notes)
+    from typehaus.engineering.owner_bases import CANOPY_SERVICE, HL43_EAST_WEST
+
+    reads_hl43 = any(c.angle and j.heel_axis is None for j, c in zip(joints, good, strict=False))
+    return _record(ident, deck.tag, tags, status, states, inputs, missing, summary, notes,
+                   (CANOPY_SERVICE, *((HL43_EAST_WEST,) if reads_hl43 else ())))
 
 
 def _concrete_states(ctx: EngineeringContext, joints: list[TieJoint], caps: list[Capacity],
@@ -433,8 +446,9 @@ def _bearing_posts(ctx: EngineeringContext, deck: Any) -> set[str]:
 
 def _record(ident: str, key: str, tags: tuple[str, ...], status: Status,
             states: list[LimitState], inputs: list[Quantity], missing: list[str],
-            summary: str, notes: list[str] | None = None) -> EngineeringRecord:
+            summary: str, notes: list[str] | None = None,
+            bases: tuple = ()) -> EngineeringRecord:
     return EngineeringRecord(
         item_id=ident, kind=KIND, key=key, basis_version=BASIS_VERSION, basis=BASIS,
         status=status, summary=summary, inputs=tuple(inputs), limit_states=tuple(states),
-        missing=tuple(missing), notes=tuple(notes or ()), element_tags=tags)
+        missing=tuple(missing), notes=tuple(notes or ()), element_tags=tags, bases=bases)

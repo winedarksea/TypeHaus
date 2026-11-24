@@ -7,6 +7,7 @@ numbers come from the caller, the same ones the state is built from.
 
 from __future__ import annotations
 
+from typehaus.engineering.column_head_uplift import UpliftBuild
 from typehaus.engineering.item import NotCovered, StatedBasis, Step, num
 
 #: The combination labels the rows carry (decided per row in the module docstring).
@@ -18,9 +19,21 @@ STRENGTH_LATERAL = ("strength: 1.0W (ASD wind / 0.6) or 1.6L (the guard), the la
 STRENGTH_GRAVITY = ("strength: 1.2D + 1.6(L or S)", (("D", 1.2), ("L", 1.6)))
 
 
-def lateral_wind(wind: float, lateral: float, tie: str) -> tuple[Step, ...]:
-    return (Step("V_w", "wind shear the head hands the tie (service, 0.6W)", wind, "lb",
-                 source="this column's share of the diaphragm or band shear"),
+def lateral_wind(wind: float, lateral: float, tie: str,
+                 bands: tuple[float, float] | None = None) -> tuple[Step, ...]:
+    if bands is not None:
+        build: tuple[Step, ...] = (
+            Step("V_deck", "wind on the deck band (fascia, beams, plank edge), this column's "
+                 "share (service, 0.6W)", bands[0], "lb", source="the deck's wind storey shear"),
+            Step("V_guard", "wind on the guard, this column's share (service, 0.6W)",
+                 bands[1], "lb", source="the guard's height and its own wind area"),
+            Step("V_w", "wind shear the head hands the tie (service, 0.6W)", wind, "lb",
+                 "V_deck + V_guard", f"{num(bands[0])} + {num(bands[1])}",
+                 "the shaft's own wind acts below the head and is not in it"))
+    else:
+        build = (Step("V_w", "wind shear the head hands the tie (service, 0.6W)", wind, "lb",
+                      source="this column's share of the diaphragm or band shear"),)
+    return (*build,
             Step("V_allow", f"{tie} lateral allowable, lower of F1/F2", lateral, "lb",
                  source="the connector's published table, C_D 1.6 included"))
 
@@ -31,9 +44,15 @@ def lateral_guard(guard: float, lateral: float, cd: float, tie: str) -> tuple[St
                  "V_pub / C_D", f"{num(lateral)} / {num(cd)}", "NDS Table 2.3.2"))
 
 
-def uplift(net: float, allow: float, tie: str) -> tuple[Step, ...]:
-    return (Step("U", "net uplift at the head, 0.6D + 0.6W", net, "lb",
-                 source="assumptions: the uplift surrogate and its area"),
+def uplift(net: float, allow: float, tie: str, build: UpliftBuild | None = None
+           ) -> tuple[Step, ...]:
+    head = build.steps() if build is not None else ()
+    equation = "U_net x A_trib" if build is not None else ""
+    numbers = (f"{num(build.wind_psf - 0.6 * build.dead_psf)} x {num(build.area_ft2)}"
+               if build is not None else "")
+    return (*head,
+            Step("U", "net uplift at the head, 0.6D + 0.6W", net, "lb", equation, numbers,
+                 "" if build is not None else "the uplift surrogate and its area"),
             Step("U_allow", f"{tie} uplift allowable", allow, "lb",
                  source="the connector's published table"))
 
@@ -115,3 +134,14 @@ NOT_COVERED = (
 )
 
 BASES: tuple[StatedBasis, ...] = ()
+
+
+def tie_area(a_v_min: float, a_v: float, b_w: float, spacing: float, tie_bar: int,
+             bar_area: float, fc: float, fy: float) -> tuple[Step, ...]:
+    """The detailing row's working: minimum tie area against what the circular tie gives."""
+    return (Step("A_v,min", "least tie area at this spacing", a_v_min, "in^2",
+                 "max(0.75 sqrt(f'c), 50) b_w s / f_y",
+                 f"max(0.75 x sqrt({num(fc)}), 50) x {num(b_w)} x {num(spacing)} / {num(fy)}",
+                 "ACI 318-19 §9.6.3.4"),
+            Step("A_v", f"tie area provided: #{tie_bar} counted twice around a circle",
+                 a_v, "in^2", "2 A_b", f"2 x {num(bar_area)}", "ACI 318-19 §22.5.10.5.3"))

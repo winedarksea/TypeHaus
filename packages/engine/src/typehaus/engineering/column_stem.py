@@ -24,7 +24,7 @@ from __future__ import annotations
 import math
 from dataclasses import dataclass
 
-from typehaus.engineering.item import LimitState, Quantity
+from typehaus.engineering.item import LimitState, Quantity, Step, num
 
 #: ACI 318-19 Table 21.2.1 — plain concrete in flexure.
 PHI_PLAIN = 0.60
@@ -87,7 +87,30 @@ def stem_states(*, tag: str, fc_psi: float, thickness_in: float, column_width_in
         f"M_u + V_u x = {demand.mu_lb_in / 12.0:,.0f} + {demand.vu_lb:,.0f} x "
         f"{embedment_in / 12.0:.1f}', taken the whole way down with no prop credited — "
         f"governed by ASCE 7-16 §2.3.1 {demand.label}",
-        combination=f"ASCE 7-16 §2.3.1 {demand.label}")]
+        combination=f"ASCE 7-16 §2.3.1 {demand.label}",
+        working=(
+            Step("M_u", "magnified head moment of the governing combination",
+                 demand.mu_lb_in / 12.0, "lb-ft", source=f"{demand.label}; the column_support "
+                 "joint rows"),
+            Step("V_u", "factored head shear", demand.vu_lb, "lb"),
+            Step("x", "length the dowels run into the stem", embedment_in / 12.0, "ft",
+                 source="the authored dowel embedment"),
+            Step("M_tip", "moment at the dowel tips: head moment plus the shear's lever, no "
+                 "prop credited", moment / 12.0, "lb-ft", "M_u + V_u x",
+                 f"{num(demand.mu_lb_in / 12.0)} + {num(demand.vu_lb)} x "
+                 f"{num(embedment_in / 12.0)}"),
+            Step("b", "width the moment spreads over: the column radius plus 45 deg each side "
+                 "over the dowel length, each side stopped at the end of the pour", below,
+                 "in", "min(R + x, n) + min(R + x, s)",
+                 f"min({num(column_width_in / 2.0)} + {num(embedment_in)}, {num(north_in)}) "
+                 f"+ min({num(column_width_in / 2.0)} + {num(embedment_in)}, "
+                 f"{num(south_in)})"),
+            Step("phi M_n", f"design moment strength of the plain {thickness_in:g} in. stem "
+                 "over that width", capacity / 12.0, "lb-ft",
+                 "phi 5 lambda sqrt(f'c) b h^2 / 6 / 12",
+                 f"{num(PHI_PLAIN)} x {num(PLAIN_FLEXURE_COEFFICIENT)} x sqrt({num(fc_psi)}) "
+                 f"x {num(below)} x {num(thickness_in)}^2 / 6 / 12",
+                 "ACI 318-19 §14.5.2.1, phi per Table 21.2.1")))]
     return states, [Quantity(f"{tag}.stem_thickness", thickness_in, "in", 0.125),
                     Quantity(f"{tag}.stem_fc", fc_psi, "psi", 1.0),
                     Quantity(f"{tag}.spread_below_dowels", below, "in", 0.5)]
