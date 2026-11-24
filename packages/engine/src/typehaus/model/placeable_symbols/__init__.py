@@ -148,6 +148,8 @@ SYMBOL_NAMES = (UNIFI_ACCESS_POINT_SYMBOLS
     "pivoting-paper-holder", "towel-bar", "towel-hook",
     "pivoting-paper-holder-chrome", "towel-bar-chrome", "towel-hook-chrome",
     # furniture
+    "ikea-hektar-floor-lamp", "ikea-tertial-work-lamp", "ikea-fado-table-lamp",
+    "ikea-nymane-wall-lamp",
     "sofa", "loveseat", "sectional", "armchair", "strandmon", "dining-chair", "cantilever-chair",
     "office-chair",
     "dining-table", "rounded-dining-table", "round-table", "coffee-table", "end-table",
