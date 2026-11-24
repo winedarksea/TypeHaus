@@ -219,7 +219,7 @@ class _Point:
                     f"deck_post grades, each against its own phi*Mn, the worst reported: "
                     f"{worst.label} at Pu {worst.pu_lb:,.0f} lb, Mu {worst.mu_lb_ft:,.0f} "
                     f"lb-ft, phi*Mn {worst.phi_mn_lb_ft:,.0f} lb-ft {where}",
-                    combination=f"ASCE 7-16 §2.3.1 {worst.label}",
+                    combination=f"{worst.label} (ASCE 7-16 §2.3.1)",
                     combination_factors=worst.factors,
                     working=W.magnified_steps(worst, self, delta)))
         return tuple(states)
