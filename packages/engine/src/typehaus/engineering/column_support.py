@@ -395,10 +395,11 @@ def _one(ctx: EngineeringContext, wall_tag: str, piers: list[_Pier]) -> Engineer
         basis_version=BASIS_VERSION, basis=BASIS, status=status, summary=summary,
         inputs=tuple(W.labelled(inputs)), limit_states=tuple(states), missing=tuple(missing),
         notes=notes, element_tags=(wall_tag, *(p.tag for p in piers)),
-        scope=Scope.SCREENING, bases=_bases())
+        scope=Scope.SCREENING, bases=_bases(states))
 
 
-def _bases() -> tuple:
-    from typehaus.engineering.owner_bases import CURTAINS, DOWEL_RATIO
+def _bases(states: list[LimitState]) -> tuple:
+    from typehaus.engineering.owner_bases import CURTAINS, dowel_ratio
 
-    return (DOWEL_RATIO, CURTAINS)
+    ratios = [s.ratio for s in states if s.name.endswith("dowel tension across the joint")]
+    return (dowel_ratio(max(ratios) if ratios else None), CURTAINS)

@@ -106,14 +106,20 @@ CANOPY_SERVICE = StatedBasis(
 
 # --- column_support (LA-fill) ----------------------------------------------------------------
 
-DOWEL_RATIO = StatedBasis(
-    BasisKind.OWNER_ACCEPTED, "dowel tension ratio, accepted as is",
-    "Dowel tension is graded on the conservative C_f 1.80 for every wind band, the guard taken "
-    "concurrently with full design wind and the one-bar couple on the block that force itself "
-    "produces. It was owner-accepted at 0.92 (2026-11-23) when the porch curtains were a wind "
-    "band; with the curtains stowed (owner basis) it is well under that.",
-    reopens_if="the ratio rising above 0.92",
-    reference="owner acceptance, 2026-11-23 (balcony_moment_columns.md)")
+def dowel_ratio(now: float | None) -> StatedBasis:
+    """The dowel-tension acceptance, with the row's CURRENT ratio read off the record."""
+    today = ("" if now is None else
+             f" With the curtains stowed (owner basis) the dowel tension row is now {now:.2f} "
+             f"at the worst column, under the 0.92 the owner accepted.")
+    return StatedBasis(
+        BasisKind.OWNER_ACCEPTED, "dowel tension ratio, accepted as is",
+        "Dowel tension is graded on the conservative C_f 1.80 for every wind band, the guard "
+        "taken concurrently with full design wind and the one-bar couple on the block that "
+        "force itself produces. It was owner-accepted at 0.92 (2026-11-23) when the porch "
+        "curtains were a wind band." + today,
+        reopens_if="the ratio rising above 0.92",
+        reference="owner acceptance, 2026-11-23 (balcony_moment_columns.md)")
+
 
 # --- The sunken-garden court (retaining_system, retaining_wall, thermal_break_transfer) ---
 # Wording is read from the drawing notes AN-SG-SOIL and AN-SG-BACKFILL, the court free body
