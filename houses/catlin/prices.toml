@@ -7570,6 +7570,13 @@ tape_connector = { unit = "EA", material = { low = 2, high = 5 }, labour = { low
 "FURN-DRESSER-HEMNES-63" = { low = 449.99, high = 449.99 }  # 1 ea
 # IKEA STRANDMON wing chair, US listing checked 2026-10-03: $349 (Sulviken) to $399 (Kelinge).
 "FURN-ARMCHAIR-STRANDMON" = { low = 349, high = 399 }  # 1 ea, RM-M-BED reading chair
+# Plug-in lamps (plan/lamp_types.py, lighting review 2026-11-23): IKEA US listings read
+# 2026-11-24, each row the lamp plus its SOLHETTA E26 bulb; the NYMÅNE's GU10 is an allowance.
+"FT-LAMP-FLOOR-HEKTAR" = { low = 98.98, high = 98.98 }  # 7 ea; HEKTAR $89.99 + 1600 lm bulb $8.99
+"FT-LAMP-TABLE-FADO" = { low = 32.49, high = 32.49 }  # 1 ea; FADO $29.99 + 800 lm bulb (2 pk $4.99)
+"FT-LAMP-DESK-TERTIAL" = { low = 22.49, high = 22.49 }  # 7 ea; TERTIAL $19.99 + 800 lm bulb
+"FT-LAMP-DESK-TERTIAL-5000" = { low = 24.99, high = 29.99 }  # 1 ea; 5000 K bulb price not read
+"FT-LAMP-WALL-NYMANE" = { low = 49.99, high = 56.99 }  # 4 ea; NYMÅNE $44.99 + GU10 $5-12
 "FURN-DESK-CHAIR" = { low = 100, high = 600 }  # 6 ea
 "FURN-DINING-2-36" = { low = 120, high = 600 }  # 2 ea
 # Retyped 2026-08-24 to FT-DINING-8-OPEN-CORNERS below — same table, same money, a smaller

@@ -322,6 +322,16 @@ MAIN_BACKING = [
 ]
 
 SECOND_BACKING = [
+    # Bed-head reading lamps (plan/lamps.py, lighting review 2026-11-23): one band per lamp,
+    # stud face to stud face across the plate, for its two mounting screws.
+    WallBacking(uid="5DV38VA5M3", tag="BK-S-SS2-BED1-READ", wall_ref="W-S-SS2", face="left",
+                start=inch(128.75), length=inch(30.5), elevation=inch(44), datum="finished-floor",
+                height=inch(5.5), profile="2x6", material_ref="spf",
+                purpose="LAMP-S-BED1-READ wall reading lamp"),
+    WallBacking(uid="MTKNAPR80N", tag="BK-S-BD2-BED2-READ", wall_ref="W-S-BD2", face="right",
+                start=inch(112.75), length=inch(46.5), elevation=inch(44), datum="finished-floor",
+                height=inch(5.5), profile="2x6", material_ref="spf",
+                purpose="LAMP-S-BED2-READ-E and -W wall reading lamps"),
     # RL-A-HANDRAIL's return (y=32 1/4") and bracket (y=65") land on WIN-S-STUDY3's jack packs.
     # SEKTION high rail: cabinet top 94 1/2" AFF, near-top rail, plus 1 1/2" of floor
     # build-up above the storey datum. The 90"..97 1/4" course spans the mounting screws.
