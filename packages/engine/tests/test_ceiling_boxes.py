@@ -23,7 +23,7 @@ def test_a_fan_takes_the_fan_rated_brace_box_on_the_finished_ceiling(catlin_mode
 
 def test_housings_wafers_psu_fittings_and_battery_sensors_take_none(catlin_model_ro):
     boxes = _boxes(catlin_model_ro)
-    for tag in ("ED-M-LIVING-LT", "ED-S-NCLOSET-LT", "AL-G-FREEZE"):
+    for tag in ("ED-M-LIVING-CAND1", "ED-S-NCLOSET-LT", "AL-G-FREEZE"):
         assert tag not in boxes, tag
     assert boxes["AL-M-BED"].box_use == "ceiling"  # the alarm row falls back to "ceiling"
 

@@ -94,15 +94,15 @@ LIVING_LIGHTING = [
                      position=pt(inch(200.5), inch(253.25)), rotation=deg(90),
                      type_ref="ED-T-LT-CTRL-5IN1", psu_ref="ED-M-DINING-LT-PSU-E", room="RM-M-STUDY-CLOSET",
                      mount=Mount(kind=MountKind.CEILING, drop=mm(37))),
-    # The lounge, laid out off the furniture (2026-10-31): ED-M-LIVING-LT (plan/mep_electrical)
-    # over the coffee table on the fire axis y=7'-4"; CAN2 a gimbal 27" off the fireplace wall
-    # aimed at the mantel; CAN3/CAN4 gimbals 33" off the south glazing, washing the curtains;
-    # CAN5/CAN6 their mirror about the fire axis. Nothing over the sofa or armchairs, every can
-    # in a joist mid-bay clear of the ERV returns at y=10'-0"/12'-8".
-    # Scene groups (2026-11-03): A accents CAN2-4 on -SW-ACCENT, B downlights LT/CAN5/CAN6 on
-    # -SW, C day CAND1/2 on -SW-DAY, all D315S relays; D coves via their Zigbee controllers.
+    # The lounge: one 3'-8" lattice, x 25'-6" / 29'-2" / 32'-10", rows y=3'-4" and 11'-4" (joist
+    # mid-bays, clear of the ERV returns at y=10'-0"/12'-8"), symmetric about the fire axis
+    # y=7'-4". South row CAN3/CAN4/CAN7: gimbals 33" off the glazing, washing the curtains.
+    # CAN2: the fire-axis gimbal, 31" off the fireplace wall, aimed at the mantel. North row
+    # CAND1-3: the day cans. No can over the movable furniture; the lamps read there.
+    # Scene groups: A accents CAN2/3/4/7 on -SW-ACCENT, C day CAND1-3 on -SW-DAY, both D315S
+    # relays; B retired 2026-11-24 (CAN5/6, ED-M-LIVING-LT); D coves via their Zigbee controllers.
     ElectricalDevice(uid="QTM0002AAA", tag="ED-M-LIVING-CAN2", kind=DeviceKind.LIGHT,
-                     position=pt(ft(33, 2), ft(7, 4)), type_ref="ED-T-LT-CAN4-PREM-GIMBAL",
+                     position=pt(ft(32, 10), ft(7, 4)), type_ref="ED-T-LT-CAN4-PREM-GIMBAL",
                      circuit="CKT-LT-MAIN", room="RM-M-LIVING",
                      controlled_by=("ED-M-LIVING-SW-ACCENT",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
@@ -116,32 +116,31 @@ LIVING_LIGHTING = [
                      circuit="CKT-LT-MAIN", room="RM-M-LIVING",
                      controlled_by=("ED-M-LIVING-SW-ACCENT",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
-    ElectricalDevice(uid="55ZCN0PWCS", tag="ED-M-LIVING-CAN5", kind=DeviceKind.LIGHT,
-                     position=pt(ft(25, 6), ft(11, 4)), type_ref="ED-T-LT-CAN4-PREM",
+    ElectricalDevice(uid="FQZ5724DVP", tag="ED-M-LIVING-CAN7", kind=DeviceKind.LIGHT,
+                     position=pt(ft(32, 10), ft(3, 4)), type_ref="ED-T-LT-CAN4-PREM-GIMBAL",
                      circuit="CKT-LT-MAIN", room="RM-M-LIVING",
-                     controlled_by=("ED-M-LIVING-SW",),
+                     controlled_by=("ED-M-LIVING-SW-ACCENT",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
-    ElectricalDevice(uid="QKY6VSH030", tag="ED-M-LIVING-CAN6", kind=DeviceKind.LIGHT,
-                     position=pt(ft(29, 2), ft(11, 4)), type_ref="ED-T-LT-CAN4-PREM",
-                     circuit="CKT-LT-MAIN", room="RM-M-LIVING",
-                     controlled_by=("ED-M-LIVING-SW",),
-                     mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
-    # The day layer: mark A1, 5000 K, over the puzzle table (x 26'-4"..28'-4", y 5'-6"..9'-2"),
-    # one joist bay either side of ED-M-LIVING-LT, so the cool light lands on the work. CAND1
-    # is 2 1/2" north of 6'-0": the y=5'-4" joist is sistered twice, so its bay is 70 1/4"..78 3/4".
+    # The day layer: mark A1, 5000 K, the north row on the lattice (y=11'-4", the farthest from
+    # the south and east glazing). The puzzle table's day light is LAMP-M-LIV-PUZZLE.
     ElectricalDevice(uid="QTM0019AAA", tag="ED-M-LIVING-CAND1", kind=DeviceKind.LIGHT,
-                     position=pt(ft(27, 4), ft(6, 2.5)), type_ref="ED-T-LT-CAN4-5000",
+                     position=pt(ft(25, 6), ft(11, 4)), type_ref="ED-T-LT-CAN4-5000",
                      circuit="CKT-LT-MAIN", room="RM-M-LIVING",
                      controlled_by=("ED-M-LIVING-SW-DAY",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="QTM001AAAA", tag="ED-M-LIVING-CAND2", kind=DeviceKind.LIGHT,
-                     position=pt(ft(27, 4), ft(8, 8)), type_ref="ED-T-LT-CAN4-5000",
+                     position=pt(ft(29, 2), ft(11, 4)), type_ref="ED-T-LT-CAN4-5000",
                      circuit="CKT-LT-MAIN", room="RM-M-LIVING",
                      controlled_by=("ED-M-LIVING-SW-DAY",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
-    # The lounge station, a 4-gang on W-M-C1's east face: COVE (a plain hard-off left on), then
-    # D315S relays ACCENT, ED-M-LIVING-SW (plan/mep_electrical.py, at 11'-10 1/8") and DAY. No
-    # dimmers: the cans run full or off, and the coves dim at their controllers.
+    ElectricalDevice(uid="K96ZBJ7FQR", tag="ED-M-LIVING-CAND3", kind=DeviceKind.LIGHT,
+                     position=pt(ft(32, 10), ft(11, 4)), type_ref="ED-T-LT-CAN4-5000",
+                     circuit="CKT-LT-MAIN", room="RM-M-LIVING",
+                     controlled_by=("ED-M-LIVING-SW-DAY",),
+                     mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
+    # The lounge station, a 3-gang on W-M-C1's east face: COVE (a plain hard-off left on), then
+    # D315S relays ACCENT and DAY. No dimmers: the cans run full or off, and the coves dim at
+    # their controllers.
     ElectricalDevice(uid="DS30ANGPH9", tag="ED-M-LIVING-SW-COVE", kind=DeviceKind.SWITCH,
                      type_ref="ED-T-LEV-SW1",
                      circuit="CKT-LT-MAIN", room="RM-M-LIVING",
@@ -161,7 +160,7 @@ LIVING_LIGHTING = [
                      circuit="CKT-LT-MAIN", room="RM-M-LIVING",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-C1", face="right", distance_from_start=inch(146.125),
+                         wall_ref="W-M-C1", face="right", distance_from_start=inch(142.125),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
 
     # The dining fixture, centred on FURN-M-DINING at y=18'. A 3'-6" assembly off a 9' ceiling puts

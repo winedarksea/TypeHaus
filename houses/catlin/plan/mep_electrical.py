@@ -148,18 +148,6 @@ BASEMENT_DEVICES = [
 ]
 
 MAIN_DEVICES = [
-    ElectricalDevice(uid="CED001K1AA", tag="ED-M-LIVING-LT", kind=DeviceKind.LIGHT,
-                     position=pt(ft(27, 4), ft(7, 4)), type_ref="ED-T-LT-CAN4-PREM", circuit="CKT-LT-MAIN",
-                     room="RM-M-LIVING", controlled_by=("ED-M-LIVING-SW",),
-                     mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
-    # Group B, the lounge downlights (LT, CAN5, CAN6), one gang of the 4-gang station whose
-    # other three are in plan/lighting_living.py.
-    ElectricalDevice(uid="CED001K2AA", tag="ED-M-LIVING-SW", kind=DeviceKind.SWITCH,
-                     type_ref="ED-T-LEV-MATTER", circuit="CKT-LT-MAIN",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(48)),
-                     location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-C1", face="right", distance_from_start=inch(142.125),
-                         normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="CED002K1AA", tag="ED-M-BED-LT", kind=DeviceKind.LIGHT,
                      position=pt(ft(4), ft(3, 4)), type_ref="ED-T-LT-CAN4-PREM", circuit="CKT-LT-MAIN",
                      room="RM-M-BED", controlled_by=("ED-M-BED-SW", "ED-M-BED-SW2"),
