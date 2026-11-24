@@ -22,6 +22,18 @@ from typehaus.engineering.retaining_system_body import STONE_PCF, Body, _exterio
 #: The field rule graded: no retained side more than half its height above another.
 RULE = 0.5
 _GRID = tuple(i / 12.0 for i in range(13))
+#: Study lever (court sliding study): a rule stated in FEET instead (e.g. 3.0 for 3'-0").
+#: The grid then steps 2" down from full height, so a whole-foot difference lies on it.
+RULE_FT: float | None = None
+_STEP_FT = 2.0 / 12.0
+
+
+def _rule_and_grid(height_ft: float) -> tuple[float, tuple[float, ...]]:
+    if RULE_FT is None:
+        return RULE, _GRID
+    step = _STEP_FT / height_ft
+    grid = {max(0.0, 1.0 - k * step) for k in range(int(1.0 / step) + 2)} | {0.0}
+    return RULE_FT / height_ft + 1e-9, tuple(sorted(grid))
 
 
 def _split(body: Body, members, stem_ft: float  # type: ignore[no-untyped-def]
@@ -115,8 +127,9 @@ def staged(body: Body, members, footing_top_ft: float, stem_ft: float,  # type: 
 
     spliced = sum(p.weight() for p in body.prisms
                   if p.label.partition(":")[2] in body.spliced)
-    grid = list(itertools.product(_GRID, repeat=len(pushes)))
-    ruled = [c for c in grid if max(c) - min(c) <= RULE + 1e-9 and max(c) > 0]
+    rule, steps = _rule_and_grid(max(heights))
+    grid = list(itertools.product(steps, repeat=len(pushes)))
+    ruled = [c for c in grid if max(c) - min(c) <= rule + 1e-9 and max(c) > 0]
     governing = min((stage(c, 0.0) for c in ruled), key=lambda s: s.fs)
     empty = min(stage(c, 0.0).fs for c in grid if max(c) > 0)
     loop_only = min(stage(c, spliced).fs for c in ruled)
