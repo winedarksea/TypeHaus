@@ -120,3 +120,143 @@ now); `FS-S-WEST` has no north edge rim behind the sheathing joints (D §2.2).
   FS 1.64 → **1.58**, one side empty 1.37 → 1.31; test re-pinned.
 
 No member size, reinforcement, load or authored plan value was changed.
+
+## 6. Closure (2026-11-23, branch `eng-review-close`)
+
+Every finding id mapped to a commit or a decision. The register went from 51 items to 32; `haus check` reports 0 FAIL. "Recorded" means a stated basis, with no change. A2 ids are written A2-Fn and D section-2 ids D-S2.n. The commit `0aa2a0938` is the review pass itself.
+
+| Id | Finding (≤12 words) | Outcome | Where |
+|---|---|---|---|
+| 6A-1 | Governing demand/capacity/ratio print positionally to the figure | fixed | 0aa2a0938 |
+| 6A-2 | No exponents (6e+04) in sheet numbers | fixed | 0aa2a0938; 46f1ef5e8 (appendix) |
+| 6A-3 | Ratios to three places (0.975 not 0.98) | fixed | 0aa2a0938 |
+| 6A-3b | Governing member not marked in schedule | fixed | 0aa2a0938 |
+| 6A-3c | Coverage/Seal columns repeat constants on every row | fixed | 46f1ef5e8 |
+| 6A-4 | Criteria page: design method missing for some kinds | fixed | 0aa2a0938 (see a: E-09) |
+| 6A-5 | Criteria wording ("not stated", section pointers) | fixed | a486e6823 |
+| 6A-6 | Long citations printed twice; use R-keys | fixed | 0aa2a0938 |
+| 6A-7 | Identical deferrals one row each; empty sections say None | fixed | 0aa2a0938; a486e6823 |
+| 6A-8 | Handoff README claims a list the sheets lack | fixed | 5dbc52da3 |
+| 6A-9 | Seal form header: four repeated strings undocumented | fixed | 5dbc52da3 |
+| 6A-10 | "No inputs to fingerprint" wording on sheets | fixed | 46f1ef5e8 |
+| 6A-11 | "this engine" speak across calc modules | fixed (swept with the working) | a486e6823; fcdda53dd; e4bfdbaab; bb3f5a72b |
+| 6A-12 | Stamped PDF omits per-member appendix by default | fixed | 5dbc52da3 |
+| 6A-13 | deck_post summary: 0.18 beside d/c 0.88 | fixed | 0aa2a0938 |
+| 6A-14 | tiered_retaining prints two friction values | retired (kind gone) | cdf409d8b; 0aa2a0938 |
+| 6A-15 | Format docs stale (counts, "commented out", tiered example) | fixed | 5dbc52da3; d5c8ee0b0 |
+| 6A-16 | deferred.py reason strings carry dates and check ids | fixed | e3623dbe2 (rafter); 0f8275001 (veneer) |
+| 6A-17 | README says nine sections; sheets have ten | fixed | 46f1ef5e8 |
+| 6A-18 | NO_CALC sheet omits designer and deliverable | fixed | 46f1ef5e8 |
+| A1-01 | Footing plan bending of W2/E2 is the ungraded load path | fixed (3 #5 per edge, d/c 0.51) | 44ec45224; c4f7beb5f |
+| A1-02 | Strut force omits braced legs; 3,000 psi capacity | fixed (0.54) | c4f7beb5f |
+| A1-03 | Friction under concrete already in the loop not counted | fixed (owner D1) | c4f7beb5f |
+| A1-04 | Staged-backfill W1/E1 weight mixed 130 and 110 pcf | fixed | 0aa2a0938; e488e82fe (§15e) |
+| A1-05 | No wet or blocked-drain sliding case | fixed (perched, flooded, snow graded; snow+perched not combined: owner basis) | c4f7beb5f; 60bf4c116; fcec8ca28 |
+| A1-06 | retaining_court study unreconciled with the register (7.66) | fixed | 659779220 |
+| A1-07 | Retained-soil class drives answer; imported backfill option | owner decision (no bulk imported backfill; at-rest 60 psf/ft specified) | 60bf4c116; b9cd54ab9 |
+| A1-08 | Deep plane under the stone handed to a geotechnical engineer | owner decision (no geotech; graded on specified native φ' 25 deg, excavation check, lean-wall fallback) | 60bf4c116; L1 note §15h |
+| A1-09 | Extra rows: stem shear, native bearing, corner bars, compaction | fixed (native bearing 0.559 on class 4; corner L-bars as modelled; plates within 3' of a stem) | 4e4bd2b4b; e8b5191fd |
+| A1-10 | Corner shear transfer grades the wrong mechanism | fixed (corner delivery row 0.12) | c4f7beb5f |
+| A1-11 | Stale oracle-note text (19'x26' court, FS 1.63) | fixed | e488e82fe |
+| A2-F1 | R404.4 is the wrong basis; walls retain under 48" | retired (R404.4 scope; kind gone) | 67f418cc3; cdf409d8b |
+| A2-F2 | friction 0.25 shown against governing tan 27.8 deg | retired | cdf409d8b (0aa2a0938 printed 0.528) |
+| A2-F3 | Method mixing; margin fragile (34 deg 1.47) | retired (chart replaces free body) | cdf409d8b |
+| A2-F4 | Sliding free body rebuilt, verified | recorded | L6, raised_garden_srw.md §10 |
+| A2-F5 | Sliding plane at pad base not checked | retired | 67f418cc3; cdf409d8b |
+| A2-F6 | Apron founds on court backfill, no compaction spec | fixed (95% Proctor, 8" lifts on SrwChartSection) | eb3ca4690 |
+| A2-F7 | 1.538 rests on three unverified choices | retired | cdf409d8b |
+| A2-F8 | Drain pipe and toe discharge unaddressed | fixed (pipe to #57 column; runnel end, splash pad; owner G9a) | eb3ca4690; 4e948830d; 0f1b549ad (billing open, see b) |
+| A2-F9 | Chart guard contradicts engine tier logic | fixed | 67f418cc3 |
+| A2-F10 | Sheet presentation: design method, tier symbols | fixed | 67f418cc3; eb3ca4690 |
+| A2-F11 | Five identical ratios verified, not copied | recorded | L6, raised_garden_srw.md §10 |
+| A2-F12 | Loads on wall and coupling to the court | recorded | L6 §10; court record row (c4f7beb5f) |
+| A2-F13 | 2026-09-18 row on upper-tier walls | recorded | L6, raised_garden_srw.md §10 |
+| A2-G1 | Goal 1: leave register via Allan Block Table 1.3 | fixed (5 items to 0; owner G9a) | 67f418cc3; cdf409d8b |
+| B-01 | No snow reaches the balcony; 3.0" seat divisor | owner decision (MN deck basis 40+10, no snow; seat reads 3.5" with C_b) | 56cfab325 |
+| B-02 | Planter load intended but modelled nowhere | fixed (171.7 plf over beam lines, cased) | 56cfab325 |
+| B-03 | Column reactions split equally; no guard-on case | fixed | 4a78d78d2 |
+| B-04 | base_rotation magnifies the wrong combination | fixed | 4a78d78d2 |
+| B-05 | Stem flexure under column moment handed to EOR | fixed (stem, strut, footing rows; dowels 48"; soil prop in compression) | 4a78d78d2; 43cac111a; a2aedc4d4 |
+| B-06 | Wind area omits guard, columns, curtains; "no uplift" | owner decision (curtains stowed in high wind, not a band); guard, shafts, uplift row fixed | 13d0dec90; 4a78d78d2; 585059463 |
+| B-07 | Dowel lap graded against column height | fixed (30" projection, 0.55) | 4a78d78d2 |
+| B-08 | 0.88 dowel development cites wrong clause (~0.53) | fixed (general equation, 0.27) | 4a78d78d2 |
+| B-09 | HETA20Z needs written Simpson confirmation | owner decision (use printed 1-ply FL11473 row; accepted reading) | 4a78d78d2; 4c56ce406 |
+| B-10 | Glulam: remaining NDS states unshown | fixed | 56cfab325 |
+| B-11 | Items a PE will stumble on (spacing text, notes) | fixed | 4a78d78d2 |
+| B-12 | Drift/serviceability and seismic not stated | fixed | 4a78d78d2 |
+| C-1 | Screen shear path below chord bases not closed | fixed (MSTA49Z screen strap; pads 30x30x12; pull-out rows) | 9aae73914; 8a7011ece; ab23576f0 |
+| C-2 | Chord force uses deck depth, not chord spacing | fixed (752 lb; 764 lb on jacketed posts; strap couple 0.77) | 5e1fe4c43; 4419ed8bd |
+| C-3 | lateral_system 0.91 from arbitrary halving | fixed (SDPWS 4.2A, deck row 0.496) | 5e1fe4c43 |
+| C-4 | roof_beam 0.877 overstated truss bearing | fixed (0.662) | 5e1fe4c43 |
+| C-5 | Equal post share ignores N-S drift gradient | recorded (+205 lb at piers); header posts modelled | 9aae73914; 0efc0b5bb |
+| C-6 | Pad bearing gravity-only | fixed (0.82) | 9aae73914 |
+| C-7 | girt_screw demand omits continuity; h from floor datum | fixed (retired to ESR-1078 read, pull-through 0.842) | 21a81ba34; 3143541b9; 0052bc67b |
+| C-8 | Splice-slip ask not load-bearing | fixed | 5e1fe4c43 |
+| C-9 | Deferred trusses: what the house can decide now | fixed (supporting structure closed); open: supplier designs | 9bf9540d8; dfb4736d6; b64e5ab5d |
+| C-10 | Landing tie: dry reading, HL33 orientation | owner decision (wet throughout; HL43 read for as-installed direction) | 8a7011ece; 39aaf6e9b |
+| C-11 | Entry piers modelled fixed-base; can leave register | fixed (8 items retired; IBC 1807.3 check) | 9aae73914; c0aa6c4c5 |
+| C-12 | roof_beam / wood_roof_post prescriptive routes | recorded (R507.4 not adopted for roof posts) | 9aae73914 |
+| D-R1 | Bracing story count never tests R325.6 | fixed (four conditions graded; premise wrong, no area fraction in 2018) | 7cb5425d8 |
+| D-R2 | J12 carries ~240 plf from SN3 outside its table | fixed (SN3 bearing + LSL strip; J12 on truss order) | 7cb5425d8; 9bf9540d8 |
+| D-R3 | W1/E1 stems pass R404.1.2(8) with column moments | fixed (stem rows) | 4a78d78d2 |
+| D-R4 | Stone/GM interface under court footings ungraded | owner decision (as A1-08) | 60bf4c116 |
+| D-R5 | Cladding read: older p.13 58/43 psf vs 07/2026 CTR 42/75 | recorded (graded both ways on p.13; the CTR row recorded, not adopted; 42 inward would read ~0.33) | house guide, Shell |
+| D-R6 | FS-M-NE peninsula loads outside OJ418S table | fixed (point-load list on the truss order) | 345438a75; 9bf9540d8 |
+| D-S2.1 | Concrete mix chloride, cement, sulfate, ASR fields | fixed; ASR open until plant submittal | 6f022b5ff |
+| D-S2.2 | Sheathing edge support: north and south joints | fixed | 345438a75; eebf8f8f0 |
+| D-S2.3 | stacked_line_ladder: real load, SN3 contradiction | fixed | 7cb5425d8 |
+| D-S2.4 | Trussed roofs: reactions, uplift, rafter span | fixed (supporting structure); open: supplier designs | 9bf9540d8 |
+| D-S2.5 | veneer_anchor and cavity width | owner decision (as F-03) | 0f8275001 |
+| D-S2.6 | W-B-N2 wall top exceeds 72" blocking limit | fixed (3-ply LVL pack, ties; no register item) | 345438a75; eebf8f8f0 |
+| E-01 | No per-family "not covered / who owns it" | fixed (NotCovered table on every family) | 46f1ef5e8; fcdda53dd; e4bfdbaab; bb3f5a72b |
+| E-02 | Arithmetic not shown, only the quotient | fixed (Step chains on all 12 graded kinds; lint) | 46f1ef5e8; fcdda53dd; e4bfdbaab; bb3f5a72b |
+| E-03 | Bundle has no structural sheets or key plan | fixed | 5dbc52da3 |
+| E-04 | No reviewer's summary or "what changed" | fixed | a486e6823; 1b62d8f41 |
+| E-05 | Stamped PDF omits per-member data | fixed | 5dbc52da3 |
+| E-06 | "Worked at governing member" hides sub-templates | fixed | 46f1ef5e8 |
+| E-07 | Rounding makes demand = capacity; notation | fixed | 0aa2a0938; 46f1ef5e8 |
+| E-08 | tiered_retaining prints two friction values | retired | cdf409d8b |
+| E-09 | Design method "not declared"; combinations unstated | fixed (method declared; every graded state names its combination in words) | 46f1ef5e8; fcdda53dd; e4bfdbaab; bb3f5a72b |
+| E-10 | Symbols without descriptions; units "—" | fixed (plain-word labels) | 46f1ef5e8; fcdda53dd; e4bfdbaab; bb3f5a72b |
+| E-11 | Citations long prose, printed twice | fixed | 0aa2a0938; 46f1ef5e8 |
+| E-12 | Open-items page: tone, naming, empty sections | fixed | a486e6823; e3623dbe2 |
+| E-13 | Seal path: placeholders repeat in every block | fixed | 5dbc52da3; 46f1ef5e8 |
+| E-14 | Design-criteria page incomplete or misleading | fixed | a486e6823; 1b62d8f41 |
+| E-15 | Numbers disagree between pages | fixed (15.2 bodies reconciled; 15.5 M_u = M_ASD / 0.6 shown as a step) | c4f7beb5f; 0aa2a0938; a486e6823; 39c1a2c73 |
+| E-16 | Hedging, history and engine-speak in strings | fixed (jargon sweep with the working) | fcdda53dd; e4bfdbaab; bb3f5a72b |
+| E-17 | Cosmetic: PDF id splits, header table, README | fixed | a486e6823; 84a412077; 46f1ef5e8 |
+| F-01 | Brick arches with no lintel (R703.8.3) | fixed (flat heads on HDG L3x3x1/4; 316 flashing on EPDM) | 0f8275001; 1f0a7e149 |
+| F-02 | No 2018 tie row for concrete-backed brick | fixed (2024 W2.8 ties on studs only; slotted HB-213) | 0f8275001; 1f0a7e149 |
+| F-03 | Veneer anchors 6 1/2" against 4 1/2" cavity | owner decision (brick stays; 2024 W2.8; dated dependency) | 0f8275001 |
+| F-04 | W-SG-BRKBM resultant outside kern of 12" bed | fixed (bed bearing 0.53) | 0f8275001 |
+| F-05 | "Nothing crosses the break" false; unbounded movement | fixed (owner D29: detail takes movement; bond break; joint 0.68) | 44ec45224; cdbf93b84; f24fad8a9 |
+| F-06 | Five register ids carry one loop-level number | fixed (5 to 1) | c4f7beb5f |
+| F-07 | Band header omits porch sill-beam seat loads | fixed | aae182ceb |
+| F-08 | band_header can leave the register (LSL rim, TJ-8000) | fixed (retired; published read) | aae182ceb |
+| F-09 | Jamb packs below band ungraded | fixed | aae182ceb |
+| F-10 | Thermal/band/veneer sheet wording (5 items) | fixed (R7 reworded; method declared; veneer citations; board strain a detailing row; 50 F fit checkpoint) | 6814726c0; d6b064162; f0735f855; cf30b33c9 |
+
+
+**Still open after the close:**
+- **The veneer ties' code edition.** `veneer_anchor/W-B-BRICK` waits for Minnesota's 2024-based code to take effect on or before the application date; failing that, an R104.11 request.
+- **The supplier truss designs**, for `RF-BW-CANOPY` and `RF-GARAGE`:
+  - The supporting structure is graded on the specified reactions. The component closes when the supplier's reaction schedule is entered.
+  - The canopy heel's uplift, 289 lb, is over the three-nail H2.5ASS row's 260 lb, and no published Simpson route closes it. The heel goes on the truss order.
+- **The ForteWEB report for D-B-SUNKEN's rim header:** for the owner to run and keep (`engineering_review_2026-11-22/forteweb_D-B-SUNKEN.md`).
+- **Soil report confirmation:** the court is closed on specified parameters (bed friction >= 0.43, native phi' >= 25 deg). `structural.soil_parameters_confirmed` stays UNKNOWN until `Site.confirmed_soil` is entered. The lean-wall fallback is printed.
+- **Billing:** the SRW drain pipe and capstone adhesive are not billed (`plans/TODO.md`).
+- **Ratios at or above the 0.85 owner cost-review trigger** (not limits):
+
+  | Item | Ratio | Governing state |
+  |---|---|---|
+  | `thermal_break_transfer` | 0.998 | winter tension |
+  | `retaining_system` | 0.981 | staged backfill |
+  | veneer ties | 0.91 | — |
+  | `deck_tie` | 0.876 | — |
+  | `retaining_wall` x3 | 0.865 | stem flexure |
+  | girt screw pull-through | 0.842 | — |
+
+- **A question for the sealing engineer, `column_support`'s bearing row:**
+  - C is solved on the block the force itself needs at 0.85 f'c. The capacity is taken on the column's P-M block.
+  - The joint is adequate either way: as a flexural section it is the dowel tension row, 0.894; held to φ·0.85 f'c the block still fits.
+  - The second reading would put the dowels at about 0.93, over the owner's 0.92 acceptance.
