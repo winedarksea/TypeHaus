@@ -386,7 +386,9 @@ not instruction: when it disagrees with this file or the model, it is the one th
 - **Lighting layout (2026-11-23 review; `notes/lighting_layout_rules.md`, `DESIGN-LOG.md`
   "Lighting layout review"):** cans sit on row lines and one pitch per zone, in joist mid-bays,
   over fixed work only; movable furniture gets a plug-in lamp (`plan/lamps.py`, types in
-  `plan/lamp_types.py`, switched at the lamp, not counted in lux). Kitchen rows stand roomward of
+  `plan/lamp_types.py`, switched at the lamp, not counted in lux), but no floor lamps where a
+  can will do (owner, 2026-11-24: the lounge puzzle-table day pair, a generic 2x2 in BED1-3).
+  A utility room has one fixture kind, one circuit and one switch group. Kitchen rows stand roomward of
   the counter edge and >= 18" off tall faces; utility tubes run over aisles, clear of bodies,
   hung services and the garage door's reach. `advisory.luminaire_placement` grades the body,
   service and door rules; its standing findings (closet PAX faces, the mech-room plenum can)

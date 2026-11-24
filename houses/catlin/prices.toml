@@ -2883,10 +2883,10 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 "ED-T-LEV-RANGE-1450" = { material = { low = 15, high = 45 }, labour = { low = 45, high = 95 } }  # 1 ea
 "ED-T-LEV-SINGLE-520" = { material = { low = 4, high = 14 }, labour = { low = 38, high = 78 } }  # 1 ea
 "ED-T-LEV-SURGE" = { material = { low = 25, high = 50 }, labour = { low = 40, high = 80 } }  # 2 ea
-"ED-T-LEV-SW1" = { material = { low = 3, high = 10 }, labour = { low = 32, high = 68 } }  # 36 ea since 2026-11-20 (workshop, garage, study went HBL)
+"ED-T-LEV-SW1" = { material = { low = 3, high = 10 }, labour = { low = 32, high = 68 } }  # 33 ea (2026-11-24; workshop, garage, study went HBL 2026-11-20)
 "ED-T-LEV-SW3" = { material = { low = 4, high = 12 }, labour = { low = 32, high = 68 } }  # 16 ea since 2026-11-20 (workshop, study stair went HBL)
 # Heavy-duty toggles (owner, 2026-11-20): MROSupply $32.57 / $35.57 (read 2026-11-21), ESTIMATE.
-"ED-T-HBL-SW1" = { material = { low = 25, high = 45 }, labour = { low = 32, high = 68 } }  # 4 ea, HBL1221BK
+"ED-T-HBL-SW1" = { material = { low = 25, high = 45 }, labour = { low = 32, high = 68 } }  # 3 ea, HBL1221BK
 "ED-T-HBL-SW3" = { material = { low = 28, high = 50 }, labour = { low = 32, high = 68 } }  # 3 ea, HBL1223BK
 "ED-T-LEV-USBC" = { material = { low = 30, high = 55 }, labour = { low = 40, high = 80 } }  # 2 ea
 "ED-T-LUT-COUNTDOWN" = { material = { low = 30, high = 80 }, labour = { low = 60, high = 130 } }  # 1 ea
@@ -2900,11 +2900,11 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 # the Nora NSIC-401QAT housing plus installing it; its trim and lamp are part rows priced by
 # product key, so a tier costs what its trim and lamp add. Allowances, not quotes: re-quote
 # before ordering. Mark C, the Juno wafer, is a whole fixture on its own key.
-"ED-T-LT-CAN4" = { material = { low = 22, high = 32 }, labour = { low = 52, high = 108 } }  # 55 ea, mark A
-"ED-T-LT-CAN4-5000" = { material = { low = 22, high = 32 }, labour = { low = 52, high = 108 } }  # 2 ea, A1, the lounge day layer (5000 K since 2026-10-31)
+"ED-T-LT-CAN4" = { material = { low = 22, high = 32 }, labour = { low = 52, high = 108 } }  # 49 ea, mark A
+"ED-T-LT-CAN4-5000" = { material = { low = 22, high = 32 }, labour = { low = 52, high = 108 } }  # 3 ea, A1, the lounge puzzle-table pair and the main study (5000 K since 2026-10-31)
 "ED-T-LT-CAN4-TASK" = { material = { low = 22, high = 32 }, labour = { low = 52, high = 108 } }  # 6 ea, A4, kitchen task cans (2026-10-31); trim and Soraa 25 deg lamp are part rows
 "ED-T-LT-CAN4-PREM" = { material = { low = 22, high = 32 }, labour = { low = 52, high = 108 } }  # 7 ea, A2
-"ED-T-LT-CAN4-PREM-GIMBAL" = { material = { low = 22, high = 32 }, labour = { low = 60, high = 120 } }  # 4 ea, A3, aimed on site
+"ED-T-LT-CAN4-PREM-GIMBAL" = { material = { low = 22, high = 32 }, labour = { low = 60, high = 120 } }  # 5 ea, A3, aimed on site
 "ED-T-LT-CAN4-WET" = { material = { low = 22, high = 32 }, labour = { low = 68, high = 130 } }  # 2 ea, B
 "ED-T-LT-CAN4-WET-5000" = { material = { low = 22, high = 32 }, labour = { low = 68, high = 130 } }  # 3 ea, B1
 "ED-T-LT-CAN4-WET-2700" = { material = { low = 22, high = 32 }, labour = { low = 68, high = 130 } }  # 1 ea, B2
@@ -2992,7 +2992,7 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 "ED-T-LT-PSU-60" = { material = { low = 30, high = 90 }, labour = { low = 45, high = 95 } }  # 3 ea — ED-M-BATH2-PSU (on the laundry ceiling since 2026-11-17), the sauna's surface-mounted ED-B-SAUNA-LT-PSU and the basement stair's ED-B-STAIR-LT-PSU (the closet's PAX supply is a TRADFRI; the pantry went to a PSU-96-WE 2026-10-31)
 "ED-T-LT-SCONCE-EXT" = { material = 19.99, labour = { low = 48, high = 115 } }  # 5 ea — IKEA GRÖNSPRÖT 205.559.99 since 2026-11-21, fixture only (lamp is the GU10 row)
 "ED-T-LT-SCONCE-EXT-WAC" = { material = { low = 186, high = 232 }, labour = { low = 48, high = 115 } }  # 0 ea — CATALOG-ONLY since 2026-11-21, kept priced as the revert: WAC WS-W2605-BK $186-232 (researched 2026-10-28)
-"ED-T-LT-SCONCE-SPOT" = { material = { low = 99, high = 130 }, labour = { low = 48, high = 115 } }  # 5 ea — WAC Sprig BL-23210-BK $99 dealer (2026-10-29, owner swap from Stretch); hardwiring unconfirmed
+"ED-T-LT-SCONCE-SPOT" = { material = { low = 99, high = 130 }, labour = { low = 48, high = 115 } }  # 6 ea — WAC Sprig BL-23210-BK $99 dealer (2026-10-29, owner swap from Stretch); hardwiring unconfirmed
 # 2026-08-18: the same down-spot, wet-location listed with a gasketed lens and a
 # corrosion-resistant housing. Same ~30-40% adder as the fan above.
 # ** CUT 2026-09-13. THE ROW STAYS, THE COUNT IS ZERO — the mark N / glazed-green-brick
@@ -3018,14 +3018,14 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 # warehouses: Westgate LVTE-4FT-30-46W-MCTP at $93, IP66. ** HARDWIRE IT ** -- plug-in
 # linkable cords crack in cold and that is where the failures start, which also means this
 # row's labour is an electrician rather than a hook and a plug.
-"ED-T-LT-SHOP4" = { material = { low = 93, high = 140 }, labour = { low = 60, high = 130 } }  # 5 ea
+"ED-T-LT-SHOP4" = { material = { low = 93, high = 140 }, labour = { low = 60, high = 130 } }  # 4 ea
 # P6 vanity sconce, Hinkley Soren 50910BK: $169 hinkley.com, dealers $139-219 (read
 # 2026-11-02); its lamp is a part row.
 "ED-T-LT-SCONCE-VANITY" = { material = { low = 139, high = 219 }, labour = { low = 60, high = 135 } }  # 3 ea
 "PROD-WAVEFORM-CENTRICHOME-A19-30K" = { material = { low = 10, high = 16 }, labour = 0 }  # Karlie lamps
 "PROD-WAVEFORM-MODERNVINTAGE-A19-30K" = { material = { low = 8, high = 15 }, labour = 0 }  # 3 ea, P6 lamps; estimate
 # Q1 LED-ready T8 strip (Halco 90511 ~$25-45) and its two Waveform 95-CRI tubes (part rows).
-"ED-T-LT-STRIP-T8" = { material = { low = 25, high = 45 }, labour = { low = 60, high = 130 } }  # 12 ea
+"ED-T-LT-STRIP-T8" = { material = { low = 25, high = 45 }, labour = { low = 60, high = 130 } }  # 15 ea
 "PROD-WAVEFORM-T8-95-50K" = { material = { low = 15, high = 25 }, labour = 0 }  # 24 ea
 # Q2 keyless lampholder (Leviton 9880) with an A19 LED.
 "ED-T-LT-KEYLESS" = { material = { low = 8, high = 18 }, labour = { low = 40, high = 90 } }  # 4 ea

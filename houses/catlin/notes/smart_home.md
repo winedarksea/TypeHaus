@@ -204,7 +204,7 @@ doorbell, cameras and two APs are shed (rule 6).
 
 ## Lighting scenes
 
-RM-M-LIVING's lights (2026-10-31, re-laid 2026-11-23, `plan/lighting_living.py`). The engine models
+RM-M-LIVING's lights (2026-10-31, re-laid 2026-11-23 and -24, `plan/lighting_living.py`). The engine models
 no scenes; this table is the HA configuration. Groups A/C and the kitchen peninsula are Leviton D315S relays
 (on/off); the coves dim and colour at their Gledopto GL-C-001P controllers (RGBCCT mode). The
 SLL RGB+CCT COB stays (owner, 2026-11-07): about 102 lm/ft per white channel as measured, and
@@ -213,8 +213,8 @@ pendant, kitchen perimeter and under-cabinet are plain paddles, outside the scen
 
 | Group | Loads | Control |
 |---|---|---|
-| A accents | gimbals `ED-M-LIVING-CAN2`-`4`, `-CAN7` (mantel, south curtains) | `ED-M-LIVING-SW-ACCENT` |
-| C day | `ED-M-LIVING-CAND1`-`3`, 5000 K, the lattice's north row | `ED-M-LIVING-SW-DAY` |
+| A accents | gimbals `ED-M-LIVING-CAN2`-`4`, `-CAN7` (mantel, south curtains) and the warm north row `-CAN5`/`6`/`8` | `ED-M-LIVING-SW-ACCENT` |
+| C day | `ED-M-LIVING-CAND1`/`2`, 5000 K, over the puzzle table | `ED-M-LIVING-SW-DAY` |
 | D coves | lounge `LR-M-LIVING-W`/`-E` and dining `LR-M-DINING-W`/`-E`, E4 RGB+CCT | `ED-M-LIVING-SW-COVE` (all four Class 2 drivers) + lounge `ED-M-LIVING-LT-CTRL`/`-CTRL-E`, dining `ED-M-DINING-LT-CTRL`/`-CTRL-E` |
 | Peninsula | `ED-M-KITCH-CAN6`/`7`/`8` | `ED-M-KITCH-SW-PEN` |
 
@@ -241,9 +241,9 @@ pendant, kitchen perimeter and under-cabinet are plain paddles, outside the scen
   (owner, 2026-10-31), so the lounge is two controllers (`ED-M-LIVING-LT-CTRL` W,
   `-CTRL-E` E) and the dining two (`ED-M-DINING-LT-CTRL`, `-CTRL-E`). Join each pair as one
   HA light group; the scenes above set the group, so both sides always match.
-- **Lamps are outside the scenes** (2026-11-23): the lounge reading lamps, the puzzle-table
-  day lamp and the dining counter lamp (`plan/lamps.py`) switch at the lamp. The lounge's
-  night is Night path plus a 2700 K lamp; the dining's is the counter lamp and the pendant low.
+- **The lamp is outside the scenes**: the dining counter lamp (`plan/lamps.py`) switches at
+  the lamp; the lounge has no lamps (2026-11-24). The lounge's night is Night path; the
+  dining's is the counter lamp and the pendant low.
 - **Night path is the warm layer**: amber at 5% only, never a white channel. The day layer is
   the 5000 K cans plus the coves' white channels at 5000 K.
 - **Check items.** None: each D315S returns to its last state after an outage (Leviton

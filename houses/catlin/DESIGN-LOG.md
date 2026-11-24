@@ -9346,3 +9346,25 @@ over furniture, kitchen cans hugged the uppers, and utility tubes sat over equip
   roof. 260 lx.
 - **Count and cost:** ceiling cans 73 -> 62, shop tubes 5 -> 6, T8 strips 12 -> 13, 20 lamps.
   Net about +$185 / -$590 (lamps +$1.1k; fixtures, trims and relays -$0.9k to -$1.7k).
+
+### Follow-up after the owner's review (2026-11-24)
+
+The owner kept the review and changed seven rooms. Rules updated in
+`notes/lighting_layout_rules.md`.
+- **Lamps:** floor lamps read as clutter. The lounge's four HEKTARs and its puzzle TERTIAL, the
+  main-bed armchair HEKTAR, the main study TERTIAL (too cramped) and the four NYMÅNE bed-head
+  lamps left (their backing too). Kept: the dining FADO, six desk TERTIALs, two attic-studio
+  HEKTARs (its sloped ceiling takes no can).
+- **Lounge:** two 5000 K cans over the puzzle table on the room's E-W centre line (x
+  26'-10 3/8", 13 1/2" either side of the fire axis) on SW-DAY; the north row turns warm A2 on
+  SW-ACCENT (CAND3 -> CAN8, CAN5/6 added). 161 -> 169 lx without lamps.
+- **Main floor:** RM-M-BED CAN6 over the armchair mirrors CAN2 about the bed axis, an even
+  south row (108 lx); the mud closet a symmetric pair either side of the tub drain; the study
+  a hardwired Sprig swing-arm over the desk on its own paddle (night layer; 3000 K integrated,
+  over the 2700 K night rule).
+- **BED1-3:** beds will move, so a generic 2x2 grid on the open floor, ~90 lx (was ~45).
+- **Utility:** one fixture kind, one circuit, one switch group. Furnace room strips only, on
+  `CKT-LT-BACKUP` (its duty re-derived to 0.21; always-on 219.8 W, autonomy 44.6 h). Workshop
+  strips only on one 3-way pair. Garage: the stair and centre tubes became Q2a porcelain
+  lampholders (1600 lm cold-start A21); 205 lx.
+- **Cost:** fixtures +$0.8k-1.5k net, lamps -$0.74k-0.78k: about +$60 / +$760.

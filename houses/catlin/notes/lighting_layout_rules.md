@@ -11,8 +11,14 @@ row alignment is taste and stays out of the checks.
   about the zone's own axis (walls, an opening, a fixed feature), in clear joist mid-bays.
   A can that breaks the pattern needs a fixed reason.
 - A can answers to **fixed** work only: sink, peninsula, range, vanity, laundry counter,
-  built-in desk, shower. Movable furniture (puzzle table, sofa, reading chair, freestanding
-  desk, bed) gets a lamp or a wall sconce.
+  built-in desk, shower. Movable furniture (sofa, freestanding desk, bed) gets a lamp or a
+  wall sconce. Owner exceptions (2026-11-24): the lounge puzzle table takes two 5000 K day
+  cans on the room's east-west centre line, and the main-bed armchair a can mirroring the
+  desk can, for a balanced five.
+- Bedrooms that get rearranged (BED1-3) take a generic 2x2 grid symmetric about the room,
+  ignoring bed and desk; no bed-head lamps.
+- Floor lamps read as clutter: none in the lounge (its only lamp is the dining counter FADO),
+  none where a ceiling can will do. The attic studio keeps two, its sloped ceiling takes no can.
 - Removing a furniture can names what takes over its task light: a lamp, an existing
   sconce, or nothing (with the lux figure).
 
@@ -31,12 +37,14 @@ row alignment is taste and stays out of the checks.
   above an equipment body, shelving, a hung duct or pipe, the opener rail, or the open
   garage door panel.
 - Garage rows run beside and between the bays and over the bench, not over a car roof.
+  Good tubes go where a bench may stand; the stair and the centre take a porcelain keyless.
+- One fixture kind, one circuit and one switch group per utility room (owner, 2026-11-24).
 - NEC 110.26(D) working-space light and 210.70(C) equipment light stay satisfied.
 
 ## Living room (premium)
 
 Layers: coves (ambient, colour), a clean wash/accent line parallel to each washed wall,
-lamps for seated reading, the dining pendant.
+a warm general row, the 5000 K day pair over the puzzle table, the dining pendant.
 
 ## Lamps, day and night, control
 
