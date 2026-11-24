@@ -214,14 +214,14 @@ MAIN_LIGHTING = [
                          wall_ref="W-M-C3", face="left", distance_from_start=inch(46.25),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
     # The study's NIGHT layer (owner, 2026-11-24; it replaced the TERTIAL desk lamp): a second
-    # Sprig on the walnut west wall over FURN-M-STUDY-DESK, on its own switch ED-M-STUDY-SW2.
+    # Sprig on the walnut west wall over FURN-M-STUDY-DESK, switched at its canopy toggle (J1).
     # A front-side light: ahead of and to the right of the seated occupant, on the camera's
     # side, never behind them on the felt. Body 4'-8" up, over seated eye (~4'-1") and 2' over
     # the desk top; the 9 7/8" arm reaches the desk's west half. Its box nails to stud-001.
     # Day is ED-M-STUDY-LT.
     ElectricalDevice(uid="ZJTRRMEFQT", tag="ED-M-STUDY-DESK-LT", kind=DeviceKind.LIGHT,
-                     type_ref="ED-T-LT-SCONCE-SPOT",
-                     circuit="CKT-LT-MAIN", room="RM-M-STUDY-CLOSET", controlled_by=("ED-M-STUDY-SW2",),
+                     type_ref="ED-T-LT-SPOT-SW",
+                     circuit="CKT-LT-MAIN", room="RM-M-STUDY-CLOSET",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(56)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-M-LS", face="right", distance_from_start=inch(10.875),
