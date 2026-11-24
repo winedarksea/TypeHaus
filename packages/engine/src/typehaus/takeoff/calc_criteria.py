@@ -301,14 +301,18 @@ def _court_soil(site: Any) -> str:
     source = getattr(shown, "source", None) or "the drawing note"
     upper = getattr(shown, "bed_friction_max", None)
     text = (f"\n\n**Soil parameters (retaining court).** The design is closed on "
-            f"{'SPECIFIED' if specified is not None else 'CONFIRMED'} values a site report "
-            f"must confirm ({source}): design friction, concrete on the compacted washed-stone "
-            f"bed, at least {shown.bed_friction:.2f}")
+            f"{'SPECIFIED' if specified is not None else 'CONFIRMED'} design parameters, "
+            f"requirements a site report must confirm ({source}), not results of the "
+            f"calculation: design friction, concrete on the compacted washed-stone bed, at "
+            f"least {shown.bed_friction:.2f} (the specified minimum, which the court's sliding "
+            f"and staged-backfill rows read)")
     if upper is not None:
-        text += (f" and at most {upper:.2f} (a higher value requires the court's "
-                 f"winter-tension rows to be re-checked)")
+        text += (f" and at most {upper:.2f} (the specified maximum, which the court's "
+                 f"winter-tension rows read, because more friction pulls harder on the side "
+                 f"runs; a higher value requires them to be re-checked)")
     text += f"; drained friction angle of the native at the bed bottom at least " \
-            f"{shown.native_phi_deg:g} degrees."
+            f"{shown.native_phi_deg:g} degrees (the specified minimum, which the deep " \
+            f"sliding plane under the beds reads)."
     scope = getattr(specified, "report_scope", None)
     if scope:
         text += f" Report scope: {scope}."

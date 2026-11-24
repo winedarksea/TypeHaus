@@ -49,6 +49,10 @@ _WALL_LABELS = PrefixLabels({
     "system_capacity": "base friction of the whole court body",
     "column_axial": "service axial of the columns on the wall top, per foot",
     "column_base_moment": "base moment of those columns, per foot",
+    "bed_thickness": "thickness of the washed-stone bed under the footing",
+    "stone_unit_weight": "unit weight of the washed stone in the bed",
+    "native_allowable_bearing": "allowable bearing of the native soil under the bed "
+                                "(IBC Table 1806.2, presumed)",
 }, suffixes={
     "_q_net": "net pressure of the apron {tag} over the soil it displaces",
     "_lateral": "lateral thrust of the apron {tag} on this wall (as a strip load)",
