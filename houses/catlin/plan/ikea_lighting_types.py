@@ -86,4 +86,23 @@ VALLMORA_VANITY = LuminaireType(
            "mark and the back plate against the box.",
 )
 
-IKEA_LIGHTING_PRODUCTS = (GU10_90_30K, NYMANE_4SPOT, VALLMORA_3, GRONSPROT)
+# R2: the basement stair night light (owner, 2026-11-24). The exterior GRÖNSPRÖT indoors,
+# down-only, with IKEA's 2 W GU10: on CKT-LT-BACKUP, the one basement light an outage keeps.
+SOLHETTA_GU10_253 = Product(
+    tag="PROD-IKEA-SOLHETTA-GU10-253-27K", brand="IKEA", model="SOLHETTA GU10 253 lm",
+    sku="405.849.48", name="SOLHETTA LED bulb GU10 253 lumen, 2700 K",
+    url="https://www.ikea.com/us/en/p/solhetta-led-bulb-gu10-253-lumen-40584948/",
+    source="IKEA US listing, read 2026-11-24. $5.99 / 3 pack; 2.0 W; 2700 K; not dimmable.",
+)
+GRONSPROT_NIGHT = GRONSPROT_EXT.model_copy(update={
+    "tag": "ED-T-LT-NIGHT-STAIR", "type_mark": "R2",
+    "name": "Stair night light, GU10 2 W 2700 K, black",
+    "lamp": "1 x GU10 LED, 2 W, 253 lm, 2700 K, replaceable", "watts": 2.0, "lumens": 253.0,
+    "cct_k": 2700, "cri": None, "wet_rated": False, "load_va": 2.0,
+    "parts": (ProductPart(role="lamp", product_ref=SOLHETTA_GU10_253.tag),),
+    "source": GRONSPROT.source + " Indoors over ST-B2M's landings, down-only; a 2 W lamp "
+              "to see the treads by in an outage, not to light them to R303.7. Indoors on a flush box "
+              "its 2\" base covers nothing: a 4\" round box and a blank round cover, CONFIRM.",
+})
+
+IKEA_LIGHTING_PRODUCTS = (GU10_90_30K, NYMANE_4SPOT, VALLMORA_3, GRONSPROT, SOLHETTA_GU10_253)

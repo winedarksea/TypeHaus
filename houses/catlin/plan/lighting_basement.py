@@ -47,8 +47,8 @@ from typehaus import (
 from typehaus.model import Location, WallAttachment, m
 
 # --- Basement -------------------------------------------------------------------------
-# Only the furnace-room strips and the ESS closet light ride CKT-LT-BACKUP (2026-11-02,
-# notes/backup_power.md §5); everything else here is on CKT-LT-BSMT.
+# Every light here is on CKT-LT-BSMT since 2026-11-24; the stair's only outage light is
+# ED-M-STAIR-NIGHT-LT on CKT-LT-BACKUP (plan/lighting_entry.py, notes/backup_power.md §5).
 # Q1 is surface (`drop` = its 2.5" height) or chain-hung (a larger `drop`).
 BASEMENT_LIGHTING = [
     # RM-B-GYM: ED-B-GYM-LT (plan/mep_electrical.py) is a lampless N3 fan on its own wall
@@ -269,8 +269,8 @@ BASEMENT_LIGHTING = [
                          wall_ref="W-B-CS", face="left", distance_from_start=inch(52.625),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
 
-    # RM-B-FURNACE: three Q1 strips on one 3-way pair, all on CKT-LT-BACKUP (2026-11-24: one
-    # kind, circuit and switch group), so the panels and ESS controls stay lit in an outage.
+    # RM-B-FURNACE: three Q1 strips on one 3-way pair, one kind, circuit and switch group
+    # (2026-11-24). Off backup: in an outage, a flashlight or a lamp on ED-B-UTIL-RC1.
     # STRIP1/2 N-S at x=1'-7.25" in front of ED-B-PANEL-2, -BACKUP-PANEL, -PANEL and the
     # backup enclosure (NEC 110.26(D)), chain-hung 9" under CD-B-DATA-STUDY and the EMT
     # (bottom 7'-4" AFF). STRIP3 E-W in the south pocket beside the utility sink, lighting it
@@ -278,48 +278,48 @@ BASEMENT_LIGHTING = [
     # under PR-M-S-BATH1-DRAIN and PR-B-MAIN-DRAIN (bottom 6'-10" AFF).
     ElectricalDevice(uid="5FCBDBTYK0", tag="ED-B-FURNACE-STRIP1", kind=DeviceKind.LIGHT,
                      position=pt(ft(1, 7.25), ft(26, 5.5)), type_ref="ED-T-LT-STRIP-T8",
-                     circuit="CKT-LT-BACKUP", room="RM-B-FURNACE",
+                     circuit="CKT-LT-BSMT", room="RM-B-FURNACE",
                      controlled_by=("ED-B-FURNACE-SW2", "ED-B-FURNACE-SW3"),
                      mount=Mount(kind=MountKind.CEILING, drop=inch(9)), rotation=deg(90)),
     ElectricalDevice(uid="5TN9818FDS", tag="ED-B-FURNACE-STRIP2", kind=DeviceKind.LIGHT,
                      position=pt(ft(1, 7.25), ft(30, 5.5)), type_ref="ED-T-LT-STRIP-T8",
-                     circuit="CKT-LT-BACKUP", room="RM-B-FURNACE",
+                     circuit="CKT-LT-BSMT", room="RM-B-FURNACE",
                      controlled_by=("ED-B-FURNACE-SW2", "ED-B-FURNACE-SW3"),
                      mount=Mount(kind=MountKind.CEILING, drop=inch(9)), rotation=deg(90)),
     ElectricalDevice(uid="80YS3B0N3S", tag="ED-B-FURNACE-STRIP3", kind=DeviceKind.LIGHT,
                      position=pt(ft(5, 7), ft(19, 4)), type_ref="ED-T-LT-STRIP-T8",
-                     circuit="CKT-LT-BACKUP", room="RM-B-FURNACE",
+                     circuit="CKT-LT-BSMT", room="RM-B-FURNACE",
                      controlled_by=("ED-B-FURNACE-SW2", "ED-B-FURNACE-SW3"),
                      mount=Mount(kind=MountKind.CEILING, drop=inch(15))),
     # SW2 mid-room on W-B-STR3B's face (y=23'-0"); SW3 at D-B-FURN (210.70(C)(1): a control
     # at each entry), on W-B-CW's furnace face at x=1'-0", latch side, under the 61"+ runs.
     ElectricalDevice(uid="8SD6TT8XXZ", tag="ED-B-FURNACE-SW2", kind=DeviceKind.SWITCH,
                      type_ref="ED-T-LEV-SW3",
-                     circuit="CKT-LT-BACKUP", room="RM-B-FURNACE",
+                     circuit="CKT-LT-BSMT", room="RM-B-FURNACE",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-B-STR3B", face="right", distance_from_start=inch(30),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="JJ2EMNAQQ0", tag="ED-B-FURNACE-SW3", kind=DeviceKind.SWITCH,
                      type_ref="ED-T-LEV-SW3",
-                     circuit="CKT-LT-BACKUP", room="RM-B-FURNACE",
+                     circuit="CKT-LT-BSMT", room="RM-B-FURNACE",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-B-CW", face="left", distance_from_start=inch(12),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
 
     # RM-B-ESS: one keyless lampholder on the Type X lid (NEC 210.70(C), equipment needing
-    # service), centred in the closet, south of EQ-B-ESS-BATT. On CKT-LT-BACKUP with the
-    # closet's alarms: the battery is serviced in an outage. Switch inside, on the wall south
-    # of the door: outside, the box would stand in the dry-fire lane.
+    # service), centred in the closet, south of EQ-B-ESS-BATT. Off backup since 2026-11-24
+    # (a flashlight in an outage); the closet's alarms stay on it. Switch inside, on the wall
+    # south of the door: outside, the box would stand in the dry-fire lane.
     ElectricalDevice(uid="38Y8Y71C9D", tag="ED-B-ESS-LT", kind=DeviceKind.LIGHT,
                      position=pt(inch(96), inch(398)), type_ref="ED-T-LT-KEYLESS",
-                     circuit="CKT-LT-BACKUP", room="RM-B-ESS",
+                     circuit="CKT-LT-BSMT", room="RM-B-ESS",
                      controlled_by=("ED-B-ESS-SW",),
                      mount=Mount(kind=MountKind.CEILING, elevation=inch(87.3125))),
     ElectricalDevice(uid="ZKRPWY85MT", tag="ED-B-ESS-SW", kind=DeviceKind.SWITCH,
                      type_ref="ED-T-LEV-SW1",
-                     circuit="CKT-LT-BACKUP", room="RM-B-ESS",
+                     circuit="CKT-LT-BSMT", room="RM-B-ESS",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-B-ESS-W", face="left", distance_from_start=inch(50),

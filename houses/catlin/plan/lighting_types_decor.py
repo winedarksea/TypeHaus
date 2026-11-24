@@ -29,7 +29,7 @@ from typehaus.model.placeable_symbols._leviton_9880 import (
     MOUNTING_BAND_IN,
 )
 
-from .ikea_lighting_types import GRONSPROT_EXT
+from .ikea_lighting_types import GRONSPROT_EXT, GRONSPROT_NIGHT
 from .porch_lighting_types import GARDEN_FLOOD_TYPE
 
 _POWER_120 = (ServicePort(tag="power", service=Service.POWER_120,
@@ -372,8 +372,10 @@ DECORATIVE_LUMINAIRE_TYPES = (
     #
     # R (all five exterior wall lights) is IKEA GRÖNSPRÖT since 2026-11-21
     # (plan/ikea_lighting_types.py). R1, the WAC Tube it replaced, is CATALOG-ONLY and kept
-    # priced: retype the placements to ED-T-LT-SCONCE-EXT-WAC to revert.
+    # priced: retype the placements to ED-T-LT-SCONCE-EXT-WAC to revert. R2 is the same
+    # fixture as the basement stair night light.
     GRONSPROT_EXT,
+    GRONSPROT_NIGHT,
     LuminaireType(tag="ED-T-LT-SCONCE-EXT-WAC",
                   replaceable_lamp=False, name="Exterior LED tube wall light, down, black",
                   form=LuminaireForm.SCONCE, type_mark="R1",

@@ -2883,7 +2883,7 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 "ED-T-LEV-RANGE-1450" = { material = { low = 15, high = 45 }, labour = { low = 45, high = 95 } }  # 1 ea
 "ED-T-LEV-SINGLE-520" = { material = { low = 4, high = 14 }, labour = { low = 38, high = 78 } }  # 1 ea
 "ED-T-LEV-SURGE" = { material = { low = 25, high = 50 }, labour = { low = 40, high = 80 } }  # 2 ea
-"ED-T-LEV-SW1" = { material = { low = 3, high = 10 }, labour = { low = 32, high = 68 } }  # 33 ea (2026-11-24; workshop, garage, study went HBL 2026-11-20)
+"ED-T-LEV-SW1" = { material = { low = 3, high = 10 }, labour = { low = 32, high = 68 } }  # 33 ea (2026-11-24: study desk paddle out, stair night-light paddle in; workshop, garage, study went HBL 2026-11-20)
 "ED-T-LEV-SW3" = { material = { low = 4, high = 12 }, labour = { low = 32, high = 68 } }  # 16 ea since 2026-11-20 (workshop, study stair went HBL)
 # Heavy-duty toggles (owner, 2026-11-20): MROSupply $32.57 / $35.57 (read 2026-11-21), ESTIMATE.
 "ED-T-HBL-SW1" = { material = { low = 25, high = 45 }, labour = { low = 32, high = 68 } }  # 3 ea, HBL1221BK
@@ -2958,6 +2958,7 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 # IKEA swaps 2026-11-21 (plan/ikea_lighting_types.py), ikea.com/us list read that day.
 "ED-T-LT-VALLMORA-3-NI" = { material = 89.99, labour = { low = 60, high = 135 } }  # 1 ea, RM-B-BATH, fixture only; lamps are the Waveform row
 "ED-T-LT-TRACK-LAUNDRY" = { material = 79.99, labour = { low = 60, high = 140 } }  # 1 ea, NYMÅNE 4-spot, fixture only; aiming four spots is in the labour. Was the unpriced PureEdge rail + 40 W supply
+"PROD-IKEA-SOLHETTA-GU10-253-27K" = { material = 2.00, labour = 0 }  # 1 ea — IKEA 405.849.48, $5.99 / 3 pack (2026-11-24)
 "PROD-LAMP-GU10-90-30K" = { material = { low = 5, high = 12 }, labour = 0 }  # 9 ea — 4 laundry + 5 exterior; 90-CRI 3000 K GU10, estimate
 "ED-T-LT-MIRROR-DAY" = { material = { low = 218, high = 233 }, labour = { low = 60, high = 135 } }  # 1 ea, 54623CM + three 80795-SU
 # MHAP4236 (2026-10-22, replaces the 24 x 36 MHAP2436 at $968): Fleurco's US catalog lists
@@ -2991,8 +2992,9 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 "PROD-ENCLOSURE-VENT-GENERIC" = { material = { low = 3, high = 8 }, labour = 0 }  # 6 ea; Wiska EVSP 12 (https://www.rapidonline.com/wiska-evsp-12-vent-plugs-m12-549410, read 2026-11-07); high = Remke RVP15-M12-NM at Zoro, search snippet only
 "ED-T-LT-PSU-60" = { material = { low = 30, high = 90 }, labour = { low = 45, high = 95 } }  # 3 ea — ED-M-BATH2-PSU (on the laundry ceiling since 2026-11-17), the sauna's surface-mounted ED-B-SAUNA-LT-PSU and the basement stair's ED-B-STAIR-LT-PSU (the closet's PAX supply is a TRADFRI; the pantry went to a PSU-96-WE 2026-10-31)
 "ED-T-LT-SCONCE-EXT" = { material = 19.99, labour = { low = 48, high = 115 } }  # 5 ea — IKEA GRÖNSPRÖT 205.559.99 since 2026-11-21, fixture only (lamp is the GU10 row)
+"ED-T-LT-NIGHT-STAIR" = { material = 19.99, labour = { low = 48, high = 115 } }  # 1 ea — IKEA GRÖNSPRÖT 205.559.99, basement stair night light (2026-11-24); fixture only, lamp is the SOLHETTA GU10 row
 "ED-T-LT-SCONCE-EXT-WAC" = { material = { low = 186, high = 232 }, labour = { low = 48, high = 115 } }  # 0 ea — CATALOG-ONLY since 2026-11-21, kept priced as the revert: WAC WS-W2605-BK $186-232 (researched 2026-10-28)
-"ED-T-LT-SCONCE-SPOT" = { material = { low = 99, high = 130 }, labour = { low = 48, high = 115 } }  # 6 ea — WAC Sprig BL-23210-BK $99 dealer (2026-10-29, owner swap from Stretch); hardwiring unconfirmed
+"ED-T-LT-SCONCE-SPOT" = { material = { low = 99, high = 130 }, labour = { low = 48, high = 115 } }  # 5 ea (2026-11-24) — WAC Sprig BL-23210-BK $99 dealer (2026-10-29, owner swap from Stretch); hardwiring unconfirmed
 # 2026-08-18: the same down-spot, wet-location listed with a gasketed lens and a
 # corrosion-resistant housing. Same ~30-40% adder as the fan above.
 # ** CUT 2026-09-13. THE ROW STAYS, THE COUNT IS ZERO — the mark N / glazed-green-brick
@@ -3033,7 +3035,7 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 # centre, where a $93-140 vaportight tube bought nothing): holder $8-18 + bulb ~$6-17.
 "ED-T-LT-KEYLESS-COLD" = { material = { low = 14, high = 35 }, labour = { low = 40, high = 90 } }  # 2 ea
 "ED-T-LT-PULLCHAIN" = { material = { low = 8, high = 18 }, labour = { low = 40, high = 90 } }  # 2 ea, Q3 — Leviton 9726-C (~$6, owner) + A19 LED, the under-stair storage (2026-11-15)
-"ED-T-LT-SPOT-SW" = { material = { low = 99, high = 130 }, labour = { low = 60, high = 140 } }  # 3 ea — same WAC Sprig as mark J; canopy toggle is the switch (2026-10-29); RM-M-BED's pair since 2026-11-02; the under-stair one went to Q3 2026-11-15
+"ED-T-LT-SPOT-SW" = { material = { low = 99, high = 130 }, labour = { low = 60, high = 140 } }  # 4 ea — same WAC Sprig as mark J; canopy toggle is the switch (2026-10-29); RM-M-BED's pair since 2026-11-02, the main study desk 2026-11-24; the under-stair one went to Q3 2026-11-15
 "ED-T-LT-GROW-BAR" = { material = { low = 230, high = 290 }, labour = { low = 45, high = 100 } }  # 2 ea — Barron AG90-W-001 $220-261 + cable hangers (researched 2026-10-28)
 "ED-T-LT-WALL-LINEAR" = { material = { low = 480, high = 552 }, labour = { low = 45, high = 100 } }  # 1 ea — WAC WS-6724-30-BK $480-552 (researched 2026-10-28)
 # RM-M-PANTRY's jamb channels: per channel 6 ft of generic 90-CRI COB (mark E's tape, since

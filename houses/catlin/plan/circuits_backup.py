@@ -61,23 +61,21 @@ BACKUP_CIRCUITS = (
             backup_shed_poe=("ED-M-DOORBELL", "ED-M-CAM-PORCH", "ED-BW-CAM-CANOPY",
                              "ED-M-PORCH-AP", "ED-A-STUDIO-AP"),
             description="Basement outlet 1: HA server + router + PoE switch; outage charging"),
-    # Since 2026-11-02 only the furnace-room cans (by the panels, the ESS closet and the sump),
-    # the ESS closet light, the kitchen under-cabinet tape and every alarm; the rest went to
-    # CKT-LT-BSMT / CKT-LT-MAIN. The alarms stay on one unswitched branch (Kidde interconnect,
-    # R314.4) that rides the outage (the ESS closet's two). load_va is None: the takeoff sums
-    # the devices (190 VA, the alarms at 0). duty_cycle 0.21 is a blend, ~40 W of 190 VA:
-    # - lights: the tape's two 30 VA TRADFRIs (their rating, errs heavy; the tape draws 25 W,
-    #   split over two drivers 2026-11-08) for ~5 h of 24 = 12.5 W; the furnace-room strips
-    #   (3 x 36 W since 2026-11-24, were two 6.5 W cans) ~1 h of 24 = 4.5 W, a service-visit
-    #   estimate; the closet light ~0.2 W;
+    # The kitchen under-cabinet tape, the basement stair night light and every alarm; every
+    # other light is on CKT-LT-BSMT / CKT-LT-MAIN (the furnace room and ESS closet left
+    # 2026-11-24: a flashlight serves). The alarms stay on one unswitched branch (Kidde
+    # interconnect, R314.4) that rides the outage (the ESS closet's two). load_va is None: the
+    # takeoff sums the devices (75 VA, the alarms at 0). duty_cycle 0.49 is a blend, ~37 W:
+    # - lights: the tape's two 30 VA TRADFRIs (their rating, errs heavy; the tape draws 25 W)
+    #   for ~5 h of 24 = 12.5 W; the 2 W night light taken as left on, 2.0 W;
     # - the two interconnect relays at their 13.2 VA rating, always energised;
     # - 12 alarms' standby, ~0.75 W each = 9.0 W. AN ESTIMATE: Kidde publishes only a 120 V /
     #   80 mA maximum. Meter it. (AL-G-HEAT left for the garage subpanel, 2026-11-14.)
     Circuit(uid="CKT018AAAA", tag="CKT-LT-BACKUP", slot=6, panel_ref=_BACKUP_PANEL,
             breaker_amps=15, poles=1, backup_tier=BackupTier.ALWAYS_ON, afci=True,
             conductor_awg="14", egc_awg="14",
-            duty_cycle=0.21,
-            description="Furnace-room + kitchen task light + interconnected alarms"),
+            duty_cycle=0.49,
+            description="Kitchen task light, basement stair night light, interconnected alarms"),
 
     # The sump rides ALWAYS_ON since 2026-10-30: the long stormy night is exactly when it
     # must run. One pump, SM-B-RADON's Zoeller M53 (plan/mep_drainage.py; SM-B-SOUTH retired

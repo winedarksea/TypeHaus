@@ -223,4 +223,25 @@ ENTRY_LIGHTING = [
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-M-STRW", face="left", distance_from_start=inch(102.125),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
+    # ST-B2M's night light (owner, 2026-11-24): the one basement light on CKT-LT-BACKUP, so an
+    # outage still shows the way down. On W-M-N2 over the step between the two landings
+    # (x=14'-2 1/4", the lower flight's west edge), lighting both decks; 36" here is ~7'-1"
+    # over the upper deck and under ST-M2S's landing ledger (50 1/2"), 11" east of
+    # EQ-M-HP3-STAIR. Switched only at the stair top, ED-M-STAIR-SW3.
+    ElectricalDevice(uid="DG8X1HEEXR", tag="ED-M-STAIR-NIGHT-LT", kind=DeviceKind.LIGHT,
+                     type_ref="ED-T-LT-NIGHT-STAIR",
+                     circuit="CKT-LT-BACKUP", room="RM-M-LIVING", serves_stair="ST-B2M",
+                     controlled_by=("ED-M-STAIR-SW3",),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(36)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-M-N2", face="left", distance_from_start=inch(44),
+                         normal_gap=inch(0), rotation_offset=deg(-180)))),
+    # Its paddle, the third gang of the stair-head bank, on the backup panel's branch.
+    ElectricalDevice(uid="HBXEC5KQ1G", tag="ED-M-STAIR-SW3", kind=DeviceKind.SWITCH,
+                     type_ref="ED-T-LEV-SW1",
+                     circuit="CKT-LT-BACKUP", room="RM-M-LIVING",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-M-STRW", face="left", distance_from_start=inch(106.125),
+                         normal_gap=inch(0), rotation_offset=deg(-180)))),
 ]
