@@ -102,9 +102,9 @@
 > ASSE 1011 vacuum breaker) is the receptor for the ERV pan, DU-ERV-EA's drain tee
 > (`PR-B-ERV-EA-DRAIN`), the WH and HP1/HP3 condensate. `CKT-SUMP` rides ALWAYS_ON.
 > The 2018 IRC R327 has no kWh caps or detection rule: those grade as advisories (2021 R328).
-> **2026-11-02 trim:** `CKT-LT-BACKUP` is two furnace-room cans, the ESS closet light, the
-> kitchen tape and every alarm; the rest of the basement is `CKT-LT-BSMT`, the kitchen cans
-> `CKT-LT-MAIN`. `BackupTier.SHED` is now **`SURPLUS`** (`CKT-HP3`, `CKT-WH`): on battery only
+> **Backup lighting (2026-11-24):** `CKT-LT-BACKUP` is the kitchen tape, the 2 W basement
+> stair night light and every alarm; every other basement light is `CKT-LT-BSMT`, the kitchen
+> cans `CKT-LT-MAIN`. `BackupTier.SHED` is now **`SURPLUS`** (`CKT-HP3`, `CKT-WH`): on battery only
 > on solar surplus, never counted against autonomy. The HPWH is the 120 V, element-free
 > PROPH80 T0 RH120-MSO, side taps on its HydroBoost riser, cord to `ED-B-WH-RC` (`notes/water_service.md` §1).
 > `Circuit.start_va` sets a surge start (else 3x). Oracle: `backup_power.md` §6.

@@ -9360,11 +9360,17 @@ The owner kept the review and changed seven rooms. Rules updated in
   SW-ACCENT (CAND3 -> CAN8, CAN5/6 added). 161 -> 169 lx without lamps.
 - **Main floor:** RM-M-BED CAN6 over the armchair mirrors CAN2 about the bed axis, an even
   south row (108 lx); the mud closet a symmetric pair either side of the tub drain; the study
-  a hardwired Sprig swing-arm over the desk on its own paddle (night layer; 3000 K integrated,
-  over the 2700 K night rule).
+  a hardwired Sprig swing-arm over the desk, switched at its canopy toggle (J1; night layer;
+  3000 K integrated, over the 2700 K night rule).
 - **BED1-3:** beds will move, so a generic 2x2 grid on the open floor, ~90 lx (was ~45).
 - **Utility:** one fixture kind, one circuit, one switch group. Furnace room strips only, on
-  `CKT-LT-BACKUP` (its duty re-derived to 0.21; always-on 219.8 W, autonomy 44.6 h). Workshop
+  `CKT-LT-BSMT`. Workshop
   strips only on one 3-way pair. Garage: the stair and centre tubes became Q2a porcelain
   lampholders (1600 lm cold-start A21); 205 lx.
 - **Cost:** fixtures +$0.8k-1.5k net, lamps -$0.74k-0.78k: about +$60 / +$760.
+- **Off backup:** every basement light left `CKT-LT-BACKUP` (furnace strips, ESS closet light;
+  owner: a flashlight, or a lamp on `ED-B-UTIL-RC1`). Its one outage light is
+  `ED-M-STAIR-NIGHT-LT`, a GRÖNSPRÖT (R2) with a 2 W SOLHETTA GU10 on W-M-N2 over ST-B2M's
+  landings, switched only at the stair top (`ED-M-STAIR-SW3`). Duty 0.49 of 75 VA; always-on
+  216.7 W, autonomy 45.1 h, bridge spare 1.67 kWh, peak 5,629 VA. The study's desk paddle
+  went too (the Sprig's toggle serves).

@@ -40,7 +40,7 @@ def test_the_inverter_covers_the_backup_panel_and_pcs_is_export_only(catlin_plan
     findings = standby_capacity(check_context(catlin_plan, catlin_model))
     assert [f.result for f in findings] == [Result.PASS, Result.NOT_APPLICABLE, Result.UNKNOWN]
     assert "include no overload control" in findings[1].message  # EG4's published PCS list
-    assert "5,744 VA" in findings[0].message and "CKT-HP3" in findings[0].message
+    assert "5,629 VA" in findings[0].message and "CKT-HP3" in findings[0].message
     # 702.6: EG4 publishes a fault LED only.
     assert "carrying load visual" in findings[2].message
 
@@ -63,7 +63,7 @@ def _run(plan, model):
 
 
 def test_a_small_inverter_is_unknown_then_fails(catlin_plan, catlin_model):
-    # 3 kW: under the 5,744 VA all circuits draw, over the 1,850 VA largest -> only a PCS can.
+    # 3 kW: under the 5,629 VA all circuits draw, over the 1,850 VA largest -> only a PCS can.
     mid = _run(_with_inverter(catlin_plan, inverter_kw_continuous=3.0), catlin_model)
     assert mid[0].result is Result.UNKNOWN and "702.4(A)(3)" in mid[0].message
     low = _run(_with_inverter(catlin_plan, inverter_kw_continuous=1.5), catlin_model)

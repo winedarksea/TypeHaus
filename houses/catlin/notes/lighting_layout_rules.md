@@ -39,6 +39,8 @@ row alignment is taste and stays out of the checks.
 - Garage rows run beside and between the bays and over the bench, not over a car roof.
   Good tubes go where a bench may stand; the stair and the centre take a porcelain keyless.
 - One fixture kind, one circuit and one switch group per utility room (owner, 2026-11-24).
+- No basement light on backup; in an outage a flashlight serves. The one exception is the 2 W
+  stair night light over ST-B2M's landings (owner, 2026-11-24).
 - NEC 110.26(D) working-space light and 210.70(C) equipment light stay satisfied.
 
 ## Living room (premium)
