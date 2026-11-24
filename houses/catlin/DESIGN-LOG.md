@@ -9311,3 +9311,38 @@ The owner's calls:
 - **Snow:** snow and perched water are not combined on the court.
 
 Every calc family now shows its working step by step. Each sheet carries its stated bases and a "not covered — who owns it" table, and a lint requires both.
+
+## Lighting layout review (2026-11-23, owner)
+
+The 2026-10-31 pass chose the fixtures; this one moved them. Cans had been set one at a time
+over furniture, kitchen cans hugged the uppers, and utility tubes sat over equipment. Rules:
+`notes/lighting_layout_rules.md`; the body, service and door rules are graded by the new
+`advisory.luminaire_placement` (decision #151). Sonnet lanes proposed, Opus reviewers revised.
+
+- **Kitchen:** one 3'-0" x pitch (22'-10" .. 31'-10"). Counter row at 32'-8", 7.7" roomward of
+  the counter edge and 18.5" off the uppers (was 2 1/2"); peninsula row 27'-4"; CAN9 ahead of
+  the range, not over it (the hood lights the cooktop); CAN10 21.6" off the pantry columns;
+  CAN4 retired (no legal bay over the 14" landing). The MITTLED tape on its own switch is the
+  night layer. Counter 498 lx, unchanged.
+- **Lounge/dining:** a lattice symmetric about the fire axis (x 25'-6"/29'-2"/32'-10", rows
+  3'-4" and 11'-4"). The 5000 K day cans form the north row (CAND1-3); the south row washes the
+  curtains (new CAN7). Group B (`ED-M-LIVING-LT`, CAN5/6) and its relay retired: 10 D315S.
+  Reading is four HEKTAR floor lamps; the puzzle table's day light a 5000 K TERTIAL; dining night
+  a FADO on the east counter. Rejected: R1b (warm north row, day from coves + a lamp: no ceiling
+  day layer) and R1c (gimbals only: the lounge reads 82 lx with the lamps off).
+- **Rest of main:** `ED-M-BED-LT` (over the armchair) retired for a floor lamp; the study can is
+  the 5000 K day layer, its desk lamp the night layer; the mud-closet can moved off the exposed
+  tub drain. Closet PAX-face and mech-room plenum cans are knowing exceptions (NEC 410.16 band,
+  only bay that clears).
+- **Second floor:** no can over a bed or a freestanding desk. Bedrooms keep two cans on one
+  row in the open floor (~47 lx general); NYMÅNE plug-in wall lamps at the bed heads and TERTIAL
+  desk lamps take the task light; the three bed reading switches retired. Suite and study cans
+  re-rowed; BATH1's can off the linen faces. STUDY2 reads 119 lx of 300 (a desk lamp, by plan).
+- **Basement:** workshop strips over the bench and aisle, clear of the hung ducts, plus a
+  5000 K can at the water heater (526 lx of 500); furnace strips in front of the panels on a 9"
+  chain under the EMT lane; furnace cans off the ERV and its plenums; two gym strips (421 lx).
+- **Garage:** tubes in two N-S rows at x 9'/27' beside the bays on truss mid-bays, plus one
+  between the bays south of the opener head; none on the rail, in the open panel or over a car
+  roof. 260 lx.
+- **Count and cost:** ceiling cans 73 -> 62, shop tubes 5 -> 6, T8 strips 12 -> 13, 20 lamps.
+  Net about +$185 / -$590 (lamps +$1.1k; fixtures, trims and relays -$0.9k to -$1.7k).

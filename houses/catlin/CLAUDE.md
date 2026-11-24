@@ -372,8 +372,8 @@ not instruction: when it disagrees with this file or the model, it is the one th
   hall cove is two straight legs (`LR-S-HALL-GAP` west to y=22'-4", `-GAP2` east to the 27'-6"
   bulkhead), drivers and controllers in RM-S-NCLOSET; a soffit run's ends snap to host edges only within 10".
 - **Lighting conventions (2026-10-31 review, trimmed 2026-11-03; `DESIGN-LOG.md` "Lighting
-  review", "Smart-switch reduction"):** smart switching is 11 D315S relays (`ED-T-LEV-MATTER`)
-  on exterior, plant, gym and the lounge's accent/downlight/day/peninsula groups; every other
+  review", "Smart-switch reduction"):** smart switching is 10 D315S relays (`ED-T-LEV-MATTER`)
+  on exterior, plant, gym and the lounge's accent/day/peninsula groups; every other
   control is plain, and a controller-fed run's paddle is a hard off left on. A ZEN32 keypad
   runs the lounge scenes (coves via their controllers); scenes live in `notes/smart_home.md`.
   Coves are RGB+CCT (E4, SLL COB ~102 lm/ft per white channel: no 12 mm RGB+CCT tape reaches
@@ -383,6 +383,14 @@ not instruction: when it disagrees with this file or the model, it is the one th
   T6525-W where the breaker is the GFCI). The conditioned basement's work light is the Q1 T8
   strip on `CKT-LT-BSMT` (off backup); mark D is the revert.
   `advisory.room_illuminance` grades average lux; `[mep.illuminance_lux]` adds the gym.
+- **Lighting layout (2026-11-23 review; `notes/lighting_layout_rules.md`, `DESIGN-LOG.md`
+  "Lighting layout review"):** cans sit on row lines and one pitch per zone, in joist mid-bays,
+  over fixed work only; movable furniture gets a plug-in lamp (`plan/lamps.py`, types in
+  `plan/lamp_types.py`, switched at the lamp, not counted in lux). Kitchen rows stand roomward of
+  the counter edge and >= 18" off tall faces; utility tubes run over aisles, clear of bodies,
+  hung services and the garage door's reach. `advisory.luminaire_placement` grades the body,
+  service and door rules; its standing findings (closet PAX faces, the mech-room plenum can)
+  are knowing exceptions, commented at the fixture.
 - `params/solar.py` — rooftop PV array (18 × 410 W bifacial, portrait, one row per plane at the R324.6.2
   18" hull setback, 36" pathway at the north rake; computed max fit).
 - `params/roof_trim.py` — the eave water chain on RF-HOUSE's west/east eaves, stacked bottom

@@ -78,7 +78,7 @@ session at setup is allowed. Instances: `plan/smart_home.py`; types and products
 | Floor heat (3 zones) | `ED-*-FH-STAT` | Warmup 7iE | Matter over Wi-Fi (local push) | Warmup app for firmware | own schedule, own sensor | Schluter warranty letter |
 | Water heater | `EQ-B-WH` | Rheem ProTerra Plug-in, EcoNet Wi-Fi + CTA-2045 port | none needed: power is switched by `CKT-WH`'s relay | Wi-Fi module never registered | tank controls | whether `esphome-econet` reaches the plug-in; not needed for backup |
 | Inverter/battery | `EQ-B-ESS-INV` | EG4 12kPV | EG4 web monitor, local Modbus (HACS) | none | inverter runs itself | firmware support for local mode |
-| Lighting (11) | `ED-T-LEV-MATTER`: exterior (entry, garage doors, porch, flood), plant photoperiod, gym x2, lounge A/B/C and peninsula | Leviton D315S-1BW, no companions | Matter (local push), ready out of the box | none | paddles; returns to its last state after an outage (Leviton DI-000-D315S-20A-M, read 2026-11-07) | none |
+| Lighting (10) | `ED-T-LEV-MATTER`: exterior (entry, garage doors, porch, flood), plant photoperiod, gym x2, lounge A/C and peninsula | Leviton D315S-1BW, no companions | Matter (local push), ready out of the box | none | paddles; returns to its last state after an outage (Leviton DI-000-D315S-20A-M, read 2026-11-07) | none |
 | Shades | `plan/window_coverings.py` | SmartWings, Matter/Thread (study cellular; plant rollers since 2026-11-12) | Matter via ZBT-2 | none | wand and remote | plant motors' humidity rating |
 | Plant heater plug | `EQ-S-PLANT-HEATER`'s cord, in always-on `ED-S-PLANT-HEAT-RC` (2026-11-14) | Eve Energy (US), plug-in | Matter over Thread via ZBT-2 | Eve app optional | the plug's button; the heater's own thermostat and cutoffs | 12.5 A continuous on a 15 A / 1800 W plug: low setting or confirm duty |
 | Plant T/RH sensor | room sensor, not modelled | any Matter/Thread or Zigbee T/RH sensor | Matter or ZHA | none | none: alerts need HA | placement away from the heater's jet and the glass |
@@ -204,8 +204,8 @@ doorbell, cameras and two APs are shed (rule 6).
 
 ## Lighting scenes
 
-RM-M-LIVING's lights (2026-10-31, `plan/lighting_living.py`). The engine models no scenes; this
-table is the HA configuration. Groups A/B/C and the kitchen peninsula are Leviton D315S relays
+RM-M-LIVING's lights (2026-10-31, re-laid 2026-11-23, `plan/lighting_living.py`). The engine models
+no scenes; this table is the HA configuration. Groups A/C and the kitchen peninsula are Leviton D315S relays
 (on/off); the coves dim and colour at their Gledopto GL-C-001P controllers (RGBCCT mode). The
 SLL RGB+CCT COB stays (owner, 2026-11-07): about 102 lm/ft per white channel as measured, and
 no 12 mm RGB+CCT tape publishes 250 lm/ft per white channel. The
@@ -213,21 +213,20 @@ pendant, kitchen perimeter and under-cabinet are plain paddles, outside the scen
 
 | Group | Loads | Control |
 |---|---|---|
-| A accents | gimbals `ED-M-LIVING-CAN2`-`4` (mantel, curtains) | `ED-M-LIVING-SW-ACCENT` |
-| B downlights | `ED-M-LIVING-LT`, `-CAN5`, `-CAN6` | `ED-M-LIVING-SW` |
-| C day | `ED-M-LIVING-CAND1`/`2`, 5000 K over the puzzle table | `ED-M-LIVING-SW-DAY` |
+| A accents | gimbals `ED-M-LIVING-CAN2`-`4`, `-CAN7` (mantel, south curtains) | `ED-M-LIVING-SW-ACCENT` |
+| C day | `ED-M-LIVING-CAND1`-`3`, 5000 K, the lattice's north row | `ED-M-LIVING-SW-DAY` |
 | D coves | lounge `LR-M-LIVING-W`/`-E` and dining `LR-M-DINING-W`/`-E`, E4 RGB+CCT | `ED-M-LIVING-SW-COVE` (all four Class 2 drivers) + lounge `ED-M-LIVING-LT-CTRL`/`-CTRL-E`, dining `ED-M-DINING-LT-CTRL`/`-CTRL-E` |
-| Peninsula | `ED-M-KITCH-CAN4`/`6`/`7`/`8` | `ED-M-KITCH-SW-PEN` |
+| Peninsula | `ED-M-KITCH-CAN6`/`7`/`8` | `ED-M-KITCH-SW-PEN` |
 
-| Scene | A | B | C | Lounge coves | Dining coves | Peninsula |
-|---|---|---|---|---|---|---|
-| Fireplace | on | off | off | 2200 K, 15% | off | off |
-| Evening | on | off | off | 2700 K, 40% | 2700 K, 25% | off |
-| Dinner | on | off | off | 2700 K, 20% | 2700 K, 50% | off |
-| Social | on | on | off | 3000 K, 60% | 3000 K, 60% | unchanged |
-| Day / work | off | on | on | 5000 K, 100% | 5000 K, 60% | unchanged |
-| Night path | off | off | off | amber, 5% | amber, 5% | off |
-| Party | on | off | off | colour, slow fade | colour, slow fade | unchanged |
+| Scene | A | C | Lounge coves | Dining coves | Peninsula |
+|---|---|---|---|---|---|
+| Fireplace | on | off | 2200 K, 15% | off | off |
+| Evening | on | off | 2700 K, 40% | 2700 K, 25% | off |
+| Dinner | on | off | 2700 K, 20% | 2700 K, 50% | off |
+| Social | on | off | 3000 K, 60% | 3000 K, 60% | unchanged |
+| Day / work | off | on | 5000 K, 100% | 5000 K, 60% | unchanged |
+| Night path | off | off | amber, 5% | amber, 5% | off |
+| Party | on | off | colour, slow fade | colour, slow fade | unchanged |
 
 - **Keypad** `ED-M-LIVING-KEYPAD` (Zooz ZEN32, beside the kitchen switches on `W-M-C3`): big
   button Evening, double-tap all lounge and dining off; small buttons Fireplace, Dinner,
@@ -242,6 +241,9 @@ pendant, kitchen perimeter and under-cabinet are plain paddles, outside the scen
   (owner, 2026-10-31), so the lounge is two controllers (`ED-M-LIVING-LT-CTRL` W,
   `-CTRL-E` E) and the dining two (`ED-M-DINING-LT-CTRL`, `-CTRL-E`). Join each pair as one
   HA light group; the scenes above set the group, so both sides always match.
+- **Lamps are outside the scenes** (2026-11-23): the lounge reading lamps, the puzzle-table
+  day lamp and the dining counter lamp (`plan/lamps.py`) switch at the lamp. The lounge's
+  night is Night path plus a 2700 K lamp; the dining's is the counter lamp and the pendant low.
 - **Night path is the warm layer**: amber at 5% only, never a white channel. The day layer is
   the 5000 K cans plus the coves' white channels at 5000 K.
 - **Check items.** None: each D315S returns to its last state after an outage (Leviton
