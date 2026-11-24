@@ -246,7 +246,7 @@ def _sheet() -> None:
     from typehaus.engineering.owner_bases import CURTAINS, DECK_SNOW, OVERHANGS
 
     declare_sheet(KIND, not_covered=W.NOT_COVERED, bases=(DECK_SNOW, CURTAINS, OVERHANGS),
-                  figure=W.figure)
+                  labels=W.LABELS, figure=W.figure)
 
 
 _sheet()
