@@ -32,6 +32,10 @@ the future.
   and ~2 tubes of capstone adhesive. Bill them off the wall axes and outlet distance, then price
   them in `prices.toml` beside `RETAINING_BLOCK_12`.
 
+- **Partition-top crossings read the node-to-node axis, not the top plate** (`resolve/partition_fasteners.classify`):
+  W-M-MECH-E is billed a crossing of FS-S-WEST's north LSL rim its plate never reaches (109, one
+  phantom). Clipping to the plate fixes it but reclassifies ~25 walls; take it as its own re-pin.
+
 - **Emit nondeterminism (found 2026-11-23).** The S-100 LOCATING dimension chain
   (`emit/draw/structural_dimensions.py`) varies with the hash seed; `haus handoff` works around
   it by re-execing under `PYTHONHASHSEED=0` (`cli/cmd_handoff.py`). Sort the set iteration and
