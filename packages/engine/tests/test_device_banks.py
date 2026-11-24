@@ -17,16 +17,17 @@ def _bank(catlin_model_ro, tag):
     return next(b for b in catlin_model_ro.device_boxes if tag in b.device_tags)
 
 
-def test_a_four_gang_snaps_to_the_gang_pitch(catlin_model_ro):
-    bank = _bank(catlin_model_ro, "ED-M-LIVING-SW")
-    assert (bank.gangs, bank.box_product) == (4, "PROD-CARLON-BH464A")
+def test_a_three_gang_snaps_to_the_gang_pitch(catlin_model_ro):
+    # The lounge station (COVE, ACCENT, DAY): four gangs until group B retired, 2026-11-23.
+    bank = _bank(catlin_model_ro, "ED-M-LIVING-SW-DAY")
+    assert (bank.gangs, bank.box_product) == (3, "PROD-CARLON-BH353A")
     objs = {o.tag: o for o in catlin_model_ro.canvas_objects}
     tx, ty = -bank.normal[1], bank.normal[0]
     stations = [objs[t].position[0] * tx + objs[t].position[1] * ty for t in bank.device_tags]
     gaps = sorted(abs(b - a) / M_PER_IN for a, b in zip(stations, stations[1:], strict=False))
-    assert gaps == pytest.approx([1.8125] * 3, abs=1e-6)
+    assert gaps == pytest.approx([1.8125] * 2, abs=1e-6)
     # centred on the bank, then the whole bank seated against a stud (#149)
-    assert sum(bank.snap_shifts_m) == pytest.approx(4 * bank.stud_shift_m, abs=1e-9)
+    assert sum(bank.snap_shifts_m) == pytest.approx(3 * bank.stud_shift_m, abs=1e-9)
     assert bank.uid == f"{min(bank.device_uids)}-box"
 
 

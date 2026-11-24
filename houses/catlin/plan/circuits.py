@@ -228,11 +228,12 @@ CIRCUITS = (
             afci=True, description="General lighting — second + attic"),
     # The basement's lighting off the backup tier: the T8 strips and gym fan (2026-10-31), then
     # (2026-11-02) the gym, stair, bath and Play-N cans, sconces and PSUs, the sauna PSU and the
-    # under-stair closet light, and the stair-head can its 3-way shares. ~802 VA of 1,440. Only the furnace-room cans and the
-    # ESS closet light stay on CKT-LT-BACKUP. Slot 26 was spare.
+    # under-stair closet light, and the stair-head can its 3-way shares; (2026-11-24) the
+    # furnace-room strips and the ESS closet light. Every basement light now, but the stair
+    # night light on CKT-LT-BACKUP. Slot 26 was spare.
     Circuit(uid="J3RFM1RVCW", tag="CKT-LT-BSMT", slot=26, panel_ref=_PANEL, breaker_amps=15,
             conductor_awg="14", egc_awg="14",
-            poles=1, afci=True, description="Basement lighting (all but the furnace room), gym fan"),
+            poles=1, afci=True, description="Basement lighting, gym fan"),
     # The two storey receptacle circuits stay non-GFCI at the breaker on purpose: each
     # reaches a whole floor, and thirty outlets behind one 5 mA trip is not buildable.
     # The handful in a 210.8(A) location (mudroom sink, wet bar) are GFCI *devices* instead

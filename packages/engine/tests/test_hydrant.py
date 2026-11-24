@@ -120,8 +120,8 @@ def test_the_hydrant_stands_clear_of_everything_else_in_the_garage(catlin_model)
              for obj in garage if obj.tag != hydrant.tag}
     assert tight, "the garage resolves no other placeable to grade against"
     assert min(tight.values()) >= 12, sorted(tight.items(), key=lambda kv: kv[1])[:3]
-    # Named so a future move reads as a decision.
-    assert min(tight, key=tight.get) == "ED-G-LT3"
+    # Named so a future move reads as a decision (ED-G-LT3's tube became a lampholder, 2026-11-24).
+    assert min(tight, key=tight.get) == "FURN-G-WORKBENCH"
     assert tight["FURN-G-WORKBENCH"] >= 24.0
 
 

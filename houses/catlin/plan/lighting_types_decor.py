@@ -29,7 +29,7 @@ from typehaus.model.placeable_symbols._leviton_9880 import (
     MOUNTING_BAND_IN,
 )
 
-from .ikea_lighting_types import GRONSPROT_EXT
+from .ikea_lighting_types import GRONSPROT_EXT, GRONSPROT_NIGHT
 from .porch_lighting_types import GARDEN_FLOOD_TYPE
 
 _POWER_120 = (ServicePort(tag="power", service=Service.POWER_120,
@@ -332,6 +332,20 @@ DECORATIVE_LUMINAIRE_TYPES = (
                   lumens=800.0, cct_k=3000, cri=90, load_va=9.0, ports=_POWER_120,
                   product_ref="PROD-LEVITON-9880",
                   source="Leviton 9880 keyless porcelain lampholder on a 4 in. box, A19 LED."),
+    # Q2a (2026-11-24): the same lampholder with a cold-start lamp for the unheated garage,
+    # 4000 K to match its tubes.
+    LuminaireType(tag="ED-T-LT-KEYLESS-COLD",
+                  replaceable_lamp=True,
+                  lamp_base="E26", name="Keyless porcelain lampholder, A21 LED, cold-rated",
+                  form=LuminaireForm.PANEL, type_mark="Q2a",
+                  footprint=(inch(ASSEMBLY_DIAMETER_IN), inch(ASSEMBLY_DIAMETER_IN)),
+                  height=inch(MOUNTING_BAND_IN), plan_symbol="light",
+                  model_representation=ModelRepresentation(symbol=LEVITON_9880_SYMBOL),
+                  lamp="E26 A21 LED, 1600 lm, 4000K, starts to -22 F, replaceable", watts=15.0,
+                  lumens=1600.0, cct_k=4000, cri=80, load_va=15.0, ports=_POWER_120,
+                  product_ref="PROD-LEVITON-9880",
+                  source="Leviton 9880 keyless porcelain lampholder on a 4 in. box, A21 LED "
+                         "(80 CRI) rated for cold starts to -22 F."),
     # Q3 (2026-11-15): a porcelain lampholder with a receptacle, for storage you reach into
     # (the under-stair space). Wall-switched at the door; the chain is a local off only. The
     # receptacle is a basement outlet (NEC 210.8(A)(5)): feed it from a GFCI's load side.
@@ -358,8 +372,10 @@ DECORATIVE_LUMINAIRE_TYPES = (
     #
     # R (all five exterior wall lights) is IKEA GRÖNSPRÖT since 2026-11-21
     # (plan/ikea_lighting_types.py). R1, the WAC Tube it replaced, is CATALOG-ONLY and kept
-    # priced: retype the placements to ED-T-LT-SCONCE-EXT-WAC to revert.
+    # priced: retype the placements to ED-T-LT-SCONCE-EXT-WAC to revert. R2 is the same
+    # fixture as the basement stair night light.
     GRONSPROT_EXT,
+    GRONSPROT_NIGHT,
     LuminaireType(tag="ED-T-LT-SCONCE-EXT-WAC",
                   replaceable_lamp=False, name="Exterior LED tube wall light, down, black",
                   form=LuminaireForm.SCONCE, type_mark="R1",

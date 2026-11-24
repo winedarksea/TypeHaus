@@ -425,7 +425,7 @@ def test_catlin_ceiling_lights_resolve_to_their_authored_mount_height() -> None:
     assert above_floor("ED-A-STUBATH-CAN1") == pytest.approx(
         stubath_build_up + ft(6, 9.6875).meters)
 
-    switch = next(item for item in model.canvas_objects if item.tag == "ED-M-LIVING-SW")
+    switch = next(item for item in model.canvas_objects if item.tag == "ED-M-LIVING-SW-DAY")
     # A switch's 48" is AFF, off the plank like the pantry channels.
     assert switch.z_m == pytest.approx(
         room_finished_floor_elevation(model, living) + inch(48).meters)

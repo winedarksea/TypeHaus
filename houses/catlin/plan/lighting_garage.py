@@ -21,45 +21,44 @@ from typehaus import (
 from typehaus.model import Location, WallAttachment
 
 # --- Garage ---------------------------------------------------------------------------
-# Five Q shop lights on one switch by the service door, on CKT-LT-GARAGE (since 2026-10-31;
-# CKT-LT-MAIN before), the garage's own lighting circuit in ED-G-PANEL, not the GFCI
-# receptacle circuit, which would drop the lights every time a tool trips one. Surface mounted at 8' —
-# nothing above the garage ceiling to recess a can into.
+# Four Q shop tubes and two Q2a keyless lampholders on one switch by the service door, on
+# CKT-LT-GARAGE (the garage's own lighting circuit in ED-G-PANEL, not the GFCI receptacles,
+# so a tripped tool leaves the lights on). Tubes hung at 8', lampholders on their ceiling
+# boxes; nothing above to recess into.
+# Layout (2026-11-24): the tubes in two N-S rows beside the bays at x 9'/27' (LT1/LT2,
+# LT4/LT5), on truss mid-bays clear of the opener rail and the open door panel, where a
+# bench may stand. The cheap porcelain holders take the centre aisle (LT6) and the stair (LT3).
 GARAGE_LIGHTING = [
     ElectricalDevice(uid="QTG0001AAA", tag="ED-G-LT1", kind=DeviceKind.LIGHT,
-                     position=pt(ft(18), ft(50, 6)), type_ref="ED-T-LT-SHOP4",
+                     position=pt(ft(9), ft(52, 2.5)), rotation=deg(90), type_ref="ED-T-LT-SHOP4",
                      circuit="CKT-LT-GARAGE", room="RM-GARAGE",
                      controlled_by=("ED-G-SW",),
                      mount=Mount(kind=MountKind.CEILING, elevation=ft(8))),
     ElectricalDevice(uid="QTG0002AAA", tag="ED-G-LT2", kind=DeviceKind.LIGHT,
-                     position=pt(ft(18), ft(60, 6)), type_ref="ED-T-LT-SHOP4",
+                     position=pt(ft(9), ft(58, 2.5)), rotation=deg(90), type_ref="ED-T-LT-SHOP4",
                      circuit="CKT-LT-GARAGE", room="RM-GARAGE",
                      controlled_by=("ED-G-SW",),
                      mount=Mount(kind=MountKind.CEILING, elevation=ft(8))),
-    # A third shop light over ST-G-SERVICE, the service door's flight. The two above are at
-    # y=50'-6" and y=60'-6", the working half of the bay; the flight drops 2'-10" in five
-    # risers from the threshold and neither reaches within R303.8's 4' of it. Stepping
-    # through the door onto a top tread in the dark is the reason the rule exists. (It reads as an
-    # *exterior* stair rather than an interior one because `_stair_is_indoors` asks whether
-    # a CONDITIONED room stands over it, and the garage is deliberately unconditioned. R303.7
-    # would want the same luminaire here and not the switching, since five risers is under
-    # its six-riser threshold.)
+    ElectricalDevice(uid="GBMWQMH8YJ", tag="ED-G-LT6", kind=DeviceKind.LIGHT,
+                     position=pt(ft(18), ft(52, 2.5)), type_ref="ED-T-LT-KEYLESS-COLD",
+                     circuit="CKT-LT-GARAGE", room="RM-GARAGE",
+                     controlled_by=("ED-G-SW",),
+                     mount=Mount(kind=MountKind.CEILING, drop=inch(5.5))),
+    # Over ST-G-SERVICE, centred on the flight (x 6'-11 5/8"..9'-11 5/8", y 43'-9 3/8"..
+    # 47'-6 1/8"): R303.8 wants a light within 4' of its top, which the bay rows miss. The
+    # unconditioned garage makes it read as an exterior stair (`_stair_is_indoors`).
     ElectricalDevice(uid="4PQRD03TG8", tag="ED-G-LT3", kind=DeviceKind.LIGHT,
-                     # Centred on the flight (x 6'-11 5/8"..9'-11 5/8", y 43'-9 3/8"..
-                     # 47'-6 1/8") since the interior landing went, 2026-10-13.
-                     position=pt(ft(8, 5.625), ft(45, 7.75)), type_ref="ED-T-LT-SHOP4",
+                     position=pt(ft(8, 5.625), ft(45, 7.75)), type_ref="ED-T-LT-KEYLESS-COLD",
                      circuit="CKT-LT-GARAGE", room="RM-GARAGE",
                      controlled_by=("ED-G-SW",),
-                     mount=Mount(kind=MountKind.CEILING, elevation=ft(8))),
-    # LT4/LT5 (2026-10-31): one over each bay at mid-depth, y=55'-6", south of where the open
-    # overhead door's panel stops (~59'-2") and clear of the opener head at x=18'-0".
+                     mount=Mount(kind=MountKind.CEILING, drop=inch(5.5))),
     ElectricalDevice(uid="PQX96QHYWG", tag="ED-G-LT4", kind=DeviceKind.LIGHT,
-                     position=pt(ft(11), ft(55, 6)), type_ref="ED-T-LT-SHOP4",
+                     position=pt(ft(27), ft(52, 2.5)), rotation=deg(90), type_ref="ED-T-LT-SHOP4",
                      circuit="CKT-LT-GARAGE", room="RM-GARAGE",
                      controlled_by=("ED-G-SW",),
                      mount=Mount(kind=MountKind.CEILING, elevation=ft(8))),
     ElectricalDevice(uid="F64CZX32H8", tag="ED-G-LT5", kind=DeviceKind.LIGHT,
-                     position=pt(ft(25), ft(55, 6)), type_ref="ED-T-LT-SHOP4",
+                     position=pt(ft(27), ft(58, 2.5)), rotation=deg(90), type_ref="ED-T-LT-SHOP4",
                      circuit="CKT-LT-GARAGE", room="RM-GARAGE",
                      controlled_by=("ED-G-SW",),
                      mount=Mount(kind=MountKind.CEILING, elevation=ft(8))),

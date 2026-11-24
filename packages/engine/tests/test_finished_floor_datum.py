@@ -72,9 +72,9 @@ def test_the_main_living_floor_is_plank_on_the_subfloor_everywhere(catlin_model)
 
 # ------------------------------------------------------------------ 2. what reads it
 def test_a_stated_mount_height_is_measured_from_the_finished_floor(catlin_model):
-    """ED-M-LIVING-SW's authored 48" is 48" off the plane a hand reaches from."""
+    """ED-M-LIVING-SW-DAY's authored 48" is 48" off the plane a hand reaches from."""
     switch = next(item for item in catlin_model.canvas_objects
-                  if item.tag == "ED-M-LIVING-SW")
+                  if item.tag == "ED-M-LIVING-SW-DAY")
     living = _room(catlin_model, "RM-M-LIVING")
     assert switch.z_m == pytest.approx(
         room_finished_floor_elevation(catlin_model, living) + inch(48).meters)

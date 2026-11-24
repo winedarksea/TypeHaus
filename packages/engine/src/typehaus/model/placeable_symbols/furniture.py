@@ -42,6 +42,10 @@ from typehaus.model.placeable_symbols._footrest import footrest
 from typehaus.model.placeable_symbols._frame import box, rect
 from typehaus.model.placeable_symbols._hammock_chair import hammock_chair
 from typehaus.model.placeable_symbols._hanging_daybed import hanging_daybed
+from typehaus.model.placeable_symbols._ikea_fado import ikea_fado_table_lamp
+from typehaus.model.placeable_symbols._ikea_hektar import ikea_hektar_floor_lamp
+from typehaus.model.placeable_symbols._ikea_nymane import ikea_nymane_wall_lamp
+from typehaus.model.placeable_symbols._ikea_tertial import ikea_tertial_work_lamp
 from typehaus.model.placeable_symbols._mirrors import arch_shelf_mirror
 from typehaus.model.placeable_symbols._paper_holder import pivoting_paper_holder
 from typehaus.model.placeable_symbols._plain_mirrors import plain_mirror
@@ -132,6 +136,11 @@ FURNITURE_SYMBOLS: dict[str, Builder] = {
     "loveseat": seating(arms=True, seats=2),
     "armchair": seating(arms=True, seats=1),
     "strandmon": strandmon,
+    # Plug-in lamps: furniture, not luminaires (no box, no circuit).
+    "ikea-hektar-floor-lamp": ikea_hektar_floor_lamp,
+    "ikea-tertial-work-lamp": ikea_tertial_work_lamp,
+    "ikea-fado-table-lamp": ikea_fado_table_lamp,
+    "ikea-nymane-wall-lamp": ikea_nymane_wall_lamp,
     "sectional": sectional(),
     # A dining chair has no arms and a slim back; its "seats" count is the single pad.
     "dining-chair": seating(arms=False, seats=1, back_depth_m=0.10),

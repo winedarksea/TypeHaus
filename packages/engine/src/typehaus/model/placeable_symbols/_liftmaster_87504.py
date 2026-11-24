@@ -8,6 +8,8 @@ from typehaus.model.placeable_symbols._mesh import mesh_part, outward
 from typehaus.model.placeable_symbols._sektion_fronts import round_bar
 from typehaus.quantities import inch
 
+#: The symbol name a garage-door opener type carries (``GARAGE_OPENER_SYMBOLS`` recognises it).
+SYMBOL = "liftmaster-87504-267-7ft"
 # LiftMaster product guide dimensions. The rail projects from the +y side of the head.
 HEAD_DEPTH = inch(10.5).meters
 INSTALLED_LENGTH = inch(124).meters

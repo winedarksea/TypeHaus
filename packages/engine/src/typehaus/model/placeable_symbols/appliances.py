@@ -22,6 +22,7 @@ from typehaus.model.placeable_symbols._frame import (
 )
 from typehaus.model.placeable_symbols._harvia_cilindro import harvia_cilindro_pc110e
 from typehaus.model.placeable_symbols._laundry_tower import laundry_tower
+from typehaus.model.placeable_symbols._liftmaster_87504 import SYMBOL as _OPENER_SYMBOL
 from typehaus.model.placeable_symbols._liftmaster_87504 import liftmaster_87504
 from typehaus.model.placeable_symbols._mini_split_head import mini_split_head
 from typehaus.model.placeable_symbols._plant_reservoir import (
@@ -32,7 +33,11 @@ from typehaus.model.placeable_symbols._plant_reservoir import (
 from typehaus.model.placeable_symbols._rheem_proterra import rheem_proterra_plugin_80
 from typehaus.model.placeable_symbols._tea_kettle import tea_kettle
 
-__all__ = ["APPLIANCE_SYMBOLS"]
+__all__ = ["APPLIANCE_SYMBOLS", "GARAGE_OPENER_SYMBOLS"]
+
+#: Symbols that draw a garage-door opener with its rail: the one family the placement check
+#: derives a rail line for (``advisory.luminaire_placement``).
+GARAGE_OPENER_SYMBOLS: frozenset[str] = frozenset({_OPENER_SYMBOL})
 
 
 def cooktop(*, burners: int = 4, oven: bool = True) -> Builder:

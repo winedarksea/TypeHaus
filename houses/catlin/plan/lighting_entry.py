@@ -21,10 +21,17 @@ from typehaus.model import Location, WallAttachment
 
 ENTRY_LIGHTING = [
     # RM-M-CLOSET's cans, switch, mirror and PAX strips are in plan/closet.py.
-    # Centred east-west in RM-M-MUD-CLOSET; y keeps the trim 6" outside the 16" shelf's
-    # storage space (NEC 410.16) and inside the one joist bay that allows it.
+    # A pair straddling the exposed tub drain (x 3'-2", N-S), 13 1/2" in from each side wall
+    # so it casts no shadow; CAN3 is held west of DU-M-ERV-EXH-TRUNK (x 1'-11"..2'-7"). y
+    # keeps the trim 6" outside the 16" shelf's storage space (NEC 410.16) and inside the
+    # one joist bay that allows it.
     ElectricalDevice(uid="QTM000XAAA", tag="ED-M-STORAGE-CAN1", kind=DeviceKind.LIGHT,
-                     position=pt(ft(3, 2.125), ft(28, 10.75)), type_ref="ED-T-LT-CAN4",
+                     position=pt(ft(4, 8.25), ft(28, 10.75)), type_ref="ED-T-LT-CAN4",
+                     circuit="CKT-LT-MAIN", room="RM-M-MUD-CLOSET",
+                     controlled_by=("ED-M-STORAGE-SW",),
+                     mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
+    ElectricalDevice(uid="XTCJAK6P3N", tag="ED-M-STORAGE-CAN3", kind=DeviceKind.LIGHT,
+                     position=pt(ft(1, 8), ft(28, 10.75)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-MAIN", room="RM-M-MUD-CLOSET",
                      controlled_by=("ED-M-STORAGE-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
@@ -215,5 +222,26 @@ ENTRY_LIGHTING = [
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-M-STRW", face="left", distance_from_start=inch(102.125),
+                         normal_gap=inch(0), rotation_offset=deg(-180)))),
+    # ST-B2M's night light (owner, 2026-11-24): the one basement light on CKT-LT-BACKUP, so an
+    # outage still shows the way down. On W-M-N2 over the step between the two landings
+    # (x=14'-2 1/4", the lower flight's west edge), lighting both decks; 36" here is ~7'-1"
+    # over the upper deck and under ST-M2S's landing ledger (50 1/2"), 11" east of
+    # EQ-M-HP3-STAIR. Switched only at the stair top, ED-M-STAIR-SW3.
+    ElectricalDevice(uid="DG8X1HEEXR", tag="ED-M-STAIR-NIGHT-LT", kind=DeviceKind.LIGHT,
+                     type_ref="ED-T-LT-NIGHT-STAIR",
+                     circuit="CKT-LT-BACKUP", room="RM-M-LIVING", serves_stair="ST-B2M",
+                     controlled_by=("ED-M-STAIR-SW3",),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(36)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-M-N2", face="left", distance_from_start=inch(44),
+                         normal_gap=inch(0), rotation_offset=deg(-180)))),
+    # Its paddle, the third gang of the stair-head bank, on the backup panel's branch.
+    ElectricalDevice(uid="HBXEC5KQ1G", tag="ED-M-STAIR-SW3", kind=DeviceKind.SWITCH,
+                     type_ref="ED-T-LEV-SW1",
+                     circuit="CKT-LT-BACKUP", room="RM-M-LIVING",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-M-STRW", face="left", distance_from_start=inch(106.125),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
 ]
