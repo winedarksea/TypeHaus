@@ -82,6 +82,7 @@ from typehaus.checks.mep import (  # noqa: F401 - register
     led_voltage_drop,
     lighting,
     lighting_illuminance,
+    lighting_placement,
     lighting_supplies,
     lighting_suspension,
     limited_energy,

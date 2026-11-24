@@ -108,6 +108,11 @@ def load_preferences(house_dir: Path) -> Preferences:
             fireblock_min_web_in=mep.get("fireblock_min_web_in", 1.5),
             routing=dict(mep.get("routing") or {}),
             illuminance_lux=dict(mep.get("illuminance_lux") or {}),
+            luminaire_body_clear_height_in=mep.get("luminaire_body_clear_height_in", 38.0),
+            luminaire_tall_body_height_in=mep.get("luminaire_tall_body_height_in", 72.0),
+            luminaire_tall_face_setback_in=mep.get("luminaire_tall_face_setback_in", 12.0),
+            luminaire_service_band_in=mep.get("luminaire_service_band_in", 24.0),
+            luminaire_opener_clearance_in=mep.get("luminaire_opener_clearance_in", 6.0),
         ),
         structural=StructuralPreferences(
             max_guard_dead_load_on_wood_plf=structural.get(

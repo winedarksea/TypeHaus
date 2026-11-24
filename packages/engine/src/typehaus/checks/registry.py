@@ -175,6 +175,24 @@ class MepPreferences:
     #: value or room tag (the tag wins); 0 drops a target. Over the check's own defaults.
     illuminance_lux: dict = field(default_factory=dict)
 
+    # --- advisory.luminaire_placement (checks/mep/lighting_placement.py) ---
+    #: A ceiling luminaire standing over a body whose top is higher than this above its floor
+    #: lights that top, not the work under it. 38" is a counter (36") plus its backsplash lip;
+    #: a taller range, island back or cabinet run is the clear case.
+    luminaire_body_clear_height_in: float = 38.0
+    #: What counts as a TALL face for the setback below: upper cabinets, a fridge, a pantry
+    #: column, a wardrobe.
+    luminaire_tall_body_height_in: float = 72.0
+    #: A recessed can or pendant within this of a tall face scallops it. The design target is
+    #: ~18" off the face; only the clear cases (inside 12") are flagged.
+    luminaire_tall_face_setback_in: float = 12.0
+    #: A hung duct, pipe or machine this close under a surface fixture shadows it and
+    #: blocks reaching it to change the lamp.
+    luminaire_service_band_in: float = 24.0
+    #: How near a fixture may stand to the opener's rail line before the rail or the
+    #: trolley it carries meets it.
+    luminaire_opener_clearance_in: float = 6.0
+
 
 @dataclass
 class StructuralPreferences:

@@ -142,6 +142,7 @@ a release or for exhaustive local verification.
   `DeviceKind.LED_DRIVER`, sized on `rated_output_w`, loading its branch at `input_va`.
   An exterior surface run along a corrugated soffit edge is hosted on the Sill to Soffit's
   flange (`resolve/trim_led.py`, decision #143); a rake soffit takes that receiver too.
+- **Luminaire placement is a derived advisory** (decision #151): `advisory.luminaire_placement` (`checks/mep/lighting_placement.py`) flags a ceiling fixture over a tall body, a can near a tall face, a hung service under a surface fixture, and the garage door's panel zone and opener rail line. A body is an Appliance/Equipment or `storage`/`work_surface` Furniture; thresholds are `MepPreferences.luminaire_*`.
 - **Linesets are derived from one `LinesetStandard`** (decision #139): a lineset is a
   `PipeRun(system=REFRIGERANT)` (`diameter` vapour, `liquid_diameter` liquid, `serves` the head,
   `outdoor_port`), its envelope the lagged bundle; `resolve/linesets.py` reads it against the
