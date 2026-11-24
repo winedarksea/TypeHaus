@@ -4,7 +4,8 @@ ceiling no longer chases. Prices live in prices.toml; instances in plan/lamps.py
 Owner rules: replaceable E26 (or the house's GU10) lamps, a plain receptacle, switched at the
 lamp. A lamp is furniture, so it is not a body for ``advisory.luminaire_placement`` and does
 not count in ``advisory.room_illuminance``. One bulb SKU per colour: SOLHETTA E26 globe,
-1600 lm in the floor lamps, 800 lm elsewhere, 2700 K except the lounge's 5000 K day lamp.
+1600 lm in the floor lamps, 800 lm elsewhere, 2700 K. The lounge day lamp and the NYMÅNE
+bed-head lamps left on 2026-11-24 (owner: ceiling day cans, beds get rearranged).
 IKEA US listings read 2026-11-24; IKEA publishes no CRI. Footprints marked ~ are not
 dimensioned on the listing.
 """
@@ -35,13 +36,6 @@ TERTIAL_WORK = Product(
     url="https://www.ikea.com/us/en/p/tertial-work-lamp-dark-gray-20355434/",
     source=_READ + "$19.99; E26, max 13 W; 7\" shade; clamp to 2 1/4\"; 4'-11\" cord.",
 )
-NYMANE_WALL = Product(
-    tag="PROD-IKEA-NYMANE-WALL-READ-WH", brand="IKEA", model="NYMÅNE wall/reading lamp",
-    sku="203.569.90", name="NYMÅNE wall/reading lamp, white (plug-in)",
-    url="https://www.ikea.com/us/en/p/nymane-wall-reading-lamp-white-20356990/",
-    source=_READ + "$44.99; 4\" high x 3\" dia shade (11 x 7 cm EU); max 8 W; 98\" cord; "
-           "GU10 LED only (US assembly sheet): takes the house's PROD-LAMP-GU10-90-30K.",
-)
 SOLHETTA_1600_27K = Product(
     tag="PROD-IKEA-SOLHETTA-E26-1600-27K", brand="IKEA", model="SOLHETTA E26 1600 lm",
     sku="905.915.45", name="SOLHETTA LED bulb E26 1600 lumen, dimmable, globe opal, 2700 K",
@@ -54,14 +48,7 @@ SOLHETTA_800_27K = Product(
     url="https://www.ikea.com/us/en/p/solhetta-led-bulb-e26-800-lumen-dimmable-globe-opal-60583943/",
     source=_READ + "$4.99 / 2 pack; 5 W; 25,000 h.",
 )
-SOLHETTA_800_50K = Product(
-    tag="PROD-IKEA-SOLHETTA-E26-800-50K", brand="IKEA", model="SOLHETTA E26 800 lm 5000 K",
-    sku="505.915.09", name="SOLHETTA LED bulb E26 800 lumen, globe opal, 5000 K",
-    url="https://www.ikea.com/us/en/p/solhetta-led-bulb-e26-800-lumen-globe-opal-50591509/",
-    source=_READ + "5 W; price not read (allowance in prices.toml).",
-)
-LAMP_PRODUCTS = (HEKTAR_FLOOR, FADO_TABLE, TERTIAL_WORK, NYMANE_WALL, SOLHETTA_1600_27K,
-                 SOLHETTA_800_27K, SOLHETTA_800_50K)
+LAMP_PRODUCTS = (HEKTAR_FLOOR, FADO_TABLE, TERTIAL_WORK, SOLHETTA_1600_27K, SOLHETTA_800_27K)
 
 LAMP_FLOOR = FurnitureType(
     tag="FT-LAMP-FLOOR-HEKTAR", name="Floor reading lamp, HEKTAR + SOLHETTA 1600 lm 2700 K",
@@ -83,17 +70,4 @@ LAMP_DESK = FurnitureType(
     source="Working pose: clamp at +y on the desk's back edge, shade ~20\" out toward -y, "
            "17.4\" high. Desk task light, switched at the lamp.",
 )
-LAMP_DESK_DAY = FurnitureType(
-    tag="FT-LAMP-DESK-TERTIAL-5000", name="Day task lamp, TERTIAL + SOLHETTA 800 lm 5000 K",
-    footprint=(inch(6.7), inch(19.8)), height=inch(17.4), plan_symbol="ikea-tertial-work-lamp",
-    product_ref=TERTIAL_WORK.tag,
-    source="As FT-LAMP-DESK-TERTIAL with the 5000 K bulb: the lounge puzzle table's day light.",
-)
-LAMP_WALL_READ = FurnitureType(
-    tag="FT-LAMP-WALL-NYMANE", name="Plug-in wall reading lamp, NYMÅNE + GU10 3000 K",
-    footprint=(inch(2.75), inch(6.1)), height=inch(6.3), plan_symbol="ikea-nymane-wall-lamp",
-    product_ref=NYMANE_WALL.tag,
-    source="Shade tilted 30 deg into the room; z=0 is the housing bottom. Bed-head reading "
-           "lamp on its own cord to a plain receptacle.",
-)
-LAMP_TYPES = (LAMP_FLOOR, LAMP_TABLE, LAMP_DESK, LAMP_DESK_DAY, LAMP_WALL_READ)
+LAMP_TYPES = (LAMP_FLOOR, LAMP_TABLE, LAMP_DESK)

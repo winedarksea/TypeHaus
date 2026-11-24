@@ -1,7 +1,7 @@
 # haus: editable
 # RM-M-BED reading chair by the west wall (W-M-W4). The SEKTION window seat that stood
 # beside it was retired on 2026-10-21. STRANDMON: rotated toward the room, clear of the
-# south-wall bookcase and bed; LAMP-M-BED-ARMCHAIR (plan/lamps.py) is its reading light,
+# south-wall bookcase and bed; ED-M-BED-CAN6 (plan/lighting_main.py) is its reading light,
 # 3" east of FURN-M-BED-TRACK-W's closed curtain since 2026-10-29.
 
 from typehaus import Furniture
