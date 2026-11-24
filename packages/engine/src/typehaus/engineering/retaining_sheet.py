@@ -88,9 +88,6 @@ WALL_NOT_COVERED = (
     NotCovered("passive resistance on the toe",
                "neglected: the toe is buried 0 in, so there is no soil to mobilise",
                _SEAL, "none needed unless the toe is later buried"),
-    NotCovered("bearing of the stone bed on the native soil beneath it",
-               "the bearing row grades the stone only, at 3,000 psf",
-               _SEAL, "the bearing-on-native row, where it is graded"),
 )
 
 SYSTEM_NOT_COVERED = (

@@ -3489,6 +3489,30 @@ The record and the per-wall records now fingerprint the soil basis the rows use:
 report is confirmed. `retaining_system_cases.court_soil_basis` is the one source for a
 neighbouring record that must read it.
 
+### 15m. Bearing on the native under the stone (review A1-09)
+
+`retaining_wall` graded the footing on the washed stone (class 3, 3,000 psf). The stone is a
+42" bed (z0 -163.4375" to the footing underside -121.4375", read off the resolved bedding), and
+the native at its bottom is the site's GM, IBC Table 1806.2 class 4, **2,000 psf**. The
+footing's pressure is spread through the bed at 2:1 (vertical:horizontal: the strip grows by
+z/2 = 1.75' each side, B_z = B + z), the stone's weight is added, and the eccentricity is kept
+as at the footing (conservative: it is measured about a centre that the spread widens).
+
+```
+E2/W2: W 5,427.5 plf, B 7' -> B_z 10.5', e 0.8519'
+       q_f = 5,427.5 / 10.5 x (1 + 6 x 0.8519 / 10.5) = 516.9 x 1.4868 = 768.5 psf
+       q_s = 100 pcf x 3.5' = 350 psf                         q = 1,118.5 psf   d/c 0.559
+S:     W 5,627.5 plf, B 8.333' -> B_z 11.833', e 0.3030'
+       q_f = 5,627.5 / 11.833 x (1 + 6 x 0.3030 / 11.833) = 475.6 x 1.1537 = 548.6 psf
+       q_s = 350 psf                                           q = 898.6 psf    d/c 0.449
+```
+
+The 110 pcf end governs both (its larger eccentricity outweighs the 130 pcf end's heavier
+heel). The review's 1,225 / 1,125 psf are the average footing pressure (775 / 675 psf) plus
+450 psf with no spread; spreading takes them to the figures above. Both pass the 2,000 psf
+presumption. The spread is an engineering approximation, not a code row, and the class-4 value
+is a presumption a site report replaces. `tests/test_retaining_court.py` pins the numbers.
+
 ## Sources
 
 Every standard and document this note rests on, collected from the citations above.

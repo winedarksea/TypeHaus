@@ -179,6 +179,20 @@ def test_every_member_quotes_the_courts_answer_and_carries_it_in_its_fingerprint
         assert by_name["eccentricity"].ok and by_name["stem flexure"].ok
 
 
+def test_the_native_under_the_stone_bears_the_footing_spread_at_two_to_one(catlin_plan) -> None:
+    """§15m, hand-worked: q = W/B_z (1 + 6e/B_z) + 100 pcf x 3.5', B_z = B + 42" of stone."""
+    results = _results(catlin_plan)
+    for tag, q_hand in (("W-SG-E2", 1118.5), ("W-SG-W2", 1118.5), ("W-SG-S", 898.6)):
+        record = results[f"retaining_wall/{tag}"]
+        state = next(s for s in record.limit_states
+                     if s.name == "bearing on the native under the stone")
+        assert state.demand == pytest.approx(q_hand, abs=0.1)
+        assert state.capacity == 2000.0 and state.ok
+        inputs = {q.name: q.value for q in record.inputs}
+        assert inputs["bed_thickness"] == pytest.approx(42.0, abs=0.01)
+        assert inputs["soil_presumed"] == 1.0
+
+
 def test_the_run_tops_out_on_the_porch_datum_and_its_exposure_is_a_result(
         catlin_plan) -> None:
     """One form height across all five court walls, and the 36" is derived from it.

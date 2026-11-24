@@ -54,6 +54,7 @@ from typehaus.engineering.retaining_basis import (
     analyse,
     material_inputs,
 )
+from typehaus.engineering.retaining_native import native_bearing
 from typehaus.engineering.retaining_system import KIND as SYSTEM_KIND
 from typehaus.engineering.retaining_system import _loops, system_factors
 from typehaus.engineering.retaining_system_cases import soil_inputs as court_soil_inputs
@@ -93,7 +94,9 @@ declare_sheet(KIND, **retaining_sheet.WALL_SHEET)
 #: at-rest case catlin grades did not move; the fingerprinted active EFP did.
 #: 6 -> 7 (2026-11-23): a restrained wall fingerprints the EFP and soil basis it is graded
 #: on (at-rest; the court's specified/confirmed friction), not the free branch's.
-BASIS_VERSION = "7"
+#: 7 -> 8 (2026-11-23, review A1-09): a ``bearing on the native under the stone`` state, the
+#: footing's pressure spread through the bed at 2:1 on the class-4 native; three new inputs.
+BASIS_VERSION = "8"
 
 
 def _drainage_note(ctx: EngineeringContext, wall) -> str:  # type: ignore[no-untyped-def]
@@ -363,6 +366,11 @@ def _one(ctx: EngineeringContext, wall,  # type: ignore[no-untyped-def]
                     surcharge=_with_tier(surcharge, tiers.get(high, (None, []))[0]))
     states_low = _restate(_limit_states(lower, geometry, soil, base), system)
     states_high = _restate(_limit_states(upper, geometry, soil, base), system)
+    # Bearing on the native under the stone bed (A1-09): the worse end of the band governs.
+    native, native_inputs = (native_bearing(ctx, wall, geometry, (lower, upper), soil)
+                             if base is not soil else (None, ()))
+    if native is not None:
+        states_low, states_high = (*states_low, native), (*states_high, native)
     over_low = any(not state.ok for state in states_low)
     over_high = any(not state.ok for state in states_high)
 
@@ -394,6 +402,7 @@ def _one(ctx: EngineeringContext, wall,  # type: ignore[no-untyped-def]
         # `retaining_basis.material_inputs`.
         *(Quantity(name, value, unit, tol)
           for name, value, unit, tol in material_inputs(geometry)),
+        *native_inputs,
     ) + ((
         # What makes moving the cross-member, or moving the wall on the FAR side of the
         # court, stale THIS wall's seal. Without these two the fingerprint would cover only
