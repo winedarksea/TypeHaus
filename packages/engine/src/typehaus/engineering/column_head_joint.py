@@ -324,7 +324,8 @@ def _net_uplift(ctx: EngineeringContext, pier: Any, notes: list[str]
         f"{GUST_EFFECT_RIGID} x {MAX_VERIFIED_CASE_AB} = {up:.3f} psf, a bound on any "
         f"published free-roof C_N, less 0.6 x {roof_dead:g} psf of roof dead.")
     net = (up - 0.6 * roof_dead) * pier.roof_tributary_ft2
-    return net, UpliftBuild("roof", q_h, up, roof_dead, pier.roof_tributary_ft2, net)
+    return net, UpliftBuild("roof", "the roof's ridge", q_h, up, roof_dead,
+                            pier.roof_tributary_ft2, net)
 
 
 def _shear_state(pier: Any, fc: float, wind: float, guard: float, states: list[LimitState],

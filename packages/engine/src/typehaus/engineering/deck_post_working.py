@@ -131,7 +131,8 @@ def pm_steps(section: PMSection, phi: float, axial: float, phi_mn: float,
         Step("C_c", "compression in the concrete", section.concrete_force, "lb",
              "0.85 f'c A_c", f"0.85 x {num(section.fc)} x {num(section.area)}"),
         Step("M_s", "moment of the bar forces about the centre (stress x area x offset; a "
-             "bar inside the block has the displaced concrete taken off)", bar_moment,
+             "bar inside the block has the displaced concrete taken off; compression +, "
+             "tension -, offset above the centre +)", bar_moment,
              "lb-in", "sum(f_s,i A_b y_i)", bars,
              "stress from strain compatibility, capped at f_y, E_s 29,000,000 psi"),
         Step("eps_t", "strain in the extreme tension bar", section.tension, "",

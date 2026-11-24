@@ -11,7 +11,7 @@ from pathlib import Path
 
 import pytest
 
-from typehaus.engineering.item import Status
+from typehaus.engineering.item import Status, sheet_spec
 
 CATLIN = Path(__file__).resolve().parents[3] / "houses" / "catlin"
 
@@ -63,7 +63,8 @@ def test_both_walls_are_computed_and_pass(results) -> None:
         assert record.status is Status.OK, record.missing
         assert record.governing.name.endswith("stem as a cantilever under E-W wind and the "
                                               "retained soil")
-        assert any("base_rotation/<column>" in note for note in record.notes)
+        # The not-graded list moved from a note to the sheet's "does not cover" table.
+        assert any("base_rotation" in row.why for row in sheet_spec("column_support").not_covered)
         # B-05: nothing is handed to "the engineer of record" any more.
         assert not any("engineer of record" in note for note in record.notes)
 
@@ -128,7 +129,7 @@ def test_each_stem_is_a_cantilever_under_e_w_wind_plus_the_retained_soil(results
         assert "PROPPED retained soil 1.6 x 60" in state.citation
         notes = " ".join(record.notes)
         assert "WHAT CARRIES THE E-W LATERAL" in notes
-        assert "OWNER-ACCEPTED" in notes
+        assert any("0.92" in basis.statement for basis in record.bases)  # owner acceptance
 
 
 def test_the_soil_prop_is_compression_through_the_joists_not_the_anchors(results) -> None:

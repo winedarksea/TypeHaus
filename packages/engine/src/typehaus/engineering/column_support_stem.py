@@ -9,13 +9,14 @@ from __future__ import annotations
 import math
 
 from typehaus.engineering.column_stem import (
+    PHI_FLEXURE,
     SOIL_LOAD_FACTOR,
     StemDemand,
     reinforced_flexure_lb_in_per_ft,
     spread_width_in,
     stem_states,
 )
-from typehaus.engineering.item import LimitState, Quantity
+from typehaus.engineering.item import LimitState, Quantity, Step, num
 from typehaus.engineering.pier_basis import _Pier
 from typehaus.engineering.registry import EngineeringContext
 from typehaus.engineering.retaining_basis import _BAR
@@ -118,7 +119,25 @@ def _footing_row(ctx: EngineeringContext, pier: _Pier, near_in: float, far_in: f
         f"{pier.base_thickness_in:.0f}\" stem over {spread_in:.0f}\" (stopped at the pour's "
         f"ends) of a {pier.footing_width_in:g}\" footing, against the presumptive allowable "
         f"of the site's soil class — the increment alone; the wall's own load is "
-        f"`retaining_wall/<tag>`'s")
+        f"`retaining_wall/<tag>`'s",
+        combination="D + L, service (ASD), the column's own load",
+        combination_factors=(("D", 1.0), ("L", 1.0)),
+        working=(
+            Step("P_s", "column service load: dead + live", pier.service_lb, "lb", "D + L",
+                 f"{num(pier.dead_lb)} + {num(pier.live_lb)}"),
+            Step("w", "width the load spreads over along the wall: the column radius plus "
+                 "45 deg each side through the stem, each side stopped at the end of the "
+                 "pour", spread_in, "in", "min(R + t, n) + min(R + t, s)",
+                 f"min({num(pier.diameter_in / 2.0)} + {num(pier.base_thickness_in)}, "
+                 f"{num(near_in)}) + min({num(pier.diameter_in / 2.0)} + "
+                 f"{num(pier.base_thickness_in)}, {num(far_in)})"),
+            Step("B", "strip footing width", pier.footing_width_in, "in"),
+            Step("q", "bearing pressure the column adds", pressure, "psf",
+                 "P_s / (B w) with B, w in ft",
+                 f"{num(pier.service_lb)} / ({num(pier.footing_width_in / 12.0)} x "
+                 f"{num(spread_in / 12.0)})"),
+            Step("q_allow", "allowable bearing of the site's soil class",
+                 soil.allowable_bearing_psf, "psf", source=soil.citation)))
 
 
 def _unbalanced_fill_m(ctx: EngineeringContext, wall) -> float | None:  # type: ignore[no-untyped-def]
@@ -157,6 +176,7 @@ def cantilever_row(ctx: EngineeringContext, wall_tag: str, piers: list[_Pier], f
     total_moment = 0.0
     spans: list[tuple[float, float]] = []
     parts: list[str] = []
+    column_steps: list[Step] = []
     for pier in piers:
         if pier.tag not in extents:
             continue
@@ -173,6 +193,19 @@ def cantilever_row(ctx: EngineeringContext, wall_tag: str, piers: list[_Pier], f
         total_moment += base
         parts.append(f"{pier.tag} M {mu / 12.0:,.0f} lb-ft + V {vu:,.0f} lb x "
                      f"{height / 12.0:.2f}' = {base / 12.0:,.0f}")
+        column_steps += [
+            Step(f"M_b({pier.tag})", f"{pier.tag}: E-W wind and guard moment at its base, "
+                 "magnified", mu / 12.0, "lb-ft",
+                 "delta (M_w,EW / 0.6 + M_g)",
+                 f"{num(delta)} x ({num(pier.wind_ew_base_moment_lb_ft)} / 0.6 + "
+                 f"{num(pier.guard_base_moment_lb_ft)})",
+                 "1.0W, the guard at 1.0; delta as the joint rows"),
+            Step(f"V_u({pier.tag})", f"{pier.tag}: E-W base shear", vu, "lb",
+                 "V_EW / 0.6 + 200", f"{num(pier.wind_ew_base_shear_lb)} / 0.6 + "
+                 f"{num(GUARD_LOAD_LB)}"),
+            Step(f"M_tot({pier.tag})", f"{pier.tag}: its moment at the footing line, M + V H",
+                 base / 12.0, "lb-ft", "M_b + V_u H",
+                 f"{num(mu / 12.0)} + {num(vu)} x {num(height / 12.0)}")]
     spans.sort()
     union = 0.0
     top = -math.inf
@@ -198,6 +231,8 @@ def cantilever_row(ctx: EngineeringContext, wall_tag: str, piers: list[_Pier], f
         reinforcement, "cover", None) is not None else 3.0
     capacity = reinforced_flexure_lb_in_per_ft(
         wall_fc, thickness_in, cover, _BAR[vertical.bar][1], area) / 12.0
+    depth_d = thickness_in - cover - _BAR[vertical.bar][1] / 2.0
+    block_a = area * 60_000.0 / (0.85 * wall_fc * 12.0)
     inputs += [Quantity(f"{wall_tag}.ew_base_moment", total_moment / 12.0, "lb-ft", 1.0),
                Quantity(f"{wall_tag}.ew_spread_ft", union_ft, "ft", 0.05),
                Quantity(f"{wall_tag}.soil_moment_per_ft", soil_per_ft, "lb-ft/ft", 1.0),
@@ -221,14 +256,46 @@ def cantilever_row(ctx: EngineeringContext, wall_tag: str, piers: list[_Pier], f
         f"@ {float(vertical.spacing.inches):g}\" on the earth face at d = "
         f"{thickness_in - cover - _BAR[vertical.bar][1] / 2.0:.2f}\" (a single curtain, "
         f"assumed on the retained face); the wind and the soil are taken adding, the case that "
-        f"governs")]
+        f"governs",
+        combination="ASCE 7-16 §2.3.1 1.2D + 1.0W + L_guard + 1.6H (the stem as a cantilever)",
+        combination_factors=(("D", 1.2), ("W", 1.0), ("L", 1.0), ("H", 1.6)),
+        working=(
+            *column_steps,
+            Step("L_s", "length of stem the columns' moments spread over (45 deg spreads, "
+                 "joined, stopped at the pour's ends)", union_ft, "ft"),
+            Step("M_wind", "wind moment per foot of stem", wind_per_ft, "lb-ft/ft",
+                 "sum(M_tot) / L_s", f"{num(total_moment / 12.0)} / {num(union_ft)}"),
+            Step("H_fill", "retained fill: the wall's authored unbalanced fill, or the grade "
+                 "down to its bottom", h_fill, "ft"),
+            Step("efp", "retained soil's at-rest pressure per foot of depth", efp_value,
+                 "psf/ft", source=f"the court's own soil basis: {basis['state']}"),
+            Step("M_soil", "propped retained-soil moment at the stem base, per foot, "
+                 "factored", soil_per_ft, "lb-ft/ft", "1.6 efp H^3 / 15",
+                 f"{num(SOIL_LOAD_FACTOR)} x {num(efp_value)} x {num(h_fill)}^3 / 15",
+                 "fixed base, pinned top, triangular load: the porch props the top"),
+            Step("M_u", "wind and soil taken adding", wind_per_ft + soil_per_ft, "lb-ft/ft",
+                 "M_wind + M_soil", f"{num(wind_per_ft)} + {num(soil_per_ft)}"),
+            Step("A_s", f"#{vertical.bar} at {float(vertical.spacing.inches):g} in. on the "
+                 "earth face, per foot", area, "in^2/ft", "12 A_b / s",
+                 f"12 x {num(_BAR[vertical.bar][0])} / {num(float(vertical.spacing.inches))}"),
+            Step("d", "depth to the bars", depth_d, "in", "h - cover - d_b / 2",
+                 f"{num(thickness_in)} - {num(cover)} - {num(_BAR[vertical.bar][1])} / 2"),
+            Step("phi M_n", "design moment strength per foot, one curtain at the tension "
+                 "face", capacity, "lb-ft/ft",
+                 "phi A_s f_y (d - a / 2) / 12, a = A_s f_y / (0.85 f'c 12)",
+                 f"{PHI_FLEXURE} x {num(area)} x 60,000 x ({num(depth_d)} - "
+                 f"{num(block_a)} / 2) / 12",
+                 "ACI 318-19 Table 21.2.1; f'c of the wall"))
+        )]
     prop_service = efp_value * h_fill ** 2 / 10.0
-    states += _porch_strut_rows(ctx, wall_tag, prop_service, inputs, missing)
+    states += _porch_strut_rows(ctx, wall_tag, prop_service, inputs, missing, efp_value,
+                                h_fill)
     return states
 
 
 def _porch_strut_rows(ctx: EngineeringContext, wall_tag: str, prop_lb_per_ft: float,
-                      inputs: list[Quantity], missing: list[str]) -> list[LimitState]:
+                      inputs: list[Quantity], missing: list[str], efp: float = 0.0,
+                      h_fill: float = 0.0) -> list[LimitState]:
     """Where the soil's prop goes: through the porch, in COMPRESSION, not through the anchors.
 
     The soil pushes W1 and E1 INWARD (toward each other), so each stem's head presses on its
@@ -278,4 +345,22 @@ def _porch_strut_rows(ctx: EngineeringContext, wall_tag: str, prop_lb_per_ft: fl
         f"and joists: the ledger anchors and the LUS210SS fasteners carry none of it. The joist "
         f"as a column ({span_ft:.2f}' strong-axis, the plank bracing the weak axis) buckles only "
         f"if E_min' falls below {e_needed:,.0f} psi at a factor of 3 (this record holds no "
-        f"E_min; the apparent E is {grade.e_psi:,.0f}); the plank is not a strut")]
+        f"E_min; the apparent E is {grade.e_psi:,.0f}); the plank is not a strut",
+        combination="H: the retained soil's service prop, ASD (NDS), unfactored",
+        combination_factors=(("H", 1.0),),
+        working=(
+            Step("H_fill", "retained fill height", h_fill, "ft"),
+            Step("efp", "retained soil's at-rest pressure per foot of depth", efp, "psf/ft"),
+            Step("R_top", "the soil's top reaction per foot of wall, service", prop_lb_per_ft,
+                 "lb/ft", "efp H^2 / 10", f"{num(efp)} x {num(h_fill)}^2 / 10",
+                 "fixed base, pinned top, triangular load"),
+            Step("s", "joist spacing", spacing_ft, "ft"),
+            Step("F_j", "prop each joist end carries", per_joist, "lb", "R_top s",
+                 f"{num(prop_lb_per_ft)} x {num(spacing_ft)}",
+                 "direct bearing on the ledger face; the ledger anchors take none"),
+            Step("A_b", f"bearing area of a {width_in:g} in. x {depth_in:g} in. joist end",
+                 width_in * depth_in, "in^2", "w d", f"{num(width_in)} x {num(depth_in)}"),
+            Step("f_c,perp", "bearing stress on the joist end", bearing, "psi", "F_j / A_b",
+                 f"{num(per_joist)} / {num(width_in * depth_in)}"),
+            Step("F_c,perp", "allowable compression perpendicular to grain, wet service",
+                 grade.fc_perp_psi, "psi", source=grade.source.split(":")[0])))]

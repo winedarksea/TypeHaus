@@ -377,12 +377,6 @@ def _one(ctx: EngineeringContext, deck: Any) -> EngineeringRecord:
     notes.append(
         "DELIVERED: the delivered_* quantities are each tie's worst force along and across "
         "the wall it lands on; that wall's own bracing record sums them (review M9).")
-    if any(_role(j) == "floor_tie_holdown" for j in joints):
-        notes.append(
-            "DTT2Z: ESR-2330 §4.1 covers dry interior service and excludes treated lumber; the "
-            "catalog's deck-to-house lateral detail (C-C-2026 p. 326) sells it for decks but "
-            "publishes no wet row. Graded on the dry row x C_M 0.70 — a reading outside the "
-            "report.")
     notes += [f"DRY SERVICE at {j.member}/{j.wall} (C_M {DRY_SERVICE_CM:g}, NDS 2018 "
               f"§11.3.3 / Table 11.3.3): a service-condition judgement the engineer of "
               f"record confirms. Basis: {j.service_basis}"
@@ -395,11 +389,11 @@ def _one(ctx: EngineeringContext, deck: Any) -> EngineeringRecord:
                f"{', '.join(sorted({j.wall for j in joints}))}"
                + (f" — {worst_state.name} governs at {worst_state.ratio:.2f}"
                   if worst_state else ""))
-    from typehaus.engineering.owner_bases import HL43_EAST_WEST
+    from typehaus.engineering.owner_bases import CANOPY_SERVICE, HL43_EAST_WEST
 
     reads_hl43 = any(c.angle and j.heel_axis is None for j, c in zip(joints, good, strict=False))
     return _record(ident, deck.tag, tags, status, states, inputs, missing, summary, notes,
-                   (HL43_EAST_WEST,) if reads_hl43 else ())
+                   (CANOPY_SERVICE, *((HL43_EAST_WEST,) if reads_hl43 else ())))
 
 
 def _concrete_states(ctx: EngineeringContext, joints: list[TieJoint], caps: list[Capacity],

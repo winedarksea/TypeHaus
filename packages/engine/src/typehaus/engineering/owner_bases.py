@@ -57,3 +57,25 @@ HL43_EAST_WEST = StatedBasis(
     reopens_if="lag bearing across the grain shown materially lower than the published F1, "
                "or the maker publishing a row for this installation",
     reference="owner decision, 2026-11-23 (north_entry_piers.md §10p)")
+
+CANOPY_SERVICE = StatedBasis(
+    BasisKind.OWNER_BASIS, "tie parts graded wet, and a wet reading outside a report",
+    "The landing's ties are exposed to weather and graded WET by one exposure rule: NDS 2018 "
+    "Table 11.3.3 C_M 0.70 on the dry catalog row. Where a part's evaluation report is scoped "
+    "to in-service MC <= 19% (ESR-2330 DTT2 among them), the wet value is a reading outside "
+    "the report, and is said so: the catalog sells the DTT2Z for deck-to-house lateral ties "
+    "(C-C-2026 p. 326) but publishes no wet row.",
+    reopens_if="the maker publishing a wet row, or a part's service condition authored dry "
+               "with a basis",
+    reference="owner decision 17 (landing tie wet throughout); canopy exposure rule")
+
+# --- column_support (LA-fill) ----------------------------------------------------------------
+
+DOWEL_RATIO = StatedBasis(
+    BasisKind.OWNER_ACCEPTED, "dowel tension ratio, accepted as is",
+    "Dowel tension is graded on the conservative C_f 1.80 for every wind band, the guard taken "
+    "concurrently with full design wind and the one-bar couple on the block that force itself "
+    "produces. It was owner-accepted at 0.92 (2026-11-23) when the porch curtains were a wind "
+    "band; with the curtains stowed (owner basis) it is well under that.",
+    reopens_if="the ratio rising above 0.92",
+    reference="owner acceptance, 2026-11-23 (balcony_moment_columns.md)")

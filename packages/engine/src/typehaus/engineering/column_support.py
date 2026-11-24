@@ -26,12 +26,14 @@ from __future__ import annotations
 import dataclasses
 import math
 
+from typehaus.engineering import column_support_working as W  # noqa: N812
 from typehaus.engineering.column_stem import StemDemand
 from typehaus.engineering.column_support_stem import (
     GUARD_LOAD_LB,
     cantilever_row,
     stem_rows,
 )
+from typehaus.engineering.column_support_working import CaseParams, Couple
 from typehaus.engineering.item import (
     EngineeringRecord,
     LimitState,
@@ -39,6 +41,7 @@ from typehaus.engineering.item import (
     Quantity,
     Scope,
     Status,
+    declare_sheet,
     item_id,
 )
 from typehaus.engineering.pier_basis import _Pier, cast_piers
@@ -61,6 +64,8 @@ PHI_TENSION = 0.90
 #: ACI 318-19 Table 22.9.4.2, normalweight (λ 1.0).
 MU_ROUGHENED = 1.0
 MU_NOT_ROUGHENED = 0.6
+
+declare_sheet(KIND, not_covered=W.NOT_COVERED, labels=W.LABELS, figure=W.figure)
 
 oracled_by(KIND, Oracle(note="balcony_moment_columns.md", section="§11",
                         test="tests/test_column_support_calc.py"))
@@ -131,8 +136,8 @@ def _shear_asd_lb(pier: _Pier) -> tuple[float, float]:
 
 
 def _couple(mu_lb_in: float, pu_lb: float, radius_in: float, fc_psi: float,
-            offsets: tuple[float, ...]) -> tuple[float, float, int]:
-    """``(C, T, bars in tension)``: the compression on the block and the dowel tension that
+            offsets: tuple[float, ...]) -> Couple:
+    """A :class:`Couple`: the compression on the block and the dowel tension that
     balance (Pu, Mu), T at the centroid of the dowels below the centre. Compression dowels
     are not credited, which puts every pound of compression on the concrete.
 
@@ -163,8 +168,8 @@ def _couple(mu_lb_in: float, pu_lb: float, radius_in: float, fc_psi: float,
         compression = 0.5 * (compression + updated)      # damped: the block and C chase each other
     pull = compression - pu_lb
     if pull <= 0.0:
-        return pu_lb, 0.0, len(tension)
-    return compression, pull, len(tension)
+        return Couple(pu_lb, 0.0, len(tension), lever, ybar, area)
+    return Couple(compression, pull, len(tension), lever, ybar, area)
 
 
 def _column_states(ctx: EngineeringContext, pier: _Pier, wall_tag: str,
@@ -207,13 +212,14 @@ def _column_states(ctx: EngineeringContext, pier: _Pier, wall_tag: str,
     from typehaus.engineering.base_rotation import flexible_magnifier
 
     flexible = flexible_magnifier(ctx, pier)
-    worst: dict[str, tuple[float, float, float, object, str]] = {}
+    worst: dict[str, tuple[float, float, float, object, str, tuple]] = {}
     stem_demand: StemDemand | None = None
     for case in dp._combinations(pier, wind_mu, guard_mu):
         # The joint sits on a base that turns: the flexible delta where the spring forms,
         # the rigid base's (k 2.1) otherwise. The larger governs; it is the flexible one.
-        delta = max(dp._sway_magnifier(pier, case.axial_lb)[1],
-                    flexible(case.axial_lb) if flexible else 1.0)
+        rigid = dp._sway_magnifier(pier, case.axial_lb)[1]
+        soft = flexible(case.axial_lb) if flexible else 1.0
+        delta = max(rigid, soft)
         mu_in = case.moment_lb_ft * delta * 12.0
         _phi_mn, _phi, c = dp._pm_point(pier, cage, cover, case.axial_lb)
         block, ybar = dp._segment(radius, min(dp._beta_1(col_fc) * c, 2.0 * radius))
@@ -230,6 +236,9 @@ def _column_states(ctx: EngineeringContext, pier: _Pier, wall_tag: str,
                      PHI_SHEAR * vn_max)
         how = (f"Pu {case.axial_lb:,.0f} lb, Mu {mu_in / 12.0:,.0f} lb-ft (δ {delta:.3f}), "
                f"e {mu_in / case.axial_lb if case.axial_lb else 0.0:.1f}\"")
+        params = CaseParams(case, rigid, soft, delta, mu_in, c, block, tuple(couples),
+                            wind_v, guard_v, vu, pier.wind_base_moment_lb_ft,
+                            pier.guard_base_moment_lb_ft, wind_mu, guard_mu)
         for name, demand, capacity in (
                 ("bearing", comp, bearing_cap),
                 ("tension", per_bar, PHI_TENSION * dowel_area * REINFORCEMENT_FY_PSI),
@@ -238,14 +247,27 @@ def _column_states(ctx: EngineeringContext, pier: _Pier, wall_tag: str,
             if name not in worst or ratio > worst[name][0]:
                 worst[name] = (ratio, demand, capacity, case,
                                how + (f", c {c:.3f}\", block {block:.2f} in2 at "
-                                      f"{ybar:.3f}\"" if name == "bearing" else ""))
+                                      f"{ybar:.3f}\"" if name == "bearing" else ""), (params,))
 
     def graded(key: str, label: str, unit: str, citation: str) -> LimitState:
-        _r, demand, capacity, case, how = worst[key]
+        _r, demand, capacity, case, how, (params,) = worst[key]
+        couples = params.couples
+        if key == "bearing":
+            steps = W.bearing(params, max(couples, key=lambda k: k.compression), wall_fc,
+                              root_a2_a1, clear, radius, PHI_BEARING, capacity, col_fc)
+        elif key == "tension":
+            steps = W.tension(params, max(couples, key=lambda k: k.pull / k.bars), col_fc,
+                              radius, demand, dowel.bar, dowel_area, PHI_TENSION,
+                              REINFORCEMENT_FY_PSI, capacity)
+        else:
+            f = dict(case.factors)
+            steps = W.shear(params, max(couples, key=lambda k: k.pull), count, dowel_area, mu,
+                            rough, PHI_SHEAR, REINFORCEMENT_FY_PSI, vn_max, capacity,
+                            f.get("W", 0.0), f.get("L", 0.0))
         return LimitState(f"{pier.tag}: {label}", demand, capacity, unit,
                           f"{citation} — governed by ASCE 7-16 §2.3.1 {case.label}: {how}",
                           combination=f"ASCE 7-16 §2.3.1 {case.label}",
-                          combination_factors=case.factors)
+                          combination_factors=case.factors, working=steps)
 
     states = [
         graded("bearing", "bearing on the wall top", "lb",
@@ -274,7 +296,7 @@ def _column_states(ctx: EngineeringContext, pier: _Pier, wall_tag: str,
     states.append(LimitState(f"{pier.tag}: footprint on the wall top", radius, clear, "in",
                              "the column's radius against the clear wall top each side of "
                              "its centre — a round wider than the stem overhangs its face",
-                             is_detailing=True))
+                             is_detailing=True, working=W.footprint(radius, clear)))
     inputs += [
         Quantity(f"{pier.tag}.sqrt_A2_A1", root_a2_a1, "", 0.01),
         Quantity(f"{pier.tag}.shear_friction_mu", mu, "", None),
@@ -352,11 +374,6 @@ def _one(ctx: EngineeringContext, wall_tag: str, piers: list[_Pier]) -> Engineer
         "the two sides backfilled together (`AN-SG-BACKFILL` (b), L1's sequence): a one-sided "
         "stage would load the far stem through the strut. No column prop rides it. A drawing "
         "note, `AN-SG-LEDGER-DOWELS`, keeps the ledger's Titen HD anchors off the dowels.",
-        "DOWEL TENSION on the conservative C_f 1.80 for every wind band, the guard taken "
-        "concurrently with full design wind and the one-bar couple on the block that force "
-        "itself produces. It was OWNER-ACCEPTED at 0.92 (2026-11-23) when the porch curtains were "
-        "a wind band; with the curtains stowed (owner basis) it is well under that, and it comes "
-        "back to the owner only if it rises above 0.92.",
         "FOOTPRINT: the 12\" round is flush with both faces of the 12\" stem, so the row reads "
         "1.000 and allows no placement tolerance — a detailing row, not a margin. The column "
         "form is set from the stem's own face lines (`AN-SG-PLACEMENTS`); a round set off-centre "
@@ -364,9 +381,6 @@ def _one(ctx: EngineeringContext, wall_tag: str, piers: list[_Pier]) -> Engineer
         "FOOTING under the column point, and the joint's torsion: the footing row above is "
         "the increment the column adds; the torque through the joint is `column_head_joint`'s "
         "(about 3% of the cracking threshold) and rides the same shear-friction dowels.",
-        "NOT GRADED here: (1) ROTATIONAL RESTRAINT of the foundation is "
-        f"`base_rotation/<column>` for {tags}; (2) the stem's in-plane (N-S) wind, which runs "
-        "along the wall's strong axis.",
     )
     over = any(not state.ok for state in states)
     status = Status.INCOMPLETE if missing else (Status.OVER if over else Status.OK)
@@ -377,6 +391,12 @@ def _one(ctx: EngineeringContext, wall_tag: str, piers: list[_Pier]) -> Engineer
     return EngineeringRecord(
         item_id=item_id(KIND, wall_tag), kind=KIND, key=wall_tag,
         basis_version=BASIS_VERSION, basis=BASIS, status=status, summary=summary,
-        inputs=tuple(inputs), limit_states=tuple(states), missing=tuple(missing),
+        inputs=tuple(W.labelled(inputs)), limit_states=tuple(states), missing=tuple(missing),
         notes=notes, element_tags=(wall_tag, *(p.tag for p in piers)),
-        scope=Scope.SCREENING)
+        scope=Scope.SCREENING, bases=_bases())
+
+
+def _bases() -> tuple:
+    from typehaus.engineering.owner_bases import CURTAINS, DOWEL_RATIO
+
+    return (DOWEL_RATIO, CURTAINS)

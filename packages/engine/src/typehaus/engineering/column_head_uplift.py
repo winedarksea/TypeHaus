@@ -19,6 +19,7 @@ class UpliftBuild:
     """The surrogate's own numbers, so the sheet prints the build-up and not only the total."""
 
     what: str          # "roof" or "sealed deck"
+    at: str            # where q_h is taken: "the top of the guard", "the roof's ridge"
     q_h: float         # velocity pressure at the height the pressure is taken, psf
     wind_psf: float    # 0.6 q G C_f
     dead_psf: float    # the dead load the uplift is relieved by (unfactored)
@@ -31,7 +32,7 @@ class UpliftBuild:
 
         net_psf = self.wind_psf - ASD_WIND_FACTOR * self.dead_psf
         return (
-            Step("q_h", f"velocity pressure at the {self.what}'s top", self.q_h, "psf",
+            Step("q_h", f"velocity pressure at {self.at}", self.q_h, "psf",
               source="ASCE 7-16 eq. 26.10-1 at the site's wind basis"),
             Step("p_up", "uplift pressure on a solid band, at the bound on any published "
               "free-roof coefficient", self.wind_psf, "psf", "0.6 q_h G C_f",
@@ -77,7 +78,8 @@ def sealed_deck_uplift(ctx: EngineeringContext, pier: Any, notes: list[str]
     up = asd_solid_band_psf(wind.q_h_psf)
     area = pier.statics_area_ft2 or pier.tributary_ft2
     uplift = (up - 0.6 * DECK_DEAD_LOAD_PSF) * area
-    build = UpliftBuild("sealed deck", wind.q_h_psf, up, DECK_DEAD_LOAD_PSF, area, uplift)
+    build = UpliftBuild("sealed deck", "the top of the guard on the deck", wind.q_h_psf, up,
+                        DECK_DEAD_LOAD_PSF, area, uplift)
     notes.append(
         f"UPLIFT: this deck's plank ({plank}) is SEALED — the porch's roof — so ASCE 7-16's "
         f"no-uplift rule for an open-jointed surface does not hold. GRADED as an OPEN structure "

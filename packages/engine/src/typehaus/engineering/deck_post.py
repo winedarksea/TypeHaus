@@ -798,7 +798,7 @@ def _combinations(pier: _Pier, wind_mu: float, guard_mu: float) -> tuple[_Combin
               m_eq: str, m_num: str, factors: tuple[tuple[str, float], ...]) -> _Combination:
         eq, nums = [f"{d_f:g} D"], [f"{d_f:g} x {num(dead)}"]
         for symbol, f, value in (("L_deck", l_f, live), ("S", s_f, snow)):
-            if f:
+            if f and value:
                 eq.append(f"{f:g} {symbol}")
                 nums.append(f"{f:g} x {num(value)}")
         axial = d_f * dead + l_f * live + s_f * snow
