@@ -8,6 +8,9 @@ land in the same component of the bridge-free graph, which is what
 
 from __future__ import annotations
 
+from typehaus.engineering.registry import EngineeringContext
+from typehaus.engineering.retaining_basis import _structure_thickness_in
+
 
 def _bridges(edges: list[tuple[str, str, str]]) -> set[str]:
     """Tags of the edges that lie on **no** cycle, by Hopcroft-Tarjan lowlink.
@@ -84,3 +87,64 @@ def _cycle_components(edges: list[tuple[str, str, str]]) -> dict[str, int]:
         root = find(a)
         labels[tag] = index.setdefault(root, len(index))
     return labels
+
+
+def _foundation_walls(ctx: EngineeringContext) -> list:
+    from typehaus.model.structure import FoundationWall
+
+    return [w for w in ctx.plan.all_elements() if isinstance(w, FoundationWall)]
+
+
+def _cast_beams(ctx: EngineeringContext) -> list:
+    from typehaus.resolve.assembly_material import is_cast_beam
+
+    return [e for e in ctx.plan.all_elements() if is_cast_beam(ctx.plan, e)]
+
+
+def _verify(ctx: EngineeringContext, ref: str, members: list) -> list[str]:
+    """The conditions that have to hold for the restraint to be real. Names what does not.
+
+    Every one of these is **derived from the model rather than asserted by the author**,
+    which is the difference between a restraint and a free pass. Authoring
+    ``base_restraint_ref`` states an intention; this function goes and checks it.
+    """
+    from typehaus.model.enums import LayerFunction
+    from typehaus.model.structure import FoundationWall
+    from typehaus.resolve.assembly_material import is_cast_beam
+
+    missing: list[str] = []
+    cross = ctx.plan.by_tag(ref)
+    if not (isinstance(cross, FoundationWall) or is_cast_beam(ctx.plan, cross)):
+        return [f"a FoundationWall or concrete Beam tagged {ref} — {len(members)} wall(s) name "
+                f"it as the element restraining their base and the model has no such member"]
+
+    edges = [(w.tag, w.start_node, w.end_node) for w in [*_foundation_walls(ctx),
+                                                          *_cast_beams(ctx)]
+             if w.start_node and w.end_node and w.start_node != w.end_node]
+    components = _cycle_components(edges)
+
+    if ref not in components:
+        return [f"a closed structural loop through {ref} — it lies on no cycle of walls, so "
+                f"it is a bridge and restrains nothing. An open U does not restrain its own "
+                f"ends"]
+    loop = components[ref]
+    for member in members:
+        if components.get(member.tag) != loop:
+            missing.append(
+                f"a closed structural loop through {ref} — {member.tag}'s base is not "
+                f"restrained by it, because the two lie on no common cycle")
+
+    # Continuity: a loop of cast concrete, or it is a diagram rather than a load path.
+    for wall in [cross, *members]:
+        if _structure_thickness_in(ctx, wall.assembly) is None:
+            missing.append(f"a concrete STRUCTURE layer on {wall.tag} (assembly "
+                           f"{wall.assembly}) — the loop has to be cast, not framed")
+            continue
+        assembly = ctx.plan.library.resolve_assembly(wall.assembly)
+        if assembly is not None and not any(
+                layer.function is LayerFunction.STRUCTURE
+                and "concrete" in (layer.material_ref or "")
+                for layer in assembly.layers):
+            missing.append(f"a cast-concrete STRUCTURE layer on {wall.tag} — its structure "
+                           f"layer is not concrete, so the corners cannot be cast continuous")
+    return missing

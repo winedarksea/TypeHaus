@@ -417,7 +417,7 @@ def item_id(kind: str, key: str) -> str:
 
 
 def no_calc(kind: str, key: str, *, reason: str = "",
-            oracle: tuple[Oracle, ...] = ()) -> EngineeringRecord:
+            oracle: tuple[Oracle, ...] = (), basis: str = "") -> EngineeringRecord:
     """The record for an item this build computes nothing for.
 
     Deliberately a *record* rather than an absence. ``rafter/RF-GARAGE`` is the case that
@@ -426,7 +426,7 @@ def no_calc(kind: str, key: str, *, reason: str = "",
     to cover and the CLI has a row to print.
     """
     return EngineeringRecord(
-        item_id=item_id(kind, key), kind=kind, key=key, status=Status.NO_CALC,
+        item_id=item_id(kind, key), kind=kind, key=key, status=Status.NO_CALC, basis=basis,
         summary=reason or "no calculation is registered for this kind — an engineer's "
                           "design governs",
         element_tags=(key,), oracle=oracle, scope=Scope.EXTERNAL,

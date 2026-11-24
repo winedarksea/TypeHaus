@@ -25,6 +25,7 @@ printed (off the C578 rating, linear to 10%) and not credited.
 
 from __future__ import annotations
 
+from typehaus.engineering import thermal_break_working as W
 from typehaus.engineering.item import LimitState, Quantity
 from typehaus.engineering.soil import MOTION_AT_ALLOWABLE_BAND_IN
 
@@ -52,6 +53,8 @@ def joint_row(ctx, boards, products, temps, runs: dict, mobilised: dict | None):
     if not capped or temps is None or not mobilised:
         return None, missing, []
     capacity = min(p.compliant.at_strain * p.compliant.thickness.inches for _, p in capped)
+    weakest = min((p.compliant for _, p in capped),
+                  key=lambda c: c.at_strain * c.thickness.inches)
     thermal = max(ALPHA_C_PER_F * temps.closing * runs[b.tag] for b, _ in capped)
     squeeze = max(RATING_STRAIN * min(p.cap_psi, p.psi) / p.psi * b.t_in for b, p in capped)
     after = set_after_backfill(ctx, boards)
@@ -82,4 +85,7 @@ def joint_row(ctx, boards, products, temps, runs: dict, mobilised: dict | None):
            if after else "")
         + f". The ties go in with the boards and take the same {demand:.3f}\". The foam "
         f"board's own squeeze at the cap, up to {squeeze:.4f}\" off its rating, is not "
-        f"credited"), missing, inputs
+        f"credited", combination=W.THERMAL[0], combination_factors=W.THERMAL[1],
+        working=W.joint_closure(thermal, slide, demand, moved, pcf, low, capacity,
+                                weakest.at_strain, weakest.thickness.inches, squeeze),
+    ), missing, inputs

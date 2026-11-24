@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import math
 
+from typehaus.engineering import thermal_break_working as W
 from typehaus.engineering.item import LimitState, Quantity
 
 _IN = 1.0 / 0.0254
@@ -135,7 +136,12 @@ def winter_rows(ctx, board, free_bodies: dict, soil, states, missing, inputs,
             f"{head}. The weakest run, {wall} on {foot}: {n} bars continuous along it, As "
             f"{area:.3f} in², phi 0.90 x fy {REINFORCEMENT_FY_PSI:,.0f} (cracked, concrete "
             f"not credited). Rigid-plastic upper bound; valid while the friction NORTH of the "
-            f"run is no more than {total:,.0f} lb (free body §11m.2)", combination="1.0T"))
+            f"run is no more than {total:,.0f} lb (free body §11m.2)",
+            combination=W.WINTER[0], combination_factors=W.WINTER[1],
+            working=W.winter(total, len(lines), demand, area, REINFORCEMENT_FY_PSI,
+                             PHI_TENSION * area * REINFORCEMENT_FY_PSI, friction, house, far,
+                             relax, h, pcf,
+                             f"steel continuous along the weakest run ({wall}, {n} bars)")))
     if spliced:
         area, n, at, f0, f1 = min(spliced)
         inputs.append(Quantity("winter_joint_steel", area, "in2", 0.0001))
@@ -144,7 +150,11 @@ def winter_rows(ctx, board, free_bodies: dict, soil, states, missing, inputs,
             PHI_TENSION * area * REINFORCEMENT_FY_PSI, "lb",
             f"{head}; at the {f0}|{f1} joint ({at:.1f}\") {n} bars cross it (lapped splices, "
             f"BarSpec.continues_into), As {area:.3f} in², phi 0.90 x fy — cracked, concrete "
-            f"not credited (free body §11m.2)", combination="1.0T"))
+            f"not credited (free body §11m.2)",
+            combination=W.WINTER[0], combination_factors=W.WINTER[1],
+            working=W.winter(total, len(lines), demand, area, REINFORCEMENT_FY_PSI,
+                             PHI_TENSION * area * REINFORCEMENT_FY_PSI, friction, house, far,
+                             relax, h, pcf, f"steel across the spliced joint ({n} bars)")))
     graded = []
     for at, w0, w1, f0, f1, solids in joints:
         fc = min(fc_psi(concrete_spec_for(ctx.plan, ctx.plan.by_tag(t))) or 0.0
@@ -168,4 +178,5 @@ def winter_rows(ctx, board, free_bodies: dict, soil, states, missing, inputs,
         f"{width:.0f}\" x {depth:.0f}\" (thickness less 2\", ACI 318-19 §14.5.1.7), phi 0.60 "
         f"x 5 sqrt(f'c {fc:,.0f}) (§14.5.2.1, read for a direct tension); the stem (a later "
         f"placement) and the base friction's eccentricity not credited",
-        combination="1.0T"))
+        combination=W.WINTER[0], combination_factors=W.WINTER[1],
+        working=W.winter_joint(demand, width, depth, fc, cap, demand / (width * depth))))

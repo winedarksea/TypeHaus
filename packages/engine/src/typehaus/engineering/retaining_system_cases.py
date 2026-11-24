@@ -24,7 +24,9 @@ from __future__ import annotations
 import dataclasses
 from dataclasses import dataclass
 
-from typehaus.engineering.item import LimitState, Quantity
+from typehaus.engineering import owner_bases
+from typehaus.engineering import retaining_system_working as W
+from typehaus.engineering.item import LimitState, Quantity, StatedBasis
 from typehaus.engineering.retaining_basis import REQUIRED_FS
 from typehaus.engineering.retaining_system_body import (
     DRY,
@@ -52,15 +54,9 @@ class Case:
     graded: bool
 
 
-#: Cases the owner has excluded by a stated basis: printed once, never graded.
-OWNER_BASIS = {
-    "perched snow": (
-        "OWNER BASIS, stated: full ground snow on the terrace and perched water at H/2 (a "
-        "blinded drain) are taken as NOT concurrent; each is graded alone. Combined they would "
-        "read FS {fs:.2f} at {pcf:.0f} pcf, printed for transparency. NOT COVERED (owner): that "
-        "combination; lateral frost thrust in the top 42\" of retained fill; seasonal thermal "
-        "ratcheting under the sustained thrust."),
-}
+#: Cases the owner has excluded by a stated basis: printed once (section 6 of the sheet,
+#: ``owner_bases.snow_not_with_perched_water``), never graded.
+OWNER_BASIS = ("perched snow",)
 
 CASES = (
     Case("dry", "sliding, dry", "footing", True),
@@ -192,6 +188,8 @@ class Graded:
     #: ``{pcf: (dry resultant, whole-body friction, house-side friction, how)}`` at the upper
     #: (restraint) bed friction that the court's contraction rows grade at.
     restraint: dict[float, tuple] = dataclasses.field(default_factory=dict)
+    #: The owner's stated bases whose value this grading computed (not graded rows).
+    bases: tuple[StatedBasis, ...] = ()
 
 
 def grade(ctx, ref: str, walls: list, built_by_pcf: dict, soil) -> tuple[Graded | None, list[str]]:  # type: ignore[no-untyped-def]
@@ -234,15 +232,18 @@ def grade(ctx, ref: str, walls: list, built_by_pcf: dict, soil) -> tuple[Graded 
         tables.append(_table(pcf, body, deep, levels))
     if missing:
         return None, list(dict.fromkeys(missing))
-    states, pending, notes = [], [], []
+    states, pending, notes, bases = [], [], [], []
     for case in CASES:
         if not fs[case.key]:
             continue
         value, pcf, on, water = min(fs[case.key], key=lambda r: (r[0], r[1]))
         how = _how(case, on, water, pcf)
         if case.graded:
+            combo, letters = W.COMBINATIONS[case.key]
             states.append(LimitState(case.label, REQUIRED_FS, value, "", how,
-                                     is_safety_factor=True))
+                                     is_safety_factor=True, combination=combo,
+                                     combination_factors=letters,
+                                     working=W.sliding_steps(on, water, value)))
             if value < REQUIRED_FS and case.key in PENDING_CASES:
                 pending.append((case.label, (
                     f"a design answer for the court's {case.label} case, FS {value:.2f} "
@@ -250,7 +251,7 @@ def grade(ctx, ref: str, walls: list, built_by_pcf: dict, soil) -> tuple[Graded 
                     f"an owner-accepted basis)")))
         else:
             if case.key in OWNER_BASIS:
-                notes.append(OWNER_BASIS[case.key].format(fs=value, pcf=pcf))
+                bases.append(owner_bases.snow_not_with_perched_water(value, pcf))
                 continue
             notes.append(f"REPORTED, not graded — {case.label}: FS {value:.2f} at "
                          f"{pcf:.0f} pcf. {how}")
@@ -259,7 +260,7 @@ def grade(ctx, ref: str, walls: list, built_by_pcf: dict, soil) -> tuple[Graded 
               Quantity("body_weight_110", body110.weight(), "lb", 1.0),
               Quantity("body_resultant_110", body110.resultant(), "lb", 1.0))
     return Graded(tuple(states), tuple(pending), tuple(notes + tables), inputs, dry,
-                  mobilised, restraint), []
+                  mobilised, restraint, bases=tuple(bases)), []
 
 
 def _how(case: Case, body: Body, water: Water, pcf: float) -> str:
@@ -344,3 +345,13 @@ def soil_inputs(ctx, soil) -> tuple[Quantity, ...]:  # type: ignore[no-untyped-d
             Quantity("soil_confirmed",
                      1.0 if getattr(site, "confirmed_soil", None) is not None else 0.0,
                      "-", 0.5))
+
+
+def soil_stated_basis(ctx, soil) -> StatedBasis | None:  # type: ignore[no-untyped-def]
+    """The court's specified soil as a stated basis, until a report confirms it."""
+    site = getattr(getattr(ctx.plan, "project", None), "site", None)
+    params = getattr(site, "specified_soil", None)
+    if design_friction(ctx, soil)[2] != "specified" or params is None:
+        return None
+    return owner_bases.specified_court_soil(
+        params.bed_friction, params.bed_friction_max, params.native_phi_deg)

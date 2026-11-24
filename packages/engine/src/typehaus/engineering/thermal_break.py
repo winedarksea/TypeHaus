@@ -29,12 +29,14 @@ from __future__ import annotations
 
 import dataclasses
 
+from typehaus.engineering import owner_bases
 from typehaus.engineering import thermal_break_board as brd
 from typehaus.engineering import thermal_break_demand as dem
 from typehaus.engineering import thermal_break_geometry as geo
 from typehaus.engineering import thermal_break_house as house
 from typehaus.engineering import thermal_break_line as line
 from typehaus.engineering import thermal_break_path as path
+from typehaus.engineering import thermal_break_sheet as sheet
 from typehaus.engineering import thermal_break_winter as winter
 from typehaus.engineering.item import (
     EngineeringRecord,
@@ -42,6 +44,7 @@ from typehaus.engineering.item import (
     Oracle,
     Quantity,
     Status,
+    declare_sheet,
     item_id,
 )
 from typehaus.engineering.registry import EngineeringContext, calc, keys, oracled_by
@@ -51,10 +54,11 @@ from typehaus.engineering.retaining_system import (
     loop_mobilisation,
 )
 from typehaus.engineering.thermal_break_joint import NAME as JOINT
-from typehaus.engineering.thermal_break_joint import joint_row
+from typehaus.engineering.thermal_break_joint import joint_row, set_after_backfill
 from typehaus.resolve.slab_clip import floor_outline
 
 KIND = "thermal_break_transfer"
+declare_sheet(KIND, not_covered=sheet.NOT_COVERED, labels=sheet.LABELS, figure=sheet.figure)
 BASIS = ("ACI 347R-14 (fresh-concrete pressure); ACI 209R-92 (stem shrinkage); ACI 318-19 "
          "(house wall, slab strut); IBC 1610.1/1806.2 (house sliding, soil); IRC R404.4 loop")
 #: Bumped whenever the arithmetic below changes — it rides in the fingerprint.
@@ -131,6 +135,11 @@ def compute(ctx: EngineeringContext) -> list[EngineeringRecord]:
         groups.setdefault(b.loop_ref or b.tag, []).append(b)
     temps = brd.temps(ctx)
     mobilised = loop_mobilisation(ctx)
+    from typehaus.engineering.retaining_system_cases import soil_stated_basis
+    from typehaus.engineering.soil import presumptive
+
+    stated = soil_stated_basis(ctx, presumptive(getattr(ctx, "soil_class", None),
+                                                basis=getattr(ctx, "soil_basis", None)))
     out = []
     for key, mine in sorted(groups.items()):
         joint = None
@@ -138,7 +147,10 @@ def compute(ctx: EngineeringContext) -> list[EngineeringRecord]:
             runs = {b.tag: geo.court_run_in(ctx, b) for b in mine}
             joint = joint_row(ctx, mine, products, temps, runs,
                               mobilised.get(mine[0].loop_ref))
-        out.append(_record(key, mine, graded, joint))
+        bases = [*((stated,) if stated is not None else ()),
+                 *((owner_bases.BOARDS_AFTER_BACKFILL,)
+                   if joint is not None and set_after_backfill(ctx, mine) else ())]
+        out.append(_record(key, mine, graded, joint, tuple(bases)))
     return out
 
 
@@ -327,7 +339,7 @@ def _merge(mine, graded):
     return states, missing, inputs, notes
 
 
-def _record(key, mine, graded, joint=None) -> EngineeringRecord:
+def _record(key, mine, graded, joint=None, bases=()) -> EngineeringRecord:
     states, missing, inputs, notes = _merge(mine, graded)
     pending = []
     if joint is not None and joint[0] is not None:
@@ -361,4 +373,4 @@ def _record(key, mine, graded, joint=None) -> EngineeringRecord:
         item_id=item_id(KIND, key), kind=KIND, key=key,
         basis_version=BASIS_VERSION, basis=BASIS, status=status, summary=summary,
         inputs=tuple(inputs), limit_states=tuple(states),
-        missing=tuple(missing), notes=tuple(notes), element_tags=tags)
+        missing=tuple(missing), notes=tuple(notes), element_tags=tags, bases=bases)

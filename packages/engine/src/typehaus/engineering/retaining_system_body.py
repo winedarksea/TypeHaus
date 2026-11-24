@@ -112,6 +112,12 @@ class Body:
 
     def thrust_per_ft(self, push: Push, water: Water = DRY) -> float:
         """At-rest earth on the push's face, top to plane, plus its lateral surcharge."""
+        earth, unbalanced_water, snow, lateral = self.thrust_terms(push, water)
+        return earth + unbalanced_water + snow + lateral
+
+    def thrust_terms(self, push: Push, water: Water = DRY
+                     ) -> tuple[float, float, float, float]:
+        """``(earth, unbalanced water, snow, lateral surcharge)`` plf: the terms of the thrust."""
         k0 = push.efp / self.soil_pcf
         sub = SATURATED_PCF_FOR_THRUST - WATER_PCF
         depth = push.top_ft - self.plane_ft
@@ -122,7 +128,7 @@ class Body:
         earth += k0 * (self.soil_pcf * dry * hw + 0.5 * sub * hw * hw)
         unbalanced_water = 0.0 if water.both_sides else 0.5 * WATER_PCF * hw * hw
         snow = k0 * water.snow_psf * depth
-        return earth + unbalanced_water + snow + push.lateral_plf
+        return earth, unbalanced_water, snow, push.lateral_plf
 
     def resultant_vector(self, water: Water = DRY) -> tuple[float, float]:
         rx = sum(self.thrust_per_ft(p, water) * p.width_ft * p.direction[0] for p in self.pushes)

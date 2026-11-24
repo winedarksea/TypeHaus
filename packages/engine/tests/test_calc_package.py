@@ -449,6 +449,10 @@ WORKED_KINDS = (
     "deck_tie",
     "deck_post",
     "column_support",
+    "retaining_system",
+    "retaining_wall",
+    "thermal_break_transfer",
+    "base_rotation",
 )
 
 

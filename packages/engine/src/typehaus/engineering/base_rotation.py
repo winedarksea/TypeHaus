@@ -35,6 +35,7 @@ from __future__ import annotations
 import math
 from dataclasses import dataclass
 
+from typehaus.engineering import base_rotation_working as W
 from typehaus.engineering import base_spring as spring
 from typehaus.engineering.base_supports import PoleBase, WallBase, measured
 from typehaus.engineering.item import (
@@ -43,6 +44,7 @@ from typehaus.engineering.item import (
     Oracle,
     Quantity,
     Status,
+    declare_sheet,
     item_id,
 )
 from typehaus.engineering.pier_basis import _Pier, cast_piers
@@ -66,6 +68,8 @@ BASIS_VERSION = "3"
 MOMENT_RATIO_LIMIT = 1.4
 
 oracled_by(KIND, Oracle(note="column_base_rotation.md", test="tests/test_base_rotation_calcs.py"))
+
+declare_sheet(KIND, not_covered=W.NOT_COVERED, labels=W.LABELS, figure=W.figure)
 
 
 def _pole_tags(ctx: EngineeringContext) -> list[str]:
@@ -110,6 +114,8 @@ class _Case:
     pu_lb: float
     mu_lb_ft: float
     phi_mn_lb_ft: float
+    #: The combination's own letters and factors (``deck_post._Combination.factors``).
+    factors: tuple[tuple[str, float], ...] = ()
 
 
 @dataclass(frozen=True)
@@ -123,6 +129,12 @@ class _Column:
     phi_mn_lb_ft: float
     pc_rigid_lb: float
     cases: tuple[_Case, ...] = ()
+    #: The pieces of ``ei_lb_in2`` (``f'c`` psi, round diameter in, ``beta_dns``) and the
+    #: ``k`` of ``pc_rigid_lb``, for the sheet's working.
+    fc_psi: float = 0.0
+    diameter_in: float = 0.0
+    beta_dns: float = 0.0
+    k_rigid: float = 0.0
 
     @classmethod
     def of(cls, pier: _Pier) -> _Column | None:
@@ -134,20 +146,22 @@ class _Column:
         # Verbatim `deck_post._sway_magnifier`'s EI and P_c, so R -> inf returns its delta.
         modulus = 57_000.0 * math.sqrt(dp._fc_psi(pier))
         inertia = math.pi * pier.diameter_in ** 4 / 64.0
-        ei = 0.4 * modulus * inertia / (1.0 + 1.2 * pier.dead_lb / pier.factored_lb)
+        beta = 1.2 * pier.dead_lb / pier.factored_lb
+        ei = 0.4 * modulus * inertia / (1.0 + beta)
         effective = dp.CANTILEVER_EFFECTIVE_LENGTH_FACTOR * pier.height_in
         wind_mu = pier.wind_base_moment_lb_ft * dp.STRENGTH_FROM_ASD_WIND
         guard_mu = pier.guard_base_moment_lb_ft * dp.GUARD_LOAD_FACTOR
         cover = dp._cover_in(pier)
         cases = tuple(_Case(c.label, c.axial_lb, c.moment_lb_ft,
-                            dp._pm_point(pier, cage, cover, c.axial_lb)[0])
+                            dp._pm_point(pier, cage, cover, c.axial_lb)[0], c.factors)
                       for c in dp._combinations(pier, wind_mu, guard_mu) if c.moment_lb_ft > 0.0)
         first = max(cases, key=lambda c: c.mu_lb_ft / c.phi_mn_lb_ft, default=None)
         mu = first.mu_lb_ft if first else max(wind_mu, guard_mu)
         phi_mn = first.phi_mn_lb_ft if first else dp._pm_point(
             pier, cage, cover, pier.factored_lb)[0]
         return cls(pier.height_in, ei, pier.factored_lb, mu, phi_mn,
-                   math.pi ** 2 * ei / effective ** 2, cases)
+                   math.pi ** 2 * ei / effective ** 2, cases, dp._fc_psi(pier),
+                   pier.diameter_in, beta, dp.CANTILEVER_EFFECTIVE_LENGTH_FACTOR)
 
 
 @dataclass(frozen=True)
@@ -160,6 +174,9 @@ class _Point:
     pc_flex_lb: float
     k_exact: float
     delta: float | None
+    #: The two forms ``pc_flex_lb`` is the lesser of (series, exact spring root).
+    pc_series_lb: float = 0.0
+    pc_exact_lb: float = 0.0
 
     @classmethod
     def at(cls, label: str, column: _Column, k_theta: float) -> _Point:
@@ -168,15 +185,19 @@ class _Point:
         pc_exact = math.pi ** 2 * column.ei_lb_in2 / (k_exact * column.length_in) ** 2
         # The plan's series form is graded; it is the smaller of the two by construction,
         # and `min` keeps that true if either formula is ever changed.
-        pc = min(column.pc_rigid_lb * spring.series_ratio(r), pc_exact)
-        return cls(label, k_theta, r, pc, k_exact, spring.magnifier(column.pu_lb, pc))
+        series = column.pc_rigid_lb * spring.series_ratio(r)
+        pc = min(series, pc_exact)
+        return cls(label, k_theta, r, pc, k_exact, spring.magnifier(column.pu_lb, pc),
+                   series, pc_exact)
 
     def states(self, column: _Column) -> tuple[LimitState, ...]:
         where = f"at {self.label}, R = k_θL/EI {self.r:.3f}"
+        sway = W.sway_steps(column, self)
         states = [LimitState(
             "sway stability, flexible base", column.pu_lb, 0.75 * self.pc_flex_lb, "lb",
             f"ACI 318-19 §6.6.4.5.2: Pu < 0.75 Pc, Pc = {column.pc_rigid_lb:,.0f} lb at "
-            f"deck_post's k 2.1 x 1/(1 + 3/R) {where}")]
+            f"deck_post's k 2.1 x 1/(1 + 3/R) {where}",
+            combination=W.AXIAL[0], combination_factors=W.AXIAL[1], working=sway)]
         if self.delta is not None:
             worst = max(column.cases, key=lambda c: self._ratio(c), default=None)
             states += [
@@ -185,7 +206,9 @@ class _Point:
                 LimitState("second-order increment", self.delta - 1.0,
                            MOMENT_RATIO_LIMIT - 1.0, "",
                            f"ACI 318-19 §6.2.5.3 — Mu with second-order effects at most "
-                           f"{MOMENT_RATIO_LIMIT} Mu first-order; delta {self.delta:.3f} {where}"),
+                           f"{MOMENT_RATIO_LIMIT} Mu first-order; delta {self.delta:.3f} {where}",
+                           combination=W.AXIAL[0], combination_factors=W.AXIAL[1],
+                           working=W.increment_steps(column, self, MOMENT_RATIO_LIMIT)),
             ]
             if worst is not None:
                 delta = spring.magnifier(worst.pu_lb, self.pc_flex_lb)
@@ -196,7 +219,9 @@ class _Point:
                     f"deck_post grades, each against its own phi*Mn, the worst reported: "
                     f"{worst.label} at Pu {worst.pu_lb:,.0f} lb, Mu {worst.mu_lb_ft:,.0f} "
                     f"lb-ft, phi*Mn {worst.phi_mn_lb_ft:,.0f} lb-ft {where}",
-                    combination=f"ASCE 7-16 §2.3.1 {worst.label}"))
+                    combination=f"{worst.label} (ASCE 7-16 §2.3.1)",
+                    combination_factors=worst.factors,
+                    working=W.magnified_steps(worst, self, delta)))
         return tuple(states)
 
     def _ratio(self, case: _Case) -> float:
@@ -324,7 +349,8 @@ def _record(ctx: EngineeringContext, pier: _Pier, base) -> EngineeringRecord:  #
         *base.inputs(),
     )
     common = dict(item_id=ident, kind=KIND, key=pier.tag, basis_version=BASIS_VERSION,
-                  basis=BASIS, inputs=inputs, element_tags=base.tags)
+                  basis=BASIS, inputs=inputs, element_tags=base.tags,
+                  not_covered=W.base_not_covered(base))
     if not (all(verdicts) or not any(verdicts)):
         stiff, soft = points[0][1], points[-1][1]
         return EngineeringRecord(

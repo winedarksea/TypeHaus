@@ -508,14 +508,15 @@ def test_no_boilerplate_line_is_printed_twice(catlin_ctx):
 
 
 def test_the_package_stays_inside_its_page_budget(catlin_ctx):
-    """** THE CEILING: 150 PAGES WITHOUT THE APPENDIX, 220 WITH IT. **
+    """** THE CEILING: 200 PAGES WITHOUT THE APPENDIX, 260 WITH IT. **
 
     The 2026-09-18 package was 307 pages (C-4 D-4 R-4 O-2 A-22 SR-1 S-79 **X-192**), and 55
     per-member appendix sheets were 63% of it. Measured on 2026-09-22 after the restructure:
     89 pages default (X-1, one divider), 121 with ``--appendix`` (X-33, one per-family table
     per design family). The ceiling is generous against those, because other work adds
     engineered items — it is here to catch a return to a sheet per member, not to pin a
-    count.
+    count. 2026-11-23: 167 / 200 once every family shows its working step by step (review
+    E-02), printed once per template; the ceiling rose with it.
     """
     from typehaus.checks import evaluate_permit_checklist, run_checks
     from typehaus.takeoff.calc_package import PackageInputs, calc_package
@@ -529,8 +530,8 @@ def test_the_package_stays_inside_its_page_budget(catlin_ctx):
         generated="2026-09-22", engine_version="test", content_hash="deadbeef",
         profile_name=catlin_ctx.profile.name,
         checklist=evaluate_permit_checklist(report, catlin_ctx.profile)))
-    assert len(paginate(files)) <= 150
-    assert len(paginate(files, include_appendix=True)) <= 220
+    assert len(paginate(files)) <= 200
+    assert len(paginate(files, include_appendix=True)) <= 260
 
 
 def test_the_cli_offers_the_appendix_flag_on_both_deliverables():

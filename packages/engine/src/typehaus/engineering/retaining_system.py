@@ -28,15 +28,18 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from typehaus.engineering import owner_bases, retaining_sheet
 from typehaus.engineering import retaining_system_cases as cases
 from typehaus.engineering import retaining_system_rows as rows
 from typehaus.engineering import retaining_system_staged as staged
+from typehaus.engineering import retaining_system_working as W
 from typehaus.engineering.item import (
     EngineeringRecord,
     LimitState,
     Oracle,
     Quantity,
     Status,
+    declare_sheet,
     item_id,
 )
 from typehaus.engineering.registry import (
@@ -50,11 +53,13 @@ from typehaus.engineering.retaining_basis import (
     REQUIRED_FS,
     _base_interface,
     _geometry,
-    _structure_thickness_in,
     analyse,
 )
 from typehaus.engineering.retaining_system_fallback import fallback_states
-from typehaus.engineering.retaining_system_loop import _cycle_components
+from typehaus.engineering.retaining_system_loop import (
+    _foundation_walls,
+    _verify,
+)
 from typehaus.engineering.soil import (
     SOIL_UNIT_WEIGHT_BAND_PCF,
     presumptive,
@@ -64,6 +69,7 @@ from typehaus.engineering.soil import (
 from typehaus.engineering.tier_surcharge import court_surcharges
 
 KIND = "retaining_system"
+declare_sheet(KIND, **retaining_sheet.SYSTEM_SHEET)
 
 #: Bumped whenever the arithmetic moves; it rides in the fingerprint. "2" derived strut
 #: reaction (2026-09-14); "3" apron surcharge (2026-09-20); "4" one body, the case set, plan
@@ -112,12 +118,6 @@ class _Member:
         return max(0.0, self.demand_lb - self.capacity_lb)
 
 
-def _foundation_walls(ctx: EngineeringContext) -> list:
-    from typehaus.model.structure import FoundationWall
-
-    return [w for w in ctx.plan.all_elements() if isinstance(w, FoundationWall)]
-
-
 def _loops(ctx: EngineeringContext) -> dict[str, list]:
     """Groups of walls that name the same ``base_restraint_ref``, keyed by that ref.
 
@@ -133,61 +133,6 @@ def _loops(ctx: EngineeringContext) -> dict[str, list]:
         if ref and getattr(wall, "lateral_support", None) == "base":
             groups.setdefault(ref, []).append(wall)
     return {ref: sorted(walls, key=lambda w: w.tag) for ref, walls in groups.items()}
-
-
-def _cast_beams(ctx: EngineeringContext) -> list:
-    from typehaus.resolve.assembly_material import is_cast_beam
-
-    return [e for e in ctx.plan.all_elements() if is_cast_beam(ctx.plan, e)]
-
-
-def _verify(ctx: EngineeringContext, ref: str, members: list) -> list[str]:
-    """The conditions that have to hold for the restraint to be real. Names what does not.
-
-    Every one of these is **derived from the model rather than asserted by the author**,
-    which is the difference between a restraint and a free pass. Authoring
-    ``base_restraint_ref`` states an intention; this function goes and checks it.
-    """
-    from typehaus.model.enums import LayerFunction
-    from typehaus.model.structure import FoundationWall
-    from typehaus.resolve.assembly_material import is_cast_beam
-
-    missing: list[str] = []
-    cross = ctx.plan.by_tag(ref)
-    if not (isinstance(cross, FoundationWall) or is_cast_beam(ctx.plan, cross)):
-        return [f"a FoundationWall or concrete Beam tagged {ref} — {len(members)} wall(s) name "
-                f"it as the element restraining their base and the model has no such member"]
-
-    edges = [(w.tag, w.start_node, w.end_node) for w in [*_foundation_walls(ctx),
-                                                          *_cast_beams(ctx)]
-             if w.start_node and w.end_node and w.start_node != w.end_node]
-    components = _cycle_components(edges)
-
-    if ref not in components:
-        return [f"a closed structural loop through {ref} — it lies on no cycle of walls, so "
-                f"it is a bridge and restrains nothing. An open U does not restrain its own "
-                f"ends"]
-    loop = components[ref]
-    for member in members:
-        if components.get(member.tag) != loop:
-            missing.append(
-                f"a closed structural loop through {ref} — {member.tag}'s base is not "
-                f"restrained by it, because the two lie on no common cycle")
-
-    # Continuity: a loop of cast concrete, or it is a diagram rather than a load path.
-    for wall in [cross, *members]:
-        if _structure_thickness_in(ctx, wall.assembly) is None:
-            missing.append(f"a concrete STRUCTURE layer on {wall.tag} (assembly "
-                           f"{wall.assembly}) — the loop has to be cast, not framed")
-            continue
-        assembly = ctx.plan.library.resolve_assembly(wall.assembly)
-        if assembly is not None and not any(
-                layer.function is LayerFunction.STRUCTURE
-                and "concrete" in (layer.material_ref or "")
-                for layer in assembly.layers):
-            missing.append(f"a cast-concrete STRUCTURE layer on {wall.tag} — its structure "
-                           f"layer is not concrete, so the corners cannot be cast continuous")
-    return missing
 
 
 def _members(ctx: EngineeringContext, walls: list, *, soil, soil_pcf: float
@@ -419,7 +364,9 @@ def _one(ctx: EngineeringContext, ref: str, members: list) -> EngineeringRecord:
             f"IRC R404.4 — the completed body at every stage the rule allows (grid of "
             f"twelfths of H per side, earth only, {low:.0f} pcf, spliced walls empty): worst "
             f"FS {worst:.2f}; one side empty and two full {empty:.2f}; the loop alone without "
-            f"the spliced walls' concrete {loop_only:.2f}"), is_safety_factor=True))
+            f"the spliced walls' concrete {loop_only:.2f}"), is_safety_factor=True,
+        combination=W.SERVICE_BACKFILL[0], combination_factors=W.SERVICE_BACKFILL[1],
+        working=W.staged_steps(body, worst, empty, loop_only, staged.RULE)))
 
     soil_state, soil_how = cases.design_friction(ctx, soil)[2:]
     if soil_state == "specified":
@@ -458,9 +405,8 @@ def _one(ctx: EngineeringContext, ref: str, members: list) -> EngineeringRecord:
         f"(more heel soil, more friction) and that record reads it; this one reads 110.",
         soil_provenance_note(soil),
         f"SOIL BASIS — {soil_how}. " + {
-            "specified": "DESIGN CLOSED ON SPECIFIED SOIL PARAMETERS; NOT YET CONFIRMED by "
-                         "the site report (structural.soil_parameters_confirmed). The "
-                         "fallback rows pre-check the printed lean wall on the presumptions.",
+            "specified": "Stated basis, section 6; the fallback rows pre-check the printed "
+                         "lean wall on the presumptions.",
             "confirmed": "Soil parameters CONFIRMED by the site report.",
             "presumptive": "No site report and no specified parameters."}[soil_state],
         "CORNERS: the footings' longitudinal bars are spliced through both joints of each "
@@ -472,6 +418,9 @@ def _one(ctx: EngineeringContext, ref: str, members: list) -> EngineeringRecord:
         "prints.",
     ) + graded.notes + _surcharge_notes(ctx, built, low)
 
+    soil_basis = cases.soil_stated_basis(ctx, soil)
+    bases = (*((soil_basis,) if soil_basis else ()), *graded.bases,
+             owner_bases.BACKFILL_CONDITIONS)
     governing = max(states, key=lambda state: state.ratio)
     over = [s for s in states if not s.ok]
     open_rows = [s for s in over if s.name in {name for name, _ in pending}]
@@ -481,7 +430,7 @@ def _one(ctx: EngineeringContext, ref: str, members: list) -> EngineeringRecord:
                         + "; ".join(f"{s.name} {s.capacity:.2f}" if s.is_safety_factor
                                     else f"{s.name} d/c {s.ratio:.2f}" for s in open_rows)),
             [*missing, *(text for _, text in pending)], inputs=inputs,
-            limit_states=tuple(states), notes=notes)
+            limit_states=tuple(states), notes=notes, bases=bases)
     return EngineeringRecord(
         item_id=item_id(KIND, ref), kind=KIND, key=ref,
         basis_version=BASIS_VERSION, basis=BASIS,
@@ -491,7 +440,7 @@ def _one(ctx: EngineeringContext, ref: str, members: list) -> EngineeringRecord:
                  f"{capacity / demand:.2f} against the 1.50 IRC R404.4 requires "
                  f"({governing.name} governs)"),
         inputs=inputs, limit_states=tuple(states), missing=tuple(missing), notes=notes,
-        element_tags=tags)
+        element_tags=tags, bases=bases)
 
 
 def graded_friction(ctx: EngineeringContext, members: list) -> float:

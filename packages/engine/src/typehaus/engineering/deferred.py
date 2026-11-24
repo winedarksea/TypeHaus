@@ -45,9 +45,12 @@ class Deferral:
     #: The permit-set line the deliverable unblocks.
     unblocks: str
     oracle: tuple[Oracle, ...] = field(default_factory=tuple)
+    #: The code sections the deferral rests on, printed as the sheet's references.
+    citations: tuple[str, ...] = ()
 
     def record(self, key: str) -> EngineeringRecord:
-        return no_calc(self.kind, key, reason=self.reason, oracle=self.oracle)
+        return no_calc(self.kind, key, reason=self.reason, oracle=self.oracle,
+                       basis="; ".join(self.citations))
 
 
 DEFERRALS: dict[str, Deferral] = {}
@@ -184,6 +187,8 @@ _declare(Deferral(
                 "building official under IRC R104.11 to accept the 2024 row, made before the "
                 "application",
     unblocks="the veneer anchorage detail and the wall section through the wythe",
+    citations=("IRC R703.8.4", "IRC Table R703.8.4(1)", "IRC R104.11",
+               "TMS 402-22 Table 6 (veneer tie types, as BIA TN 3C prints it)"),
     oracle=(Oracle(note="sunken_garden_veneer_beam.md", section="§6k, §6l",
                    test="tests/test_veneer_cavity.py"),),
 ))
