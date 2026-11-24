@@ -467,8 +467,9 @@ def test_open_corner_knees_bear_on_real_wood_for_either_support_face(low, high) 
 
 
 def test_corner_band_grades_as_an_interpolated_open_knee() -> None:
-    """Note §3b-§3g: 993.2 lb type-1 pair, the 6x6's Table 4D buckling, both clipped-end
-    bearings, and the compression brace's contact on the centre post."""
+    """Note §3b-§3g: type-1 pair (wet row, 1,042.3 lb, canopy_west_band.md §5d), the 6x6's
+    Table 4D buckling, both clipped-end bearings,
+    and the compression brace's contact on the centre post."""
     from types import SimpleNamespace
 
     from typehaus.engineering.lateral_band_slats import SlatBand, slat_rows
@@ -484,14 +485,17 @@ def test_corner_band_grades_as_an_interpolated_open_knee() -> None:
               band, states, notes, missing, inputs)
     assert not missing
     rows = {s.name.removeprefix(f"{element.tag} "): s for s in states}
-    expected = {"slat end, KBS1Z": (745.6061, 993.2177),
+    # §5d: C-C-2026 p.324 MC > 19%, 1,055 - 220 x 0.868/15 = 1,042.3 (the demand is this test's own
+    # 1,038.35 lb input; §5d's 755.2 is the model's, so the ratio 0.725 is not asserted here).
+    # The plate screws read wet too: Z' x C_M 0.70, 664.099 x 0.70 = 464.87, 648 x 0.70 = 453.6.
+    expected = {"slat end, KBS1Z": (745.6061, 1042.2686),
                 "slat buckling": (745.6061, 24904.1),
                 "clipped end bearing on a post": (23.901, 251.25),
                 "clipped end bearing on a plate": (25.395, 251.25),
                 "centre post bending": (34.07, 1360.0),
                 "centre post end ties": (478.37, 1390.0),
-                "top plate screws into HEADER": (186.4015, 664.099),
-                "sill screws into W's top plate": (129.7938, 648.0)}
+                "top plate screws into HEADER": (186.4015, 464.869),
+                "sill screws into W's top plate": (129.7938, 453.6)}
     for name, (demand, capacity) in expected.items():
         assert rows[name].demand == pytest.approx(demand, rel=1e-3), name
         assert rows[name].capacity == pytest.approx(capacity, rel=1e-3), name

@@ -616,6 +616,24 @@ N-S load on that wall's top, carried to W-G-W/E by the roof, which is what the l
 the canopy's one exposure rule (`canopy_service.DRY_UNDER_ROOFING`) reads them DRY (C_M 1.0), stated on the joint, rotation and
 end-strap rows. At wet service (0.70) the end-strap row, 0.798, would read 1.14.
 
+**12x. The joint nailers and chord plates on V = 1,051.72 lb** (2026-11-23). §11's 261.18 / 216.45 / 87.96 stand on the 5.5" post face;
+the jacketed posts (§2) move both terms, the N-S share AND the E-W couple. p = 16.6622 psf (§11); post head half
+16.6622 x (7.5/12) x 6.1771 / 2 = 32.164 lb (was 23.585).
+
+```
+E-W   slope 26.667 x 16.6622 = 444.33 lb at y 40.21875;  headers 10.762 x 16.6622 = 179.32 lb at 39.98958;  posts 32.164 at y 37.500 and 42.479
+      V_x = 444.33 + 179.32 + 2 x 32.164 = 687.97 lb       y_V = (17,870.4 + 7,170.9 + 1,206.2 + 1,366.3) / 687.97 = 40.1376
+      e = 43.21875 - 40.1376 = 3.0812'     M = 687.97 x 3.0812 = 2,119.8 lb-ft     (was 670.77 x 3.0774 = 2,064.2)
+      chord force   M / W' = 2,119.8 / 23.46875 = 90.32 lb      (was 88.07)
+      linear couple M x 11.6302 / 423.52 = 58.21 lb;  chord bound  M / 23.2604 = 91.13 lb  (governs, as in §11)
+N-S   V_y = 1,051.72 lb (§12b) over the six LTP4Z on BM-BW-RW:  1,051.72 / 6 = 175.29 lb  (was 172.43)
+joint nailers   175.29 + 91.13 = 266.42 lb   vs 1,079.4 (canopy) / 959.5 (garage)   0.247 / 0.278     (was 261.18)
+west chord plate   90.32 / 2 + 175.29 = 45.16 + 175.29 = 220.45 lb vs LTP4Z 450      0.490           (was 216.41)
+east chord plate   90.32 lb vs 450                                                   0.201           (was 87.96)
+```
+
+The 264.0 of 1,051.72 / 6 + 88.75 keeps §11's couple; the couple term is 91.13, not 88.75.
+
 ## Sources
 
 - ASCE 7-16 §26.2, §29.3, §2.4.1.
