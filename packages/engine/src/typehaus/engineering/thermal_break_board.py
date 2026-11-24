@@ -140,13 +140,19 @@ def movement(board: Board, product: Product, t: Temps, run: float, closure_in: f
                Quantity("foam_modulus", e, "psi", 1.0),
                Quantity("closure", closure_in, "in", 1e-5)]
     est = " ESTIMATED" if product.estimated else ""
+    # Graded at the compliant layer's cap, the modulus cancels (ratio = cap stress / rating) and
+    # no verdict reads an estimated one: the row is reported as a detailing state.
+    capped = product.compliant is not None
+    capped_note = ("DETAILING, no verdict reads it (E cancels: the ratio is the graded stress "
+                   "over the board's rating): " if capped else "")
     states.append(LimitState(
         "board strain, pour + closing", pour + closure_in, board.t_in * product.psi / e, "in",
-        f"locked-in pour {pour_psi or 0:.3f} psi x {board.t_in:.2f}\"/E {pour:.5f}\" + closing "
+        f"{capped_note}locked-in pour {pour_psi or 0:.3f} psi x {board.t_in:.2f}\"/E "
+        f"{pour:.5f}\" + closing "
         f"{closure_in:.5f}\" at the neutral point ({t.max_f:.0f} - {t.set_f:.0f} F specified "
         f"set); vs {board.t_in:.2f}\" x sigma_y/E = {product.psi:.0f}/{e:,.0f}{est} — "
         f"{product.source}; service range: {t.source}",
-        combination=W.THERMAL[0], combination_factors=W.THERMAL[1],
+        combination=W.THERMAL[0], combination_factors=W.THERMAL[1], is_detailing=capped,
         working=W.board_strain(
             pour_psi or 0.0, board.t_in, e, pour, closure_in, pour + closure_in, product.psi,
             board.t_in * product.psi / e, product.estimated,
