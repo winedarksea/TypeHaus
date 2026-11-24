@@ -115,7 +115,8 @@ def test_the_earth_pressure_is_the_bands_average_and_zero_above_the_soil(load):
     wall_plates = [p for p in shells.plates if p.tag == "W-SG-E2"]
     pressures = [by_plate[p.id].pressure_pa / PSF_TO_PA for p in wall_plates]
     # The deepest band cannot exceed the profile's own value at the base of the wall.
-    assert max(pressures) <= inputs["active_efp"] * inputs["retained_height"] + 1e-6
+    efp = inputs.get("at_rest_efp") or inputs["active_efp"]
+    assert max(pressures) <= efp * inputs["retained_height"] + 1e-6
     # And nothing is negative: above the retained soil the profile is zero, never suction.
     assert min(pressures) >= 0.0
 

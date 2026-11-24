@@ -144,7 +144,8 @@ def _mesh_wall(shells: ShellSet, item: str, record: Any, wall: Any, mesh_ft: flo
     length_m = math.hypot(x1 - x0, y1 - y0)
     height_ft = _quantity(record, "stem_height")
     thickness_ft = _quantity(record, "stem_thickness")
-    efp_pcf = _quantity(record, "active_efp")
+    # The pressure the record graded: at rest on a restrained court wall, else active.
+    efp_pcf = _quantity(record, "at_rest_efp") or _quantity(record, "active_efp")
     retained_ft = _quantity(record, "retained_height")
     if not (height_ft and thickness_ft and efp_pcf and length_m > 0.0):
         shells.gaps.append(
