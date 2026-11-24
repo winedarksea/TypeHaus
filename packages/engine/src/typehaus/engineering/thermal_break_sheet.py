@@ -63,6 +63,11 @@ NOT_COVERED = (
                "sequence the model states and cannot enforce",
                "the contractor at excavation",
                "the placement annotation carried to site, and a schedule hold"),
+    NotCovered("concrete temperature when the boards are fitted",
+               "the joint's closure counts from a specified floor of 50 F, a field condition "
+               "the model cannot enforce; a 35 F fit still closes 0.112 in against 0.125 in",
+               "the contractor at the pour", "the fit-temperature checkpoint on the walls "
+               "visit: concrete measured at or above 50 F before any board is set"),
     NotCovered("the house's own soil",
                "the house's lateral path and far-wall rows read IBC Table 1806.2 "
                "presumptions for a presumed soil class",
