@@ -19,6 +19,8 @@ WSFU_BY_SYMBOL: dict[str, tuple[float, float, float]] = {
     "lavatory-wall-hung": (1.0, 0.75, 0.75),
     "drawer-vanity": (1.0, 0.75, 0.75),
     "drawer-vanity-indy": (1.0, 0.75, 0.75),
+    "havback-vanity": (1.0, 0.75, 0.75),
+    "havback-vanity-indy": (1.0, 0.75, 0.75),
     "sektion-vanity-indy": (1.0, 0.75, 0.75),
     "sunnersta-sink": (1.0, 0.75, 0.75),
     "door-drawer-vanity": (1.0, 0.75, 0.75),

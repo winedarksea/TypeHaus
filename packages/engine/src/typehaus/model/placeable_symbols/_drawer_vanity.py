@@ -9,6 +9,7 @@ from typehaus.model.placeable_symbols._frame import box
 from typehaus.model.placeable_symbols._lav_waste import lav_waste
 from typehaus.model.placeable_symbols._sektion_fronts import axstad_front, bagganas_pull, round_bar
 from typehaus.model.placeable_symbols._solid_surface_vanity import deck_height, solid_surface_vanity
+from typehaus.quantities import M_PER_IN
 
 REVEAL_IN = 0.125
 WALL_IN = 0.75
@@ -164,7 +165,7 @@ def drawer_vanity(
             high = wall + (index + 1) * drawer_pitch - reveal / 2
             body.append(box(0, front_face + front_thickness / 2, low, high,
                             drawer_width, front_thickness, case_color))
-            body.extend(bagganas_pull(0, front_face, (low + high) / 2))
+            body.extend(bagganas_pull(0, front_face, (low + high) / 2, scale / M_PER_IN))
     else:
         for index in range(2):
             low = index * cabinet_top / 2 + reveal

@@ -144,6 +144,9 @@ def test_parts_stay_inside_the_declared_box_and_name_a_real_colour(
     # is explicit; all other symbols continue to promise a finished-product envelope.
     projection = 2 * 0.0254 if symbol.startswith("sektion-axstad-kitchen-") else 0.0
     side_projection = projection if symbol.endswith("corner-wall") else 0.0
+    if symbol.startswith("havback-vanity"):
+        # A 1 1/4" BAGGANÄS pull on a case set 3/4" behind the 21 3/4" top's front edge.
+        projection = depth * 0.5 / 21.75
     base_projection = 0.0
     if symbol in {"insinkerator-badger-5", "badger-5-with-dearborn-p9703wbg"}:
         # Catalog footprint is the motor body; the supplied discharge elbow projects west.
