@@ -1058,6 +1058,9 @@
 "canvas_objects/ED-M-STAIR-LT/body_z0_m": 2.1336,
 "canvas_objects/ED-M-STAIR-LT/body_z1_m": 2.2606,
 "canvas_objects/ED-M-STAIR-LT/z_m": 2.1336,
+"canvas_objects/ED-M-STAIR-NIGHT-LT/body_z0_m": 0.94045,
+"canvas_objects/ED-M-STAIR-NIGHT-LT/body_z1_m": 1.06745,
+"canvas_objects/ED-M-STAIR-NIGHT-LT/z_m": 0.94045,
 "canvas_objects/ED-M-STAIR-RC1/body_z0_m": 1.88533,
 "canvas_objects/ED-M-STAIR-RC1/body_z1_m": 1.951624,
 "canvas_objects/ED-M-STAIR-RC1/z_m": 1.88533,
@@ -1067,6 +1070,9 @@
 "canvas_objects/ED-M-STAIR-SW2/body_z0_m": 1.19445,
 "canvas_objects/ED-M-STAIR-SW2/body_z1_m": 1.260744,
 "canvas_objects/ED-M-STAIR-SW2/z_m": 1.19445,
+"canvas_objects/ED-M-STAIR-SW3/body_z0_m": 1.19445,
+"canvas_objects/ED-M-STAIR-SW3/body_z1_m": 1.260744,
+"canvas_objects/ED-M-STAIR-SW3/z_m": 1.19445,
 "canvas_objects/ED-M-STORAGE-CAN1/body_z0_m": 2.7305,
 "canvas_objects/ED-M-STORAGE-CAN1/body_z1_m": 2.8829,
 "canvas_objects/ED-M-STORAGE-CAN1/z_m": 2.7305,
@@ -1103,9 +1109,6 @@
 "canvas_objects/ED-M-STUDY-SW/body_z0_m": 1.24525,
 "canvas_objects/ED-M-STUDY-SW/body_z1_m": 1.311544,
 "canvas_objects/ED-M-STUDY-SW/z_m": 1.24525,
-"canvas_objects/ED-M-STUDY-SW2/body_z0_m": 1.24525,
-"canvas_objects/ED-M-STUDY-SW2/body_z1_m": 1.311544,
-"canvas_objects/ED-M-STUDY-SW2/z_m": 1.24525,
 "canvas_objects/ED-S-BALCONY-LT/body_z0_m": 5.1816,
 "canvas_objects/ED-S-BALCONY-LT/body_z1_m": 5.3086,
 "canvas_objects/ED-S-BALCONY-LT/z_m": 5.1816,
@@ -3243,6 +3246,8 @@
 "device_boxes/DCP5ZCJVTK-box/z1_m": 1.173622,
 "device_boxes/DD20R7F44T-box/z0_m": 7.27202,
 "device_boxes/DD20R7F44T-box/z1_m": 7.36727,
+"device_boxes/DG8X1HEEXR-box/z0_m": 0.956325,
+"device_boxes/DG8X1HEEXR-box/z1_m": 1.051575,
 "device_boxes/DR238RC001-box/z0_m": 1.4465512,
 "device_boxes/DR238RC001-box/z1_m": 1.5418012,
 "device_boxes/DS30ANGPH9-box/z0_m": 1.230772,
@@ -39862,11 +39867,23 @@
 8,
 "9a6ab84a606e"
 ],
-"geometry/CMW106AAAA::framing/member:backing-0-000": [
+"geometry/CMW106AAAA::framing/member:backing-0-000-box-0": [
 0.9144,
 1.09855,
 8,
 "4fd13c0876b1"
+],
+"geometry/CMW106AAAA::framing/member:backing-0-000-box-1": [
+0.9144,
+0.95315,
+8,
+"c50c406b78e9"
+],
+"geometry/CMW106AAAA::framing/member:backing-0-000-box-2": [
+1.05475,
+1.09855,
+8,
+"2565682b930e"
 ],
 "geometry/CMW106AAAA::framing/member:backing-0-001": [
 0.9144,
@@ -67461,6 +67478,18 @@
 7.381621,
 2,
 "38271c4745b6"
+],
+"geometry/DG8X1HEEXR-box-support/body": [
+0.956325,
+1.051575,
+10,
+"239753b470aa"
+],
+"geometry/DG8X1HEEXR-box/body": [
+0.956325,
+1.051575,
+18,
+"ea6c6c301ac3"
 ],
 "geometry/DHPT0K1FB2-00/body": [
 -0.3429,
@@ -101762,11 +101791,23 @@
 2,
 "25a72fdd3139"
 ],
-"member/CMW106AAAA/backing-0-000": [
+"member/CMW106AAAA/backing-0-000-box-0": [
 0.9144,
 1.09855,
 2,
 "202400146f44"
+],
+"member/CMW106AAAA/backing-0-000-box-1": [
+0.9144,
+0.95315,
+2,
+"2021ed175ae0"
+],
+"member/CMW106AAAA/backing-0-000-box-2": [
+1.05475,
+1.09855,
+2,
+"13ddc5392a9c"
 ],
 "member/CMW106AAAA/backing-0-001": [
 0.9144,
@@ -129335,6 +129376,10 @@
 "solids/ED-M-PORCH-SW-BOX/z1_m": 1.275222,
 "solids/ED-M-PORCH-SW-PLATE/z0_m": 1.165621,
 "solids/ED-M-PORCH-SW-PLATE/z1_m": 1.289573,
+"solids/ED-M-STAIR-NIGHT-LT-BOX-SUPPORT/z0_m": 0.956325,
+"solids/ED-M-STAIR-NIGHT-LT-BOX-SUPPORT/z1_m": 1.051575,
+"solids/ED-M-STAIR-NIGHT-LT-BOX/z0_m": 0.956325,
+"solids/ED-M-STAIR-NIGHT-LT-BOX/z1_m": 1.051575,
 "solids/ED-M-STAIR-RC1-BOX-SUPPORT/z0_m": 1.870852,
 "solids/ED-M-STAIR-RC1-BOX-SUPPORT/z1_m": 1.966102,
 "solids/ED-M-STAIR-RC1-BOX/z0_m": 1.870852,
