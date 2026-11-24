@@ -246,7 +246,7 @@ def _sheet() -> None:
     from typehaus.engineering.owner_bases import CURTAINS, DECK_SNOW, OVERHANGS
 
     declare_sheet(KIND, not_covered=W.NOT_COVERED, bases=(DECK_SNOW, CURTAINS, OVERHANGS),
-                  figure=W.figure)
+                  labels=W.LABELS, figure=W.figure)
 
 
 _sheet()
@@ -432,8 +432,8 @@ def _one(ctx: EngineeringContext, tag: str, beam: Any, deck: Any) -> Engineering
         f"table read. The supplier's deck-guide row that covers this beam is published "
         f"DRY-USE (AWC NDS 2018 Table 5.3.1 C_M: {WET_FB:.2f} on Fb, {WET_FV:.3f} on Fv, "
         f"{WET_FC_PERP:.2f} on Fc-perp, {WET_E:.3f} on E), and this beam stands in weather "
-        f"with no enclosure above it. `structural.deck_beam_span` refuses the row on "
-        f"`PublishedSpan.service_condition` and this record carries the verdict.",
+        f"with no enclosure above it. the deck-beam span check refuses the "
+        f"published row for a wet-service condition and this record carries the verdict.",
         f"THE SEAT is the authored one, {seat_in:g}\" ({seat_where}), not R507.6's 3\" minimum "
         f"that this record used to divide by: C_b {c_b:.3f} (NDS §3.10.4, a bearing under 6\" "
         f"at least 3\" in from the end — here {end_in:.2f}\" — and a flat plate, so the whole "
@@ -455,13 +455,13 @@ def _one(ctx: EngineeringContext, tag: str, beam: Any, deck: Any) -> Engineering
         f"Reactions at the two columns (south, north): dead {dead_r[0]:,.0f} / "
         f"{dead_r[1]:,.0f} lb, live {live_r[0]:,.0f} / {live_r[1]:,.0f} lb, planter "
         f"{planter_r[0]:,.0f} / {planter_r[1]:,.0f} lb. The columns are loaded with THESE "
-        f"(`balcony_loads.column_statics`), not an equal split.",
-        (f"PLANTER: {allowance.describe()} (preferences.toml [structural] balcony_planter). "
+        f"(the beam statics, patterned live load), not an equal split.",
+        (f"PLANTER: {allowance.describe()} (the house's stated planter allowance). "
          f"It bears on a support directly on this beam, so none of it enters the plank or "
          f"the joists; it is dead load, cased with a planter over neither beam, one or both "
-         f"(this record is the planted case; `engineering/balcony_loads.py`)."
+         f"(this record is the planted case)."
          if allowance else
-         "PLANTER: none authored (preferences.toml [structural] balcony_planter)."),
+         "PLANTER: none stated (the house's planter allowance is absent)."),
         f"SERVICEABILITY: dead load with creep (NDS §3.5.2 K_cr bounded at "
         f"{CREEP_FACTOR_BOUND:g}) is {creep_in:.3f}\" on the back span, "
         f"{creep_in / (span_ft * 12.0) * 100.0:.2f}% of it; live-load deflection is graded above.",

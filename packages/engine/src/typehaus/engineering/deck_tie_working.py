@@ -58,6 +58,43 @@ def _sum(values: list[float]) -> str:
     return " + ".join(num(v) for v in values) or "0"
 
 
+def panel_share_steps(load: Load) -> tuple[Step, ...]:
+    """A roof's shear-panel share at the 100% delivered envelope, built up from the roof's
+    wind: 0.6 q_h G C_f over its solid area, plus half the drag of each pinned post. Empty
+    where the load is not that envelope (the frame split is on the roof sheets)."""
+    from typehaus.engineering.roof_lateral import wind_of
+    from typehaus.wind_tables import GUST_EFFECT_RIGID, MAX_VERIFIED_CASE_AB
+
+    tag, _, roof = load.label.partition(" panel share of ")
+    wind = wind_of(roof) if roof else None
+    axis = "y" if load.fy else "x"
+    force = load.fy or load.fx
+    if wind is None or abs(wind.delivered_lb(axis) - force) > 1e-6 or not wind.top_area_sf:
+        return ()
+    area = wind.top_area_sf[axis]
+    pin_terms = " + ".join(f"{num(wind.pressure_psf)} x {num(p.width_ft)} x "
+                           f"{num(p.length_ft)} / 2" for p in wind.pinned) or "0"
+    return (
+        Step("q_h", f"velocity pressure at the top of {roof}", wind.q_h_psf, "psf",
+             source=f"{wind.basis_text}, height {num(wind.height_ft)} ft above ground"),
+        Step("p", "ASD wind pressure on a solid band", wind.pressure_psf, "psf",
+             "0.6 q_h G C_f", f"0.6 x {num(wind.q_h_psf)} x {num(GUST_EFFECT_RIGID)} x "
+             f"{num(MAX_VERIFIED_CASE_AB)}", "gust factor G 0.85, force coefficient C_f 1.80 "
+             "(the Case A/B bound)"),
+        Step("A_s", f"solid area {roof} presents along axis {axis}: its roof projection and "
+             "the header members", area, "ft^2", source="the roof's slope band or gable "
+             "triangle, plus each bearing member's own depth x length"),
+        Step("F_roof", f"wind on {roof} at deck level along {axis}", wind.top_shear[axis],
+             "lb", "p A_s", f"{num(wind.pressure_psf)} x {num(area)}"),
+        Step("F_post", "half the drag of each pinned post under the roof beams, returned "
+             "to the deck level", force - wind.top_shear[axis], "lb",
+             "sum(p w h / 2)", pin_terms),
+        Step("F_share", f"{tag}'s share of {roof}: the whole deck-level shear, 100%, since "
+             "the roof delivers to a neighbour and no stiffness split is judged across the "
+             "joint", force, "lb", "F_roof + F_post",
+             f"{num(wind.top_shear[axis])} + {num(force - wind.top_shear[axis])}"))
+
+
 def interaction_steps(g: Governing) -> tuple[Step, ...]:
     d, i = g.dist, g.index
     s = num(g.sign)
@@ -72,7 +109,9 @@ def interaction_steps(g: Governing) -> tuple[Step, ...]:
                     zip(g.joints, d.k_y, strict=True) if k]
     j = g.joints[i]
     a, b = d.k_x[i], d.k_y[i]
+    shares = tuple(step for load in g.loads for step in panel_share_steps(load))
     steps = [
+        *shares,
         Step("F_x", "total force on the tie line along plan x, all loads in this case",
              d.fx, "lb", "s sum(F_x,k)", f"{s} x ({_sum([ld.fx for ld in g.loads])})",
              "s = +1, or -1 for the reverse sense, whichever is worse"),

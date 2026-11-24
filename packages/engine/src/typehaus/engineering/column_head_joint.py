@@ -55,7 +55,7 @@ from typehaus.engineering.registry import EngineeringContext, calc, keys, oracle
 
 KIND = "column_head_joint"
 BASIS = ("ACI 318-19 §22.5, §22.7.4, §22.8.3, Table R6.2.5; the head connector's published "
-         "allowables (Post.head_connector)")
+         "allowables (the head connector's catalog row)")
 #: 1: the kind as introduced, 2026-09-20. 2: the connector's own combined-load rule is a
 #: graded row where its document states one (FL11473 §9 item 4), 2026-09-21. 3: 2026-11-23
 #: (review B-06/B-09/B-11): a sealed deck takes a wind uplift row and the interaction, the

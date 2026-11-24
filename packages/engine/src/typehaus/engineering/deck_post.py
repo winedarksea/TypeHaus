@@ -960,9 +960,9 @@ def _moment_column(pier: _Pier, area: float, ratio: float, shape: str, demand: f
                    f"on the cage's own cover and spacing (Table 25.4.2.3's simplified row reads "
                    f"{lap_simplified:.1f}\"), every bar spliced at one section; against "
                    + (f"the AUTHORED {lap_available:g}\" dowel projection above the joint "
-                      f"(`BarSpec.projection`)" if projection is not None else
+                      f"(the drawn projection of the dowel bars)" if projection is not None else
                       "the column's own height, the only bound this model holds on how much "
-                      "lap can exist ABOVE the joint — author `BarSpec.projection`"),
+                      "lap can exist ABOVE the joint — draw the dowels' projection"),
                    combination=W.NO_LOAD[0],
                    working=_lap_steps(cage, fc_psi, pier, lap, lap_available, lap_simplified,
                                       projection is not None)),

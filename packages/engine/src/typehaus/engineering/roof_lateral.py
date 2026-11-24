@@ -72,6 +72,8 @@ class RoofWind:
     #: ``axis -> (ASD lb, station across the wind)`` of the header bands inside
     #: ``top_shear``: each resolves at its own member's centroid, not the footprint's.
     member_bands: dict[str, tuple[float, float]] = field(default_factory=dict)
+    #: ``axis -> sf`` of solid area behind ``top_shear`` (shown on the deck_tie sheet).
+    top_area_sf: dict[str, float] = field(default_factory=dict)
 
     def top_station_ft(self, axis: str) -> float:
         """Where ``top_shear`` alone resolves ACROSS the wind."""
@@ -154,12 +156,14 @@ def roof_wind(ctx: EngineeringContext, element: Any, roof: Any) -> RoofWind | No
     pressure = asd_solid_band_psf(q_h)
     member_tags = {b.tag for b in beams}
     top: dict[str, float] = {}
+    areas: dict[str, float] = {}
     members: dict[str, tuple[float, float]] = {}
     for axis in ("x", "y"):
         solid = solid_bands(ctx.plan, axis, member_tags, None)
         bands = (*roof_projection_bands(roof, axis, rise_ft), *solid)
-        top[axis] = Demand(axis=axis, q_h_psf=q_h, height_ft=top_ft - ground_ft,
-                           bands=bands).storey_shear_lb(MAX_VERIFIED_CASE_AB)
+        demand = Demand(axis=axis, q_h_psf=q_h, height_ft=top_ft - ground_ft, bands=bands)
+        top[axis] = demand.storey_shear_lb(MAX_VERIFIED_CASE_AB)
+        areas[axis] = demand.area_sf
         placed = [(pressure * b.area_sf, at) for b in solid
                   if (at := _member_station_ft(ctx.plan, b.source, axis)) is not None]
         if (lb := sum(f for f, _ in placed)) > 0.0:
@@ -171,7 +175,8 @@ def roof_wind(ctx: EngineeringContext, element: Any, roof: Any) -> RoofWind | No
         roof_tag=roof.tag, q_h_psf=q_h, height_ft=top_ft - ground_ft,
         pressure_psf=pressure, grade_ft=grade_ft, basis_text=basis.describe(),
         top_shear=top, centre_ft=centre,
-        pinned=tuple(pinned_posts(ctx, beams, pressure)), member_bands=members)
+        pinned=tuple(pinned_posts(ctx, beams, pressure)), member_bands=members,
+        top_area_sf=areas)
 
 
 def _member_station_ft(plan: Any, tag: str, axis: str) -> float | None:

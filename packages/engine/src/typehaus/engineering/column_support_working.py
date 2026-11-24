@@ -99,7 +99,19 @@ def bearing(p: CaseParams, couple: Couple, wall_fc: float, root: float, clear: f
              "ACI 318-19 §22.8.3.2; a round as wide as the stem gets no credit"),
         Step("phi B_n", "design bearing strength on the block", capacity, "lb",
              "phi 0.85 f'c A_c k_A", f"{num(phi)} x 0.85 x {num(wall_fc)} x {num(p.block)} x "
-             f"{num(root)}", "ACI 318-19 §22.8.3.2; f'c of the wall"))
+             f"{num(root)}", "ACI 318-19 §22.8.3.2; f'c of the wall. " + _bearing_scope(
+                 couple, p, wall_fc, phi)))
+
+
+def _bearing_scope(couple: Couple, p: CaseParams, wall_fc: float, phi: float) -> str:
+    """What this row bounds, and what a reviewer holding the interface to phi 0.85 f'c finds."""
+    need = couple.compression / (phi * 0.85 * wall_fc)
+    fits = ("still fits within" if need <= p.block else "does NOT fit within")
+    return (f"This row bounds the compression C spread on the column's compression block "
+            f"A_c at this axial load; the joint's flexure is graded by the dowel-tension "
+            f"row. A reviewer holding the interface to phi 0.85 f'c needs "
+            f"C / (phi 0.85 f'c) = {num(need)} in^2 of bearing, which {fits} A_c "
+            f"{num(p.block)} in^2.")
 
 
 def tension(p: CaseParams, couple: Couple, col_fc: float, radius: float, per_bar: float,
@@ -115,13 +127,30 @@ def tension(p: CaseParams, couple: Couple, col_fc: float, radius: float, per_bar
              "ACI 318-19 Table 21.2.2, tension-controlled"))
 
 
+def _shear_couple(p: CaseParams, couple: Couple, col_fc: float, radius: float
+                  ) -> tuple[Step, ...]:
+    """The couple friction deducts: the larger total T of the ring's two orientations, which
+    is not always the orientation the tension row grades (the larger T per dowel)."""
+    from dataclasses import replace
+
+    steps = _couple_steps(couple, p, col_fc, radius)
+    per_dowel = max(p.couples, key=lambda k: k.pull / k.bars)
+    if per_dowel.pull == couple.pull or couple.pull <= 0.0:
+        return steps
+    why = (f"dowel tension of the ring orientation with {couple.bars} dowels in tension, "
+           f"the larger total T of the ring's two orientations, so the larger deduction from "
+           f"A_vf f_y; the tension row grades the other orientation, the larger per dowel "
+           f"({num(per_dowel.pull)} lb on {per_dowel.bars} dowel)")
+    return (*steps[:-1], replace(steps[-1], meaning=why))
+
+
 def shear(p: CaseParams, couple: Couple, count: int, area: float, mu: float, rough: bool,
           phi: float, fy: float, vn_max: float, capacity: float,
-          w_factor: float, l_factor: float) -> tuple[Step, ...]:
+          w_factor: float, l_factor: float, col_fc: float, radius: float
+          ) -> tuple[Step, ...]:
     friction = mu * (phi * count * area * fy - couple.pull)
     return (
-        Step("T", "dowel tension of the couple at this combination", couple.pull, "lb",
-             source="as in the tension row"),
+        *_shear_couple(p, couple, col_fc, radius),
         Step("V_w", "wind shear at the head, service", p.wind_v, "lb",
              source="deck_post: the bands' total, shaft included"),
         Step("V_g", "guard load", p.guard_v, "lb", source="IRC R301.5"),

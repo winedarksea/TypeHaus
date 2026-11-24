@@ -97,13 +97,14 @@ def deck_basis_text(ctx: Any) -> str:
     authored = getattr(structural, "deck_snow_psf", None)
     text = DECK_BASIS_STATED
     if balanced is not None:
-        text += (f" For comparison, ASCE 7-16 §7.3 balanced flat-roof snow at the site's "
-                 f"ground snow is {balanced:g} psf, above the {DECK_LIVE_LOAD_PSF:g} psf live "
-                 f"load.")
+        text += (f" Comparison only, applied to no member: ASCE 7-16 §7.3 balanced flat-roof "
+                 f"snow at the site's ground snow would be {balanced:g} psf, above the "
+                 f"{DECK_LIVE_LOAD_PSF:g} psf live load.")
     if authored is not None:
-        text += (f" The owner's stated deck snow is {authored:g} psf, under the table's "
-                 f"{DECK_LIVE_LOAD_PSF:g} psf live, which is why IRC Table R507.6 is read at "
-                 f"its live load.")
+        text += (f" (The joist-span table screen, IRC Table R507.6, reads a {authored:g} psf "
+                 f"figure from the house's preferences: it is under the table's "
+                 f"{DECK_LIVE_LOAD_PSF:g} psf live, so the live load governs there. It is a "
+                 f"screen, not a design snow.)")
     return text + " " + NOT_COVERED_OWNER + " " + CURTAIN_OWNER_BASIS
 
 

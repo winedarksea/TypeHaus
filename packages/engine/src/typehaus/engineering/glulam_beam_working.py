@@ -105,6 +105,27 @@ def figure(record: EngineeringRecord) -> Figure | None:
                 "above. Live load is patterned segment by segment.")
 
 
+LABELS = {
+    "overhang_start": "overhang past the first post, a",
+    "overhang_end": "overhang past the second post, b",
+    "tributary": "deck width the beam carries (tributary width)",
+    "live_load": "deck live load",
+    "dead_load": "deck dead load",
+    "Fb": "tabulated bending design value F_b",
+    "Fv": "tabulated shear design value F_v",
+    "Fc_perp": "tabulated compression perpendicular to grain F_c-perp (bearing)",
+    "E": "tabulated modulus of elasticity E",
+    "C_M_bending": "wet-service factor on F_b",
+    "C_M_shear": "wet-service factor on F_v",
+    "C_M_bearing": "wet-service factor on F_c-perp",
+    "C_M_modulus": "wet-service factor on E",
+    "C_D": "load-duration factor",
+    "C_V": "volume factor, size effect on bending",
+    "C_b": "bearing-area factor for a short seat (NDS 3.10.4)",
+    "bearing_length": "length of the seat under the beam at each post",
+    "planter_line_load": "planter load per foot over the span between the posts",
+}
+
 NOT_COVERED = (
     NotCovered("snow on the deck", "the Minnesota deck basis is adopted (owner's stated "
                "basis, section 6); no snow path is built", "the owner (stated basis)",
