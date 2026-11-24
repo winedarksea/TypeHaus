@@ -169,7 +169,8 @@ MAIN_DEVICES = [
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-M-S1", face="left", distance_from_start=inch(120),
                          normal_gap=inch(0), rotation_offset=deg(180)))),
-    # The study's day layer (5000 K, lighting review 2026-11-23); night is the desk lamp.
+    # The study's day layer is this 5000 K can (with ED-M-STUDY-SPOT); night is the desk
+    # sconce ED-M-STUDY-DESK-LT on ED-M-STUDY-SW2 (plan/lighting_main.py).
     ElectricalDevice(uid="CED003K1AA", tag="ED-M-STUDY-LT", kind=DeviceKind.LIGHT,
                      position=pt(ft(14, 11.5), ft(19, 4)), type_ref="ED-T-LT-CAN4-5000", circuit="CKT-LT-MAIN",
                      room="RM-M-STUDY-CLOSET", controlled_by=("ED-M-STUDY-SW",),
@@ -179,6 +180,14 @@ MAIN_DEVICES = [
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-M-C3", face="left", distance_from_start=inch(45.375),
+                         normal_gap=inch(0), rotation_offset=deg(-180)))),
+    # The desk sconce's paddle, the north gang of a 2-gang with ED-M-STUDY-SW in the bay
+    # between D-M-STUDY's north king and the corner pack (nailed to the king).
+    ElectricalDevice(uid="KZMXPXMFF3", tag="ED-M-STUDY-SW2", kind=DeviceKind.SWITCH,
+                     type_ref="ED-T-LEV-SW1", circuit="CKT-LT-MAIN",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(48)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-M-C3", face="left", distance_from_start=inch(47.25),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
     # --- kitchen outlets (RM-M-LIVING is open plan, so these keep the LIVING suffix) ---
     # Counter outlets at 42" (6" backsplash over the 36" counter, under 54" cabinets);

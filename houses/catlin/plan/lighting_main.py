@@ -68,11 +68,12 @@ MAIN_LIGHTING = [
                          wall_ref="W-M-PAN-E", face="left", distance_from_start=inch(6.76),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
 
-    # RM-M-BED (premium tier, 2026-10-31), on a 3-WAY with ED-M-BED-SW2 at D-M-BED2. A south
-    # row at y=3'-4": CAN5 a gimbal washing the bookcases, CAN2 over the desk top ahead of
-    # the user (the armchair gets a floor lamp, not a can). CAN3/CAN4 flank
-    # the bed at y=8'-8", 52" either side of its centre and off the mattress, in the one bay
-    # the ERV returns leave free. Two bed sconces replaced the north reading bar.
+    # RM-M-BED (premium tier, 2026-10-31), on a 3-WAY with ED-M-BED-SW2 at D-M-BED2. All five
+    # cans are symmetric about the bed axis x=9'-5 7/8". South row at y=3'-4" (joist mid-bay):
+    # CAN6 the STRANDMON's reading light, CAN5 a gimbal washing the bookcases, CAN2 over the
+    # desk top ahead of the user. CAN3/CAN4 flank the bed at y=8'-8", 52" either side of its
+    # centre and off the mattress, in the one bay the ERV returns leave free. Two bed sconces
+    # replaced the north reading bar.
     ElectricalDevice(uid="QTM000EAAA", tag="ED-M-BED-CAN2", kind=DeviceKind.LIGHT,
                      position=pt(ft(16, 10.75), ft(3, 4)), type_ref="ED-T-LT-CAN4-PREM",
                      circuit="CKT-LT-MAIN", room="RM-M-BED",
@@ -89,7 +90,12 @@ MAIN_LIGHTING = [
                      controlled_by=("ED-M-BED-SW", "ED-M-BED-SW2"),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="2FXG2TPSRY", tag="ED-M-BED-CAN5", kind=DeviceKind.LIGHT,
-                     position=pt(ft(9, 4), ft(3, 4)), type_ref="ED-T-LT-CAN4-PREM-GIMBAL",
+                     position=pt(ft(9, 5.875), ft(3, 4)), type_ref="ED-T-LT-CAN4-PREM-GIMBAL",
+                     circuit="CKT-LT-MAIN", room="RM-M-BED",
+                     controlled_by=("ED-M-BED-SW", "ED-M-BED-SW2"),
+                     mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
+    ElectricalDevice(uid="R7WHQQE70G", tag="ED-M-BED-CAN6", kind=DeviceKind.LIGHT,
+                     position=pt(ft(2, 1), ft(3, 4)), type_ref="ED-T-LT-CAN4-PREM",
                      circuit="CKT-LT-MAIN", room="RM-M-BED",
                      controlled_by=("ED-M-BED-SW", "ED-M-BED-SW2"),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
@@ -137,8 +143,8 @@ MAIN_LIGHTING = [
     # TRUE ROOM CENTRE. The clear face runs x 0.635"..215.365", y 0.635"..155.365", so
     # (9'-0", 6'-6") is the centre of it to the sixteenth. The cans (a south row at y=3'-4",
     # CAN3/CAN4 at y=8'-8") are deliberately NOT centred on it: the fan is the thing a person
-    # looks up at. The 26" sweep clears the nearest can centre (CAN5 at (9'-4", 3'-4")) by
-    # ~12" and every wall by 6'-0"+. REG-M-SUP3 moved 2'-0"
+    # looks up at. The 26" sweep clears the nearest can centre (CAN5 at (9'-5 7/8", 3'-4")) by
+    # ~10" and every wall by 6'-0"+. REG-M-SUP3 moved 2'-0"
     # west for this (plan/mep_registers_main.py) — it sat on the room seed, 6" away, which is a
     # canopy-on-register overlap nothing in the engine would have reported.
     #
@@ -196,10 +202,10 @@ MAIN_LIGHTING = [
     # opening down to 21'-0 11/16" and FURN-M-STUDY-BENCH from there to the corner. See
     # plan/mep_registers_main.py for both.
     #
-    # ** KEEP AT LEAST ONE OF THIS AND ED-M-STUDY-LT. ** RM-M-STUDY-CLOSET is windowless and
-    # passes `code.R303_1_light_and_ventilation` only on Exception 1's electric-light
-    # substitute: 787 lm (500 can + 287 spot) over its 16 sf is 23.6 fc against 6 (LightRun
-    # coves are excluded by `_room_lumens`). Either alone still passes; neither is a FAIL.
+    # ** KEEP AT LEAST ONE OF THIS, ED-M-STUDY-DESK-LT AND ED-M-STUDY-LT ** for
+    # `electrical.room_lighting` (R303.1 does not reach a study closet: not habitable).
+    # `advisory.room_illuminance` wants 300 lx: 1,094 lm (520 can + 2 x 287 sconces) over 16 sf
+    # is 353 lx; without the desk sconce it read 260.
     ElectricalDevice(uid="QTM000HAAA", tag="ED-M-STUDY-SPOT", kind=DeviceKind.LIGHT,
                      type_ref="ED-T-LT-SCONCE-SPOT",
                      circuit="CKT-LT-MAIN", room="RM-M-STUDY-CLOSET", controlled_by=("ED-M-STUDY-SW",),
@@ -207,6 +213,19 @@ MAIN_LIGHTING = [
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-M-C3", face="left", distance_from_start=inch(46.25),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
+    # The study's NIGHT layer (owner, 2026-11-24; it replaced the TERTIAL desk lamp): a second
+    # Sprig on the walnut west wall over FURN-M-STUDY-DESK, on its own switch ED-M-STUDY-SW2.
+    # A front-side light: ahead of and to the right of the seated occupant, on the camera's
+    # side, never behind them on the felt. Body 4'-8" up, over seated eye (~4'-1") and 2' over
+    # the desk top; the 9 7/8" arm reaches the desk's west half. Its box nails to stud-001.
+    # Day is ED-M-STUDY-LT.
+    ElectricalDevice(uid="ZJTRRMEFQT", tag="ED-M-STUDY-DESK-LT", kind=DeviceKind.LIGHT,
+                     type_ref="ED-T-LT-SCONCE-SPOT",
+                     circuit="CKT-LT-MAIN", room="RM-M-STUDY-CLOSET", controlled_by=("ED-M-STUDY-SW2",),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(56)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-M-LS", face="right", distance_from_start=inch(10.875),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
 
     # RM-M-BATH1: one can over the lavatory, 22" off the mirror wall and east of the ERV
     # trunk, plus the mirror light; the basin backs onto the shared south wet wall
