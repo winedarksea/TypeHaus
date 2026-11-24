@@ -21,7 +21,7 @@ All three are strength rows at 1.6H (IBC §1605.2); the sliding rows are service
 from __future__ import annotations
 
 from typehaus.engineering import retaining_system_working as W
-from typehaus.engineering.item import LimitState
+from typehaus.engineering.item import LimitState, Quantity
 from typehaus.engineering.retaining_basis import (
     EARTH_PRESSURE_LOAD_FACTOR,
     PRESUMPTIVE_FC_PSI,
@@ -202,6 +202,20 @@ def _toe_tie(ctx, wall) -> tuple[float, float, str] | None:  # type: ignore[no-u
     if not area:
         return None
     return area, moment / area, " + ".join(parts)
+
+
+def tie_inputs(ctx, members) -> tuple[Quantity, ...]:  # type: ignore[no-untyped-def]
+    """Each footing's toe-edge tie (As, centroid), fingerprinted: the plan rows' capacity
+    and lever read the authored bars, so a smaller bar must stale a seal."""
+    from typehaus.engineering.retaining_system_body import _footing_of
+
+    out: list[Quantity] = []
+    for member in members:
+        footing, tie = _footing_of(ctx, member.tag), _toe_tie(ctx, ctx.plan.by_tag(member.tag))
+        if footing is not None and tie is not None:
+            out += [Quantity(f"tie_area_{footing.tag}", tie[0], "in2", 0.01),
+                    Quantity(f"tie_centroid_{footing.tag}", tie[1], "in", 0.01)]
+    return tuple(out)
 
 
 def plan_bending(ctx, body, members, built) -> list[LimitState]:  # type: ignore[no-untyped-def]
