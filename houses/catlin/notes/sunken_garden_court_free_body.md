@@ -2993,6 +2993,12 @@ is that the corner squares are real concrete now, not a gap the free body happen
 
 ## 13. Staged backfill — the court is a structure while it is being filled (2026-10-11)
 
+> **Historical: superseded by §15e and §15h.** Every FS in this section (1.58 under the H/2
+> rule, 1.31 one side empty, the table below) was worked on the old unit section: the south
+> wall's thrust on its 18' axis length rather than the body's 25' projected width (§15a), with
+> mu 0.35 on the stone. It is kept as the record of how the backfill rule was chosen. The
+> graded value is **1.529** on the specified mu 0.43, worked from its governing stage in §15h.
+
 §4's FS 1.735 is the completed court: all three retained sides full, the heel soil on all
 three footings. While it is being backfilled, neither half of that is true. A review screened
 E2 and S full with W2 empty at FS ≈ 1.06. The owner's brief for the answer is that it must be
@@ -3195,6 +3201,11 @@ Grid of twelfths of H per side, earth only, W1/E1 empty (concrete only), 110 pcf
 The south face is wider than §13 counted, so the drawn rule no longer reaches 1.50.
 AN-SG-BACKFILL's printed 1.64/1.37 is stale and waits on gate G1.
 
+> **Historical basis.** This table is at mu 0.35, the IBC Table 1806.2 class-3 presumption on
+> the stone, on the current body. Its H/2 row, 1.24 (1.2447), is the same governing stage as
+> the graded **1.529** on the specified mu 0.43: 0.35 x 317,855 / 89,375 = 1.2447. §15h works
+> that stage term by term.
+
 ### 15f. Gate options (for the owner; nothing is drawn)
 
 **G1, sliding below 1.5.** Graded cases: perched 1.28, flooded 1.43, staged at H/2 1.24.
@@ -3324,11 +3335,38 @@ pattern, with two statuses.
 sliding dry        0.43 x 350,788 / 78,173                    = 1.930
 perched H/2        0.43 x 350,788 / 96,201                    = 1.568
 flooded court      0.43 x 317,882 / 77,884                    = 1.755
-staged at H/2      1.245 x 0.43/0.35 (friction scales)         = 1.529   (one side empty 1.28)
+staged at H/2      0.43 x 317,855 / 89,375 (worked below)       = 1.529   (one side empty 1.28)
 deep, lip          0.4663 x 536,996 / 157,044                 = 1.594   (dry 2.09; flooded 1.39 reported)
 retained full      reported                                   = 1.17
 corner delivery    (78,173 − 0.43 x its 174,812) / 25 = 120 plf -> 0.12
 ```
+
+**The staged row, worked from its governing stage.** The grid of §13 (each of W2, S and E2
+at a twelfth of H = 10.1198', no side more than H/2 above another, earth only, W1/E1 empty,
+the apron not yet placed) is governed by **E2 at 6/12 (5.0599'), S and W2 full**:
+
+```
+thrust  E2  ½ x 60 x 5.0599² x 19.8333  = 15,233.5 lb   pushes west
+        S   ½ x 60 x 10.1198² x 25.00   = 76,807.6 lb   pushes north
+        W2  ½ x 60 x 10.1198² x 19.8333 = 60,934.1 lb   pushes east
+        E-W 60,934.1 − 15,233.5 = 45,700.6;  H = √(45,700.6² + 76,807.6²)    = 89,375.4 lb
+heel soil, each region to the lower fill line of the sides it stands beyond, above the
+footing top (1.0' over the plane); the drain column is #57 at 100 pcf up to its own top
+(5.1198' above the footing top):
+        E2 heel    50.5 x 110 x 4.0599 − 16.333 x 10 x 4.0599  = 22,552.7 − 663.1 = 21,889.6
+        S heel     57.0 x 110 x 9.1198 − 19.000 x 10 x 5.1198  = 57,181.1 − 972.8 = 56,208.3
+        W2 heel    50.5 x 110 x 9.1198 − 16.333 x 10 x 5.1198  = 50,660.5 − 836.2 = 49,824.3
+        SE corner   9.0 x 110 x 4.0599 −  1.052 x 10 x 4.0599  =  4,019.3 −  42.7 =  3,976.6
+        SW corner   9.0 x 110 x 9.1198 −  1.052 x 10 x 5.1198  =  9,028.6 −  53.9 =  8,974.7
+                                                                      W_soil = 140,873.5
+concrete (§15a less its heel soil) 77,450 + 1,650 + 97,882                     = 176,982
+N'_stage = 176,982 + 140,873.5 = 317,855.5;  F = 0.43 x 317,855.5             = 136,677.9
+FS = 136,677.9 / 89,375.4                                                      = 1.529
+```
+
+The heel regions total 176 sf, §15a's heel soil area, and full fill gives back §15a's
+173,806 lb. Friction scales the whole grid alike, so the governing stage is the same at any
+mu: at 0.35 it is §15e's 1.2447. The sheet prints these terms from the search itself.
 
 2. **Soil parameters confirmed.** This stays open until the report's values go in
    `Site.confirmed_soil`. While it is open, `structural.soil_parameters_confirmed` is UNKNOWN

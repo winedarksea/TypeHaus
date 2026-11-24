@@ -8,6 +8,11 @@ sheet cannot drift from the ratio. Every chain ends on the state's demand and ca
 from __future__ import annotations
 
 from typehaus.engineering.item import Step, num
+from typehaus.engineering.retaining_system_body import (
+    SATURATED_PCF_FOR_THRUST,
+    STONE_PCF,
+    WATER_PCF,
+)
 
 REQUIRED_FS = 1.5
 
@@ -41,13 +46,23 @@ def sliding_steps(body, water, fs: float) -> tuple[Step, ...]:  # type: ignore[n
         t = body.thrust_per_ft(p, water)
         head = 0.0 if water.level_ft is None else min(depth, max(0.0, water.level_ft
                                                                   - body.plane_ft))
+        wet = ""
+        if head:
+            k0, dry = p.efp / body.soil_pcf, depth - head
+            wet = (f"; earth = 0.5 x {num(p.efp)} x {num(dry)}^2 + {num(k0)} x ("
+                   f"{num(body.soil_pcf)} x {num(dry)} x {num(head)} + 0.5 x ("
+                   f"{num(SATURATED_PCF_FOR_THRUST)} - {num(WATER_PCF)}) x {num(head)}^2)")
         out.append(Step(
             f"T_{p.tag}", f"thrust per foot on {p.tag}'s face", t, "plf",
             "earth + unbalanced water + snow + apron surcharge",
             f"{num(earth)} earth + {num(wat)} water + {num(snow)} snow + {num(lat)} apron; "
-            f"K {num(p.efp)} psf/ft, depth d {num(depth)} ft, water head {num(head)} ft",
-            "earth K d^2 / 2 when dry; below water K0 x (gamma - 62.4) and the water's own "
-            "62.4 h^2 / 2 (retained side only); snow K0 x ground snow x d"))
+            f"K {num(p.efp)} psf/ft, depth d {num(depth)} ft, water head h {num(head)} ft"
+            + wet,
+            f"earth K d^2 / 2 when dry; below water, K0 = K / {num(body.soil_pcf)} pcf on the "
+            f"soil above it plus K0 (gamma_sat - 62.4) h^2 / 2 with gamma_sat "
+            f"{num(SATURATED_PCF_FOR_THRUST)} pcf, the top of the unit-weight band (the "
+            "largest thrust it allows); the water's own 62.4 h^2 / 2 (retained side only); "
+            "snow K0 x ground snow x d"))
         forces.append(t * p.width_ft)
         out.append(Step(f"w_{p.tag}", f"width {p.tag}'s push acts over", p.width_ft, "ft",
                         source="the body's projected width, corner squares included"))
@@ -140,27 +155,68 @@ def plan_steps(*, side: bool, w: float, width: float, own: float, load: float, s
                  "ACI 318-19 Ch. 23, phi from Table 21.2.1"))
 
 
-def staged_steps(body, worst: float, empty: float, loop_only: float, rule: float
-                 ) -> tuple[Step, ...]:  # type: ignore[no-untyped-def]
+def _twelfths(f: float) -> str:
+    n = round(f * 12)
+    return f"{n}/12" + (" (full)" if n == 12 else " (empty)" if n == 0 else "")
+
+
+def staged_steps(body, worst: float, empty: float, loop_only: float, rule: float,
+                 stage) -> tuple[Step, ...]:  # type: ignore[no-untyped-def]
+    """The rule's grid, then the governing stage worked term by term from ``stage`` (the
+    :class:`retaining_system_staged.Stage` the search returned)."""
     heights = [(p.tag, p.top_ft - body.plane_ft) for p in body.pushes]
-    return (
-        Step("mu", "friction on the footing plane", body.friction, ""),
-        Step("N'", "completed body's weight, concrete and heel soil", body.weight(), "lb",
-             source="the dry sliding row's body"),
+    pcf = body.soil_pcf
+    steps = [
         Step("H_i", "full height of each retained side", heights[0][1], "ft",
              numbers="; ".join(f"{t} {num(h)}" for t, h in heights),
              source="top of the retained soil to the footing plane"),
-        Step("FS_stage", "worst safety factor over every fill stage the rule allows", worst,
-             "", f"min over fill fractions f_i in twelfths of H_i, spread <= {rule:.0%}, of "
-             "mu (N'_stage) / |sum of the thrusts K (f_i H_i)^2 w_i / 2|",
-             "earth only, spliced walls empty, apron not yet placed",
-             "IRC R404.4; the backfill rule on the drawing"),
+        Step("search", "fill stages searched: each side at a fill fraction f_i in twelfths "
+             f"of its H_i, no side more than {rule:.0%} of H above another", worst, "",
+             "min over the grid of FS_stage = mu N'_stage / H_stage",
+             "earth only, spliced walls empty, apron not yet placed; the governing stage "
+             "follows", "IRC R404.4; the backfill rule on the drawing")]
+    for (tag, (dx, dy), fill_ft, thrust), f, p in zip(stage.thrusts, stage.fills,
+                                                       body.pushes, strict=True):
+        steps.append(Step(
+            f"T_{tag}", f"{tag} backfilled to {_twelfths(f)} of its height: its earth thrust, "
+            f"pushing along ({num(dx, 3)}, {num(dy, 3)})", thrust, "lb",
+            "K (f H)^2 w / 2", f"{num(p.efp)} x {num(fill_ft)}^2 x {num(p.width_ft)} / 2",
+            "at-rest; w is the body's projected width the push acts over"))
+    steps += [
+        Step("H_stage", "resultant thrust in the governing stage", stage.demand, "lb",
+             "sqrt((sum T_i d_ix)^2 + (sum T_i d_iy)^2)",
+             f"sqrt({num(stage.rx)}^2 + {num(stage.ry)}^2)",
+             "opposed side walls cancel; d_i is each wall's push direction")]
+    soil_terms = []
+    for label, area, col, rise, col_rise in stage.soil_parts:
+        term = f"{label}: {num(area)} sf x {num(pcf)} x {num(rise)} ft"
+        if col and col_rise:
+            term += (f" - drain column {num(col)} sf x ({num(pcf)} - {num(STONE_PCF)}) x "
+                     f"{num(col_rise)} ft")
+        soil_terms.append(term)
+    steps += [
+        Step("W_soil", "heel soil standing in the governing stage", stage.soil, "lb",
+             "each heel region to the lower fill line of the sides it stands beyond, above "
+             "the footing top", "; ".join(soil_terms),
+             "corner squares take the lower of their two sides; the drain column is stone "
+             f"at {num(STONE_PCF)} pcf, not soil, up to its own top"),
+        Step("W_rest", "concrete in the body: footings, strut, stems, the spliced walls",
+             stage.rest - stage.credit, "lb", source="the dry sliding row's body, less its "
+             "heel soil"),
+        Step("N'_stage", "weight on the sliding plane in the governing stage", stage.weight,
+             "lb", "W_rest + W_soil", f"{num(stage.rest - stage.credit)} + {num(stage.soil)}"),
+        Step("mu", "friction on the footing plane", body.friction, "",
+             source="the court's soil basis, section 6"),
+        Step("F_stage", "base friction in the governing stage", stage.friction, "lb",
+             "mu N'_stage", f"{num(body.friction)} x {num(stage.weight)}"),
         Step("FS_empty", "worst with one side empty and two full (not permitted)", empty, "",
              source="reported"),
         Step("FS_loop", "worst under the rule without the spliced walls' concrete",
              loop_only, "", source="reported"),
         Step("FS_req", "safety factor required", REQUIRED_FS, "", source="IRC R404.4"),
-        Step("FS", "safety factor in the worst allowed stage", worst, ""))
+        Step("FS", "safety factor in the worst allowed stage", worst, "", "F_stage / H_stage",
+             f"{num(stage.friction)} / {num(stage.demand)}")]
+    return tuple(steps)
 
 
 def fallback_steps(*, passive: float, submerged: float, cap: float, phi_mn: float, arm: float,

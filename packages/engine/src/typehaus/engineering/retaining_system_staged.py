@@ -15,6 +15,7 @@ drawing's backfill note prints the generated values.
 from __future__ import annotations
 
 import itertools
+from dataclasses import dataclass
 
 from typehaus.engineering.retaining_system_body import STONE_PCF, Body, _exterior
 
@@ -50,11 +51,34 @@ def _keys(n: int):  # type: ignore[no-untyped-def]
         yield from itertools.combinations(range(n), size)
 
 
+@dataclass(frozen=True)
+class Stage:
+    """One fill stage, every term the sheet prints (``staged_steps``)."""
+
+    fills: tuple[float, ...]
+    #: Per push: ``(tag, unit direction, fill height ft, thrust lb)``.
+    thrusts: tuple[tuple[str, tuple[float, float], float, float], ...]
+    rx: float
+    ry: float
+    demand: float
+    #: Everything but the heel soil (concrete, strut, stems, spliced walls), lb.
+    rest: float
+    credit: float
+    #: Heel soil per region: ``(label, soil sf, drain-column sf, rise ft, column rise ft)``.
+    soil_parts: tuple[tuple[str, float, float, float, float], ...]
+    soil: float
+    weight: float
+    friction: float
+    fs: float
+
+
 def staged(body: Body, members, footing_top_ft: float, stem_ft: float,  # type: ignore[no-untyped-def]
-           key: tuple[float, tuple[float, float]] | None = None) -> tuple[float, float, float]:
+           key: tuple[float, tuple[float, float]] | None = None
+           ) -> tuple[float, float, float, Stage]:
     """``(worst FS under the rule, worst with one side empty, worst under the rule with the
-    spliced braced walls' concrete left out)``. ``key``: a resistance ``(K lb, unit
-    direction)`` that acts along one direction only (``directional_fs``)."""
+    spliced braced walls' concrete left out, the governing stage under the rule)``. ``key``:
+    a resistance ``(K lb, unit direction)`` that acts along one direction only
+    (``directional_fs``)."""
     regions, rest = _split(body, members, stem_ft)
     pushes = list(body.pushes)
     heights = [p.top_ft - body.plane_ft for p in pushes]
@@ -62,34 +86,41 @@ def staged(body: Body, members, footing_top_ft: float, stem_ft: float,  # type: 
     column = next((p for p in body.prisms if p.label == "heel soil:drain column"), None)
     col_h = column.z1_ft - column.z0_ft if column else 0.0
 
-    def fs(fills: tuple[float, ...], credit: float) -> float:
+    def stage(fills: tuple[float, ...], credit: float) -> Stage:
         rx = ry = 0.0
+        thrusts = []
         for p, f, h in zip(pushes, fills, heights, strict=True):
             t = 0.5 * p.efp * (h * f) ** 2 * p.width_ft
+            thrusts.append((p.tag, p.direction, h * f, t))
             rx += t * p.direction[0]
             ry += t * p.direction[1]
         demand = (rx * rx + ry * ry) ** 0.5
-        if demand < 1.0:
-            return float("inf")
         soil = 0.0
+        parts = []
         for area, col, keys in regions:
             rise = max(0.0, min(heights[k] * fills[k] for k in keys) - depth)
-            soil += area * body.soil_pcf * rise + col * (STONE_PCF - body.soil_pcf) * min(
-                rise, col_h)
-        friction = body.friction * (rest - credit + soil)
-        if key is not None:
-            return directional_fs((rx, ry), friction, *key)
-        return friction / demand
+            col_rise = min(rise, col_h)
+            soil += area * body.soil_pcf * rise + col * (STONE_PCF - body.soil_pcf) * col_rise
+            parts.append((" + ".join(pushes[k].tag for k in keys), area, col, rise, col_rise))
+        weight = rest - credit + soil
+        friction = body.friction * weight
+        if demand < 1.0:
+            fs = float("inf")
+        elif key is not None:
+            fs = directional_fs((rx, ry), friction, *key)
+        else:
+            fs = friction / demand
+        return Stage(fills, tuple(thrusts), rx, ry, demand, rest, credit, tuple(parts),
+                     soil, weight, friction, fs)
 
     spliced = sum(p.weight() for p in body.prisms
                   if p.label.partition(":")[2] in body.spliced)
-    worst = min(fs(c, 0.0) for c in itertools.product(_GRID, repeat=len(pushes))
-                if max(c) - min(c) <= RULE + 1e-9 and max(c) > 0)
-    empty = min(fs(c, 0.0) for c in itertools.product(_GRID, repeat=len(pushes))
-                if max(c) > 0)
-    loop_only = min(fs(c, spliced) for c in itertools.product(_GRID, repeat=len(pushes))
-                    if max(c) - min(c) <= RULE + 1e-9 and max(c) > 0)
-    return worst, empty, loop_only
+    grid = list(itertools.product(_GRID, repeat=len(pushes)))
+    ruled = [c for c in grid if max(c) - min(c) <= RULE + 1e-9 and max(c) > 0]
+    governing = min((stage(c, 0.0) for c in ruled), key=lambda s: s.fs)
+    empty = min(stage(c, 0.0).fs for c in grid if max(c) > 0)
+    loop_only = min(stage(c, spliced).fs for c in ruled)
+    return governing.fs, empty, loop_only, governing
 
 
 
