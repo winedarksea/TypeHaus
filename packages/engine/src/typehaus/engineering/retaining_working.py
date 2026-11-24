@@ -169,3 +169,36 @@ def stem_moment(case, stem_ft: float, service: float, demand: float, factor: flo
                  "earth pressure on the stem; apron surcharge moment"),
             Step("M_u", "factored moment, 1.6 on the earth", demand, "ft-lb/ft", "1.6 M",
                  f"{num(factor)} x {num(service)}", "IBC 2018 §1605.2 / ASCE 7-16 §2.3.1 on H"))
+
+
+def stem_reported(case, stem_ft: float, h_in: float, fc_psi: float, bar: int, as_ft: float,
+                  d: float, factor: float) -> tuple[Step, ...]:  # type: ignore[no-untyped-def]
+    """Stem shear and minimum steel, REPORTED with the stem flexure row and not graded."""
+    lateral = case.surcharge.lateral_plf if case.surcharge else 0.0
+    shear = 0.5 * case.efp_psf_per_ft * stem_ft ** 2 + lateral
+    vu = factor * shear
+    phi_vc = 0.75 * 2.0 * fc_psi ** 0.5 * 12.0 * d
+    rho = 0.0012 if bar <= 5 else 0.0015
+    as_min = rho * 12.0 * h_in
+    note = "reported with this row, not graded"
+    return (
+        Step("V_stem", f"service shear at the stem base per foot ({note})", shear, "lb/ft",
+             "K h_s^2 / 2 + P_sur",
+             f"{num(case.efp_psf_per_ft)} x {num(stem_ft)}^2 / 2 + {num(lateral)}",
+             "taken at the base, not at d above it, with the apron's whole lateral thrust on "
+             "the stem: both upper bounds"),
+        Step("V_u,stem", f"factored stem shear ({note})", vu, "lb/ft", "1.6 V_stem",
+             f"{num(factor)} x {num(shear)}"),
+        Step("phi Vc,stem", f"design one-way shear strength of the stem per foot ({note})",
+             phi_vc, "lb/ft", "0.75 x 2 sqrt(f'c) x 12 d",
+             f"0.75 x 2 x sqrt({num(fc_psi)}) x 12 x {num(d)}",
+             "ACI 318-19 §22.5.5.1, phi from Table 21.2.1"),
+        Step("V/phiVc", f"stem shear demand over capacity ({note}); under 0.5 the §11.6.1 "
+             "minimum below applies (ACI 318-19 §11.6.2)", vu / phi_vc, "",
+             "V_u,stem / phi Vc,stem", f"{num(vu)} / {num(phi_vc)}"),
+        Step("A_s,min", f"minimum vertical steel per foot of wall ({note})", as_min,
+             "in^2/ft", "rho_min x 12 h", f"{num(rho)} x 12 x {num(h_in)}",
+             "ACI 318-19 §11.6.1 vertical minimum, 0.0012 for deformed bars #5 and smaller, "
+             "0.0015 larger; compare A_s above"),
+        Step("A_s/A_s,min", f"steel provided over the minimum ({note}); 1 or more meets it",
+             as_ft / as_min, "", "A_s / A_s,min", f"{num(as_ft)} / {num(as_min)}"))

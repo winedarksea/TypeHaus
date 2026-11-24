@@ -64,10 +64,12 @@ _NOTE_STRUT_PHI_PN_LB = 132_890.0
 # 3.94") + the outermost #4 (3.25"): As 1.13, centroid 3.82", z = 42 - 3.82 = 38.18";
 # 1.6 x 3,122.79 x 11.5^2 / 8 = 82,598 ft-lb -> Tu 25,960 vs 0.75 x 1.13 x 60,000 = 50,850.
 _NOTE_PLAN_DC = 0.51
-# Staged backfill at the drawn H/2 rule: 1.24; one side empty 1.04 (§15e).
+# Staged backfill at the drawn H/2 rule (§15h): E2 at 6/12, S and W2 full; H and N' of
+# that stage, worked by hand term by term.
 _NOTE_EXPOSURE_IN = 40.0
 _NOTE_EXPOSURE_BAND_IN = (36.0, 48.0)
 _NOTE_STAGED_FS = {"rule": 1.529, "empty": 1.28}
+_NOTE_STAGE = {"H_stage": 89_375.4, "W_soil": 140_873.5, "N'_stage": 317_855.5}
 
 
 def _results(plan):
@@ -100,6 +102,9 @@ def test_the_court_reproduces_the_hand_worked_free_body(catlin_plan) -> None:
     staged = next(s for name, s in states.items() if name.startswith("staged backfill"))
     assert staged.capacity == pytest.approx(_NOTE_STAGED_FS["rule"], abs=0.002)
     assert f"one side empty and two full {_NOTE_STAGED_FS['empty']:.2f}" in staged.citation
+    worked = {step.symbol: step.value for step in staged.working}
+    for symbol, value in _NOTE_STAGE.items():
+        assert worked[symbol] == pytest.approx(value, rel=1e-4), symbol
     basis = next(b.statement for b in record.bases if "snow and perched water" in b.subject)
     assert "NOT concurrent" in basis and "FS 1.46" in basis   # §15k, printed once
     assert "under snowmelt" not in states

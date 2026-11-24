@@ -122,19 +122,28 @@ DOWEL_RATIO = StatedBasis(
 def specified_court_soil(bed_friction: float, bed_friction_max: float | None,
                          native_phi_deg: float) -> StatedBasis:
     """The court's soil: specified, a site report confirms (AN-SG-SOIL)."""
+    import math
+
     top = ("" if bed_friction_max is None else
-           f", and up to {bed_friction_max:g} for the rows that friction hurts (the winter "
-           f"contraction of the court on its base)")
+           f" (2) The same friction at most {bed_friction_max:.2f}, a specified MAXIMUM: the "
+           f"court's winter-tension rows read it, because more friction pulls harder on the "
+           f"side runs.")
     return StatedBasis(
         BasisKind.SPECIFIED, "the court's soil parameters",
-        f"The court is designed on SPECIFIED soil parameters: design friction for concrete "
-        f"on the compacted washed #57 bed {bed_friction:g}{top}, and drained phi' of the "
-        f"native at the bed bottom {native_phi_deg:g} deg. The design is closed on these and "
-        f"NOT YET CONFIRMED by a site report; where no report or specified value exists the "
-        f"rows grade on the IBC Table 1806.2 presumptions.",
-        reopens_if=f"the report returns a bed friction under {bed_friction:g} or a native "
+        f"The court is designed on SPECIFIED design parameters that the site report must "
+        f"confirm; they are requirements on the ground, not results of this calculation. "
+        f"(1) Design friction of concrete on the compacted washed #57 bed at least "
+        f"{bed_friction:.2f}, a specified MINIMUM: the rows friction helps read it (the "
+        f"court's sliding cases and staged backfill, the corner delivery, the walls' base "
+        f"restraint, the joint's movement).{top} "
+        f"({3 if top else 2}) Drained friction angle phi' of the native at the bed bottom at "
+        f"least {native_phi_deg:g} deg (tan {math.tan(math.radians(native_phi_deg)):.3f}), a "
+        f"specified MINIMUM: the deep sliding plane under the beds reads it. The design is "
+        f"closed on these and NOT YET CONFIRMED by a site report; where no report or "
+        f"specified value exists the rows grade on the IBC Table 1806.2 presumptions.",
+        reopens_if=f"the report returns a bed friction under {bed_friction:.2f} or a native "
                    f"phi' under {native_phi_deg:g} deg (the deep plane returns to the owner); "
-                   + (f"a bed friction above {bed_friction_max:g} re-checks the winter-tension "
+                   + (f"a bed friction above {bed_friction_max:.2f} re-checks the winter-tension "
                       f"rows; " if bed_friction_max is not None else "")
                    + "a clay or silt bed bottom builds the lean-wall fallback",
         reference="drawing note AN-SG-SOIL: site report required before the first placement")

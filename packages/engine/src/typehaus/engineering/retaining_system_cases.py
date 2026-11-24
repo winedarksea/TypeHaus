@@ -30,6 +30,7 @@ from typehaus.engineering.item import LimitState, Quantity, StatedBasis
 from typehaus.engineering.retaining_basis import REQUIRED_FS
 from typehaus.engineering.retaining_system_body import (
     DRY,
+    SATURATED_PCF_FOR_THRUST,
     STONE_PCF,
     Body,
     Member,
@@ -185,8 +186,9 @@ class Graded:
     #: ``{pcf: (friction mobilised once backfilled, before the apron; the most any graded
     #: service case mobilises)}`` — what the joint row's post-backfill movement reads.
     mobilised: dict[float, tuple[float, float]] = dataclasses.field(default_factory=dict)
-    #: ``{pcf: (dry resultant, whole-body friction, house-side friction, how)}`` at the upper
-    #: (restraint) bed friction that the court's contraction rows grade at.
+    #: ``{pcf: (dry resultant, whole-body friction, house-side friction, how, parts)}`` at the
+    #: upper (restraint) bed friction the court's contraction rows grade at; ``parts`` is
+    #: ``house_side_weight``'s, with ``mu`` and the house side's ``weight``.
     restraint: dict[float, tuple] = dataclasses.field(default_factory=dict)
     #: The owner's stated bases whose value this grading computed (not graded rows).
     bases: tuple[StatedBasis, ...] = ()
@@ -215,9 +217,10 @@ def grade(ctx, ref: str, walls: list, built_by_pcf: dict, soil) -> tuple[Graded 
         levels, gap = waters(ctx, body)
         missing.extend(gap)
         dry[pcf] = (body.resultant(), body.friction * body.weight())
-        house, house_how = house_side_weight(ctx, ref, walls, members, body)
+        house, house_how, house_parts = house_side_weight(ctx, ref, walls, members, body)
         restraint[pcf] = (body.resultant(), upper * body.weight(), upper * house,
-                          f"mu {upper:.2f} x {house_how}")
+                          f"mu {upper:.2f} x {house_how}",
+                          {**house_parts, "mu": upper, "weight": house})
         bare = dataclasses.replace(body, pushes=tuple(
             dataclasses.replace(p, lateral_plf=0.0) for p in body.pushes))
         service = [levels[k] for k in ("dry", "perched", "flooded court") if k in levels]
@@ -268,7 +271,9 @@ def _how(case: Case, body: Body, water: Water, pcf: float) -> str:
     level = ("none" if water.level_ft is None else f"{water.level_ft * 12:.2f}\" ({where})")
     return (f"IRC R404.4 — {body.label} at {body.plane_ft * 12:.2f}\", mu {body.friction:.2f}"
             f": {body.friction:.2f} x N' {body.weight(water):,.0f} lb / H "
-            f"{body.resultant(water):,.0f} lb at {pcf:.0f} pcf; water {level}"
+            f"{body.resultant(water):,.0f} lb at {pcf:.0f} pcf"
+            + (f" ({SATURATED_PCF_FOR_THRUST:.0f} pcf saturated below water, for the thrust)"
+               if water.level_ft is not None else "") + f"; water {level}"
             + (f"; the columns' ASD base shears, E-W {water.wind_lb:,.0f} lb and "
                f"{water.wind_along_lb:,.0f} lb along the resultant, added the adverse way "
                f"(IBC §1807.2.3 at service, ASCE 7 §2.4.1 0.6W)" if water.wind_lb else ""))

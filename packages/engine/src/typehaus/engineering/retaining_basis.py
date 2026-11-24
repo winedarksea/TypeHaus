@@ -412,7 +412,10 @@ def _stem_section(geometry: _Geometry, case: _Case, fc_psi: float | None = None
     # and must not be quietly credited with the table minimum's longer lever arm.
     capacity, how, steps = _reinforced_section(h_in, fc_psi, parsed,
                                                geometry.specified_cover_in)
-    return demand, capacity, f"{how}, {fc_note}", (*moment_steps, *steps)
+    by = {st.symbol: st.value for st in steps}
+    reported = W.stem_reported(case, stem_ft, h_in, fc_psi, parsed[0], by["A_s"], by["d"],
+                               EARTH_PRESSURE_LOAD_FACTOR)
+    return demand, capacity, f"{how}, {fc_note}", (*moment_steps, *steps, *reported)
 
 
 def reinforced_flexure(h_in: float, fc_psi: float, parsed: tuple[int, float],

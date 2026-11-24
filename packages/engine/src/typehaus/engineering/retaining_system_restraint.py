@@ -53,13 +53,14 @@ def _house_side(ctx, cross_tag: str, walls: list):  # type: ignore[no-untyped-de
 
 
 def house_side_weight(ctx, cross_tag: str, walls: list, members, body: Body  # type: ignore[no-untyped-def]
-                      ) -> tuple[float, str]:
-    """``(upper-bound weight on the house side lb, how)``."""
+                      ) -> tuple[float, str, dict[str, float]]:
+    """``(upper-bound weight on the house side lb, how, its parts)``; the parts are
+    ``concrete``, ``soil``, ``extra`` (lb) and ``soil_pcf``, for the sheet's working."""
     from typehaus.model.structure import FoundationWall
 
     region = _house_side(ctx, cross_tag, walls)
     if region is None:
-        return 0.0, "no resolvable cross-member axis"
+        return 0.0, "no resolvable cross-member axis", {}
     concrete = sum(p.weight() * p.shape.intersection(region).area / p.shape.area
                    for p in body.prisms if p.shape is not None and p.shape.area
                    and p.label.startswith(("footing:", "stem:")))
@@ -93,7 +94,8 @@ def house_side_weight(ctx, cross_tag: str, walls: list, members, body: Body  # t
     total = concrete + soil + extra
     return total, (f"house side of {cross_tag}: concrete {concrete:,.0f} + heel soil to the "
                    f"stem tops at {pcf:.0f} pcf {soil:,.0f} + bedded cast walls {extra:,.0f} "
-                   f"= {total:,.0f} lb")
+                   f"= {total:,.0f} lb"), {"concrete": concrete, "soil": soil,
+                                            "extra": extra, "soil_pcf": pcf}
 
 
 def _cast(ctx, wall) -> bool:  # type: ignore[no-untyped-def]

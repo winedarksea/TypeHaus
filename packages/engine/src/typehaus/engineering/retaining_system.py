@@ -268,7 +268,7 @@ def loop_mobilisation(ctx: EngineeringContext) -> dict[str, dict[float, tuple[fl
 def loop_free_bodies(ctx: EngineeringContext, *, restraint: bool = False
                      ) -> dict[str, dict[str, tuple[float, float]]]:
     """``{loop ref: {soil_pcf: (soil resultant, base friction)}}`` at the design friction, or
-    the 4-tuple ``Graded.restraint`` at the upper friction (the winter rows read it)."""
+    the 5-tuple ``Graded.restraint`` at the upper friction (the winter rows read it)."""
     return {ref: {f"{pcf:.0f}": v for pcf, v in (g.restraint if restraint else g.dry).items()}
             for ref, g in _graded_loops(ctx).items()}
 
@@ -356,17 +356,20 @@ def _one(ctx: EngineeringContext, ref: str, members: list) -> EngineeringRecord:
     states.extend(rows.plan_bending(ctx, body, members_low, built))
     floor = max(p.z1_ft for p in body.prisms if p.label.startswith("footing:"))
     geometry, _ = _geometry(ctx, members[0])
-    worst, empty, loop_only = staged.staged(body, members_low, floor,
-                                            geometry.stem_thickness_ft if geometry else 1.0)
+    worst, empty, loop_only, stage = staged.staged(
+        body, members_low, floor, geometry.stem_thickness_ft if geometry else 1.0)
     states.append(LimitState(
         f"staged backfill, no side more than {staged.RULE:.0%} of H above another",
         REQUIRED_FS, worst, "", (
             f"IRC R404.4 — the completed body at every stage the rule allows (grid of "
             f"twelfths of H per side, earth only, {low:.0f} pcf, spliced walls empty): worst "
-            f"FS {worst:.2f}; one side empty and two full {empty:.2f}; the loop alone without "
+            f"FS {worst:.2f} with " + ", ".join(
+                f"{t[0]} at {round(f * 12)}/12" for t, f in zip(stage.thrusts, stage.fills,
+                                                                 strict=True))
+            + f"; one side empty and two full {empty:.2f}; the loop alone without "
             f"the spliced walls' concrete {loop_only:.2f}"), is_safety_factor=True,
         combination=W.SERVICE_BACKFILL[0], combination_factors=W.SERVICE_BACKFILL[1],
-        working=W.staged_steps(body, worst, empty, loop_only, staged.RULE)))
+        working=W.staged_steps(body, worst, empty, loop_only, staged.RULE, stage)))
 
     soil_state, soil_how = cases.design_friction(ctx, soil)[2:]
     if soil_state == "specified":
@@ -409,10 +412,10 @@ def _one(ctx: EngineeringContext, ref: str, members: list) -> EngineeringRecord:
                          "lean wall on the presumptions.",
             "confirmed": "Soil parameters CONFIRMED by the site report.",
             "presumptive": "No site report and no specified parameters."}[soil_state],
-        "CORNERS: the footings' longitudinal bars are spliced through both joints of each "
-        "side footing (BarSpec.continues_into), and the south footing runs out to out under "
-        "both corners; the side footings' plan bending and the south footing's corner "
-        "delivery are the rows that grade that path.",
+        "CORNERS: the footings' longitudinal bars are lap-spliced through both joints of "
+        "each side footing, and the south footing runs out to out under both corners; the "
+        "side footings' plan bending and the south footing's corner delivery are the rows "
+        "that grade that path.",
         "Sequence: the cross-member is cast with the footings (placement 1), so the loop is "
         "closed before any backfill; the staged row grades the backfill rule the drawing "
         "prints.",
