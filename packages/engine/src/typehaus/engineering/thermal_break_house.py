@@ -116,7 +116,8 @@ def house_wall_rows(ctx, board: Board, patch: dict, states, missing, inputs) -> 
     states.append(LimitState(
         "house wall shear", max(patch["bottom_reaction"], patch["top_reaction"]), vc, "lb",
         f"one-way at the support, phi 0.75 x 2 sqrt(f'c) b d over the whole {length:.1f}\" "
-        f"(ACI 318-19 §22.5.5.1); punching retired — the patch runs support to support",
+        f"(ACI 318-19 §22.5.5.1); no punching check: the patch runs support to support, so the "
+        f"panel spans one way",
         combination=W.THERMAL[0], combination_factors=W.THERMAL[1],
         working=W.wall_shear(patch["bottom_reaction"], patch["top_reaction"],
                              max(patch["bottom_reaction"], patch["top_reaction"]), fc, length,
@@ -163,7 +164,7 @@ def _floor_line(ctx, board: Board, patch: dict, states, missing) -> None:
         span_x, span_y = max(sx) - min(sx), max(sy) - min(sy)
         own = span_y > span_x if board.ax == 1 else span_x > span_y
         if own and a_lo < across < a_hi and l_lo - 1.0 <= along <= l_hi + 1.0:
-            anchors.append(parts[1])
+            anchors.append((parts[1], value, allow.citation))
             capacity += value
     demand = patch["top_reaction"] + patch["band"]
     if not anchors:
@@ -173,11 +174,12 @@ def _floor_line(ctx, board: Board, patch: dict, states, missing) -> None:
     states.append(LimitState(
         "house floor-line reaction", demand, capacity, "lb",
         f"top reaction {patch['top_reaction']:,.0f} + the board above the wall top "
-        f"{patch['band']:,.0f} lb; vs {len(anchors)} x {anchors[0]} F2 (perpendicular, "
+        f"{patch['band']:,.0f} lb; vs {len(anchors)} x {anchors[0][0]} F2 "
+        f"{anchors[0][1]:,.0f} lb each (perpendicular, "
         f"ICC-ES ESR-2555 Table 1, at its C_D 1.6 and SG 0.50 — generous for an SPF sill)",
         combination=W.THERMAL[0], combination_factors=W.THERMAL[1],
-        working=W.floor_line(patch["top_reaction"], patch["band"], demand, len(anchors),
-                             anchors[0], capacity)))
+        working=W.floor_line(patch["top_reaction"], patch["band"], demand, anchors,
+                             capacity)))
 
 
 def court_sliding(ctx, ref: str, total: float, free_bodies: dict, states, missing) -> None:
