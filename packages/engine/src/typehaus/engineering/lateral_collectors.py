@@ -20,6 +20,7 @@ from __future__ import annotations
 
 from typing import Any
 
+from typehaus.engineering import delivery_working as DW
 from typehaus.engineering.item import LimitState, Quantity
 from typehaus.engineering.roof_moment import FrameCase
 from typehaus.engineering.torsion import Torsion, line_force_lb
@@ -167,7 +168,10 @@ def _head_collector(ctx: Any, case: FrameCase, torsion: Torsion | None, column_t
         f"{uplift:,.0f}/{share} / {connector.uplift_lb:,.0f} + in-plane {force:,.0f} / "
         f"{connector.lateral_lb:,.0f} + the torsional couple's {across:,.0f} / "
         f"{perpendicular:,.0f}. The in-plane force is this line's direct share "
-        f"({direct:,.0f} lb) WITH its torsional increment; 0.6D + 0.6W"))
+        f"({direct:,.0f} lb) WITH its torsional increment; 0.6D + 0.6W",
+        **DW.cw(DW.NET_UPLIFT),
+        working=DW.head_collector(uplift, share, connector.uplift_lb, force, direct,
+                                  connector.lateral_lb, across, perpendicular, unity, rule)))
 
 
 def _strap_line(ctx: Any, roof: Any, cases: list[FrameCase], torsions: dict[str, Torsion],
@@ -225,7 +229,8 @@ def _strap_line(ctx: Any, roof: Any, cases: list[FrameCase], torsions: dict[str,
         f"{length_ft:.1f}' = {force / length_ft:.1f} plf, {per_strap:.1f} lb per tie. "
         f"THE FORCE RUNS ALONG THE JOINT, not across it: the tabulated value is the STEEL "
         f"strength and the nail group behind it is direction-independent for a fastener "
-        f"under 1/4in (NDS 12.3). {allowable.fasteners}"))
+        f"under 1/4in (NDS 12.3). {allowable.fasteners}", **DW.cw(DW.WIND_ASD),
+        working=DW.strap_line(force, len(ties), per_strap, capacity, ties[0].size)))
     notes.append(
         f"THE E-W COLLECTOR AT THIS LINE CROSSES INTO {', '.join(others)}. No member of "
         f"{roof.tag} stands on it, so the line reaction is collected by the "

@@ -26,6 +26,7 @@ from __future__ import annotations
 
 from typing import Any
 
+from typehaus.engineering import delivery_working as DW
 from typehaus.engineering.item import LimitState, Quantity
 
 _M_PER_FT = 0.3048
@@ -72,7 +73,11 @@ def open_front_rows(ctx: Any, rows: Any, element: Any, joints: list[Any], v_alon
             "lb", f"the chord force {force:,.1f} lb crosses the joint through the end straps "
                   f"({ends[0].tag}, {ends[-1].tag}), added LINEARLY to each one's "
                   f"{share:,.1f} lb of across-joint tension (a conservative combination "
-                  "of the separate wind cases); reduced installed nail schedule"))
+                  "of the separate wind cases); reduced installed nail schedule",
+            **DW.cw(DW.WIND_ASD),
+            working=DW.end_strap_chord(force, share, capacity, len(joints),
+                                       element.diaphragm.delivers_to,
+                                       getattr(allowable, "uplift_lb", None))))
     for chord in chords:
         if chord is not None:
             _chord_plate_rows(ctx, rows, element, chord, ends, force, index)
@@ -127,7 +132,10 @@ def _chord_plate_rows(ctx: Any, rows: Any, element: Any, chord: Any, ends: list[
         f"{', '.join(p.tag for p, _c in rated)} ({rated[0][0].size}), the lower catalog "
         f"lateral direction: chord force {force:,.1f} lb"
         + (f" plus the plate's own {share:,.1f} lb collector share, added linearly across "
-           "the two wind cases" if share else "")))
+           "the two wind cases" if share else ""),
+        **DW.cw(DW.WIND_ASD),
+        working=DW.chord_block(force, len(rated), share, demand, min(c for _p, c in rated),
+                               rated[0][0].size)))
 
 
 def _chord_row(rows: Any, chord: Any, force: float, couple: float, spacing: float) -> None:
@@ -136,14 +144,16 @@ def _chord_row(rows: Any, chord: Any, force: float, couple: float, spacing: floa
     section = glulam_section(chord)
     if section is None:
         rows.notes.append(f"{chord.tag} carries a {force:,.1f} lb chord force and is not a "
-                          f"glulam this engine holds a tension value for; not graded")
+                          f"glulam with a tension value in the calculation; not graded")
         return
     area = section[0] * section[1]
     rows.states.append(LimitState(
         f"{chord.tag} chord tension, open front", force / area, FT_PSI * CM_FT * 1.6, "psi",
         f"M / W' = {couple:,.1f} / {spacing:.3f}' = {force:,.1f} lb over {area:.1f} in2 — "
         f"AWC NDS 2018 Supplement Table 5A 24F-V4 DF Ft {FT_PSI:.0f} psi x wet C_M {CM_FT} "
-        f"x C_D 1.6"))
+        f"x C_D 1.6", **DW.cw(DW.WIND_ASD),
+        working=DW.chord_tension(couple, spacing, force, area, force / area,
+                                 FT_PSI * CM_FT * 1.6, FT_PSI, CM_FT)))
 
 
 def _far_lines(ctx: Any, rows: Any, far: list, readings: dict, couple: float,
@@ -169,7 +179,10 @@ def _far_lines(ctx: Any, rows: Any, far: list, readings: dict, couple: float,
             force / surplus, line.unit_shear_asd_plf, "plf",
             f"{line.source}; M / d = {couple:,.1f} / {d:.3f}' = {force:,.1f} lb on the "
             f"{surplus:.3f}' surplus — the open front's couple, which the joint hands on "
-            f"rather than closes"))
+            f"rather than closes", **DW.cw(DW.WIND_ASD),
+            working=DW.couple_line(couple, d, force, reading[1], reading[2], surplus,
+                                   force / surplus, line.unit_shear_asd_plf, line.wall,
+                                   "E-W" if along == "x" else "N-S")))
 
 
 def _drift(ctx: Any, rows: Any) -> None:

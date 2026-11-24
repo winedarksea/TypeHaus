@@ -19,6 +19,7 @@ from __future__ import annotations
 
 from typing import Any
 
+from typehaus.engineering import delivery_working as DW
 from typehaus.engineering.item import LimitState, Quantity
 
 _M_PER_FT = 0.3048
@@ -110,5 +111,7 @@ def wall_sum_rows(ctx: Any, rows: Any, lines: tuple, far_walls: list[Any], along
             line.unit_shear_asd_plf, "plf",
             f"{line.source}; {text} = {total:,.1f} lb in plane on the {surplus:.3f}' of "
             f"surplus; the worst wind direction, every delivery in it added (the garage-100% and "
-            f"screen-100% canopy cases too): a conservative bound"))
+            f"screen-100% canopy cases too): a conservative bound", **DW.cw(DW.WIND_ASD),
+            working=DW.summed(parts, total, surplus, total / surplus, line.unit_shear_asd_plf,
+                              line.wall, name)))
         _overturning(ctx, rows, wall, total, provided, "all deliveries summed", required=False)

@@ -88,3 +88,27 @@ def pinned_post(*, title: str, length_ft: float, axial: str, lateral: str,
         "      //////  pier",
     ]
     return Figure(title, _fit(lines), caption)
+
+
+def diaphragm_on_joint(*, title: str, depth_ft: float, width_ft: float, along: str,
+                       across: str, couple: str, chord: str, chord_across: str = "",
+                       neighbour: str = "the neighbouring roof", caption: str = "") -> Figure:
+    """A deck in plan, held along one edge by a joint to its neighbour and free on the
+    opposite (open) edge: shear along and across the joint, the couple between the two,
+    and the chord force at the deck's two ends (SDPWS 4.2.5.2)."""
+    lines = [
+        f"  {neighbour} (the deck's only support)",
+        "  =S=====S=====S=====S=====S=====S=  joint: straps (S) and nailing",
+        "  ||                               ||  --> V_a = " + along,
+        "  ||   deck, plan view             ||",
+        "  ||                               ||  vv  V_x = " + across,
+        f"  ||  L' = {num(depth_ft)} ft deep{' ' * 15}||",
+        "  ||                               ||",
+        "  +--------- open front ------------+  free edge, W' = " + num(width_ft) + " ft",
+        "  chord at each end of the deck: T_ch = M / W' = " + chord,
+        "  couple M = V_a x its lever to the resultant = " + couple,
+    ]
+    if chord_across:
+        lines += ["  N-S: the first and last truss are the deck's chords,",
+                  "       T = V L / (8 d) = " + chord_across]
+    return Figure(title, _fit(lines), caption)

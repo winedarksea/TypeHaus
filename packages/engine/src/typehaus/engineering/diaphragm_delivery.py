@@ -32,6 +32,8 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any
 
+from typehaus.engineering import delivery_working as DW
+from typehaus.engineering import lateral_working as W
 from typehaus.engineering.canopy_service import DRY_UNDER_ROOFING
 from typehaus.engineering.item import LimitState, Quantity
 
@@ -55,6 +57,8 @@ class DeliveryRows:
     collector_shares: dict[str, float] = field(default_factory=dict)
     #: The joint strap's installed axial rating, lb, read once from the catalog in ``_straps``.
     strap_capacity_lb: float | None = None
+    #: The strap's published (uninstalled) axial allowable, lb, for the working.
+    strap_rated_lb: float | None = None
 
 
 def _xy_ft(element: Any) -> tuple[float, float] | None:
@@ -144,9 +148,12 @@ def delivery_rows(ctx: Any, element: Any, resolved_roof: Any, wind: Any,
         rows.states += [
             LimitState("open front, L'", depth, OPEN_FRONT_MAX_DEPTH_FT, "ft",
                        f"SDPWS-2015 §4.2.5.2 — the deck's dimension normal to its open side, "
-                       f"{depth:.3f}', against 25'"),
+                       f"{depth:.3f}', against 25'", **W.cw(W.GEOMETRY),
+                       working=W.open_front_depth(depth, OPEN_FRONT_MAX_DEPTH_FT)),
             LimitState("open front, L'/W'", depth / width, OPEN_FRONT_ASPECT_ONE_STORY, "",
-                       f"SDPWS-2015 §4.2.5.2, one-story: {depth:.3f}' / {width:.3f}'")]
+                       f"SDPWS-2015 §4.2.5.2, one-story: {depth:.3f}' / {width:.3f}'",
+                       **W.cw(W.GEOMETRY),
+                       working=W.open_front_aspect(depth, width, OPEN_FRONT_ASPECT_ONE_STORY))]
 
     spec = element.diaphragm
     v_along = shears.get(along, 0.0)
@@ -156,7 +163,9 @@ def delivery_rows(ctx: Any, element: Any, resolved_roof: Any, wind: Any,
     rows.states.append(LimitState(
         "joint boundary nailing, along", v_along / joint_len, spec.unit_shear_asd_plf, "plf",
         f"{spec.source}; {_direction(along)} {v_along:,.1f} lb along {joint_len:.2f}' of "
-        f"joint, where the last bay lands on {delivery.roof}'s frame"))
+        f"joint, where the last bay lands on {delivery.roof}'s frame", **W.cw(W.WIND_ASD),
+        working=W.joint_nailing(v_along, joint_len, spec.unit_shear_asd_plf,
+                                _direction(along))))
     _straps(ctx, rows, joints, v_along, v_across, along, joint_at, joint_len,
             resultants.get(along), element)
     _clips(rows, clips, v_along, along)
@@ -231,15 +240,19 @@ def _straps(ctx: Any, rows: DeliveryRows, joints: list[Any], v_along: float, v_a
         rows.missing.append(f"a published allowable for the joint strap `{joints[0].size}`")
         return
     rows.strap_capacity_lb = capacity
+    rated = rows.strap_rated_lb = allowable.uplift_lb
+    delivery = element.diaphragm.delivers_to
     n = len(joints)
     cite = allowable.citation.split(":")[0]
     rows.states += [
         LimitState(f"{joints[0].size} joint straps, across", v_across / n, capacity, "lb",
                    f"{cite}; {v_across:,.1f} lb of strap tension over {n} straps; "
                    f"capacity reduced for the installed end nail schedule; the straps are "
-                   f"{DRY_UNDER_ROOFING}")]
+                   f"{DRY_UNDER_ROOFING}", **W.cw(W.WIND_ASD),
+                   working=DW.strap_across(v_across, n, delivery, rated, capacity))]
     if resultant is None:
-        joint_attachment_rows(ctx, rows, element, joints, along, v_across / n)
+        joint_attachment_rows(ctx, rows, element, joints, along, v_across / n,
+                              parts=(v_across / n, None, None))
         return
     # The along-joint resultant sits off the joint; the strap line closes the couple.
     index = 0 if along == "x" else 1
@@ -254,10 +267,15 @@ def _straps(ctx: Any, rows: DeliveryRows, joints: list[Any], v_along: float, v_a
         f"{joints[0].size} joint straps, rotation couple", worst, capacity, "lb",
         f"the {_direction(along)} resultant stands {lever:.3f}' off the joint, M = "
         f"{v_along:,.1f} x {lever:.3f} = {couple:,.1f} lb-ft, taken as a linear couple over "
-        f"the strap stations (sum x^2 = {second:.1f} ft2); the straps are {DRY_UNDER_ROOFING}"))
+        f"the strap stations (sum x^2 = {second:.1f} ft2); the straps are {DRY_UNDER_ROOFING}",
+        **W.cw(W.WIND_ASD),
+        working=DW.strap_rotation(v_along, lever, couple, second,
+                                  max(abs(s - centre) for s in stations), worst, delivery,
+                                  rated, capacity)))
     chord_bound = couple / joint_len
     joint_attachment_rows(ctx=ctx, rows=rows, element=element, joints=joints,
-                          along=along, demand=v_across / n + max(worst, chord_bound))
+                          along=along, demand=v_across / n + max(worst, chord_bound),
+                          parts=(v_across / n, worst, chord_bound))
 
 
 def _clips(rows: DeliveryRows, clips: list[Any], v_along: float, along: str) -> None:
@@ -278,7 +296,8 @@ def _clips(rows: DeliveryRows, clips: list[Any], v_along: float, along: str) -> 
         f"{clips[0].size} plate clips, frame into wall", v_along / len(clips), min(values), "lb",
         f"{allowable.citation}; {_direction(along)} {v_along:,.1f} lb over {len(clips)} "
         f"clips at the LOWER of the two published directions, so no direction needs knowing. "
-        f"{allowable.fasteners}"))
+        f"{allowable.fasteners}", **W.cw(W.WIND_ASD),
+        working=DW.plate_clips(v_along, len(clips), clips[0].size, min(values))))
 
 
 def _surplus(ctx: Any, rows: DeliveryRows, wall_tag: str) -> tuple[str, float, float] | None:
@@ -302,7 +321,11 @@ def _line_rows(ctx: Any, rows: DeliveryRows, wall: Any, line: Any, force: float,
         float("inf"), line.unit_shear_asd_plf, "plf",
         f"{line.source}; IRC R301.1.3 — {line_tag} keeps its R602.10 grade for its own "
         f"building, and the {_direction(axis)} {force:,.1f} lb delivered is graded on the "
-        f"{surplus:.3f}' of surplus ({provided:.3f}' provided less {required:.3f}' required)"))
+        f"{surplus:.3f}' of surplus ({provided:.3f}' provided less {required:.3f}' required)",
+        **W.cw(W.WIND_ASD),
+        working=DW.line_shear(force, provided, required, surplus,
+                              force / surplus if surplus > 0 else float("inf"),
+                              line.unit_shear_asd_plf, line.wall)))
     if overturning:
         _overturning(ctx, rows, wall, force, provided)
 
@@ -345,7 +368,9 @@ def _overturning(ctx: Any, rows: DeliveryRows, wall: Any, force: float,
         f"{wall.tag} overturning, {label}", tension, capacity, "lb",
         f"{device.size} ({device.tag}); v = {force:,.1f} / {provided_ft:.3f} = "
         f"{force / provided_ft:.2f} plf over h {height:.3f}', NO dead load credited. The "
-        f"line's corner ends are R602.10.7 returns and take the same increment as detailing"))
+        f"line's corner ends are R602.10.7 returns and take the same increment as detailing",
+        **W.cw(W.WIND_NO_DEAD),
+        working=DW.overturning(force, provided_ft, height, tension, capacity, device.size)))
 
 
 def _receiving_roof(ctx: Any, rows: DeliveryRows, receiver: Any, resolved: Any,
@@ -389,11 +414,16 @@ def _receiving_roof(ctx: Any, rows: DeliveryRows, receiver: Any, resolved: Any,
                    f"{spec.source}; the {_direction(axis)} {shear:,.1f} lb enters along its "
                    f"edge at {resultant:.3f}' and splits by the lever rule, {to_lo:,.1f} lb "
                    f"to {w_lo.tag} and {to_hi:,.1f} lb to {w_hi.tag}, over {depth:.2f}' of "
-                   f"depth. The INCREMENT — its own roof shear is the prescriptive path's"),
+                   f"depth. The INCREMENT — its own roof shear is the prescriptive path's",
+                   **W.cw(W.WIND_ASD),
+                   working=DW.roof_increment(shear, resultant, lo, hi, to_hi, to_lo, depth,
+                                             max(to_hi, to_lo) / depth,
+                                             spec.unit_shear_asd_plf, receiver.tag)),
         LimitState(f"{receiver.tag} span-to-depth", span / depth, limit, "",
                    f"SDPWS Table 4.2.4, {'blocked' if spec.blocked else 'unblocked'}: "
                    f"{span:.2f}' between {w_lo.tag} and {w_hi.tag} over {depth:.2f}'",
-                   is_detailing=True)]
+                   is_detailing=True, **W.cw(W.GEOMETRY),
+                   working=W.deck_aspect(span, depth, limit, spec.blocked))]
     for wall, line, force in ((w_lo, l_lo, to_lo), (w_hi, l_hi, to_hi)):
         reading = _surplus(ctx, rows, line.wall)
         if reading is not None:

@@ -21,6 +21,7 @@ from __future__ import annotations
 
 from typing import Any
 
+from typehaus.engineering import delivery_working as DW
 from typehaus.engineering.canopy_service import DRY_UNDER_ROOFING
 from typehaus.engineering.item import LimitState, Quantity
 
@@ -85,7 +86,9 @@ def chord_rows(ctx: Any, rows: Any, element: Any, resolved_roof: Any, joints: li
             f"({(linear + chord_ew) / capacity:.2f} with the chord force); the end-strap pair "
             f"is kept because it needs no stiffness judgement across the joint. The straps are "
             f"{DRY_UNDER_ROOFING} (C_M 1.0); read at wet service (0.70) this row is "
-            f"{(pair + chord_ew) / (capacity * 0.70):.2f}"))
+            f"{(pair + chord_ew) / (capacity * 0.70):.2f}", **DW.cw(DW.WIND_ASD),
+            working=DW.end_strap_couple(v, lever, couple, strap_line, pair, chord_ew, capacity,
+                                        element.diaphragm.delivers_to, rows.strap_rated_lb)))
     placed = []
     for wall, line in far:
         e = [ctx.plan.by_tag(getattr(wall, n)) for n in ("start_node", "end_node")]
@@ -106,4 +109,8 @@ def chord_rows(ctx: Any, rows: Any, element: Any, resolved_roof: Any, joints: li
             f"{line.wall} joint couple, N-S case", force / surplus, line.unit_shear_asd_plf,
             "plf", f"{line.source}; M / d = {couple:,.1f} / {spacing_far:.3f}' = "
                    f"{force:,.1f} lb on the {surplus:.3f}' surplus — the screen-at-100% "
-                   f"case's couple, which the joint hands on rather than closes"))
+                   f"case's couple, which the joint hands on rather than closes",
+            **DW.cw(DW.WIND_ASD),
+            working=DW.couple_line(couple, spacing_far, force, reading[1], reading[2], surplus,
+                                   force / surplus, line.unit_shear_asd_plf, line.wall,
+                                   "N-S")))
