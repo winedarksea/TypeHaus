@@ -252,7 +252,7 @@ def _connector_states(ctx: EngineeringContext, pier: Any, connector: Any, wind: 
                 combination=W.GUARD_ASD[0], combination_factors=W.GUARD_ASD[1],
                 working=W.lateral_guard(guard, lateral, cd, connector.tie)))
 
-    built = _net_uplift(ctx, pier, notes)
+    built = _net_uplift_build(ctx, pier, notes)
     if built is None:
         return
     uplift, build = built
@@ -300,10 +300,16 @@ def _credit(connector: Any) -> str:
     return f"not raised for {connector.tie_count} parts"
 
 
-def _net_uplift(ctx: EngineeringContext, pier: Any, notes: list[str]
-                ) -> tuple[float, UpliftBuild] | None:
-    """0.6D + 0.6W on the roof this column carries, ASD lb up, with its build-up;
-    ``None`` with no roof."""
+def _net_uplift(ctx: EngineeringContext, pier: Any, notes: list[str]) -> float | None:
+    """0.6D + 0.6W on the roof this column carries, ASD lb up; ``None`` with no roof. The
+    lateral kinds read this number; the sheet's build-up is :func:`_net_uplift_build`."""
+    built = _net_uplift_build(ctx, pier, notes)
+    return None if built is None else built[0]
+
+
+def _net_uplift_build(ctx: EngineeringContext, pier: Any, notes: list[str]
+                      ) -> tuple[float, UpliftBuild] | None:
+    """:func:`_net_uplift` with the surrogate's own numbers, for the sheet."""
     from typehaus.engineering.column_head_uplift import roof_q_h, sealed_deck_uplift
     from typehaus.engineering.pier_basis import design_roof_dead_psf
     from typehaus.wind_tables import (
