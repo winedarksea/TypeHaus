@@ -185,68 +185,60 @@ LIVING_LIGHTING = [
     # The kitchen end of the same room. The cans left the backup tier on 2026-11-02 for
     # CKT-LT-MAIN; only the under-cabinet tape below rides it (notes/backup_power.md §5).
     #
-    # Two rows (2026-10-31), each in a FS-S-EAST mid-bay and on one x pitch of 3'-0" off the
-    # sink centre: CAN1-CAN3 at y=34'-0", between the uppers' face (34'-2 1/2") and the
-    # counter edge (33'-5 3/8"), CAN2 on the sink; CAN5-CAN8 at y=27'-4" over the peninsula
-    # worktop, ahead of both the cook in the aisle and the stools. CAN5 is the row's west end
-    # and lights the pantry and fridge faces 2'-10" off them. CAN3 stays west of
-    # PR-M-KITCH-VENT at x=32'-7".
-    # Task cans (A4, 25 deg) since 2026-10-31 at the sink (CAN2), the peninsula (CAN4/6/7/8)
-    # and the range front (CAN9); CAN10 is an A over the pantry aisle. Two legs:
-    # perimeter on ED-M-KITCH-SW, peninsula on ED-M-KITCH-SW-PEN.
+    # One x pitch of 3'-0" (22'-10", 25'-10", 28'-10", 31'-10"), every can in a FS-S-EAST mid-bay
+    # (y 24'-8", 27'-4", 30'-0", 32'-8"). North counter row CAN1-CAN3 at y=32'-8", 7 5/8" ahead
+    # of the counter front and 18 1/2" off the uppers' faces; CAN3 is 10" west of PR-M-KITCH-VENT
+    # (x=32'-8"). Peninsula row CAN5-CAN8 at y=27'-4" over the worktop; CAN5 is the aisle end, 2'-2"
+    # off the fridge/pantry faces. CAN9/CAN10 are the range and pantry-column cans, >=18" off
+    # every tall face. No can over the microwave landing (CAN4, retired 2026-11-24): CAN8, CAN9
+    # and the hood LED cover it.
+    # Task cans (A4, 25 deg) at the sink (CAN2) and peninsula (CAN6/7/8) and the range (CAN9); CAN10
+    # is an A over the pantry aisle. Two legs: perimeter on ED-M-KITCH-SW, peninsula on -SW-PEN.
     ElectricalDevice(uid="7WE319EHB5", tag="ED-M-KITCH-CAN5", kind=DeviceKind.LIGHT,
-                     position=pt(ft(23, 4), ft(27, 4)), type_ref="ED-T-LT-CAN4",
+                     position=pt(ft(22, 10), ft(27, 4)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-MAIN", room="RM-M-LIVING",
                      controlled_by=("ED-M-KITCH-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="Z256WYTAN6", tag="ED-M-KITCH-CAN6", kind=DeviceKind.LIGHT,
-                     position=pt(ft(26, 4), ft(27, 4)), type_ref="ED-T-LT-CAN4-TASK",
+                     position=pt(ft(25, 10), ft(27, 4)), type_ref="ED-T-LT-CAN4-TASK",
                      circuit="CKT-LT-MAIN", room="RM-M-LIVING",
                      controlled_by=("ED-M-KITCH-SW-PEN",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="T5YZRQ2P6K", tag="ED-M-KITCH-CAN7", kind=DeviceKind.LIGHT,
-                     position=pt(ft(29, 4), ft(27, 4)), type_ref="ED-T-LT-CAN4-TASK",
+                     position=pt(ft(28, 10), ft(27, 4)), type_ref="ED-T-LT-CAN4-TASK",
                      circuit="CKT-LT-MAIN", room="RM-M-LIVING",
                      controlled_by=("ED-M-KITCH-SW-PEN",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="QXW0T5DB2J", tag="ED-M-KITCH-CAN8", kind=DeviceKind.LIGHT,
-                     position=pt(ft(32, 4), ft(27, 4)), type_ref="ED-T-LT-CAN4-TASK",
+                     position=pt(ft(31, 10), ft(27, 4)), type_ref="ED-T-LT-CAN4-TASK",
                      circuit="CKT-LT-MAIN", room="RM-M-LIVING",
                      controlled_by=("ED-M-KITCH-SW-PEN",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="QTM0009AAA", tag="ED-M-KITCH-CAN1", kind=DeviceKind.LIGHT,
-                     position=pt(ft(26, 4), ft(34)), type_ref="ED-T-LT-CAN4",
+                     position=pt(ft(25, 10), ft(32, 8)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-MAIN", room="RM-M-LIVING",
                      controlled_by=("ED-M-KITCH-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="QTM000AAAA", tag="ED-M-KITCH-CAN2", kind=DeviceKind.LIGHT,
-                     position=pt(ft(29, 4), ft(34)), type_ref="ED-T-LT-CAN4-TASK",
+                     position=pt(ft(28, 10), ft(32, 8)), type_ref="ED-T-LT-CAN4-TASK",
                      circuit="CKT-LT-MAIN", room="RM-M-LIVING",
                      controlled_by=("ED-M-KITCH-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="QTM000BAAA", tag="ED-M-KITCH-CAN3", kind=DeviceKind.LIGHT,
-                     position=pt(ft(32, 4), ft(34)), type_ref="ED-T-LT-CAN4",
+                     position=pt(ft(31, 10), ft(32, 8)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-MAIN", room="RM-M-LIVING",
                      controlled_by=("ED-M-KITCH-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
-    # CAN4 is over the peninsula carousel's landing in front of the microwave, between the
-    # upper's face and the east counter edge.
-    ElectricalDevice(uid="QTM000CAAA", tag="ED-M-KITCH-CAN4", kind=DeviceKind.LIGHT,
-                     position=pt(ft(33, 10), ft(28, 8)), type_ref="ED-T-LT-CAN4-TASK",
-                     circuit="CKT-LT-MAIN", room="RM-M-LIVING",
-                     controlled_by=("ED-M-KITCH-SW-PEN",),
-                     mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
-    # The range front, 1 1/4" inside APPL-M-RANGE's face (32'-11 3/4"), 8 3/4" ahead of the
-    # hood, its 25 deg beam clear of the hood onto the front burners. x=33'-1" and not the
-    # planned 32'-10": PR-M-KITCH-VENT runs north-south in the bay at x=32'-7".
+    # The range can: 13 3/4" west of APPL-M-RANGE's face (32'-11 3/4"), off the body, midway between
+    # the rows; the hood LED lights the cooktop (the vent pipe at x=32'-8" blocks a can behind it).
     ElectricalDevice(uid="HP0FGG8J2G", tag="ED-M-KITCH-CAN9", kind=DeviceKind.LIGHT,
-                     position=pt(ft(33, 1), ft(31, 4)), type_ref="ED-T-LT-CAN4-TASK",
+                     position=pt(ft(31, 10), ft(30)), type_ref="ED-T-LT-CAN4-TASK",
                      circuit="CKT-LT-MAIN", room="RM-M-LIVING",
                      controlled_by=("ED-M-KITCH-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
-    # The pantry aisle, 17" off the PANTRY-S1/S2 fronts (33'-5 1/2"), north of the stools.
+    # The pantry aisle, 21 5/8" off the PANTRY-S1/S2 fronts (33'-5 1/2"), centred on their seam.
     ElectricalDevice(uid="KPZAFJ3357", tag="ED-M-KITCH-CAN10", kind=DeviceKind.LIGHT,
-                     position=pt(ft(32), ft(23, 4)), type_ref="ED-T-LT-CAN4",
+                     position=pt(ft(31, 10), ft(24, 8)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-MAIN", room="RM-M-LIVING",
                      controlled_by=("ED-M-KITCH-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
