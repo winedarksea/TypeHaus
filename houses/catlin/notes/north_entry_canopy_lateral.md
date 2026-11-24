@@ -14,7 +14,7 @@ adds nothing to them); `canopy_west_band.md` (the built west line); `canopy_gara
 
 ## §8a. What §8 grades, and where each stands on the built canopy
 
-1. **The chord force.** N-S: the end trusses' top chords (§8b). E-W: the glulam headers, 88.07 lb
+1. **The chord force.** N-S: the first and last canopy trusses' top chords, 764 lb (§8b). E-W: the glulam headers, 88.07 lb
    (`canopy_west_band.md` §6).
 2. **The collectors.** `DiaphragmSpec.collector_refs` names `BM-BW-RW` and `BM-BW-RE`; what is graded is the
    connection at each end, not the member (§8c-§8e).
@@ -27,27 +27,29 @@ adds nothing to them); `canopy_west_band.md` (the built west line); `canopy_gara
 
 ## §8b. The chord — delegated to the truss fabricator, not computed
 
-The N-S chords are the **top chords of the two end trusses**: 24 feet of 2x4, one plated splice at the peak,
-carrying `V L / (8 W)` of axial force, tension in one chord and compression in the other, **in addition to the
-gravity and drift case the chord is already designed for**:
+**Amended 2026-11-23 (review C-2, C-8; decision 19).** The N-S chords are the **top chords of the first and last
+canopy truss**, y 37.3333' and 41.3333', **4.000' apart** (not the deck's 6.0' depth): 24 feet of 2x4, one plated
+splice at the peak, carrying `V L / (8 d)` of axial force, tension in one chord and compression in the other, **in
+addition to the gravity and drift case the chord is already designed for**. L is the strap line from the screen's
+end to the east end strap, 23.2604' (the screen at 100% is in equilibrium only as that simple span):
 
 ```
-N-S, built canopy      1,034.49 x 24.0 / (8 x 6.0) = 517.2 lb
-unit test (§7f of the cast frame's V 1,189.4 lb)         = 594.7 lb
+N-S, built canopy      1,051.72 x 23.2604 / (8 x 4.000) = 764.5 lb       (was 1,034.49 x 24.0 / (8 x 6.0) = 517.2)
+unit test (§7f of the cast frame's V 1,189.4 lb)                           = 594.7 lb
 ```
 
-The E-W chords are the glulam headers, 88.07 lb, which is nothing.
+The engine prints it as `chord_force_y` on `lateral_system/RF-BW-CANOPY` (`diaphragm_chord.py`) and the order asks
+every canopy truss for it. The garage gable truss (y 43.281) is not named as the north chord: it would take a canopy
+force through a nailed deck edge (505 lb at its 5.95' spacing, if it were). The E-W chords are the glulam headers,
+88.07 lb, which is nothing.
 
 A truss chord is not a member this engine may size: its axial capacity comes out of the fabricator's own plate,
 web and lateral-brace layout at the same section, and the combined axial + bending interaction is the
-fabricator's chart. So the chord force goes on the **truss order** (S-001) through the existing
-`rafter/RF-BW-CANOPY` deferral rather than into a limit state here. Two things ride with it and are stated on the
-order, not assumed:
-
-* **the splice.** One plated splice at the peak has to carry the full chord force in tension.
-* **0.03" of splice slip is an ASSUMPTION and it is load-bearing.** It is the third term of SDPWS 4.2.2
-  (`DiaphragmSpec.chord_splice_slip`) and a share of the deck's N-S deflection; the fabricator confirms it or
-  supplies its own value, and a larger slip moves the deck deflection the rigid/flexible call rests on.
+fabricator's chart. So the chord force goes on the **truss order** (S-001, the TRUSS CRITERIA block) through the
+existing `rafter/RF-BW-CANOPY` deferral rather than into a limit state here. **The splice slip is no longer on the
+order**: both N-S paths are graded at 100% (the double envelope), so the rigid/flexible split never enters a ratio;
+`DiaphragmSpec.chord_splice_slip` survives only for the `cast` variant's deflection. The **end-strap couple** the
+same equilibrium needs is graded: `canopy_garage_diaphragm.md` §12c (549.4 lb at the end straps, 0.774).
 
 ## §8c. The west collector — the header, fed by the eave clips
 
@@ -272,8 +274,8 @@ The N-S column demand is 342.5 lb at the roof plane; `north_entry_piers.md` §9e
 
 ## Not graded here / still open
 
-* The truss end chords and the peak splice's slip (§8b): the truss fabricator's sealed design, an external
-  deliverable.
+* The truss end chords (§8b, 764 lb): the truss fabricator's sealed design, an external deliverable; the splice
+  slip is not asked for.
 * The cast and steel variants' current shears and base moments: `canopy_garage_diaphragm.md`.
 * The soils report: the soil class is presumed, and every record that reads it says so.
 

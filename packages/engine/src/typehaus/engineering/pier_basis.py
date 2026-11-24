@@ -154,6 +154,51 @@ class _Pier:
     #: (or the base is the column's own footing). A dowel develops in THAT concrete.
     base_fc_psi: float | None = None
     base_cover_in: float | None = None
+    #: The reaction the deck BEAM's own statics put on this column (``balcony_loads``): dead
+    #: and patterned live, and the planter's saturated dead weight on top. ``None`` where the
+    #: beam is not graded by statics, and the tributary rule stands. The planter is NOT in
+    #: ``deck_dead_lb``: it is a case (a planter over this beam or none), graded both ways.
+    deck_dead_lb: float | None = None
+    deck_live_lb: float | None = None
+    planter_lb: float = 0.0
+    #: The deck area this column carries by statics under full uniform load, ft2; 0.0 where the
+    #: beam is not graded by statics (the tributary stands).
+    statics_area_ft2: float = 0.0
+    #: The ASD wind shear this column's HEAD receives from the deck, plank edge and guard — not
+    #: the shaft's own wind, which acts below the head. 0.0 where it is not derived (the head
+    #: then reads ``M_wind / H``, exact only without a shaft term).
+    wind_head_shear_lb: float = 0.0
+    #: Its components, per column, ASD lb: the guard's share (acting at ``wind_guard_arm_ft``
+    #: above the column base) and the shaft's own wind (uniform over the column). The
+    #: deck band is the head shear less the guard. ``analytical/loads`` applies each where it
+    #: acts so its base moment is this record's.
+    wind_guard_shear_lb: float = 0.0
+    wind_shaft_shear_lb: float = 0.0
+    wind_guard_arm_ft: float = 0.0
+    #: The E-W wind on one column whatever the governing axis, ASD: base moment and total base
+    #: shear. Under E-W wind all four columns push both stems the same way, so the porch cannot
+    #: prop each stem against the other (`column_support`'s cantilever row).
+    wind_ew_base_moment_lb_ft: float = 0.0
+    wind_ew_base_shear_lb: float = 0.0
+    #: The deck band's share (fascia, beams, plank edge) and its centroid's height above the
+    #: column base, ft: that band acts above the column top, at the deck's centroid.
+    wind_deck_shear_lb: float = 0.0
+    wind_deck_arm_ft: float = 0.0
+    #: The resolved shaft's height, ft: the shaft's own wind acts over it, from the base.
+    wind_shaft_height_ft: float = 0.0
+
+    @property
+    def deck_dead_effective_lb(self) -> float:
+        """The deck's dead load on this column, planter excluded."""
+        if self.deck_dead_lb is not None:
+            return self.deck_dead_lb
+        return self.tributary_ft2 * DECK_DEAD_LOAD_PSF
+
+    @property
+    def deck_live_effective_lb(self) -> float:
+        if self.deck_live_lb is not None:
+            return self.deck_live_lb
+        return self.tributary_ft2 * DECK_LIVE_LOAD_PSF
 
     @property
     def gross_area_in2(self) -> float:
@@ -191,7 +236,13 @@ class _Pier:
         # than converted into an area and multiplied by a psf. A wall's weight is a fact
         # about its own layer stack, and turning it into equivalent deck area to run it back
         # through DECK_DEAD_LOAD_PSF would replace the number with a guess.
-        return (self.tributary_ft2 * DECK_DEAD_LOAD_PSF
+        return self.dead_unplanted_lb + self.planter_lb
+
+    @property
+    def dead_unplanted_lb(self) -> float:
+        """Dead load with no planter over the beam: the smaller case, which the
+        low-axial combinations take."""
+        return (self.deck_dead_effective_lb
                 + self.roof_tributary_ft2 * self.roof_dead_psf
                 + self.self_weight_lb + self.carried_dead_lb + self.wall_dead_lb)
 
@@ -203,7 +254,7 @@ class _Pier:
         summing the areas first would grade whichever is larger at the smaller number. See
         :func:`design_roof_snow_psf` for which snow this is and why.
         """
-        return (self.tributary_ft2 * DECK_LIVE_LOAD_PSF
+        return (self.deck_live_effective_lb
                 + self.roof_tributary_ft2 * self.roof_snow_psf)
 
     @property
@@ -824,7 +875,35 @@ def record_base_shear(tag: str, shear_lb: float, arm_ft: float) -> None:
     _SHEARS[tag] = (shear_lb, arm_ft)
 
 
-def _base_moments(ctx: EngineeringContext) -> dict[str, tuple[float, float, str]]:
+def _shaft_ft(ctx: EngineeringContext, posts: dict, tag: str) -> float:
+    """The resolved shaft's height, which ends under the beam, not the authored Post.height."""
+    solid = ctx.model.by_tag(tag)
+    if solid is not None and getattr(solid, "z1_m", None) is not None:
+        return (solid.z1_m - solid.z0_m) / 0.3048
+    return posts[tag].height.inches / 12.0
+
+
+def _wind_moment(comps: dict[str, float], ctx: EngineeringContext, posts: dict, tag: str,
+                 n: int, top_ft: float, guard_h: float, walking_ft: float, fascia_ft: float,
+                 deck: Any) -> tuple[float, dict[str, float], float]:
+    """``(moment, lever by band, guard arm)`` of one column's share of ``comps``, ASD lb-ft,
+    each band at its own lever above this column's resolved base: the deck band at its
+    centroid (walking surface less half the fascia), the plank edge just above it, the shaft
+    at half its own height, the guard at its centroid."""
+    column_ft = posts[tag].height.inches / 12.0
+    base_m = getattr(ctx.model.by_tag(tag), "z0_m", None)
+    base_ft = base_m / 0.3048 if base_m is not None else 0.0
+    guard_arm = top_ft - base_ft if base_m is not None else column_ft + guard_h
+    walk_rel = (walking_ft - base_ft) if base_m is not None else column_ft
+    plank_half = (deck.subfloor.thickness.meters / 0.3048 / 2.0
+                  if getattr(deck, "subfloor", None) else 0.0)
+    lever = {"deck": walk_rel - fascia_ft / 2.0, "plank edge": walk_rel - plank_half,
+             "columns": _shaft_ft(ctx, posts, tag) / 2.0,
+             "guard": guard_arm - guard_h / 2.0}
+    return sum(comps[k] * lever[k] for k in comps) / n, lever, guard_arm
+
+
+def _base_moments(ctx: EngineeringContext) -> dict[str, tuple]:
     """Post tag -> ``(wind ASD base moment, guard ASD base moment, how)``, in lb-ft.
 
     **Only for a column that IS the lateral system.** A deck with knee braces sheds its
@@ -873,7 +952,7 @@ def _base_moments(ctx: EngineeringContext) -> dict[str, tuple[float, float, str]
     from typehaus.wind_tables import MAX_VERIFIED_CASE_AB
 
     posts = {e.tag: e for e in ctx.plan.all_elements() if isinstance(e, Post)}
-    out: dict[str, tuple[float, float, str]] = {}
+    out: dict[str, tuple] = {}
     for deck in ctx.plan.all_elements():
         if not isinstance(deck, FloorSystem) or deck.service != "deck":
             continue
@@ -905,25 +984,54 @@ def _base_moments(ctx: EngineeringContext) -> dict[str, tuple[float, float, str]
             continue
         guard = wind.guard
         q_h, top_ft, ground_ft = wind.q_h_psf, wind.top_ft, wind.ground_ft
+        # The deck's own bands (fascia, beams) and what stands on it that they omit — the
+        # guard with its posts, the column shafts, the plank edge and the porch's closed
+        # plank edge (review B-06) — each at its own lever, per axis. The porch curtains are NOT a
+        # band: they are stowed in high wind (owner basis, `balcony_loads.CURTAIN_OWNER_BASIS`).
+        from typehaus.engineering.balcony_wind import (
+            Demand,
+            column_bands,
+            guard_band,
+            nearest,
+            plank_edge_band,
+        )
+        from typehaus.engineering.deck_tie_basis import deck_storey
+        from typehaus.model.trim import Fascia
+
+        shafts = [(t, size[0] / 12.0, _shaft_ft(ctx, posts, t)) for t in columns
+                  if (size := _round_size(posts[t].size)) is not None and posts[t].height]
+        guard_h = _bw_ft(guard.height)
+        fascia = nearest(ctx.plan, [posts[t] for t in columns], Fascia,
+                         deck_storey(ctx, deck))
+        fascia_ft = _bw_ft(fascia.depth) if fascia is not None else 0.0
+        walking_ft = _bw_ft(guard.base_elevation)
+        parts: dict[str, dict[str, float]] = {}
+        for axis, deck_shear in wind.shear_lb.items():
+            def shear(bands, axis=axis, q_h=q_h, height=top_ft - ground_ft):
+                return Demand(axis=axis, q_h_psf=q_h, height_ft=height,
+                              bands=tuple(bands)).storey_shear_lb(MAX_VERIFIED_CASE_AB)
+            parts[axis] = {
+                "deck": deck_shear,
+                "plank edge": shear(filter(None, [plank_edge_band(deck, axis)])),
+                "guard": shear(filter(None, [guard_band(ctx.plan, axis, guard)])),
+                "columns": shear(column_bands(shafts)),
+            }
+        totals = {axis: sum(comps.values()) for axis, comps in parts.items()}
         # The worse axis, and x on a tie: the first strict maximum, as it always was.
-        x_shear, y_shear = wind.shear_lb["x"], wind.shear_lb["y"]
-        worst_axis = "x" if x_shear > 0.0 and x_shear >= y_shear else "y"
-        worst_shear = wind.shear_lb[worst_axis]
+        worst_axis = "x" if totals["x"] > 0.0 and totals["x"] >= totals["y"] else "y"
+        n = len(columns)
 
         for tag in columns:
             column = posts[tag]
             if column.height is None:
                 continue
-            column_ft = column.height.inches / 12.0
-            per_column = worst_shear / len(columns)
-            wind_moment = per_column * column_ft
-            # Guard top down to the RESOLVED column base: beam, joists and plank stand
-            # between the column top and the walking surface, and all of it is lever.
-            solid = ctx.model.by_tag(tag)
-            base_m = getattr(solid, "z0_m", None)
-            guard_arm_ft = (top_ft - base_m / 0.3048 if base_m is not None
-                            else column_ft + _bw_ft(guard.height))
+            comps = parts[worst_axis]
+            worst_shear = totals[worst_axis]
+            per_column = worst_shear / n
+            geometry = (ctx, posts, tag, n, top_ft, guard_h, walking_ft, fascia_ft, deck)
+            wind_moment, lever, guard_arm_ft = _wind_moment(comps, *geometry)
             guard_moment = 200.0 * guard_arm_ft
+            ew_moment = _wind_moment(parts["x"], *geometry)[0]
             # The force and the arm behind that moment, for `engineering/column_base.py`.
             # IBC 1807.3.2.1 takes a FORCE and the height it acts at, and `P x h` has
             # infinitely many factorisations — this is the one the demand was built from.
@@ -932,17 +1040,28 @@ def _base_moments(ctx: EngineeringContext) -> dict[str, tuple[float, float, str]
             if guard_moment > wind_moment:
                 record_base_shear(tag, 200.0, guard_arm_ft)
             else:
-                record_base_shear(tag, per_column, column_ft)
+                record_base_shear(tag, per_column, wind_moment / per_column)
+            head_shear = (comps["deck"] + comps["plank edge"] + comps["guard"]) / n
+            parts_per_column = (head_shear, comps["guard"] / n, comps["columns"] / n,
+                                lever["guard"], ew_moment, totals["x"] / n,
+                                (comps["deck"] + comps["plank edge"]) / n,
+                                (comps["deck"] * lever["deck"]
+                                 + comps["plank edge"] * lever["plank edge"])
+                                / (comps["deck"] + comps["plank edge"]),
+                                _shaft_ft(ctx, posts, tag))
             out[tag] = (wind_moment, guard_moment, (
                 f"{'E-W' if worst_axis == 'x' else 'N-S'} wind on {deck.tag}: q_h "
                 f"{q_h:.1f} psf at {top_ft - ground_ft:.1f}' above the ground beneath "
                 f"({wind.basis_text}), ASD storey shear {worst_shear:,.0f} lb at C_f "
                 f"{MAX_VERIFIED_CASE_AB:.2f} (the Fig. 29.3-1 Case A/B ceiling, taken "
-                f"because the figure's own cell is not a value this repository holds), "
-                f"split over {len(columns)} fixed column(s) = {per_column:,.0f} lb each at "
-                f"the deck plane, {column_ft:.2f}' above this column's base. "
-                f"GUARD: IRC R301.5's 200 lb at the top of {guard.tag}, {guard_arm_ft:.2f}' "
-                f"above this column's base, taken wholly on one column rather than shared"))
+                f"because the figure's own cell is not a value this repository holds) = "
+                + " + ".join(f"{name} {comps[name]:,.0f}" for name in comps)
+                + f", split over {n} fixed column(s) = {per_column:,.0f} lb each, "
+                f"moment {wind_moment:,.0f} lb-ft at each band's own lever (the deck band "
+                f"at its centroid {lever['deck']:.2f}' above this column's base, each shaft at "
+                f"half its own {_shaft_ft(ctx, posts, tag):.2f}'). GUARD: IRC R301.5's 200 lb at "
+                f"the top of {guard.tag}, {guard_arm_ft:.2f}' above this column's base, taken "
+                f"wholly on one column rather than shared"), parts_per_column)
     from typehaus.engineering.roof_moment import roof_base_moments
 
     # ** THE WORSE OF THE TWO, NOT THE LAST ONE WRITTEN. ** A column can carry a deck AND
@@ -1032,6 +1151,16 @@ def _point_to_segment(point, a, b) -> float:
     return math.hypot(px - (ax + dx * t), py - (ay + dy * t))
 
 
+def _wind_parts(case: tuple | None) -> dict[str, float]:
+    """The ``_Pier`` wind-component fields from a ``_base_moments`` entry's fourth element."""
+    parts = case[3] if case is not None and len(case) > 3 else (0.0,) * 9
+    return {"wind_head_shear_lb": parts[0], "wind_guard_shear_lb": parts[1],
+            "wind_shaft_shear_lb": parts[2], "wind_guard_arm_ft": parts[3],
+            "wind_ew_base_moment_lb_ft": parts[4], "wind_ew_base_shear_lb": parts[5],
+            "wind_deck_shear_lb": parts[6], "wind_deck_arm_ft": parts[7],
+            "wind_shaft_height_ft": parts[8]}
+
+
 def cast_piers(ctx: EngineeringContext) -> list[_Pier]:
     """Every CAST-CONCRETE post standing on its own ``Footing`` or ``Pad``.
 
@@ -1083,6 +1212,9 @@ def cast_piers(ctx: EngineeringContext) -> list[_Pier]:
     tributaries = _deck_tributaries(ctx)
     snow_psf, snow_basis = design_roof_snow_psf(ctx)
     moments = _base_moments(ctx)
+    from typehaus.engineering.balcony_loads import column_statics
+
+    statics = column_statics(ctx)
 
     # A post standing on another post hands its whole load down. Collect it before the
     # piers are built so the pier below carries the share the N/A on the post above
@@ -1191,6 +1323,7 @@ def cast_piers(ctx: EngineeringContext) -> list[_Pier]:
             shared_wall_footing=on_wall,
             lateral_system=post.tag in moments,
             wind_base_moment_lb_ft=moments.get(post.tag, (0.0, 0.0, ""))[0],
+            **_wind_parts(moments.get(post.tag)),
             guard_base_moment_lb_ft=moments.get(post.tag, (0.0, 0.0, ""))[1],
             moment_basis=moments.get(post.tag, (0.0, 0.0, ""))[2],
             footing_width_in=footing.width.inches if footing is not None else 0.0,
@@ -1206,5 +1339,14 @@ def cast_piers(ctx: EngineeringContext) -> list[_Pier]:
             base_fc_psi=(fc_psi(concrete_spec_for(ctx.plan, base_el))
                          if base_el is not None else None),
             base_cover_in=(cover_for(ctx.plan, base_el)[0] if base_el is not None else None),
+            # Statics replace the equal split only where nothing else is handed to the post.
+            deck_dead_lb=(statics[post.tag].dead_lb
+                          if post.tag in statics and not handed_trib.get(post.tag) else None),
+            deck_live_lb=(statics[post.tag].live_lb
+                          if post.tag in statics and not handed_trib.get(post.tag) else None),
+            planter_lb=(statics[post.tag].planter_lb
+                        if post.tag in statics and not handed_trib.get(post.tag) else 0.0),
+            statics_area_ft2=(statics[post.tag].area_ft2
+                              if post.tag in statics and not handed_trib.get(post.tag) else 0.0),
         ))
     return sorted(out, key=lambda pier: pier.tag)

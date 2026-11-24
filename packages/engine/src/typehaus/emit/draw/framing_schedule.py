@@ -191,8 +191,9 @@ def _band_headers(model: ResolvedModel, floor: ResolvedFloor) -> tuple[tuple, fr
     and the child keys of every ply they use.
 
     The plies are the floor's own ``sister_joist`` members; the entry is the first one with
-    its profile spelled as the built-up beam (``2-1.75x11.875 LVL``), so the header schedule
-    and the plan key read it as one header, the way a wall's ``2-2x10`` reads.
+    its profile spelled as the built-up beam (``2-1.25x11.875 rim``: the edge rim plus its ply,
+    which the count includes), so the header schedule and the plan key read it as one header,
+    the way a wall's ``2-2x10`` reads.
     """
     from typehaus.resolve.band_headers import band_header, band_header_doors
 
@@ -205,7 +206,8 @@ def _band_headers(model: ResolvedModel, floor: ResolvedFloor) -> tuple[tuple, fr
         if wall is None:
             continue  # integrity.header_in_band reports it
         ply = found.plies[0]
-        out.append((wall, replace(ply, profile=f"{len(found.plies)}-{ply.profile}"), door.tag))
+        count = len(found.plies) + (1 if ply.profile.endswith(" rim") else 0)
+        out.append((wall, replace(ply, profile=f"{count}-{ply.profile}"), door.tag))
         plies.update(member.child_key for member in found.plies)
     return tuple(out), frozenset(plies)
 

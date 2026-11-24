@@ -24,6 +24,8 @@ import math
 from dataclasses import dataclass
 from typing import Any
 
+from typehaus.engineering import lateral_band_working as BW
+from typehaus.engineering.canopy_service import WET_CM
 from typehaus.engineering.item import LimitState, Quantity
 from typehaus.engineering.wood_roof_post import EMIN_WET_PSI, FC_WET_PSI
 
@@ -165,6 +167,11 @@ def slat_rows(ctx: Any, wall: Any, collector: Any, sb: SlatBand, states: list[Li
         f"or compression.")
     role = ROLE_KNEE_BRACE_EQUAL_WIDTH if el.connectors_per_end == 2 else ROLE_KNEE_BRACE
     allow = allowable_for_model(el.connector, role=role)
+    wet = _KBS1Z_WET_DFSP.get(role) if el.connector == "KBS1Z" else None
+    if wet is not None:
+        # The canopy's exposure rule: WET. C-C-2026 publishes the > 19% column; the slats and
+        # posts are KDAT Southern Pine, the DF/SP column.
+        allow = _with_f1(allow, *wet)
     capacity, basis = _f1_at_angle(allow, sb.angle_degrees)
     if capacity is None:
         missing.append(f"a published F1 along the brace for {el.connector!r} at "
@@ -172,19 +179,36 @@ def slat_rows(ctx: Any, wall: Any, collector: Any, sb: SlatBand, states: list[Li
     else:
         states.append(LimitState(
             f"{el.tag} slat end, {el.connector}", p, capacity, "lb",
-            f"{'two' if el.connectors_per_end == 2 else 'one'} {el.connector} each end, "
-            f"{allow.citation.split(';')[0]}; {basis}; {allow.species}; "
-            f"in-service MC <= 19% (the canopy's dry-service condition)"))
-    _slat_buckling(el, lay, p, states, missing)
+            f"{'two' if el.connectors_per_end == 2 else 'one'} {el.connector} each end; "
+            + (f"{_KBS1Z_WET_CITATION}; {basis}" if wet is not None else
+               f"{allow.citation.split(';')[0]}; {basis}; {allow.species}; NOT read wet"),
+            **BW.cw(BW.WIND_ASD),
+            working=BW.slat_end(sb, capacity, allow, el.connector, _KBS1Z_WET_CITATION
+                                if wet is not None else allow.citation.split(';')[0])))
+    _slat_buckling(el, lay, p, states, missing, sb)
     if el.corner_to_corner:
         _corner_bearing(el, lay, sb, states, missing)
     _centre_post(el, lay, sb, states, missing)
     _plate_screws(el, collector, wall, sb, states, missing)
     notes.append(
         f"BAND, {el.tag}: each chord takes {sb.chord_push_lb():,.1f} lb across the band from "
-        f"its bay (outward from a compression bay; wood_roof_post grades it); the header "
+        f"its bay (outward from a compression bay; the wood_roof_post sheet grades it); the header "
         f"couple from the slats is {sb.couple_lb_ft():,.1f} lb-ft. Vertical components on "
         f"the centre post cancel; h = {h:,.2f} lb an end.")
+
+
+#: C-C-2026 p. 324, KBS1Z table, in-service MC > 19%, DF/SP: connection type 1 (two per end,
+#: equal width) 1,055 lb at 45°, 835 at 30°/60°; type 2 (one per end) 470 / 395 (read
+#: 2026-11-23). Fn 1: (160), no further increase; fn 2: interpolate between the angles.
+_KBS1Z_WET_DFSP = {"knee_brace_equal_width": (1055.0, 835.0), "knee_brace": (470.0, 395.0)}
+_KBS1Z_WET_CITATION = ("Simpson C-C-2026 p. 324 KBS1Z, in-service MC > 19% (wet, the canopy's "
+                       "exposure rule), DF/SP column (KDAT SP members)")
+
+
+def _with_f1(allow, f1_45: float, f1_30_60: float):  # type: ignore[no-untyped-def]
+    import dataclasses
+
+    return dataclasses.replace(allow, lateral_f1_lb=f1_45, lateral_f1_30_60_lb=f1_30_60)
 
 
 def _f1_at_angle(allow, angle: float) -> tuple[float | None, str]:
@@ -201,7 +225,7 @@ def _f1_at_angle(allow, angle: float) -> tuple[float | None, str]:
                    f"and {allow.lateral_f1_30_60_lb:,.0f} lb at 30°/60°")
 
 
-def _slat_buckling(el, lay, p, states, missing) -> None:
+def _slat_buckling(el, lay, p, states, missing, sb) -> None:
     from typehaus.resolve.framing.profiles import cross_section
 
     if el.slat not in SLAT_DESIGN_VALUES:
@@ -221,7 +245,9 @@ def _slat_buckling(el, lay, p, states, missing) -> None:
         f"NDS §3.7, the longest braced slat {length_in:.2f}\" about its {d_in:g}\" face, l/d "
         f"{length_in / d_in:.2f}; {row} Fc {fc_psi:g} x wet {fc_cm} x "
         f"C_D {CD_WIND}, E_min {emin_psi:,.0f} x {emin_cm}: FcE {fce:.1f} psi, "
-        f"C_P {cp:.4f}"))
+        f"C_P {cp:.4f}", **BW.cw(BW.WIND_ASD),
+        working=BW.slat_buckling(sb, p, length_in, d_in, b_in, fc_psi, fc_cm, CD_WIND, emin_psi,
+                                 emin_cm, row)))
 
 
 def _corner_bearing(el, lay, sb, states, missing) -> None:
@@ -252,7 +278,10 @@ def _corner_bearing(el, lay, sb, states, missing) -> None:
             f"NDS §3.10.3 Hankinson on the brace at {math.degrees(grain):.3f}° to its grain, "
             f"Fc* {fc_star:g} and Fc-perp {fc_perp:g}: {f_theta:.1f} psi; the {label} across "
             f"its grain, Table 4D SP No. 2 timbers Fc-perp {POST_FC_PERP_PSI:g} x wet "
-            f"{POST_FC_PERP_CM}"))
+            f"{POST_FC_PERP_CM}", **BW.cw(BW.WIND_ASD),
+            working=BW.clipped_bearing(sb, label, force, contact_in, depth_in,
+                                       math.degrees(grain), fc_star, fc_perp, f_theta,
+                                       min(f_theta, fc_perp))))
 
 
 def _centre_post(el, lay, sb, states, missing) -> None:
@@ -265,8 +294,9 @@ def _centre_post(el, lay, sb, states, missing) -> None:
         return
     force = 2.0 * sb.landings("centre") * sb.per_end_lb
     span_ft = lay.height / _M_PER_FT
-    moment = force * span_ft / 8.0
-    reaction = force / 2.0
+    moment = m_uniform = force * span_ft / 8.0
+    reaction = half = force / 2.0
+    point = a_ft = m_point = 0.0
     basis = (f"both bays push it the same way: 2 x {sb.landings('centre')} x "
              f"{sb.per_end_lb:.2f} = {force:,.1f} lb uniform over {span_ft:.4f}'")
     if el.corner_to_corner:
@@ -277,7 +307,8 @@ def _centre_post(el, lay, sb, states, missing) -> None:
         a_ft = contact_ft / 2.0
         b_ft = span_ft - a_ft
         point = sb.per_end_lb
-        moment += point * a_ft * b_ft / span_ft
+        m_point = point * a_ft * b_ft / span_ft
+        moment += m_point
         reaction += point * b_ft / span_ft
         basis += (f", plus the compression bay's clipped end {point:.2f} lb at {a_ft * 12:.3f}\" "
                   f"below its top")
@@ -285,7 +316,10 @@ def _centre_post(el, lay, sb, states, missing) -> None:
     states.append(LimitState(
         f"{el.tag} centre post bending", fb, FB_WET_PSI * CD_WIND, "psi",
         f"{basis}, M = {moment:,.1f} lb-ft on a 6x6; "
-        f"Table 4D SP No. 2 timbers Fb {FB_WET_PSI:g} x wet C_M 1.0 x C_D {CD_WIND}"))
+        f"Table 4D SP No. 2 timbers Fb {FB_WET_PSI:g} x wet C_M 1.0 x C_D {CD_WIND}",
+        **BW.cw(BW.WIND_ASD),
+        working=BW.centre_post_bending(sb, force, span_ft, m_uniform, point, a_ft, m_point,
+                                       moment, fb, FB_WET_PSI * CD_WIND, FB_WET_PSI, CD_WIND)))
     allow = allowable_for_model(el.centre_post_tie)
     values = [v for v in (getattr(allow, "lateral_f1_lb", None),
                           getattr(allow, "lateral_f2_lb", None)) if v]
@@ -297,7 +331,11 @@ def _centre_post(el, lay, sb, states, missing) -> None:
         f"{el.tag} centre post end ties", reaction,
         el.centre_post_ties_each_end * min(values), "lb",
         f"the larger end reaction on {el.centre_post_ties_each_end} {el.centre_post_tie}, "
-        f"the lower lateral row; {allow.citation.split(';')[0]}"))
+        f"the lower lateral row; {allow.citation.split(';')[0]}", **BW.cw(BW.WIND_ASD),
+        working=BW.centre_post_ties(sb, half, reaction - half, reaction,
+                                    el.centre_post_ties_each_end, min(values),
+                                    el.centre_post_ties_each_end * min(values),
+                                    el.centre_post_tie)))
 
 
 def _plate_screws(el, collector, wall, sb, states, missing) -> None:
@@ -308,8 +346,8 @@ def _plate_screws(el, collector, wall, sb, states, missing) -> None:
         missing.append(f"an ER-192 wood row for {el.plate_fastener!r}, {el.tag}'s plate screws")
         return
     z, _side, w_per_in, thread, w_max = row
-    z_prime = z * CD_WIND
-    w_prime = min(w_per_in * thread, w_max) * CD_WIND
+    z_prime = z * CD_WIND * WET_CM
+    w_prime = min(w_per_in * thread, w_max) * CD_WIND * WET_CM
     half = el.plate_fasteners / 2.0
     lateral = sb.shear_lb / el.plate_fasteners
     contact = (f" The compression bay's clipped end presses {sb.vertical_per_end_lb:.2f} lb "
@@ -326,4 +364,9 @@ def _plate_screws(el, collector, wall, sb, states, missing) -> None:
             f"{el.plate_fasteners} {el.plate_fastener}: {lateral:.2f} lb lateral each, and the "
             f"tension bay's {sb.landings(which)} landings pull {withdrawal:.2f} lb out of each "
             f"of its {half:g}; NDS §12.4.1 at {math.degrees(alpha):.2f}° with Z' {z_prime:g}, "
-            f"W'p {w_prime:g} (C_D {CD_WIND}, dry service).{contact} {SDWS22_WOOD_CITATION}"))
+            f"W'p {w_prime:g} (C_D {CD_WIND}, C_M {WET_CM:g} wet by the canopy's exposure "
+            f"rule).{contact} {SDWS22_WOOD_CITATION}", **BW.cw(BW.WIND_ASD),
+            working=BW.plate_screws(sb, label, el.plate_fasteners, el.plate_fastener, lateral,
+                                    sb.landings(which), sb.vertical_per_end_lb, half,
+                                    withdrawal, resultant, math.degrees(alpha), z_prime,
+                                    w_prime, CD_WIND, WET_CM, z_alpha, row)))

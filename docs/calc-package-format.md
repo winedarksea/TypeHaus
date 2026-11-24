@@ -28,6 +28,9 @@ register. Use the CLI for exported packages and PDFs.
 ```
 out/calcs/
   README.md               index + how to read this package
+  00-summary.md           the reviewer's summary: criteria, the ten highest d/c, counts,
+                          presumed/authored inputs, what changed since the last issue, open
+                          items, and where each family lists what it does not cover
   00-cover.md             project, jurisdiction, date, model content hash, engine version,
                           where both gates stand, NOT-FOR-CONSTRUCTION banner
   01-design-criteria.md   wind / snow / ground / materials / bases
@@ -64,28 +67,26 @@ columns that was twelve copies of ACI 318-19 §22.4.2.1 with an element tag and 
 changed. A reviewer checking a family of members wants the clause once, the arithmetic
 once, and a **schedule** saying which member is which and which one governs.
 
-So `calcs/<kind>.md` carries:
+So `calcs/<kind>.md` carries a header table, then (the per-kind authoring rules are in
+[calc-sheet-pattern.md](calc-sheet-pattern.md)):
 
 1. **Scope** — what this family is
-2. **References** — every citation the whole family rests on, deduped, printed once and
-   numbered `R1`, `R2` …, which is how the appendix's limit-state tables cite one without
-   reprinting 400 characters of it per member
-3. **Member schedule** — one row per member: elements, governing limit state, demand,
-   capacity, d/c, status, coverage, seal — and under it, the pointer to
-   `appendix/<kind>.md`
-4. **The calculation, worked at the governing member** — the inputs as
-   `symbol = value unit`, then each limit state as its own substitution beside its ratio
-   and citation. Substitutions with units, because a row reading `9,461 / 7,150 = 1.32` is
-   checkable only by somebody who already knows what went into the 9,461
-5. **Result** — the family's counts, and the member the verdict comes from
-6. **Assumptions and exclusions** — a pointer to `04-assumptions.md` under this kind,
-   where the family's notes are printed collapsed with the items each reaches. Printed
-   there and here was 20 pages of one 108-page PDF
-7. **Open inputs** — per member, only the members that have any
-8. **Independent check** — the family's oracle notes and the tests that reproduce them
-9. **What this calculation does not cover** — this family's coverage word, over the
-   standing exclusions on `06-conventions.md`
-10. **Per-member fingerprints** — what a seal on any one member would be pinned against
+2. **References** — every citation the family rests on, near-duplicates collapsed into one
+   numbered `R<n>` with a values table, which is how the schedule, section 4 and the
+   appendix cite one without reprinting it
+3. **Member schedule** — one row per member: governing limit state, demand, capacity, d/c;
+   status, coverage and seal only when they differ between members (else in the header)
+4. **The calculation, worked at the governing member** — once per *template* (members
+   running the same limit states): the symbols in plain words, a free-body sketch, the
+   limit-state table, each state's steps (equation = numbers = result, with the clause),
+   and the load combinations used
+5. **Result** — the family's counts, the governing member, and the 1.000 limit
+6. **Stated bases and owner acceptances** — inputs resting on a decision, not a code row
+7. **Assumptions** — a pointer to `04-assumptions.md` under this kind
+8. **Open inputs** — per member; a deferred kind's designer and deliverable
+9. **Independent check** — the family's oracle notes
+10. **What this calculation does not cover** — what is not graded, why, who owns it and
+    what closes it; then one line of fingerprints for the seal form
 
 The governing member is picked by status first and ratio second: an INCOMPLETE member has
 no ratio to lose with and is a bigger fact about the family than an OK member at 0.98.
@@ -105,8 +106,9 @@ between two runs is taken over — they are machine data rather than the documen
 
 `haus calcs --pdf` leaves the appendix out and says so on its divider page, which names the
 folder the data is in: **a silent omission is exactly the defect `sheet_order`'s docstring
-exists to prevent.** `haus calcs --pdf --appendix` and `haus handoff --full` print the
-per-family tables (X-33 on catlin against the old X-192).
+exists to prevent.** `haus calcs --pdf --appendix` prints the per-family tables, and
+`haus handoff` does by default (`--no-appendix` drops them): a seal binds to the PDF, so the
+members' data has to be in it.
 
 **The boilerplate is said once.** Five strings — the draft-gate sentence, the load-case
 sentence, the "bold row governs" key, the limit-state table key and the coverage
@@ -178,26 +180,29 @@ mean less, not more.
 
 ## Deferred items
 
-**Thirty items in catlin** are computed by nothing, by decision. `engineering/deferred.py`
-declares each kind's designer of record, what they must produce and which permit-set line it
-unblocks, and `03-open-items.md` is generated straight off that table. They are exactly as
-blocking as they were before they had names; what changed is that the outstanding work is now
-an assignment rather than an absence.
+An item this engine computes nothing for has a kind in `engineering/deferred.py`: the designer
+of record, what they must produce and which permit-set line it unblocks. `03-open-items.md` is
+generated straight off that table, and `calcs/<kind>.md` for such a kind says the same. They
+are exactly as blocking as they were before they had names; the outstanding work is an
+assignment rather than an absence. Today catlin's are the trussed roofs (the fabricator's
+sealed component design) and the brick veneer anchors (the supplier's), and a seal over one
+pins the designer's own document, not a model fingerprint (`engineering.toml.draft` has the
+form, `engineering-external.toml.draft` the blocks).
 
-**Most of them are NOT the supplier's**, and this paragraph said the opposite until
-2026-09-18 — it read "a fabricator's or a supplier's sealed design governs" and named seven
-items, a count that had been stale through four separate expansions. Today: two trussed roofs
-and their uplift path are a fabricator's; the rest — the wall tops under the balcony's
-fixed-base columns, the court's veneer beam, the thermal-break transfer, the tiered apron,
-and (2026-09-18) the fixed bases' rotational stiffness and the column head joints — name the
-**structural engineer of record**, which is to say the person the handoff bundle is addressed
-to. A reviewer told "these are not yours" about twelve items that are theirs is the one
-sentence in a handoff that can cost a whole review cycle.
+**Most of them are the structural engineer of record's**, not the supplier's, and the
+designer is always the table's: a reviewer told "these are not yours" about items that are
+theirs is the one sentence in a handoff that can cost a whole review cycle.
 
-**An exact count does not belong in this document.** It went stale four times because a
-number about one house was written into the format's own specification; `haus engineering`
-and `03-open-items.md` are generated and are always right. The figure above is a sense of
-scale, and the day it disagrees with the CLI, trust the CLI.
+**What changed since the last issue** is diffed against an earlier package, never against the
+folder being overwritten (two runs of one model must stay byte-identical): `haus calcs --since
+<earlier package>` or `haus handoff --since <earlier package or bundle>`, defaulting to
+`houses/<name>/out/issued/` when a released package is kept there. With none, the summary says
+"First issue". The register page is sorted by d/c and carries each item's level and plan
+position and the number of limit states graded.
+
+**An exact count does not belong in this document.** A figure about one house, written into
+the format's own specification, went stale four times. `haus engineering` and
+`03-open-items.md` are generated and are always right; trust the CLI.
 
 **A deferral is not the only alternative to a calculation.** Where a manufacturer publishes
 a span table, reading a row is a *prescriptive* act and belongs in neither lane: the element

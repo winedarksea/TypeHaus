@@ -27,6 +27,7 @@ def test_report_is_the_same_package_and_lists_every_page(
         profile_name=context.profile.name,
         checklist=evaluate_permit_checklist(report, context.profile),
         model_revision="live-revision",
+        profile=context.profile, preferences=context.preferences,
     ))
     assert actual["files"] == expected
     cover = actual["files"]["00-cover.md"]

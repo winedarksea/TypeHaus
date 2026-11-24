@@ -54,6 +54,7 @@ from typehaus import (
 )
 
 from params.flooring import LVP_THICKNESS_IN
+from params.truss_orders import NE_FLOOR_TRUSS_ORDER
 from params.sill_seat_backers import ENTRY_SEAT_BACKERS
 from params.second_deck import _DEPTH as _JOIST_DEPTH
 from params.second_deck import (_JOIST, _JOIST_BEARING, _SUBFLOOR, _TRUSS, _TRUSS_BEARING,
@@ -311,7 +312,12 @@ WEST_FLOOR = FloorSystem(
                      # The x=18' plate is shared with FS-M-NE's trusses north of y=13'.
                      end_bearing=(("W-B-CS2", _JOIST_BEARING), ("W-B-CN2", _JOIST_BEARING)),
                      # The gable-end edge line is a 1 1/4" LSL rim board (owner, 2026-11-18).
-                     edge_rims=("lo",), sill_tie="A35Z", station_ties=5),
+                     edge_rims=("lo",), sill_tie="A35Z", station_ties=5,
+                     # ONE RIM BOARD RUNS PAST THE 18' SEAM (2026-11-23): FS-M-EAST's carries on
+                     # 12" west, to x 17'-0", so the splice is 20 1/3" from D-B-SUNKEN's west jamb
+                     # (TJ-8000 p.5: 12" or more beyond a rim-header opening) and not on the seam,
+                     # 8 1/3" from it. This field's rim stops where that one starts.
+                     edge_rim_trim=(inch(0), inch(11.25))),
     subfloor=DeckLayer(material_ref="plywood-subfloor", thickness=_SUBFLOOR,
                        nailing=SUBFLOOR_FASTENING),
     published_span=TJI_230_FLOOR_SPAN,
@@ -372,6 +378,17 @@ STAIR_FLOOR = FloorSystem(
                        nailing=SUBFLOOR_FASTENING),
     published_span=TJI_230_FLOOR_SPAN,
     ceiling_below=_CEILING_GWB,
+    # W-B-N2's wall-top restraint (decision 23): FO-M-STAIR's north trimmer pack is a FLAT beam
+    # (`code.MN_1309_0404_wall_top`, notes/main_floor_truss_basis.md §4a). Plies bent flatwise do
+    # not act as one section, so two 1 3/4" plies fail it (d/c 1.29); a third, in the 1 7/8" gap
+    # between the pack and the LSL rim, passes it (0.86). Its 3 plies are tied by two rows of
+    # Simpson SDW22500 (5") screws through the south face at 19.2" o.c. (TJ-9000 p.28 L17, 3-ply).
+    reinforcements=(JoistReinforcement(
+        at=pt(inch(168), inch(429.5)), plies=2, member="1.75x11.875 LVL", blocking=False,
+        extent=(inch(120), inch(215.25)),
+        source="third ply of FO-M-STAIR's north trimmer pack, laid against the LSL rim: the wall-top "
+               "restraint of W-B-N2 as a flat beam; Microllam 2.0E, ESR-1387 plank orientation",
+        fastening=PlyFastening(fastener="screw", rows=2, spacing=inch(19.2), faces="one")),),
     outline=_rect(_STR_X, _MECH_Y, _CENTRE_X, _HOUSE),
     openings=("FO-M-STAIR",),
     source="catlin main floor, over the stair shaft — same joists as FS-M-WEST, spanning "
@@ -393,7 +410,8 @@ EAST_FLOOR = FloorSystem(
                      # (y 0..10'-0") and W-B-CS3 (10'-0"..13'-10").
                      bearing_refs=("W-B-CS", "W-B-CS3", "W-B-E1"),
                      # The gable-end edge line is a 1 1/4" LSL rim board (owner, 2026-11-18).
-                     edge_rims=("lo",), sill_tie="A35Z", station_ties=5),
+                     edge_rims=("lo",), sill_tie="A35Z", station_ties=5,
+                     edge_rim_extend=(inch(12), inch(0))),
     subfloor=DeckLayer(material_ref="plywood-subfloor", thickness=_SUBFLOOR,
                        nailing=SUBFLOOR_FASTENING),
     published_span=TJI_230_FLOOR_SPAN,
@@ -401,16 +419,17 @@ EAST_FLOOR = FloorSystem(
     outline=_rect(_CENTRE_X, _ZERO, _HOUSE, _SEAM_Y_S),
     # ** D-B-SUNKEN'S HEADER IS IN THIS BAND (2026-10-31). ** W-B-S3-FR bears this deck's
     # y=0 edge line but runs PARALLEL to the joists, so the 63 5/16" opening under it is
-    # carried by a flush 2-ply 1 3/4" x 11 7/8" Microllam LVL beside the LSL edge rim, seated
-    # on the two 4-stud jamb packs. NOT a bearing ref: resolve/floors.py would cut every
-    # joist at that line. Graded as `band_header/D-B-SUNKEN` (notes/sunken_door_band_header.md).
+    # carried by the LSL edge rim and ONE ply of the same stock behind it (2026-11-23, decision
+    # 12; the 2-ply 1 3/4" LVL is gone): TJ-8000 (March 2025) p.7, 2-ply 1 1/4" 1.3E LSL
+    # 11 7/8", a published header row, graded by `structural.rim_header`
+    # (notes/sunken_door_band_header.md). The ply runs pack to pack and is D-M-PORCH's seat
+    # backer too (params/sill_seat_backers.py). NOT a bearing ref: resolve/floors.py would cut
+    # every joist at that line.
     reinforcements=(JoistReinforcement(
-        at=pt(inch(256), inch(3.25)), plies=3, member="1.75x11.875 LVL", blocking=False,
+        at=pt(inch(256), inch(2.75)), plies=2, member="1.25x11.875 rim", blocking=False,
         extent=(inch(218.34375), inch(293.65625)),
-        source="flush band header over D-B-SUNKEN (Door.header_in_band) — 2-ply Microllam "
-               "LVL 2.0E, Weyerhaeuser TJ-9000 (July 2026)",
-        # TJ-9000 p.30 (top-loaded, 2 plies of 1 3/4"), nailed straight to the LSL edge rim:
-        # no TJ-4000 p.28 filler since the rim is solid (2026-11-18).
+        source="2-ply LSL rim header over D-B-SUNKEN (Door.header_in_band): the edge rim and one ply of 1 1/4\" x 11 7/8\" rim stock, Weyerhaeuser TJ-8000 (March 2025) p.7",
+        # TJ-8000 p.7 (2-ply, 1 1/4" plies, top load): 10d in 3 rows at 12", one face.
         fastening=PlyFastening(fastener="10d", rows=3, spacing=inch(12), faces="one")),
         *_wall_top_blocks("W-B-S4", (inch(350), inch(398)), _S_WALL_LINES)),
     # RM-M-LIVING's fireplace piers pass through this deck in the pockets between joists
@@ -513,6 +532,7 @@ NE_FLOOR = FloorSystem(
     reinforcements=(*_N_WALL_BLOCKING, _PENINSULA_TRUSS, _PENINSULA_BACK_TRUSS),
     strongbacks=_STRONGBACKS,
     published_span=TRIFORCE_OJ418S_FLOOR_SPAN,
+    truss_order=NE_FLOOR_TRUSS_ORDER,
     ceiling_below=_CEILING_GWB,
     outline=_rect(_CENTRE_X, _SEAM_Y, _HOUSE, _HOUSE),
     source="catlin main floor, east half north of y=13' — 11 7/8\" open-web floor trusses "

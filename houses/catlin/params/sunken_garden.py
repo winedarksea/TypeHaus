@@ -94,7 +94,7 @@ from typehaus.resolve.railings.fascia_layout import fascia_stations
 from typehaus.resolve.railings.guard_line import offset_path
 from typehaus.quantities import m
 from typehaus.model.structure import CompliantLayer
-from params.column_heads import HETA20Z_PAIR_HEAD, STANDOFF_PACK_IN
+from params.column_heads import HETA20Z_PAIR_HEAD_1_PLY, STANDOFF_PACK_IN
 from params.cladding import HOUSE_NS_OUTBOARD_IN
 from plan.assemblies.board_batten import BBD_BAND_JOINT, BOARD_BATTEN_DEPTH
 from params.landscape_walk import D_X0 as WALK_D_X0
@@ -676,16 +676,21 @@ _CAST_COLUMN_CAGE = ReinforcementSpec(
     source='8" cage, (4) #5 + #3 rings @ 10", one of ten house-wide; notes/sunken_garden_piers.md §4, balcony_moment_columns.md §7',
 )
 # The four CORNER columns are fixed at the base, so the same cage plus the dowels that fix it:
-# a #5 L at each vertical, hooked into the W-SG-W1/E1 wall top and lapped class B above it
-# (balcony_moment_columns.md §7; laid out by resolve/rebar, decision #75 D6).
-# `embedment` 24" clears straight ld 21.2" at 5,000 psi and `joint_surface` is §7's 1/4"
-# roughening — both graded in §11 (`column_support/W-SG-W1`/`-E1`).
+# a STRAIGHT #5 at each vertical (no hook is credited), cast 48" into the W-SG-W1/E1 stem and
+# standing 30" above it to lap class B into the column (balcony_moment_columns.md §7, §21;
+# laid out by resolve/rebar, decision #75 D6). `embedment` is 48" since 2026-11-23 (owner
+# decision 7, review B-05): the developed length is 12.7" on §25.4.2.4's general equation
+# (21.2" on Table 25.4.2.3's simplified row) and the longer bar carries the column moment
+# well below the head, which `column_support`'s stem rows grade. `projection` 30" is the lap
+# the class B splice (16.6") is graded against. `joint_surface` is §7's 1/4" roughening —
+# graded in §11 (`column_support/W-SG-W1`/`-E1`).
 _MOMENT_COLUMN_CAGE = ReinforcementSpec(
     bars=(
         BarSpec(role="vertical", bar=5, count=4),
         BarSpec(role="ties", bar=3, spacing=inch(10.0)),
-        BarSpec(role="dowels", bar=5, embedment=inch(24.0), joint_surface="roughened",
-                note="one per vertical, class B lap into the column"),
+        BarSpec(role="dowels", bar=5, embedment=inch(48.0), projection=inch(30.0),
+                joint_surface="roughened",
+                note="one per vertical, straight, class B lap into the column"),
     ),
     cover=inch(2.0),
     lap_class="B",
@@ -828,13 +833,19 @@ WALLS = [
     #
     # W-SG-W1/E1 are SUPPORTED TOP AND BOTTOM. Whether a porch deck counts as *permanent
     # lateral support* at the head of a wall holding 9'-9" of fill is a judgment about the
-    # real structure: this head is not a deck edge resting alongside a wall — it is a beam
-    # pocket cast INTO it. Both back beams and both front beams die into these two walls in
-    # HUCQ410-SDS concealed-flange hangers (CN-SG-HGR-W/E, -FW/-FE), the porch joists span
-    # between those beams, and FS-SG-PORCH's plank sheet ties the whole diaphragm together.
-    # The bottom is the garden slab bearing at their foot. That is a continuous load path in
-    # both directions at both ends, which is what R404.1.2(8) presumes and what the free
-    # retaining walls south of here (W2/E2/S) do not have.
+    # real structure. The head is held by the PORCH DIAPHRAGM: two treated 2x12 ledgers
+    # (`BM-SG-LDGW`/`-LDGE`) on these walls' court faces, 9 stainless Titen HD each, the porch
+    # joists hung between them in LUS210SS hangers, and FS-SG-PORCH's plank tying the field
+    # together, 16'-9" face to face. (The back and front beams, their HUCQ410-SDS hangers and
+    # the beam pockets this comment used to describe were retired 2026-09-22.) The bottom is
+    # the garden slab bearing at their foot. The same head props the RETAINED SOIL's thrust
+    # (`column_support`): both walls are pushed INWARD, so each stem presses on its ledger, the
+    # ledger on the joist ends, and the joists carry it across as struts, in COMPRESSION, by
+    # direct bearing; the ledger anchors and hanger fasteners take none of it. No balcony column
+    # props on this head (E-W wind has no prop). `AN-SG-LEDGER-DOWELS` keeps the drill off the
+    # dowels, and the porch must be framed before the two sides are backfilled together.
+    # That is a continuous load path in both directions at both ends, which is what R404.1.2(8)
+    # presumes and what the free retaining walls south of here (W2/E2/S) do not have.
     #
     # These walls resolve 9'-1 7/16" tall over 6.3' of unbalanced fill, which the check
     # answers on Table R404.1.2(8)'s 10' wall x 7' backfill row — the last one it publishes,
@@ -908,7 +919,8 @@ WALLS = [
     # at 0.99 of ACI's threshold on a ±1/4" bearing tolerance. It was always cast on the
     # bed, so the span was an assumption; FB-SG-BRKBM now states the bed, and
     # `engineering/veneer_beam` skips a wall a bedding hosts. Its ends still run into the toes
-    # with the steel kept as nominal. Nothing grades its bearing (~0.5 ksf); nor W-SG-ARCH's.
+    # with the steel kept as nominal. `structural.veneer_bed_bearing` grades its bearing (2026-11-23:
+    # resultant 2.3" off a 12" contact, outside the kern, peak 1.06 of 2.0 ksf; note §6l); not W-SG-ARCH's.
     #
     # Flush on the house strips: board -4"..-6", concrete -6"..-18", and W-B-BRICK's back on
     # the concrete's north face, 6 1/2" off the backup studs (`_y_ax_brkbm` above).
@@ -1245,9 +1257,18 @@ _STRIP = (_RETAINING_FOOTING_WIDTH_IN, _RETAINING_FOOTING_OFFSET_IN, _RETAINING_
 # body §11m.2): into W1/E1 (one pour, no cold joint — but restraint cracking does not ask)
 # and into FT-SG-S. Each splice is a class B lap beside the bar, through both covers, and a
 # class B lap on into the neighbour, so the side line keeps a steel tie after it cracks.
+# ** 3 #5 PER EDGE (2026-11-23, owner, gate G3; free body §15d). ** The side footing spans
+# in plan from FT-SG-S to the strut carrying its wall's whole thrust; the edge bundles are
+# that plan beam's ties (toe edge sagging, heel edge hogging at FT-SG-S), d/c 0.50. Laid
+# first, so they sit directly on the transverse bars; lapped class B into both neighbours.
+_PLAN_TIES = BarSpec(role="bottom-y", bar=5, count=3,
+                     note="3 #5 bundled at EACH edge: the footing's plan-bending ties")
+
+
 def _spliced_mat(*into: str) -> ReinforcementSpec:
+    base = _RETAINING_FOOTING_MAT.bars
     bars = tuple(b.model_copy(update={"continues_into": into}) if b.role == "bottom-y" else b
-                 for b in _RETAINING_FOOTING_MAT.bars)
+                 for b in (*base[:2], _PLAN_TIES, *base[2:]))
     return _RETAINING_FOOTING_MAT.model_copy(update={"bars": bars})
 
 
@@ -2360,7 +2381,7 @@ for _i, _x in _PILLAR_X.items():
                             supported_by=_bears_on,
                             vertical_reinforcement=SPEC.corner_column_cage,
                             reinforcement=_MOMENT_COLUMN_CAGE,
-                            head_connector=HETA20Z_PAIR_HEAD,
+                            head_connector=HETA20Z_PAIR_HEAD_1_PLY,
                             assembly="SUNKEN_GARDEN_COLUMN_12"))
 
 # --- public geometry for params/porch_guards.py ---------------------------------------------
@@ -2811,6 +2832,9 @@ _BOARD_PRODUCT = dict(
     # blockout, never cast against. AN-SG-PLACEMENTS / AN-SG-BLOCKOUTS say so on the drawing,
     # which is why the ref is now load-bearing: stripped without it is a named missing input.
     formed_and_stripped=True,
+    # G8 (owner, 2026-11-23): set, with the veneer ties, after the three retained sides are
+    # backfilled, cut to the as-built slot (AN-SG-PLACEMENTS / AN-SG-BLOCKOUTS print it).
+    set_after_backfill=True,
     placement_sequence_ref="AN-SG-PLACEMENTS",
     # Basis 9 (2026-09-22, owner; free body §11l): 1/2" of it is a closed-cell EPDM sponge
     # whose sheet caps the stress, so no verdict reads the ESTIMATED modulus above. The beam's
@@ -2887,16 +2911,16 @@ CONNECTORS = []
 # to the exterior environment (`notes/column_head_connector_options.md`).
 #
 # ``elevation`` is the column TOP, the pour the spoons are cast into and the HETA's own datum
-# (one pack under the soffit since 2026-10-31). The straps are field-trimmed at the glulam top
-# (`AN-SG-HETA-TRIM`).
+# (one pack under the soffit since 2026-10-31). Each strap is WRAPPED over the glulam top, not
+# trimmed (owner decision 8, 2026-11-22; `AN-SG-HETA-TRIM`).
 _CORNER_SEAT_BEAM = {("R", 1): "BM-SG-BLW", ("F", 1): "BM-SG-BLW",
                      ("R", 3): "BM-SG-BLE", ("F", 3): "BM-SG-BLE"}
 #
 # ** TWO ANCHORS PER COLUMN, ONE EACH FACE OF THE BEAM, SINCE 2026-09-14. ** A one-sided tie
 # is an ECCENTRIC rotation restraint and NDS 3.3.3 wants beam ends restrained. FL11473 Table
-# 3 rates the HETA pair as ONE installation on a "2- or 3-ply" member; a 3-1/2" glulam is
-# that by width, not ply count — a reading the options note flags. Read as 1-ply, the
-# lateral drops to Table 2's 340 lb and the guard still clears (200 / 212.5).
+# 3 rates the HETA pair as ONE installation; a 3-1/2" glulam is ONE PLY, so the pair is graded
+# on Table 3's 1-ply columns (1,920 / F1 1,115 / F2 900 — `params/column_heads.py`, owner
+# decision 8) and its straps are wrapped over the beam top.
 #
 # Each spoon sits 1-3/4" off the axis, 4-1/4" from the edge of the 12" round (min 1-1/2").
 # Authored at the beam FACES, where each strap nails on; two markers at one point would
@@ -3042,16 +3066,19 @@ BALCONY_LEADER = Downspout(
     diameter=inch(_SG_LEADER_DIA_IN), material="metal-dark-kstyle",
     gutter_ref="TR-SG-GUTTER", discharge_ref="daylight",
 )
-# ** TR-SG-RUNNEL: A 4" x 3" OPEN U-CHANNEL IN PLACE OF THE AB CAP ON W-RG-EAST-BALCONY. **
-# Seated on the top course (rim +3"), closed at its west end clear of PT-SG-BF3, falling
-# 1/4 in/ft east along the return to the corner block, south 1'-6" along W-RG-EAST's top,
-# then east through a bracketed 12" scupper past its yard face, so it lets go 3'-0" south of
+# ** TR-SG-RUNNEL: A 4" x 3" OPEN U-CHANNEL SEATED ON THE AB CAPSTONES OF W-RG-EAST-BALCONY. **
+# Seated on the cap (rim +3"; the cap top is the court datum), closed at its west end clear of
+# PT-SG-BF3, falling 1/4 in/ft east along the return to the corner block, south 1'-6" along
+# W-RG-EAST's cap, then east through a bracketed 12" scupper past its yard face and no further
+# (nothing unsupported, owner 2026-11-24). The water lands ~0.8' past the lip, ~1.8' off the
+# toe, on FURN-SG-SPLASH-PAD (plan/landscape.py), a river-rock pad that spreads it onto the
+# lawn: the AB Table 2.1 "extra precautions" (`structural.srw_gravity_chart`). Lets go 3'-0"
+# south of
 # SL-SG-STAIRPAD's edge rather than 1'-6" (St Paul DSI: no icy hazard on a walkway). Square
 # legs, not a diagonal: the open-channel resolver bands each leg on its own axis. ~17 gpm off 200 sf at 8 in/hr against
-# ~35 gpm at half depth. It lands in FURN-SG-SPLASH-BASIN (plan/landscape.py), which spills
-# south onto lawn. Winter icing is accepted; heat trace was refused for the leader already.
+# ~35 gpm at half depth. Winter icing is accepted; heat trace was refused for the leader already.
 # No host_ref: integrity.edge_run_host wants a hosted run's top within 1" of the wall top,
-# and this rim is 3" over it. Nothing grades the runnel or the basin; tests pin both
+# and this rim is 3" over it. Nothing grades the runnel itself; tests pin it and the pad
 # (test_drainage_elements.py).
 _RUNNEL_Y = _SG_GUTTER_Y
 _RUNNEL_PATH = (pt(ft(27, 7), ft(_RUNNEL_Y)), pt(ft(31), ft(_RUNNEL_Y)),
@@ -3160,7 +3187,7 @@ BALCONY_REAR_FLASH = [
 SEQUENCE_NOTES = [
     Annotation(
         uid="SGAN01AAAA", tag="AN-SG-PLACEMENTS", position=pt(ft(_cx), ft(-20)),
-        text="THREE PLACEMENTS, NOT FOUR — AND THE ORDER IS THE DESIGN. (1) FOOTINGS AND STRUT: the five strip footings FT-SG-W1/E1/W2/E2/S and the 12in x 12in strut W-SG-ARCH in one placement, all on one bed plane — the court loop is closed before any wall is formed. FT-SG-W2/E2's 6 #4 longitudinals are spliced across both of their joints, into FT-SG-W1/E1 and into FT-SG-S (a 50in #4 splice bar beside each, class B each side). The court has no column pads since 2026-09-22 — the porch spans wall to wall on two ledgers — so nothing in this court is dug below the wall beds. (2) WALLS AND VENEER BEAM: all five court walls and W-SG-BRKBM, one form height (every wall top is the porch datum 0ft 0in), one strip-and-set. W-SG-BRKBM IS CAST MONOLITHIC WITH THE TWO SIDE WALLS, NOT DOWELLED INTO THEM (settled 2026-09-14): it is a blockout inside this same form between -8ft 6-7/16in and -10ft 0-3/16in, cast on the drained stone of FB-SG-BRKBM (a soil-supported veneer footing; its ends run into FT-SG-W1/E1's toes) with its 2in board flush on the house strips' south face; its 2 #4 hangers run straight into the walls, its 2 #5 bottom bars lap (contact, beside them) the 2 #5 dowels cast in each toe, and its #3 cage ties stop at the toe faces. It was named in NO placement until now, while notes/sunken_garden_veneer_beam.md called it cast in one section and chipped-and-dowelled in another - and there is no existing pour to chip, because this placement is where those side walls are themselves cast. THE HOUSE BASEMENT WALL MUST BE POURED, CURED AND SURVEYED FIRST — every thermal-break blockout is set against its face (AN-SG-BLOCKOUTS; the dowels that once needed it are deleted). (3) RIM SLAB AND COLUMNS: SL-SG-FLOOR with all four 12in cast rounds in the same placement, the four balcony corners braced off the court floor and the wall tops rather than off porch framing that does not exist yet. EVERY COURT PLACEMENT NEEDS THE BOOM PUMP and the pumping allowance is already recorded as probably short. This saves one mobilisation and one below-minimum load against the four-pour sequence it replaces"),
+        text="THREE PLACEMENTS, NOT FOUR — AND THE ORDER IS THE DESIGN. (1) FOOTINGS AND STRUT: the five strip footings FT-SG-W1/E1/W2/E2/S and the 12in x 12in strut W-SG-ARCH in one placement, all on one bed plane — the court loop is closed before any wall is formed. FT-SG-W2/E2's 6 #4 longitudinals are spliced across both of their joints, into FT-SG-W1/E1 and into FT-SG-S (a 50in #4 splice bar beside each, class B each side). The court has no column pads since 2026-09-22 — the porch spans wall to wall on two ledgers — so nothing in this court is dug below the wall beds. (2) WALLS AND VENEER BEAM: all five court walls and W-SG-BRKBM, one form height (every wall top is the porch datum 0ft 0in), one strip-and-set. W-SG-BRKBM IS CAST MONOLITHIC WITH THE TWO SIDE WALLS, NOT DOWELLED INTO THEM (settled 2026-09-14): it is a blockout inside this same form between -8ft 6-7/16in and -10ft 0-3/16in, cast on the drained stone of FB-SG-BRKBM (a soil-supported veneer footing; its ends run into FT-SG-W1/E1's toes) with its 2in board flush on the house strips' south face; its 2 #4 hangers run straight into the walls, its 2 #5 bottom bars lap (contact, beside them) the 2 #5 dowels cast in each toe, and its #3 cage ties stop at the toe faces. It was named in NO placement until now, while notes/sunken_garden_veneer_beam.md called it cast in one section and chipped-and-dowelled in another - and there is no existing pour to chip, because this placement is where those side walls are themselves cast. THE HOUSE BASEMENT WALL MUST BE POURED, CURED AND SURVEYED FIRST — every thermal-break blockout is set against its face (AN-SG-BLOCKOUTS; the dowels that once needed it are deleted). (3) RIM SLAB AND COLUMNS: SL-SG-FLOOR with all four 12in cast rounds in the same placement, the four balcony corners braced off the court floor and the wall tops rather than off porch framing that does not exist yet. EVERY COURT PLACEMENT NEEDS THE BOOM PUMP and the pumping allowance is already recorded as probably short. This saves one mobilisation and one below-minimum load against the four-pour sequence it replaces. THE ISOLATION BOARDS AND THE VENEER TIES GO IN AFTER THE THREE RETAINED SIDES ARE BACKFILLED (AN-SG-BACKFILL, AN-SG-BLOCKOUTS), each board cut to its as-built slot. CORNER STEEL IS LAID AS MODELLED: at both south corners the stem horizontals (#4 at 16in, each face) turn round the corner as L-bars with 2ft 9in legs each way (a class B lap of a #4 at 5,000 psi is 22in), and the footing edge bars run through the corner (W2/E2's 3 #5 edge bundles lap class B into FT-SG-S, whose E-W bottom bars run out to out)"),
     Annotation(
         uid="SGAN02AAAA", tag="AN-SG-MIX", position=pt(ft(_cx), ft(-23)),
         text="ONE TICKET: every placement in this court specifies EXPOSED_MIX (5,000 psi, w/cm <= 0.40, class F3+C2 air entrainment and SCM caps). The two column pads that specified BURIED_MIX (PIER_BASE_12) were retired with the porch's centre line on 2026-09-22, so there is no substitution left to permit: supply the whole court from one ticket"),
@@ -3170,15 +3197,23 @@ SEQUENCE_NOTES = [
     # Hand-minted 2026-09-22 (`haus fmt` does not visit params/); unique by grep.
     Annotation(
         uid="SGAN04AAAA", tag="AN-SG-BLOCKOUTS", position=pt(ft(_cx), ft(-29)),
-        text="THERMAL-BREAK BLOCKOUTS — NO BOARD IS CAST AGAINST (basis 7, free body 11j). Every court face that meets an isolation board is formed against a greased, pull-rodded blockout of the board's own thickness, stripped, and the board set into the slot afterwards: TB-SG-W1/E1 2in x 8in x 84in (placement 1, left in until the walls strip), TB-SG-W1/E1-STEM 2-1/2in x 12in x 9ft 1-7/16in and W-SG-BRKBM's 2in x 17-3/4in x 18ft 0in (placement 2, against the house strips' south face). Boards are set after the walls are stripped, before backfill, and the owner walks the empty slots first (inspection break_blockouts_stripped). The board is FOAMULAR-class XPS as scheduled; nothing holds it but the slot. A board cast against the pour locks in its fresh-concrete squeeze for good — the beam's alone was 41,162 lb — and puts the house's slab edge and global sliding back over"),
+        text="THERMAL-BREAK BLOCKOUTS — NO BOARD IS CAST AGAINST (basis 7, free body 11j). Every court face that meets an isolation board is formed against a greased, pull-rodded blockout of the board's own thickness, stripped, and the board set into the slot afterwards: TB-SG-W1/E1 2in x 8in x 84in (placement 1, left in until the walls strip), TB-SG-W1/E1-STEM 2-1/2in x 12in x 9ft 1-7/16in and W-SG-BRKBM's 2in x 17-3/4in x 18ft 0in (placement 2, against the house strips' south face). Boards are set after the three retained sides (W-SG-W2, W-SG-S, W-SG-E2) are backfilled, so the court has taken up its sliding before the joint exists, each cut to its as-built slot width so nothing is pre-compressed and FITTED WITH THE CONCRETE AT OR ABOVE 50 F (fitted colder, summer closes the joint past its cap), with the veneer ties; the owner walks the empty slots first (inspection break_blockouts_stripped). The board is FOAMULAR-class XPS as scheduled; nothing holds it but the slot. A board cast against the pour locks in its fresh-concrete squeeze for good — the beam's alone was 41,162 lb — and puts the house's slab edge and global sliding back over"),
     # Minted 2026-10-31 with typehaus.model.ids.new_uid() (C3-E14).
     Annotation(
         uid="5N3QKZFZ9Y", tag="AN-SG-HETA-TRIM", position=pt(ft(_cx), ft(-35)),
-        text="HOLD POINT, HETA20Z SEAT TIES (CN-SG-SEAT-*): the four corner columns are cast 3/4in under the balcony glulam soffits so the SS316 pack is a real 3/4in; set each pair's spoons from a template of the beam faces. After the glulam is set, FIELD-TRIM each 16in strap at or below the beam top before the joists go on (no HETA12/16 in ZMAX or stainless). Nail 6 - 16d HDG per strap (FL11473 Table 3), the LOWEST FOUR holes first (Table 2 note 2), all on the glulam face above the pack; confirm the trim with Simpson before the pour."),
+        text="HOLD POINT, HETA20Z SEAT TIES (CN-SG-SEAT-*): the four corner columns are cast 3/4in under the balcony glulam soffits so the SS316 pack is a real 3/4in; set each pair's spoons from a template of the beam faces. After the glulam is set, WRAP each 16in strap over the beam top and nail it there (do not trim it): the strap rises the beam's 11-7/8in face and the 3/4in pack and lies 3-3/8in across the top, the two straps overlapping at the centre line; the pair is graded on FL11473 Table 3's 1-ply columns, single glulam. Nail the 10 0.148x1-1/2in nails of the row, the LOWEST FOUR holes of each strap first (Table 2 note 2), on the glulam face above the pack. No confirmation from Simpson is owed."),
+    # Minted 2026-11-23 with typehaus.model.ids.new_uid(). Review B-05.
+    Annotation(
+        uid="SJXPPQJKRE", tag="AN-SG-LEDGER-DOWELS", position=pt(ft(_cx), ft(-38)),
+        text="PORCH LEDGER ANCHORS AT THE CORNER COLUMNS (W-SG-W1/E1): the four corner columns are doweled 48in into the stem with #5 bars 3.3in to 4.1in off the court face. SKIP OR RELOCATE any ledger anchor within 8in of a column centre line, or locate the dowels with a scanner before drilling: a 1/2in x 6in Titen HD drilled from the court face reaches the dowel zone and will strike a #5."),
+    # Minted 2026-11-23 with typehaus.model.ids.new_uid(). Free body §15h (G1/G2, owner).
+    Annotation(
+        uid="WATAHVD68H", tag="AN-SG-SOIL", position=pt(ft(_cx), ft(-38)),
+        text="SOIL REPORT REQUIRED BEFORE PLACEMENT 1 — THE COURT IS DESIGNED ON SPECIFIED SOIL PARAMETERS (free body 15h). The report must CONFIRM: design friction for concrete on the compacted washed #57 bed >= 0.43 (a report bed friction above 1.00 requires the court's winter-tension rows to be re-checked), and drained phi' (and interface angle) of the native at the bed bottom, -14ft 7-7/16in, >= 25 deg. Scope: 1-2 borings at the court to about 20ft below the terrace, groundwater observation, ASTM D2487 lab classification of the native at the bed bottom, drained phi' and the design friction above. ACCEPTANCE AT EXCAVATION (owner-checked, ASTM D2488 visual-manual): the bed bottom is granular (GW, GP, SW, SP, GM or SM), firm under the plate, with no standing water or seepage 48 h after rain. FALLBACK, built only if the report is short of either value or the bed bottom is clay or silt (CL, ML, CH, MH): a 12in x 4ft 6in x 25ft plain lean-concrete wall (f'c 2,500 psi, 4.2 cy) under FT-SG-S, standing on the native at the bed bottom and rising to the footing underside, formed with removable forms in the open dig BEFORE any stone, stripped, stone placed and plated both sides in lifts, #5 dowels at 24in, 30in straight into the lean wall (ld at 2,500 psi) with a standard 90-degree hook into FT-SG-S's bottom mat (placement 1). The wall reaches no deeper than the bed, so it does not answer the deep plane. If the native phi' is short, the deep plane returns to the owner with the measured value"),
     # Minted 2026-10-11 with typehaus.model.ids.new_uid(). Free body §13.
     Annotation(
         uid="90QCKCV758", tag="AN-SG-BACKFILL", position=pt(ft(_cx), ft(-32)),
-        text="BACKFILL IS A STAGE OF THE STRUCTURE (free body 13). The court resists sliding as one U, W1+W2 / S / E1+E2 with the strut, and only reaches FS 1.73 when ALL THREE retained sides are full. (a) W-SG-W2, W-SG-S and W-SG-E2 are backfilled TOGETHER in lifts: no one of the three may stand more than HALF ITS HEIGHT (5ft 0in) above any other at any time. Half up one side, then the other, then on up, is fine (worst stage FS 1.64); one side left empty while the rest is full is NOT (1.37). (b) W-SG-W1/E1 are NOT backfilled until the porch beams brace their tops (IRC R404.1.7); their concrete is part of the sliding resistance in (a) and must stand empty until then. (c) No backfill before placement 1 has cured and the strut is in, and none against a wall before its break board is set (AN-SG-BLOCKOUTS)"),
+        text="BACKFILL IS A STAGE OF THE STRUCTURE (free body 13). The court resists sliding as one U, W1+W2 / S / E1+E2 with the strut, and only reaches its design FS when ALL THREE retained sides are full (graded on retaining_system/W-SG-ARCH, free body 15). (a) W-SG-W2, W-SG-S and W-SG-E2 are backfilled TOGETHER in lifts: no one of the three may stand more than HALF ITS HEIGHT (5ft 0in) above any other at any time. One side left empty while the rest is full is NOT permitted. (b) W-SG-W1/E1 are NOT backfilled until the porch beams brace their tops (IRC R404.1.7); their concrete is part of the sliding resistance in (a) and must stand empty until then. The porch joists are the soil's strut between them: every joist end bears TIGHT on its ledger face (shim any gap in the hanger seat), and W1 and E1 are then backfilled TOGETHER, neither more than 2ft 0in above the other. (c) No backfill before placement 1 has cured and the strut is in. (d) COMPACTION: lifts of 8in or less, and within 3ft of any stem only light hand-guided plate compactors (no ride-on or heavy roller), the house's backfill rule; the court rows carry no compaction surcharge, and this rule is what keeps one out. The break boards and veneer ties go in AFTER this backfill (AN-SG-BLOCKOUTS)"),
 ]
 
 # ** SPENT UIDS, 2026-09-22 — the centre line retired with the 17'-0" court. ** Not reused:

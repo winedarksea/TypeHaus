@@ -15,6 +15,7 @@ from typing import TYPE_CHECKING, Any
 from typehaus.checks.soil import site_soil_bearing_psf
 from typehaus.emit.draw.schedules.blocks import draw_note_page, paginate_note_blocks
 from typehaus.emit.draw.schedules.special_fastening import special_fastening_block
+from typehaus.emit.draw.schedules.truss_criteria import truss_criteria_block
 from typehaus.emit.draw.sheet_writer import schedule_sheet
 from typehaus.emit.draw.structural_common import (
     flat_roof_snow_psf,
@@ -143,15 +144,14 @@ def design_criteria_block(model: ResolvedModel,
     lines.append(_row("DECK / BALCONY LOAD",
                       f"{DECK_LIVE_LOAD_PSF:.0f} psf LIVE + {DECK_DEAD_LOAD_PSF:.0f} psf "
                       "DEAD (IRC R507.1 / TABLE R301.5)"))
-    # R301.5 room/stair/attic live loads are carried nowhere; a table from memory is the
-    # "per code" note MNSPECT rejects.
+    # R301.5 live loads are carried nowhere; a table from memory is MNSPECT's "per code" note.
     lines.append(_row("OTHER R301.5 LOADS", NOT_STATED + " — not carried by this model"))
     # A JURISDICTION fact (IRC Table R301.2.2.1), from the profile like the frost depth;
     # NOT STATED when it declares none, never the mildest row.
     lines.append(_row("SEISMIC DESIGN CATEGORY",
                       _value(getattr(profile, "seismic_design_category", None))))
-    lines.append("WEATHERING, TERMITE, ICE BARRIER, FLOOD, AIR-FREEZING INDEX AND")
-    lines.append("MEAN ANNUAL TEMPERATURE ARE " + NOT_STATED.upper() + " IN THIS MODEL.")
+    lines += ["WEATHERING, TERMITE, ICE BARRIER, FLOOD, AIR-FREEZING INDEX AND",
+              "MEAN ANNUAL TEMPERATURE ARE " + NOT_STATED.upper() + " IN THIS MODEL."]
     return lines
 
 
@@ -453,6 +453,8 @@ def structural_note_blocks(model: ResolvedModel,
         ("FOUNDATIONS AND CONCRETE — ACI 318-19",
          concrete_block(model) + footing_dowel_lines(model, profile)),
         ("WOOD FRAMING", wood_framing_block(model)),
+        *((("TRUSS CRITERIA", truss),) if (truss := truss_criteria_block(model, preferences))
+          else ()),
         *((("SPECIAL FASTENING", special),) if (special := special_fastening_block(model))
           else ()),
         ("ANCHORAGE AND CONNECTIONS", anchorage_block(model, sheets)),

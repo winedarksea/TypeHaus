@@ -88,16 +88,22 @@ def register(ctx: Any, scope: Any, axes: dict[str, Any], nodes: Any) -> dict[tup
 
 
 def springs(ctx: Any, scope: Any, tie_node: dict[tuple, str]) -> tuple[SupportSpring, ...]:
-    """DX and DY at every registered tie node."""
+    """A spring at every registered tie node on each plan direction the joint carries
+    (``deck_tie.carries_of``: a tension tie its axis, a vertical-heel angle along its wall)."""
+    from typehaus.engineering.deck_tie import Capacity, capacity, carries_of
+
     out: list[SupportSpring] = []
     for deck, joints in _tied(ctx, scope):
-        for joint in joints:
+        caps = [capacity(joint) for joint in joints]
+        carried = [carries_of([j], [c])[0] if isinstance(c, Capacity) else (True, True)
+                   for j, c in zip(joints, caps, strict=True)]
+        for joint, (on_x, on_y) in zip(joints, carried, strict=True):
             node = tie_node.get((deck.tag, joint.member, joint.wall))
             if node is None:
                 continue
             parts = len(joint.parts)
             stiffness = SLIP_MODULUS_LB_IN * parts * _LB_PER_IN_TO_N_PER_M
-            for dof in ("DX", "DY"):
+            for dof in [d for d, on in (("DX", on_x), ("DY", on_y)) if on]:
                 out.append(SupportSpring(
                     node=node, dof=dof, stiffness_n_m=stiffness, direction=None,
                     basis=_BASIS.format(joint=f"{joint.member}/{joint.wall}", parts=parts,

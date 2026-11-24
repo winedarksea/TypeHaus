@@ -13,7 +13,7 @@ import pytest
 
 from typehaus.checks.structural._engineering import engineering_context
 from typehaus.engineering import base_spring as spring
-from typehaus.engineering.base_rotation import KIND, _Column, _Point, compute
+from typehaus.engineering.base_rotation import KIND, _Column, _k_theta, _Point, compute
 from typehaus.engineering.base_supports import PoleBase, WallBase
 from typehaus.engineering.item import Status
 from typehaus.engineering.pier_basis import cast_piers
@@ -22,43 +22,24 @@ from typehaus.model.registry import constructor_names
 
 #: §0: ``(δ at δ_ref 0.25", δ at 1.0" or None for a mechanism, status)``.
 #:
-#: ** `_WORKED` KEEPS THE FOUR LANDING ROWS AS ARITHMETIC ONLY SINCE 2026-09-21. ** The
-#: landing is tied to the garage stem (`north_entry_piers.md` §10) and its piers left the
-#: register; the band-end reproductions still run on them, the record tests do not.
 #: RE/RNE straddle the band and CLOSE on catlin's presumed n_h (§10), hence OK.
 _WORKED = {
     # Every north-entry column cast one 3/4" pack low, 2026-10-31 (addendum 2026-10-31b): the
     # head 3/4" nearer grade, the shafts 3/4" shorter. GW's soft end closes at 1/δ 0.0076.
     "PT-BW-RE": (1.2988, 1.9309, Status.OK),
     "PT-BW-RNE": (1.2892, 1.8486, Status.OK),
-    # ** RE-WORKED 2026-09-23 (note addendum 2026-09-23) ** with each deck beam on its own
-    # half-bay strip: the landing's deck share fell 17.03 -> 9.93 ft2 (W/E), 9.60 (GW/GE).
-    # Seat beams from the column's east face, 2026-09-23 (addendum 2026-09-23c): 3.3542' long.
-    # Carriers 4.5" shorter at the landing header, 2026-09-24 (addendum 2026-09-24).
-    # W/GW 14" round since 2026-09-30 (the CBSTQ's 3" side cover, canopy_west_band.md §5e).
-    # The garage landing went 2026-10-13 (addendum 2026-10-13): 3.91 ft2 off each; GW's soft
-    # end is a hair inside 0.75 Pc. The 0.06 inch raised bearing (2026-10-15 addendum)
-    # makes L=60.56 inch and the soft-end magnifier 48.8372, still arithmetic only.
-    # Reworked 2026-11-02 with the direct-mounted MDO and edge-nailer inventory.
-    # These retired landing rows remain arithmetic only; GW is still near singular.
-    "PT-BW-W": (1.0781, 1.3210, Status.INCOMPLETE),
-    "PT-BW-E": (1.0212, 1.0632, Status.OK),
-    # The screen stops on the garage cladding (2026-11-06): chord -1.18 lb, GW 35.25 -> 35.00;
-    # the seat beam stops off the base strap the same day: P_u -4.40 lb, 35.00 -> 34.24.
-    # MDO stops at the north chord post, timber nailed (2026-11-14): chord -5.55 lb, -> 33.64.
-    # The screen's south end 1/2" north (2026-11-18): chord -0.66 lb, -> 33.52.
-    # 7/16" ZIP for 5/8" CDX the same day: chord -6.25 lb, landing 3/16" wider -> 32.63
-    # (the engine's reading; arithmetic only, as above).
-    "PT-BW-GW": (1.3277, 32.63, Status.OVER),
-    # GE's P_u fell 1,107.8 -> 1,074.7 lb when the landing came in 3 3/8" (2026-10-31).
-    "PT-BW-GE": (1.0502, 1.2254, Status.INCOMPLETE),
-    # The balcony at the same date: each edge beam carries 9.75' (not 18'), P_u 7,886 ->
-    # 4,855 lb (front), 4,877 (rear); wall-top k_θ unchanged. Front R 6.616 / 6.242.
-    # 3" lower on 2026-09-23 (addendum 2026-09-23b): L 105.125", P_u 4,820.0; R 6.412 / 6.049.
-    "PT-SG-BF1": (1.0406, 1.0414, Status.OK),
-    "PT-SG-BF3": (1.0406, 1.0414, Status.OK),
-    "PT-SG-BR1": (1.0421, 1.0429, Status.OK),
-    "PT-SG-BR3": (1.0421, 1.0429, Status.OK),
+    # The four landing rows (W, E, GW, GE) went 2026-11-22: decision 16 pins and props
+    # those piers as footing piers, so a fixed-base sway reading of them describes nothing.
+    # The balcony, re-worked 2026-11-23 (note balcony_moment_columns.md §26): each column on its
+    # beam's STATICS reaction plus the planter, P_u 5,196.3 (front) / 6,095.4 (rear). The hand
+    # script (scratchpad hand_delta.py, from §4's wall-top spring, Pc = Pc_rigid/(1 + 3/R)
+    # with the exact-spring root as the cap) reads R 6.838 / 6.450 front, 6.763 / 6.379 rear.
+    # §28 (2026-11-23): the stem is FREE at its top for the E-W wind, k_theta = 1/(H/EI + 1/k_f)
+    # (hand_delta, the same script with that spring): R 1.247 / 0.564 front, 1.234 / 0.558 rear.
+    "PT-SG-BF1": (1.1152, 1.2370, Status.OK),
+    "PT-SG-BF3": (1.1152, 1.2370, Status.OK),
+    "PT-SG-BR1": (1.1401, 1.2959, Status.OK),
+    "PT-SG-BR3": (1.1401, 1.2959, Status.OK),
 }
 _LANDING = ("PT-BW-W", "PT-BW-E", "PT-BW-GW", "PT-BW-GE")
 _ORACLE = {tag: row for tag, row in _WORKED.items() if tag not in _LANDING}
@@ -73,7 +54,7 @@ def _points(ectx, tag):
     pier = next(p for p in cast_piers(ectx) if p.tag == tag)
     base = (WallBase if pier.base_kind == "wall" else PoleBase).build(ectx, pier)
     column = _Column.of(pier)
-    return pier, column, [_Point.at("", column, base.k_theta(ectx, d, column))
+    return pier, column, [_Point.at("", column, _k_theta(ectx, base, d, column))
                           for d in (0.25, 1.0)]
 
 
@@ -176,6 +157,21 @@ def test_the_presumed_n_h_reproduces_section_10(tag, catlin_cast_ctx) -> None:
     assert increment.demand == pytest.approx(delta - 1.0, abs=5e-4)
     assert record.governing.name == "second-order increment"
     assert any("THE SOIL IS PRESUMED" in n for n in record.notes)
+
+
+@pytest.mark.parametrize("tag,ratio", [("PT-SG-BF1", 0.3060), ("PT-SG-BR1", 0.3089)])
+def test_the_flexible_delta_magnifies_every_pair_and_the_worst_governs(
+        tag, ratio, catlin_cast_ctx) -> None:
+    """B-04: 0.178 was the flexible delta on one non-governing pair (the guard at 1.6L). Every
+    §2.3.1 pair now takes it against its own phi*Mn; the floor-empty wind + guard pair at
+    the lowest axial governs, 7,042 lb-ft against 23,857 (§28: curtains out)."""
+    record = catlin_cast_ctx.engineering[f"{KIND}/{tag}"]
+    assert record.governing.name == "magnified moment (sway), flexible base"
+    assert record.governing.ratio == pytest.approx(ratio, abs=0.0005)
+    assert "1.2D + 1.0W + L + 0.5S" in record.governing.combination   # planter on, Pu 4,175
+    notes = " ".join(record.notes)
+    assert "HEAD DRIFT" in notes and "SEISMIC" in notes and "SDC A" in notes
+    assert "WHICH Pc IS GRADED" in notes
 
 
 def test_the_keys_are_column_bases_plus_the_wall_borne_columns(catlin_cast_ctx, ectx) -> None:

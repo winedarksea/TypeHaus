@@ -239,15 +239,20 @@ two, so the per-column net above halves again to about 136 lb.
 
 ### 4a. The truss-to-header ties
 
+**Corrected 2026-11-23 (review C-9, decision 20).** The canopy has **three** truss stations per header, not four, and
+they are not equal: the widest (T2, 2.0') has 2.0 x 13.333 = 26.67 sf. The order SPECIFIES **450 lb of net uplift per
+heel** (`Roof.specified_reactions`); the table is `canopy_truss_criteria.md` §1.
+
 | term | working | value |
 |---|---|---|
-| bearings per header | 4 truss stations | 4 |
-| gross wind uplift per bearing | 1,706 / 4 | 427 lb |
-| 0.6W, no dead relief | 0.6 (427) | **256 lb** |
-| 0.6W − 0.6D | 0.6 (427 − 200) | 136 lb |
+| bearings per header | 3 truss stations (T1 1.115', T2 2.0', T3 1.974' tributary) | 3 |
+| gross wind uplift, widest truss | 21.3 psf x 26.67 sf | 568 lb |
+| 0.6W, no dead relief | 0.6 (568) | **341 lb** |
+| 0.6W - 0.6D | 0.6 (568 - 10 x 26.67) | 181 lb |
+| specified | covers the gross 0.6W + 32% | **450 lb** |
 
-Eight authored `H2.5ASS`, one per bearing — stainless because these land on treated southern
-pine at an entry salted every winter, and the house buys stainless at every KDAT joint.
+Six authored `H2.5ASS`, one per bearing (three on each header) — stainless because these land on treated southern
+pine at an entry salted every winter, and the house buys stainless at every KDAT joint. 450 / 700 = 0.64.
 
 > ⚠ **CLOSED 2026-09-11, and the number that looked wrong is what closed it.** This note
 > said for a day that the stainless H2.5ASS was not the galvanized tie's 700 lbf, because the
@@ -273,7 +278,7 @@ pine at an entry salted every winter, and the house buys stainless at every KDAT
 > take the catalog's 615. **Stainless parity is a claim about steel and nails and says nothing
 > about species**, so it rides across unchanged in both directions.
 >
-> ⚠ **THE NAIL IS NOW A SPECIFICATION ITEM.** That 700 lbf is conditional on **SSA8D**
+> ⚠ **THE NAIL IS A SPECIFICATION ITEM, ON THE ORDER AND S-001 (2026-11-23).** That 700 lbf is conditional on **SSA8D**
 > stainless ring-shank nails, five to the rafter and five to the plates, substituting for the
 > catalog's 8d common 0.131 x 2-1/2 in. Drive these eight ties with stainless SMOOTH-shank
 > nails and each is worth 440 lbf instead, at 0 FAIL, with nothing in the model able to see
@@ -688,6 +693,75 @@ and nets the same displaced soil, so the ratios above are the check's own — `P
 move with the snow: `L` rose 2,000 → 2,948 lb on `PT-BW-RE` / `-RNE`, which stales any seal
 pinned to them and correctly so. `integrity.reinforcement_layout`'s four anchorage FAILs
 (7.00" / 5.00" against 7.11") are gone.
+
+### 6c. 2026-11-22 — footing piers, graded prescriptively (decision 16; review C-11, D4)
+
+All six piers are PINNED. The four landing piers are propped at the head by the tied landing
+(§10); `PT-BW-PE`/`-PNE` stand free under the pinned east posts. Tops at −1'-4 3/16"
+(landing) and +0'-2" (PE/PNE) against grade −2'-10": exposed 1.48' (h/d 1.27 on 14", 1.48 on
+12") and 3.00' (2.57 on 14"), all <= 3. IRC R507.3 / Figure R507.3 draw a concrete pier from
+the footing to the bearing and state NO height; the <= 3 cap is the ACI 318-19 plain-concrete
+pedestal definition (§2.3, §14.3.3.1) used as a conservative proxy, not an IRC rule. Below
+grade the shaft is soil-embedded. Each is the deck's R507.3 footing, not an R507.4 post: pad by `structural.deck_footing_size`, depth by
+`structural.frost_depth` (`engineering/footing_pier.py`). The eight items `deck_post/PT-BW-*`
+(6) and `column_base/PT-BW-PE`/`-PNE` leave the register.
+
+**PE/PNE as short poles — IBC 2018 §1807.3.2.1, Eq. 18-1** (non-constrained: no rigid floor
+at grade, no diaphragm above). Load canopy_garage_diaphragm.md §2/§6, the post's drag on its
+7 1/2" PVC jacket (2026-11-23, verifier): post half-drag 16.661 x 7.5/12 x 6.1771 / 2 = 32.16 +
+pier drag 58.31 = **P 90.47 lb ASD**; M at grade 32.16 x 3.0 + 58.31 x 1.5 = 183.95 lb-ft,
+**h 2.033'** above grade. b = 14" = 1.1667'; S1 = 150 psf/ft
+x d/3 (Table 1806.2 class 4, GM, presumptive); no §1806.3.4 doubling; the pad is NOT credited
+— embedment is the shaft only, grade to pad top.
+
+    d = 2.59': S1 = 150 x 2.59/3 = 129.5 psf; A = 2.34 x 90.47 / (129.5 x 1.1667) = 1.401
+    d = 0.5 x 1.401 x (1 + sqrt(1 + 4.36 x 2.033 / 1.401)) = 0.7006 x 3.707 = 2.597 -> 2.59'
+    PE : shaft grade -2.833' to pad top -8.953' = 6.12'   d/c 2.59/6.12 = 0.42
+    PNE: shaft grade -2.833' to pad top -6.333' = 3.50'   d/c 2.59/3.50 = 0.74
+
+Graded in `structural.column_base` (`checks/structural/deck_piers.py`), PRESCRIPTIVE.
+**Bond breaker:** the top 42" of all six shafts are wrapped (two layers 6-mil poly, or a slip
+sleeve), closing §7's adfreeze and skin-friction items by detail (AN-BW-STRUCTURE).
+
+### 6d. 2026-11-22 — pull-out of the screen's chord piers (decision 15; review C-1)
+
+`PD-BW-GW` and `PD-BW-RNE` are 2'-6" x 2'-6" x 12". The tension chord's pier must hold the
+full-height overturning: T = 1,034.6 x 8.6825 / 4.979 + 426.5 (net roof uplift, 0.6D + 0.6W)
+= **2,230.6 lb**, the hold-down row's own number. Held down at 0.6D by shaft + doweled pad +
+soil on the pad's projection (110 pcf, the low end of the band) + post 57 + screen wall 157;
+no deck or roof dead (the roof's 0.6D is already in T).
+
+    GW: shaft 1.069 ft2 x 4.984' x 150 = 799; pad 6.25 x 1.0 x 150 = 937.5;
+        soil (6.25 - 1.069) x 3.50' x 110 = 1,995;  sum 3,945.5 x 0.6 = 2,367  d/c 0.942
+    W : shaft 1.069 x 7.604' x 150 = 1,219; pad 3.75 x 1.0 x 150 = 562.5;
+        soil (3.75 - 1.069) x 6.12' x 110 = 1,805;  sum 3,800.5 x 0.6 = 2,280  d/c 0.978
+
+Both pass and both sit past the 0.85 owner cost-review trigger (decision 30; limit 1.0).
+Conservative on two counts not taken: the overturning arm runs to the chord bases, not the
+landing that props them (to the sill, T = 1,540 + 426.5 = 1,966.5, W 0.86), and the landing
+dead hung on the chord through the LUS26-2Z is not credited. Rows in `lateral_system/
+RF-BW-CANOPY` (`engineering/lateral_band._pullout_rows`).
+
+> **Superseded for N-S 2026-11-23 (§10p).** The MSTA49Z collector takes the screen's shear
+> out at its top plate, so the chords' overturning never reaches their bases: the pull-out,
+> pad-bearing, hold-down and base-shear rows are no longer graded (`_strapped_out`). The
+> arithmetic above stays as the case the rows would grade without the strap; the pads stay
+> as drawn (decision 15).
+
+**The compression chord's pad (review C-6)**, ASCE 7-16 §2.4.1 D + 0.75(L+S) + 0.75(0.6W),
+gross on the pad, no displaced-soil credit, against 2,000 psf (Table 1806.2 class 4):
+overturning compression 1,034.6 x 8.6825 / 4.979 = 1,804.1 lb, x 0.75 = 1,353 lb. PD-BW-W
+(3.75 ft2): D + pad + 0.75(L+S) = 4,804 lb (the pier's own record), total 6,157.5 lb =
+**1,642 psf, d/c 0.82** (`_pad_bearing_rows`). The reviewer's independent 6,312 lb (1,683 psf,
+0.84) differs by 0.75 x 205 = 154 lb, the drift gradient below.
+
+**The drift gradient on the house-side supports (review C-5) — recorded, not modelled.**
+`pier_basis` splits each 6-ft header by halves on the average surcharge. By statics the south
+support takes L(2p_s + p_n)/6 = 110.5 psf-ft of surcharge against 95.1: **+205 lb (+6%)** on
+PT-BW-RE/-CW, piers PE/W and pads PD-BW-RE/W; the north ones are 205 lb lighter. No verdict
+moves: post axial 0.213 → 0.226, PD-BW-W D+S+L 1,546 psf, the C-6 row 0.84. A known, bounded
+approximation; `pier_basis.landed_roof_tributaries` is the place to split it if a row ever
+gets close.
 
 ## 7. What is NOT graded here
 
@@ -1256,6 +1330,55 @@ guard Y = 1,300.0 / 3.255208 = 399.4 lb
 ```
 
 §10b-§10n above are the 11-17 working; these rows supersede theirs.
+
+### 10p. 2026-11-23 — G5: a strap, a DTT pair and an accepted HL43 reading (supersedes §10o's parts)
+
+Owner (2026-11-23): the HL43 catalog values may be read for the as-installed direction; the
+MSTA/DTT swap where it is better. Every part graded WET, C_M 0.70 (decision 17). Each part
+carries only the direction it is published for, and each plan direction is shared among the
+joints that carry it (`deck_tie.distribute`, basis 6).
+
+| Joint | Part (C-C-2026) | Carries | Published (160) | Wet |
+|---|---|---|---|---|
+| W, `CN-BW-SCREEN-STRAP` | MSTA49Z, p. 290, 26 nails, half per member (note d), over ZIP (note b) | N-S tension | 2,020 | 1,414.0 |
+| FE, `CN-BW-GSDTT-S/-N` | DTT2Z pair + 1/2" HDG rod, deck-to-house detail, holdown note h | N-S tension | 1,825 (1 1/2" row, ESR-2330) | 1,277.5 |
+| FE, `CN-BW-GSTIE-LO/-HI` | HL43HDG, one per face, heel vertical, p. 315 F1 (fn 6: one per sense) | E-W only | 1,445 | 1,011.5 |
+
+The opposite sense of each tension tie bears (the filler at the strap line; FE's tip).
+
+```
+joints  strap x 6.036458 (W face of the screen, over the ZIP), DTT rod x 9.718750, y 43.3125
+        N-S joints: xr 7.877604, dx -/+1.841146, J = 2 x 1.841146^2 = 6.779637
+        The screen share enters AT THE STRAP (x 6.036458), not mid-screen (verifier, 11-23);
+        it is 1,051.72 lb with the east posts' drag on their 7 1/2" jackets.
+N-S   ΣFy 1,142.07; M = 1,051.72 (6.036458 - 7.877604) + 90.35 (7.924479 - 7.877604) = -1,932.16 lb-ft
+      strap: 571.04 + 1,932.16 x 1.841146 / 6.779637 = 1,095.8 lb / 1,414.0      0.775 (governs)
+      DTT:   571.04 - 524.7 = 46.3 lb / 1,277.5                                 0.036
+E-W   ΣFx 580.3 lb, all to the HL43: 580.3 / 1,011.5                    0.574 (owner reading)
+      M 1,887.1 lb-ft: ±1,887.1 x 1.841146 / 6.779637 = ±512.5 lb N-S (strap 0.36, DTT 0.40)
+guard 200 lb at the screen's south end: DTT 353.0 / (1,277.5 / 1.6)               0.442
+```
+
+**Band push base share (review M4, 11-23).** The slat band still pushes ONE chord outward
+through its slats; the base share, 151.67 lb at PT-BW-CNW (`wood_roof_post` band_push_base),
+leaves through the CBSTQ into PT-BW-GW and the landing. It is a deck_tie N-S load, in the
+sense that adds: ΣFy 1,293.74; M = -1,936.40 + 4.24 + 151.67 (6.265625 - 7.877604) = -2,176.66;
+strap 646.87 + 2,176.66 x 1.841146 / 6.779637 = **1,238.0 lb / 1,414.0 = 0.876** (past the 0.85
+cost trigger, limit 1.0). Delivered into the walls (`delivered_*` inputs, for W-G-W / W-G-S's
+own rows): along W-G-W 1,238.0; along W-G-S 580.3; across W-G-S 512.5.
+
+`deck_tie/FS-BW-FLOOR` 0.784 → **0.876**, N-S at the strap. It stays in the register: the
+demand is an elastic distribution with plan torsion, not a table read. Named on the record:
+the HL43's E-W 0.574 is an OWNER-ACCEPTED reading OUTSIDE the published condition — the
+figure's F1 bears along the grain, here the garage leg's lags bear across a vertical stud's
+grain, and that bearing may be materially lower than the row. ESR-2330 §4.1 scopes the
+DTT2 to dry interior service; the catalog sells it for deck lateral ties and it is graded wet.
+
+**The screen's chords carry no N-S.** The canopy's screen share runs SB-BW-BAND → top plate →
+MSTA49Z → W-G-W; `lateral_band._strapped_out` drops the chord overturning, base shear,
+pull-out and pad rows (§6d) from `lateral_system/RF-BW-CANOPY`. Line 2's HL33HDG pair and tie block are retired. **Open detail:** the DTT's rod line
+1 5/8" off FE's east face meets the D-G-SERVICE east jamb pack; the garage-side tie needs a
+nailer or filler on the drawing, set before drywall.
 
 ## Sources
 

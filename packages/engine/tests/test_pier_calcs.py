@@ -223,17 +223,32 @@ _TIER_PIERS = tuple(f"PT-BW-T{_n}{_s}" for _n in (1, 2, 3, 4) for _s in ("W", "E
 #
 # ** 5/8" MORE REAR OVERSAIL ON 2026-11-18 (note §19). ** D-S-BALCONY's 3/8" joint: A_s
 # 29.780 -> 29.836 sf, wind 1,101.9 -> 1,103.9 front, 1,121.2 -> 1,123.3 rear.
+#
+# ** CURTAINS OUT 2026-11-23 (note §28, owner: not wind-rated, stowed in high wind): wind is now
+# E-W, 1,348 lb ASD (deck 508 + plank edge 21 + guard 286 + shafts 533), 2,578.6 BF / 2,588.8 BR
+# lb-ft per column, head shear 203.6 lb.
+# ** WIND 4,411.8 -> 4,860.4 (BF) / 4,916.1 (BR) LATER ON 2026-11-23 (note §27): the guard's 3x3
+# posts (+71 lb), the corner curves of the curtains (16' face, +99), the plank edge (+41), the
+# shafts
+# ending under the beam at 7.76'/7.91' (-64) and the deck band at its centroid 9.33'; independent
+# verifier 4,832/4,853.
+# ** WIND 1,103.9 -> 4,411.8 ON 2026-11-23 (note §24, review B-06). ** The bands were the fascia
+# and the beams; the guard's balusters, the four 12" shafts and the porch's closed curtains
+# (top-track half) stand in the wind too: N-S 363 + 208 + 597 + 1,092 = 2,259 lb ASD over four
+# columns, each band at its own lever. The deck's gravity moved with it: each column carries its
+# beam's STATICS reaction (§20), so BF1 / BR1 carry 1,431.7 / 1,578.2 lb of dead (not 1,496 /
+# 1,514) and 1,701.8 / 2,153.9 of live, and the factored P_u is 4,440.9 / 5,340.0 with no planter
+# (this context) and 5,196.3 / 6,095.4 with the house's planter (the cast-variant context).
 _CORNER_ORACLE = {
-    "PT-SG-BF1": {"height_in": 104.375, "wind_lb_ft": 1103.9, "guard_lb_ft": 2643.75},
-    "PT-SG-BF3": {"height_in": 104.375, "wind_lb_ft": 1103.9, "guard_lb_ft": 2643.75},
-    # The rear row runs 2" proud for the deck's drainage crown.
-    # ** THE REAR PAIR LOST 1/6" ON 2026-09-14. ** ``SPEC.rear_pillar_rise_in = 2.0`` became
-    # ``SPEC.balcony_fall_in_per_ft = 0.25``: the FALL is the authored number now and the rise
-    # follows the run between the bearing rows, which over 7'-4" is 1.833" rather than 2.000".
-    # Both base moments are ``shear x height``, so they follow it exactly and by the same
-    # 0.15%. Nothing else about the rear row moved.
-    "PT-SG-BR1": {"height_in": 106.208, "wind_lb_ft": 1123.3, "guard_lb_ft": 2643.75},
-    "PT-SG-BR3": {"height_in": 106.208, "wind_lb_ft": 1123.3, "guard_lb_ft": 2643.75},
+    "PT-SG-BF1": {"height_in": 104.375, "wind_lb_ft": 2578.6, "guard_lb_ft": 2643.75,
+                  "phi_mn": 24_768.0},
+    "PT-SG-BF3": {"height_in": 104.375, "wind_lb_ft": 2578.6, "guard_lb_ft": 2643.75,
+                  "phi_mn": 24_768.0},
+    # The rear row runs 2" proud for the deck's drainage crown (fall 1/4" per foot).
+    "PT-SG-BR1": {"height_in": 106.208, "wind_lb_ft": 2588.8, "guard_lb_ft": 2643.75,
+                  "phi_mn": 25_003.0},
+    "PT-SG-BR3": {"height_in": 106.208, "wind_lb_ft": 2588.8, "guard_lb_ft": 2643.75,
+                  "phi_mn": 25_003.0},
 }
 #: §4 of the note: phi*Mn at the column's own axial load, hand-worked term by term.
 #:
@@ -253,13 +268,16 @@ _CORNER_ORACLE = {
 #: strip, not the 18' joist span: P_u 7,886 -> 4,855 lb, c 2.809" -> 2.750". Rear 24,684.
 #:
 #: ** 24,678 -> 24,669 ON 2026-09-23 (note §15). ** 3" of column self weight: P_u 4,820.0.
-_CORNER_PHI_MN_LB_FT = 24_669.0
-#: §7: ld = (60,000 / (25 sqrt(5,000))) x 0.625 = 21.2", x 1.3 for a class B splice.
+# ** 24,669 -> 24,768 / 25,003 ON 2026-11-23 (note §25): the beam's statics and the planter raise
+# P_u to 5,196 / 6,095 lb, and below balance that is more phi*Mn. Per column: `_CORNER_ORACLE`.
+#: §21 (2026-11-23): the general equation, ld 12.73", x 1.3 = 16.55" against the authored 30"
+#: projection; the simplified row's 21.2" x 1.3 = 27.6" is the bound. §7 (superseded):
+#: ld = (60,000 / (25 sqrt(5,000))) x 0.625 = 21.2".
 #: 35.6" at the presumptive 3,000 psi — development length goes as 1/sqrt(f'c), so reading
 #: the real mix SHORTENS the required lap. The assembly's own source text still specifies
 #: "~30in", which is longer than required and is what gets built; this is the requirement,
 #: not the detail.
-_CLASS_B_LAP_IN = 27.6
+_CLASS_B_LAP_IN = 16.55
 
 _PRESUMPTIVE_ALLOWABLE_PSF = 2000.0
 
@@ -306,12 +324,18 @@ def test_active_kdat_roof_posts_stand_on_separate_pinned_piers(catlin_ctx) -> No
     active = {pier.tag: pier for pier in cast_piers(catlin_ctx.engineering.context)}
     assert {"PT-BW-PE", "PT-BW-PNE"} <= set(active)
     assert not {"PT-BW-RE", "PT-BW-RNE"} & set(active)
+    from typehaus.engineering.footing_pier import is_footing_pier
+    from typehaus.engineering.roof_moment import pinned_pier_poles
+
+    ctx = catlin_ctx.engineering.context
+    poles = pinned_pier_poles(ctx)
     for tag in ("PT-BW-PE", "PT-BW-PNE"):
         pier = active[tag]
-        assert pier.lateral_system
+        # Decision 16: a short pole under a pinned post, not a moment column.
+        assert not pier.lateral_system and is_footing_pier(ctx, pier)
         assert pier.diameter_in == pytest.approx(14.0)
-        assert pier.wind_base_moment_lb_ft > 0.0, "the pinned post still sends base drag"
-        assert "RF-BW-CANOPY" in pier.moment_basis
+        assert poles[tag][0] == pytest.approx(90.48, abs=0.1), "the post still sends base drag"
+        assert "RF-BW-CANOPY" in poles[tag][2]
 
 
 def test_every_cast_concrete_pier_on_its_own_base_is_in_scope(piers) -> None:
@@ -588,8 +612,8 @@ def test_a_column_with_no_cage_is_incomplete_and_names_the_field(tmp_path) -> No
         assert record.status is Status.INCOMPLETE, record.summary
         assert any("vertical_reinforcement" in m for m in record.missing), record.missing
         assert any("14.1.5" in m for m in record.missing), record.missing
-    # A north-entry pier still has its cage, so this is the field and not a global break.
-    assert results["deck_post/PT-BW-W"].status is Status.OK
+    # The north-entry piers left the kind (decision 16); none of them breaks with the field.
+    assert "deck_post/PT-BW-W" not in set(results)
 
 
 def test_a_cage_that_does_not_parse_reads_as_no_steel(tmp_path) -> None:
@@ -857,7 +881,8 @@ def test_the_base_moments_reproduce_the_note(tag, piers) -> None:
     lever_ft = want["guard_lb_ft"] / 200.0
     assert lever_ft == pytest.approx(13.219, abs=0.01)
     assert lever_ft > want["height_in"] / 12.0 + 40.125 / 12.0, "the deck build-up is lever too"
-    # The guard governs, which is the whole reason it is computed at all.
+    # The guard governs the ASD moment (2,644 > 2,579), as it did before §24; at STRENGTH the wind
+    # (x 1/0.6 = 4,298) edges the guard (x 1.6 = 4,230), so both stay in the envelope.
     assert pier.guard_base_moment_lb_ft > pier.wind_base_moment_lb_ft
 
 
@@ -875,7 +900,7 @@ def test_the_corner_column_is_graded_in_bending_and_it_checks_out(tag, results) 
     assert all(state.ok for state in record.limit_states)
 
     for name in ("bending at base, wind", "bending at base, guard"):
-        assert states[name].capacity == pytest.approx(_CORNER_PHI_MN_LB_FT, rel=0.01)
+        assert states[name].capacity == pytest.approx(_CORNER_ORACLE[tag]["phi_mn"], rel=5e-4)
     guard = states["bending at base, guard"]
     # 0.12 until 2026-09-10; the denominator rose 17% when the assembly's 5,000 psi mix
     # became readable. Not one demand moved: wind is a pressure on a guard and a deck, and
@@ -899,7 +924,7 @@ def test_the_corner_column_is_graded_in_bending_and_it_checks_out(tag, results) 
     # Magnification is real (k*lu/r 76, past §6.2.5's SWAY limit of 22) and nearly nothing,
     # because P-delta needs P to bite and P is ~2% of capacity.
     magnified = states["magnified moment (sway)"]
-    assert 1.02 < magnified.demand / guard.demand < 1.05
+    assert 1.02 < magnified.demand / states["bending at base, wind"].demand < 1.05
 
 
 @pytest.mark.parametrize("tag", _CORNER_PIERS)
@@ -927,8 +952,9 @@ def test_the_dowel_lap_reads_the_galvanized_row_not_the_epoxy_one(tag, results) 
     1.2-1.5. Reading the epoxy row for a galvanized bar lengthens every lap by half."""
     record = results[f"deck_post/{tag}"]
     lap = next(s for s in record.limit_states if s.name == "dowel lap, class B")
-    assert lap.demand == pytest.approx(_CLASS_B_LAP_IN, abs=0.2)
-    assert lap.ok, "the lap does not fit inside the column it is lapped into"
+    assert lap.demand == pytest.approx(_CLASS_B_LAP_IN, abs=0.02)
+    assert lap.capacity == 30.0, "graded against the AUTHORED projection, not the column height"
+    assert lap.ok, "the lap does not fit inside the projection it is lapped into"
     note = next(n for n in record.notes if n.startswith("DOWELS"))
     assert "GALVANIZED" in note and "1.0" in note
 
@@ -986,7 +1012,8 @@ def test_the_nds_pass_on_a_balcony_glulam(tag, bearings) -> None:
     assert states["bearing, compression perpendicular"].capacity == pytest.approx(392.2,
                                                                                   abs=0.5)
     assert states["bending"].demand == pytest.approx(466.6, abs=0.5)
-    assert states["shear parallel to grain"].demand == pytest.approx(50.3, abs=0.1)
+    # V at d from the FACE of the 3" seat (d + 1.5"): 2,689 - 812.5 - 487.5 x 1.115 = 1,333 lb
+    assert states["shear parallel to grain"].demand == pytest.approx(48.1, abs=0.1)
     assert states["bearing, compression perpendicular"].demand == pytest.approx(256.1, abs=0.3)
     assert states["live-load deflection"].demand == pytest.approx(0.0347, abs=0.0003)
     worst = max(states.values(), key=lambda s: s.demand / s.capacity)
@@ -1059,7 +1086,7 @@ def test_an_edge_glulam_carries_its_own_strip_not_the_whole_span() -> None:
 
     states = {s.name: s for s in nds_states(3.5, 11.875, 9.667, 5.75)}
     assert states["bending"].demand == pytest.approx(490.0, abs=1.0)
-    assert states["shear parallel to grain"].demand == pytest.approx(39.9, abs=0.2)
+    assert states["shear parallel to grain"].demand == pytest.approx(38.6, abs=0.2)
     bearing = states["bearing, compression perpendicular"]
     assert bearing.demand == pytest.approx(132.3, abs=0.2)
     assert bearing.demand / bearing.capacity == pytest.approx(0.34, abs=0.005)
@@ -1472,3 +1499,24 @@ def test_a_pier_whose_demand_is_short_publishes_no_ratio() -> None:
     unmodelled = next(n for n in record.notes if n.startswith("UNMODELLED:"))
     assert "BM-X, BM-Y" in unmodelled
     assert "multiwall" not in unmodelled and "shelter" not in unmodelled
+
+
+def test_the_glulam_record_reads_the_authored_seat_and_the_house_planter(catlin_ctx) -> None:
+    """§20 (B-01, B-02): the seat is the authored 3.5" pack with NDS §3.10.4 C_b, no longer a
+    hard-coded 3.0", and the planter is a dead line load on the back span."""
+    record = catlin_ctx.engineering["glulam_beam/BM-SG-BLW"]
+    inputs = {q.name: q.value for q in record.inputs}
+    assert inputs["bearing_length"] == pytest.approx(3.5)
+    assert inputs["C_b"] == pytest.approx(1.1071, abs=1e-4)
+    assert inputs["planter_line_load"] == pytest.approx(171.667, abs=0.001)
+    bearing = next(s for s in record.limit_states if s.name.startswith("bearing"))
+    assert bearing.capacity == pytest.approx(434.2, abs=0.1)        # 740 x 0.53 x 1.107
+    assert bearing.demand == pytest.approx(270.9, abs=0.1)          # 3,319 lb / (3.5 x 3.5)
+    assert bearing.ratio == pytest.approx(0.624, abs=0.001) and record.governing is bearing
+    notes = " ".join(record.notes)
+    # The deck basis is a stated basis now (printed in section 6), not a note.
+    from typehaus.engineering.item import sheet_spec
+
+    bases = " ".join(b.statement for b in sheet_spec(record.kind).bases)
+    assert "no snow, no drift" in bases
+    assert "OVERHANGS, accepted (owner decision 9)" in notes and "12\" o.c." in notes

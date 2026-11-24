@@ -75,6 +75,11 @@ checkpoints = [
   { id = "forms", label = "Forms, steel, sleeves, and the stem and beam blockouts set" },
   { id = "pour", label = "Pour" },
   { id = "strip", label = "Strip and cure", cure_days = 3 },
+  # The joint's closure counts from the concrete's temperature when each board is fitted:
+  # 50 F is the specified floor (AN-SG-BLOCKOUTS; the model cannot enforce it). Closure at a
+  # 35 F fit, from the recorded 5.5e-6 /F x (80 - 35) F x 323" run = 0.080" thermal + 0.032"
+  # sliding = 0.112" against the compliant layer's 0.125".
+  { id = "fit_temp", label = "Concrete measured at or above 50 F before any board is fitted (a 35 F fit still closes 0.112 in against the layer's 0.125 in)" },
   { id = "boards", label = "Blockouts pulled, slots walked, the five thermal-break boards set", after = ["insp/break_blockouts_stripped"] },
 ]
 constraints = [

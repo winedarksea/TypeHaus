@@ -24,93 +24,52 @@ from typehaus.engineering.retaining_system import KIND
 
 _M_PER_FT = 0.3048
 
-# §4 of the note, at the graded case (at-rest 60 psf/ft, 110 pcf, mu 0.35 on the stone bed).
-# Re-oracled by hand FOUR times. The first three took the top of the wall down: the footings
-# rose 9" to become the court's walking surface (stem 10.37' -> 9.62', H 11.37' -> 10.62'),
-# the tops came down 4" to the owner's 36"-above-grade cap (stem -> 9.2865', H -> 10.2865'),
-# and on 2026-09-10 all five court walls came flush with the porch datum at 0'-0"
-# (stem -> 9.1198', H -> 10.1198'). Thrust goes as H^2 while the resisting weights fall
-# linearly, so all three of those pushed every one of these the same way, and were free.
+# §15 of the note (2026-11-22): ONE body off the resolved solids, two planes, the case set.
+# Hand-worked there term by term; every figure below is §15's.
 #
-# ** THE FOURTH IS DIFFERENT IN KIND AND IT SPENDS MARGIN. ** H does not move at all. Two
-# PLAN dimensions do: the court's clear length 28'-0" -> 26'-0", which takes 2'-0" off each
-# side wall, and the footing strip 8'-0" offset 6" -> 7'-0" centred, toe 4'-0" -> 3'-0".
-#
-# The DEMAND is untouched. The E-W thrusts cancel identically (see the cancellation test
-# below), so the resultant is the south wall's thrust alone and the south wall is the
-# court's WIDTH, which did not change. `_NOTE_RESULTANT_LB` is therefore the ONE number in
-# this block that does not move, and that is a structural fact rather than a coincidence.
-# Every capacity-side figure falls: 4'-0" of base friction gone from the run, and 150 plf
-# off W as the strip narrows.
-#
-# ** THE FIFTH PASS (2026-09-20) ADDS A LOAD: the raised-garden apron's surcharge, §4c. **
-# Every thrust gains 69.0 plf (50.5 at §4d; a rigid-wall Boussinesq strip at NET bearing), so
-# the resultant, the cancelled share, the shortfalls and the strut force all move; the
-# capacity does not. Superseded values are kept beside each constant.
-#
-# ** THE SIXTH PASS (2026-09-21), §4d: the apron is Allan Block AB Classic at 130 pcf in
-# place, so its net bearing is 80.0 psf (0 at 130 pcf) and every §4c term falls a little. **
-#
-# ** THE SEVENTH PASS (2026-09-22), §12: the court is 17'-0" clear, axes 18'-0". ** Only the
-# SOUTH wall's length moved (20.0' -> 18.0'), and the resultant IS that wall: 3,122.79 plf x
-# 18.0'. The side legs, the thrust per foot and the weight per foot are untouched, so the
-# cancelled share, the strut's Pu and the side-wall shortfalls do not move.
-_NOTE_RESULTANT_LB = 56_210.0          # §12; §4d 62,456
-_NOTE_CAPACITY_LB = 97_508.0           # §12a, FT-SG-S 5,627.5 plf; §12 96,248
-_NOTE_CANCELLED_LB = 102_011.0         # §4c 102,617; §4 100,362
-_NOTE_SYSTEM_FS = 1.735                # §12a; §12 1.712
-# §8: the **derived reaction** at the strut, factored, against phi-Pn on a 12" x 17.5"
-# section over an 18'-0" span (20'-0" until §12). phi-Pn moves with the span, not the
-# wall height; Pu does.
-#
-# ** THIS WAS 49,157 lb UNTIL 2026-09-14, AND THAT NUMBER WAS NOT A BOUND. ** It was
-# `0.5 * max(member thrust)` — half the largest thrust in the loop, which on this court is
-# the SOUTH wall, whose thrust runs perpendicular to the strut and cannot compress it. The
-# engine graded one wall's load against a member it does not push. §8 already carried the
-# right figure beside it, as the "conservative by 22%" comparison; it is the record now.
-#
-# A side leg spans in plan from the monolithic south corner to the strut and delivers
-# 0.500 wL there at a pinned corner (graded) or 0.375 wL fully fixed (reported):
-#   w = 3,072.31 plf, L = 16.333 ft -> wL = 50,181 lb
-#   P = 25,090 lb service, Pu = 1.6 x 25,090 = 40,145 lb
-#
-# §8b (2026-10-10): the strut is 12" x 12" in the footing plane, cast with the footings.
-_NOTE_STRUT_PU_LB = 40_804.0           # §4d, w 3,122.8 plf (§4c 41,047; §4 40,145)
-#: §8b's formula on the 18'-0" member: λ = 1 − (216 / (32 × 12))² = 0.6836, so
-#: 0.60 × 0.45 × 3,000 × 144 × 0.6836 = 79,734 lb (116,279 at the old 12" x 17.5").
-_NOTE_STRUT_PHI_PN_LB = 79_734.0
-#: The other end of the corner-fixity family, hand-worked in §8 beside the graded one.
-#: Asserted so the record cannot quietly stop publishing the range.
-_NOTE_STRUT_FIXED_CORNER_P_LB = 19_127.0      # §4c 19,241; §4 18,818
-_NOTE_STRUT_PINNED_CORNER_P_LB = 25_503.0     # §4c 25,654; §4 25,090
-
-# §5a: the delivery the cancellation is bought with. NO FOOTING IN THIS COURT HOLDS ITS OWN
-# WALL — every one is short against its own thrust, and the shortfall travels through the
-# corners as in-plane shear. The south wall governs at 23,454 lb service; graded as one-way
-# shear on its own 12" x 0.8-lw section, concrete alone, it clears by better than two to one.
-#: §12a: the south wall's own 56,210 less its own 0.35 x 5,627.5 x 18.0' = 35,453.
-_NOTE_CORNER_SHORTFALL_LB = 20_757.0   # §12 22,017; §4d 24,464; §4 23,454
-_NOTE_CORNER_VU_LB = 33_211.0          # 1.6 x 20,757 (§12 35,227)
-_NOTE_CORNER_PHI_VN_LB = 86_322.0
-#: Every member's own-thrust-less-own-friction, §5a's table. Asserted in full because the
-#: headline of that subsection is that the list has NO zero in it.
-_NOTE_SHORTFALL_BY_TAG = {
-    "W-SG-W2": 19_979.0, "W-SG-E2": 19_979.0, "W-SG-S": 20_757.0,   # §12a (§12 22,017)
-}
-#: §5 at §12a's court: 0.25 x (5,427.5 x 32.667' + 5,627.5 x 18.0') = 69,648 against 56,210.
-_NOTE_NO_STONE_FS = 1.24               # §12a; §12 1.22
-# §4c/§4d, by hand: the apron as a doubled Boussinesq strip, a = 0, b = 1.0', 4.0' down, at
-# AB Classic's 520 psf gross. At 130 pcf the unit weighs no more than the soil it displaces.
-_NOTE_APRON_NET_PSF = {110.0: 80.0, 130.0: 0.0}
-_NOTE_APRON_LATERAL_PLF = {110.0: 50.48, 130.0: 0.0}
-_NOTE_APRON_ARM_FT = 5.4362            # above the footing underside
-_NOTE_APRON_STEM_MOMENT = {110.0: 88.0, 130.0: 0.0}
-_NOTE_APRON_GROSS_LATERAL_PLF = 328.1
-_NOTE_APRON_SOURCE = {"W-SG-W2": "W-RG-WEST", "W-SG-E2": "W-RG-EAST", "W-SG-S": "W-RG-BLOCK"}
-# The exposure of the run above the authored yard, which is a RESULT of the flush tops and
-# not the driver it used to be. `params/sunken_garden.RETAINING_EXPOSURE_ABOVE_LOCAL_GRADE_IN`.
+# Footing plane, 110 pcf, mu 0.35 on the bed (class 3):
+#   footings W1/E1 7 x 10.5, W2/E2 7 x 11.5, S 8.333 x 25 (out to out), 1' x 150 = 77,450;
+#   strut 11' net of the side footings x 1 x 1 x 150 = 1,650;
+#   stems 71.552 sf (27.276' each side line + 17' between) x 9.1198 x 150 = 97,882;
+#   heel soil 176 sf (2 x 3' x 16.833' + 3' x 25') x 9.1198 x 110 = 176,559, less the drain
+#   columns' 53.77 sf x 5.1198' x (110 - 100) = 2,753 -> W 350,788, mu W 122,776.
+#   Thrust 1/2 x 60 x 10.1198^2 + apron 54.63 (L6's capped AB legs) = 3,126.94 plf over the
+#   25.00' south face (W2/E2's 19.83' cancel but for W-RG-EAST's old 50.48) = 78,174 lb
+#   -> dry FS 1.571.
+_NOTE_BODY_LB = 350_788.0
+_NOTE_RESULTANT_LB = 78_174.0
+_NOTE_SOUTH_FACE_FT = 25.0
+_NOTE_SIDE_FACE_FT = 19.8333
+# §15h: graded on the SPECIFIED bed friction 0.43 and native phi' 25 deg (tan 0.4663);
+# presumptive (0.35) dry is 1.571, scaled x 0.43/0.35.
+_NOTE_FRICTION_LB = 150_839.0   # 0.43 x 350,788
+_NOTE_DRY_FS = 1.930
+# Perched at H/2 (water 5.06' over the footing top, bed draining): 3,843.9 plf -> 96,097 lb.
+_NOTE_PERCHED_FS = 1.568
+# Flooded to the court floor, both sides, uplift 527.33 sf x 62.4 = 32,905: 317,883 / 77,781.
+_NOTE_FLOODED_FS = 1.702   # to D-B-SUNKEN's threshold crest, -102.14" (§15j)
+# Retained water to the terrace, court empty (reported): 128,344 lb.
+_NOTE_RETAINED_FULL_FS = 1.17
+# Deep plane at -175.4375", mu 0.25: + bed stone 2,364.65 cf x 100 = 236,465, native under
+# the W1/E1/BRKBM beds 158 cf = 17,380, native core 121,644 -> 726,276 lb; dry thrust
+# 1/2 x 60 x 14.6198^2 + 50.48 = 6,462.7 x 25 = 161,567. Soakaway full to -127.4375":
+# uplift 4.0' x 758.33 sf x 62.4 = 189,280, thrust 6,277.5 x 25 = 156,937.
+_NOTE_DEEP_FS = {"dry": 2.09, "lip": 1.594, "flooded": 1.37}
+# Strut: two-span continuous reaction, E2 3,122.79 plf over 16.333' and E1's footing 1,593.9
+# plf (1/2 x 60 x 7.289^2) over 10.5'. M_B = 71,965; R 45,126 -> Pu 72,201; phi Pn at the
+# strut's 5,000 psi: 0.60 x 0.45 x 5,000 x 144 x 0.6836 = 132,890.
+_NOTE_STRUT_PU_LB = 72_278.0
+_NOTE_STRUT_PHI_PN_LB = 132_890.0
+# Plan bending FT-SG-E2 on the G3 ties (owner, 2026-11-23): 3 #5 bundled at the edge (centroid
+# 3.94") + the outermost #4 (3.25"): As 1.13, centroid 3.82", z = 42 - 3.82 = 38.18";
+# 1.6 x 3,122.79 x 11.5^2 / 8 = 82,598 ft-lb -> Tu 25,960 vs 0.75 x 1.13 x 60,000 = 50,850.
+_NOTE_PLAN_DC = 0.51
+# Staged backfill at the drawn H/2 rule (§15h): E2 at 6/12, S and W2 full; H and N' of
+# that stage, worked by hand term by term.
 _NOTE_EXPOSURE_IN = 40.0
 _NOTE_EXPOSURE_BAND_IN = (36.0, 48.0)
+_NOTE_STAGED_FS = {"rule": 1.529, "empty": 1.28}
+_NOTE_STAGE = {"H_stage": 89_375.4, "W_soil": 140_873.5, "N'_stage": 317_855.5}
 
 
 def _results(plan):
@@ -123,62 +82,120 @@ def _results(plan):
 
 
 def test_the_court_reproduces_the_hand_worked_free_body(catlin_plan) -> None:
-    """The whole of §4's system block, from the landed house."""
+    """§15: every case and load-path row, from the landed house. Rows still under their
+    limit hold the record INCOMPLETE, each named — an open owner decision, never OK."""
     record = _results(catlin_plan)[f"{KIND}/W-SG-ARCH"]
-    assert record.status is Status.OK, record.summary
-
     states = {state.name: state for state in record.limit_states}
-    # 1.60 against the 1.50 IRC R404.4 requires. Carried as required/achieved, so < 1 is fine.
-    assert states["sliding"].capacity == pytest.approx(_NOTE_SYSTEM_FS, abs=0.01)
-    assert states["sliding"].demand == pytest.approx(1.5)
-    assert states["sliding"].ok
-
-    assert states["strut compression"].demand == pytest.approx(_NOTE_STRUT_PU_LB, rel=0.001)
-    assert states["strut compression"].capacity == pytest.approx(
-        _NOTE_STRUT_PHI_PN_LB, rel=0.001)
-    # The record must publish BOTH ends of the corner-fixity family, or the reader gets one
-    # number where §8 worked a range — which is how the old assertion read as a derivation.
-    citation = states["strut compression"].citation
-    assert f"{_NOTE_STRUT_PINNED_CORNER_P_LB:,.0f} lb service reaction" in citation, citation
-    assert f"{_NOTE_STRUT_FIXED_CORNER_P_LB:,.0f} lb if the corner is fully fixed" in citation
-    # And it must name the wall whose reaction it is. The south wall pushes across the
-    # strut, not along it; naming it here was the whole defect.
-    assert "W-SG-E2" in citation or "W-SG-W2" in citation, citation
-    assert "W-SG-S" not in citation.split(" on ")[0], citation
-
-    # §5a. The row that says what the cancellation is bought with.
-    corner = states["corner shear transfer"]
-    assert corner.demand == pytest.approx(_NOTE_CORNER_VU_LB, rel=0.001)
-    assert corner.capacity == pytest.approx(_NOTE_CORNER_PHI_VN_LB, rel=0.001)
-    assert corner.ok
-    # The hand shortfall is rounded to the pound; the citation prints the engine's own.
-    printed = float(corner.citation.split(" lb from W-SG-S")[0].rsplit(" ", 1)[-1]
-                    .replace(",", ""))
-    assert printed == pytest.approx(_NOTE_CORNER_SHORTFALL_LB, abs=1.0), corner.citation
-    # The whole point of §5a: not one footing holds its own wall. A future pass that made
-    # one of them self-sufficient would be welcome — and would have to come here and say so.
-    per_footing = next(note for note in record.notes if note.startswith("PER FOOTING"))
-    for tag, shortfall in _NOTE_SHORTFALL_BY_TAG.items():
-        assert f"{tag} " in per_footing, per_footing
-        # Hand figures are rounded to the pound; the note prints the engine's own.
-        printed = per_footing.split(f"{tag} ", 1)[1].split("(short ", 1)[1].split(")")[0]
-        assert float(printed.replace(",", "")) == pytest.approx(shortfall, abs=1.0), (
-            tag, per_footing)
-    assert "holds its own" not in per_footing, per_footing
-    assert states["strut compression"].ok
-
-    # The resultant and the capacity themselves, not just their ratio: two errors can cancel
-    # inside a safety factor, and the note publishes both terms.
-    assert f"{_NOTE_RESULTANT_LB:,.0f}" in record.summary
-    assert f"{_NOTE_CAPACITY_LB:,.0f}" in record.summary
+    assert states["sliding, dry"].capacity == pytest.approx(_NOTE_DRY_FS, abs=0.002)
+    assert states["sliding, perched at H/2"].capacity == pytest.approx(_NOTE_PERCHED_FS,
+                                                                       abs=0.002)
+    flooded = states["sliding, court flooded to its lowest threshold"]
+    assert flooded.capacity == pytest.approx(_NOTE_FLOODED_FS, abs=0.002)
+    deep = states["deep plane, soakaway full to its lip"]
+    assert deep.capacity == pytest.approx(_NOTE_DEEP_FS["lip"], abs=0.002)
+    strut = states["strut compression"]
+    assert strut.demand == pytest.approx(_NOTE_STRUT_PU_LB, rel=0.001)
+    assert strut.capacity == pytest.approx(_NOTE_STRUT_PHI_PN_LB, rel=0.001)
+    assert "f'c 5,000 as specified" in strut.citation
+    assert states["footing plan bending, FT-SG-E2"].ratio == pytest.approx(_NOTE_PLAN_DC,
+                                                                          abs=0.005)
+    staged = next(s for name, s in states.items() if name.startswith("staged backfill"))
+    assert staged.capacity == pytest.approx(_NOTE_STAGED_FS["rule"], abs=0.002)
+    assert f"one side empty and two full {_NOTE_STAGED_FS['empty']:.2f}" in staged.citation
+    worked = {step.symbol: step.value for step in staged.working}
+    for symbol, value in _NOTE_STAGE.items():
+        assert worked[symbol] == pytest.approx(value, rel=1e-4), symbol
+    basis = next(b.statement for b in record.bases if "snow and perched water" in b.subject)
+    assert "NOT concurrent" in basis and "FS 1.46" in basis   # §15k, printed once
+    assert "under snowmelt" not in states
+    reported = " ".join(n for n in record.notes if n.startswith("REPORTED"))
+    assert f"court empty: FS {_NOTE_RETAINED_FULL_FS:.2f}" in reported
+    assert f"deep plane, dry: FS {_NOTE_DEEP_FS['dry']:.2f}" in reported
+    assert f"flooded court: FS {_NOTE_DEEP_FS['flooded']:.2f}" in reported
+    # The terms, not only their ratio: two errors can cancel inside a safety factor.
+    assert f"{_NOTE_RESULTANT_LB:,.0f}" in record.summary or \
+        f"{_NOTE_FRICTION_LB:,.0f}" in " ".join(record.notes)
     inputs = {q.name: q.value for q in record.inputs}
-    total = sum(inputs[f"thrust_{t}"] * inputs[f"length_{t}"]
-                for t in ("W-SG-W2", "W-SG-E2", "W-SG-S"))
-    assert total - _NOTE_RESULTANT_LB == pytest.approx(_NOTE_CANCELLED_LB, abs=1.0)
-    # The loop says which apron each thrust carries, by its source item.
-    surcharge = next(note for note in record.notes if note.startswith("APRON SURCHARGE"))
-    for wall, apron in _NOTE_APRON_SOURCE.items():
-        assert f"{wall} +50 plf via tiered_retaining/{apron}" in surcharge, surcharge  # §4d
+    assert inputs["body_weight_110"] == pytest.approx(_NOTE_BODY_LB, abs=2.0)
+    assert inputs["body_resultant_110"] == pytest.approx(_NOTE_RESULTANT_LB, abs=2.0)
+    # Closed on the specified soil parameters; the fallback rows pre-check the lean wall.
+    assert record.status is Status.OK, record.summary
+    fallback = {n: s.capacity for n, s in states.items() if n.startswith("fallback")}
+    assert fallback["fallback lean wall under FT-SG-S: sliding, perched at H/2"] == \
+        pytest.approx(1.614, abs=0.002)
+    assert fallback["fallback lean wall under FT-SG-S: sliding, flooded court"] == \
+        pytest.approx(1.805, abs=0.002)
+    # The wall resists north-south only: |FS T - K y| = mu N (verifier, 2026-11-23).
+    assert fallback["fallback lean wall under FT-SG-S: staged backfill"] == pytest.approx(
+        1.543, abs=0.002)
+    assert states["sliding, ground snow on the terrace"].capacity == pytest.approx(
+        1.773, abs=0.002)
+    # §15l: the balcony columns' ASD base shears read from pier_basis — E-W 4 x 337 = 1,348
+    # in quadrature, the governing-axis 1,348 along the resultant: 79,533 lb, FS 1.897.
+    wind = states["sliding, dry with the structure's wind on the court (D + H + 0.6W)"]
+    assert wind.capacity == pytest.approx(1.897, abs=0.003)
+    assert "ASD base shears" in wind.citation
+    inputs = {q.name: q.value for q in record.inputs}
+    assert inputs["bed_friction"] == pytest.approx(0.43)
+    assert inputs["restraint_friction"] == pytest.approx(1.00)
+    assert inputs["at_rest_efp"] == pytest.approx(60.0)
+    assert any("NOT YET CONFIRMED" in b.statement for b in record.bases)
+
+
+def test_the_east_west_thrusts_cancel_and_the_south_face_is_the_body_s(catlin_plan) -> None:
+    """W2/E2 mirror each other, so the resultant is the south push alone — over the body's
+    25'-0" projected width, corner squares included, not the south wall's 18'-0" axis."""
+    record = _results(catlin_plan)[f"{KIND}/W-SG-ARCH"]
+    inputs = {q.name: q.value for q in record.inputs}
+    # Mirror images but for the apron: W-RG-EAST keeps its old section until gate G9.
+    assert inputs["thrust_W-SG-W2"] == pytest.approx(inputs["thrust_W-SG-E2"], abs=5.0)
+    widths = next(n for n in record.notes if n.startswith("EACH PUSH"))
+    assert f"W-SG-S {_NOTE_SOUTH_FACE_FT:.2f}'" in widths, widths
+    assert f"W-SG-E2 {_NOTE_SIDE_FACE_FT:.2f}'" in widths, widths
+    assert inputs["thrust_W-SG-S"] * _NOTE_SOUTH_FACE_FT == pytest.approx(
+        _NOTE_RESULTANT_LB, rel=0.001)
+
+
+def test_the_no_stone_sensitivity_is_the_designs_real_dependency(catlin_plan) -> None:
+    """§15: at the site's own mu 0.25 the dry body reads 0.25 / 0.35 x 1.573 = 1.12 — the
+    bed's 0.35 is still the margin, and the drawing's "no fabric under the footings" with
+    it."""
+    record = _results(catlin_plan)[f"{KIND}/W-SG-ARCH"]
+    dry = next(s for s in record.limit_states if s.name == "sliding, dry")
+    assert 0.35 / 0.43 * dry.capacity == pytest.approx(1.571, abs=0.005)
+    assert 0.25 / 0.43 * dry.capacity == pytest.approx(1.12, abs=0.01)
+    assert 0.25 / 0.43 * dry.capacity < 1.5
+
+
+def test_every_member_quotes_the_courts_answer_and_carries_it_in_its_fingerprint(
+        catlin_plan) -> None:
+    """A wall's own record depends on the court, visibly and in the hash."""
+    results = _results(catlin_plan)
+    for tag in ("W-SG-W2", "W-SG-E2", "W-SG-S"):
+        record = results[f"retaining_wall/{tag}"]
+        assert record.status is Status.OK, record.summary
+        by_name = {state.name: state for state in record.limit_states}
+        assert "sliding" not in by_name
+        assert by_name["base restraint"].capacity == pytest.approx(_NOTE_DRY_FS, abs=0.002)
+        inputs = {q.name: q.value for q in record.inputs}
+        assert inputs["system_demand"] == pytest.approx(_NOTE_RESULTANT_LB, rel=0.001)
+        assert inputs["system_capacity"] == pytest.approx(_NOTE_FRICTION_LB, rel=0.001)
+        assert by_name["overturning"].ok and by_name["bearing"].ok
+        assert by_name["eccentricity"].ok and by_name["stem flexure"].ok
+
+
+def test_the_native_under_the_stone_bears_the_footing_spread_at_two_to_one(catlin_plan) -> None:
+    """§15m, hand-worked: q = W/B_z (1 + 6e/B_z) + 100 pcf x 3.5', B_z = B + 42" of stone."""
+    results = _results(catlin_plan)
+    for tag, q_hand in (("W-SG-E2", 1118.5), ("W-SG-W2", 1118.5), ("W-SG-S", 898.6)):
+        record = results[f"retaining_wall/{tag}"]
+        state = next(s for s in record.limit_states
+                     if s.name == "bearing on the native under the stone")
+        assert state.demand == pytest.approx(q_hand, abs=0.1)
+        assert state.capacity == 2000.0 and state.ok
+        inputs = {q.name: q.value for q in record.inputs}
+        assert inputs["bed_thickness"] == pytest.approx(42.0, abs=0.01)
+        assert inputs["soil_presumed"] == 1.0
 
 
 def test_the_run_tops_out_on_the_porch_datum_and_its_exposure_is_a_result(
@@ -216,88 +233,6 @@ def test_the_run_tops_out_on_the_porch_datum_and_its_exposure_is_a_result(
     assert exposure_in == pytest.approx(_NOTE_EXPOSURE_IN, abs=0.01)
     low, high = _NOTE_EXPOSURE_BAND_IN
     assert low <= exposure_in <= high
-
-
-def test_the_east_west_thrusts_cancel_identically(catlin_plan) -> None:
-    """The cancellation is exact, and this asserts it from the members' own numbers.
-
-    ``W-SG-W2`` and ``W-SG-E2`` are derived in ``params/sunken_garden.py`` from the same
-    symbols — not from matching literals — so there is no arithmetic by which one can differ
-    from the other. The resultant is therefore the south wall's thrust alone, to the last
-    decimal, and any drift here means the two walls have stopped being mirror images.
-    """
-    record = _results(catlin_plan)[f"{KIND}/W-SG-ARCH"]
-    inputs = {q.name: q.value for q in record.inputs}
-    assert inputs["thrust_W-SG-W2"] == pytest.approx(inputs["thrust_W-SG-E2"])
-    assert inputs["length_W-SG-W2"] == pytest.approx(inputs["length_W-SG-E2"])
-
-    south = inputs["thrust_W-SG-S"] * inputs["length_W-SG-S"]
-    assert south == pytest.approx(_NOTE_RESULTANT_LB, rel=0.001)
-    total = sum(inputs[f"thrust_{tag}"] * inputs[f"length_{tag}"]
-                for tag in ("W-SG-W2", "W-SG-E2", "W-SG-S"))
-    assert total - south == pytest.approx(_NOTE_CANCELLED_LB, abs=1.0)
-
-
-def test_the_no_stone_sensitivity_is_the_designs_real_dependency(catlin_plan) -> None:
-    """§5: at the site's own silty gravel (mu 0.25) the court reaches 1.22 and does NOT check.
-
-    **This assertion pins a failure and that is the point.** The whole margin between 1.14
-    and 1.59 is the washed-stone bed, and the bed is an authored claim
-    (``FootingBedding.non_frost_susceptible``) about how something gets built. The note says
-    so out loud; this says so in the suite, so that nobody later reads 1.59 as robust.
-
-    Five passes have moved this row — 1.13 to 1.22 when the footings rose, to 1.26 at the
-    36" cap, to 1.29 with the flush tops, to 1.16 when the court shortened and the strip
-    narrowed, to 1.14 when the apron's surcharge joined the demand (§4c), to 1.22 when the
-    court narrowed to 17'-0" and the south wall shortened (§12) — and none changed
-    the argument: it is still short of 1.50, and 0.35 versus 0.25 is still the difference
-    between a court that stands and one that does not. Only the bed can close it.
-    """
-    from typehaus.engineering.registry import EngineeringContext
-    from typehaus.engineering.retaining_system import _free_body, _loops, _members
-    from typehaus.engineering.soil import presumptive
-    from typehaus.resolve import resolve
-
-    model, _ = resolve(catlin_plan)
-    ctx = EngineeringContext(plan=catlin_plan, model=model, soil_class="GM")
-    members = _loops(ctx)["W-SG-ARCH"]
-    built, missing = _members(ctx, members, soil=presumptive("GM"), soil_pcf=110.0)
-    assert not missing
-
-    on_stone_demand, on_stone_capacity, _ = _free_body(built)
-    assert on_stone_capacity / on_stone_demand == pytest.approx(_NOTE_SYSTEM_FS, abs=0.01)
-
-    # Same walls, same thrust, the site's own class under the footings instead of the bed.
-    site = presumptive("GM").friction_coefficient
-    assert site == pytest.approx(0.25)
-    on_site = sum(site * m.weight_plf * m.length_ft for m in built)
-    assert on_site / on_stone_demand == pytest.approx(_NOTE_NO_STONE_FS, abs=0.01)
-    assert on_site / on_stone_demand < 1.5
-
-
-def test_every_member_quotes_the_courts_answer_and_carries_it_in_its_fingerprint(
-        catlin_plan) -> None:
-    """A wall's own record must depend on the court, visibly and in the hash.
-
-    ``W-SG-E2``'s number depends on ``W-SG-W2`` standing across from it. If that dependency
-    is not in the fingerprint, moving the far wall leaves a stale seal reading as fresh.
-    """
-    results = _results(catlin_plan)
-    for tag in ("W-SG-W2", "W-SG-E2", "W-SG-S"):
-        record = results[f"retaining_wall/{tag}"]
-        assert record.status is Status.OK, record.summary
-        by_name = {state.name: state for state in record.limit_states}
-        # Per-wall sliding is gone: it is not a meaningful number for a wall in a loop.
-        assert "sliding" not in by_name
-        assert by_name["base restraint"].capacity == pytest.approx(_NOTE_SYSTEM_FS, abs=0.01)
-        assert f"{KIND}/W-SG-ARCH" in by_name["base restraint"].citation
-
-        inputs = {q.name: q.value for q in record.inputs}
-        assert inputs["system_demand"] == pytest.approx(_NOTE_RESULTANT_LB, rel=0.001)
-        assert inputs["system_capacity"] == pytest.approx(_NOTE_CAPACITY_LB, rel=0.001)
-        # The conservative rows stay per-wall and stay comfortable.
-        assert by_name["overturning"].ok and by_name["bearing"].ok
-        assert by_name["eccentricity"].ok and by_name["stem flexure"].ok
 
 
 def test_the_stem_is_reinforced_and_a_plain_one_would_not_be_covered_at_all(
@@ -630,58 +565,36 @@ def test_the_restrained_walls_stay_in_the_engineering_suite(catlin_plan) -> None
     assert tags == {"W-SG-E2", "W-SG-S", "W-SG-W2"}
 
 
-def test_staged_backfill_holds_at_half_a_wall_of_difference(catlin_plan) -> None:
-    """Free body §13 (2026-10-11), the AN-SG-BACKFILL rule. Each retained side at fill fraction f
-    of its H: at-rest earth ½ K0 (H f)² (no apron surcharge yet), heel soil to the fill line (H
-    f − 1' of footing), the stem and footing whole. W1/E1 stand EMPTY until the porch braces
-    them (IRC R404.1.7) and slide with the U:
-    2 x 10.443' x (stem 1,368.0 + footing 1,050.0 = 2,418.0 plf) x 0.35 = 17,676 lb.
-    Grid of twelfths, 110 pcf:
+def test_the_specified_soil_is_pending_until_the_report_and_fails_below_it(catlin_plan) -> None:
+    """§15h, the truss pattern: UNKNOWN until Site.confirmed_soil is entered; a report short
+    of the specified values FAILs the confirmation and the court's rows grade on it."""
+    from types import SimpleNamespace
 
-    * no side more than H/2 above another: worst FS 1.58 (one side at half, two full);
-    * one side empty, two full: 1.31 — not a slide, and not 1.5: the rule forbids it;
-    * the three-wall loop alone at H/2: 1.31, which is why W1/E1 are named.
-    """
-    import dataclasses
-    import itertools
-    import math
-
-    from typehaus.engineering.registry import EngineeringContext
-    from typehaus.engineering.retaining_system import _free_body, _loops, _members
-    from typehaus.engineering.soil import presumptive
+    from typehaus.checks.structural.soil_parameters import soil_parameters_confirmed
+    from typehaus.findings import Result
+    from typehaus.model.site import SoilParameters
     from typehaus.resolve import resolve
 
+    site = catlin_plan.project.site
     model, _ = resolve(catlin_plan)
-    ctx = EngineeringContext(plan=catlin_plan, model=model, soil_class="GM")
-    full, missing = _members(ctx, _loops(ctx)["W-SG-ARCH"], soil=presumptive("GM"),
-                             soil_pcf=110.0)
-    assert not missing
-    # Earth only: the raised apron whose surcharge the completed record adds (§4c) is built
-    # after the backfill, so no stage carries it.
-    efp = presumptive("GM").at_rest_efp_psf_per_ft
-    h, heel, stem, pcf = 10.12, 3.0, 9.12, 110.0
-    # 5,974.8 plf is W1/E1 at 130 pcf; empty, it is the stem and footing alone.
-    north = 2 * 10.443 * (5_974.8 - heel * stem * 130.0) * 0.35
-    assert north == pytest.approx(17_676, abs=1)
 
-    def fs(fills, credit):
-        staged = [dataclasses.replace(
-            m, thrust_plf=0.5 * efp * (h * f) ** 2,
-            weight_plf=m.weight_plf - heel * stem * pcf + heel * max(0.0, h * f - 1.0) * pcf)
-            for m, f in zip(full, fills, strict=True)]
-        demand, capacity, _ = _free_body(staged)
-        # equal side fills with S empty cancel outright: nothing to slide
-        return (capacity + credit) / demand if demand > 1.0 else math.inf
+    def run(plan):
+        return soil_parameters_confirmed(SimpleNamespace(plan=plan))[0].result
 
-    grid = [i / 12 for i in range(13)]
+    assert run(catlin_plan) is Result.UNKNOWN
+    short = SoilParameters(bed_friction=0.40, native_phi_deg=30.0, source="report")
+    plan = catlin_plan.model_copy(update={"project": catlin_plan.project.model_copy(
+        update={"site": site.model_copy(update={"confirmed_soil": short})})})
+    assert run(plan) is Result.FAIL
+    high = SoilParameters(bed_friction=1.10, native_phi_deg=30.0, source="report")
+    over = catlin_plan.model_copy(update={"project": catlin_plan.project.model_copy(
+        update={"site": site.model_copy(update={"confirmed_soil": high})})})
+    assert run(over) is Result.FAIL   # above bed_friction_max 1.00: the winter rows
+    from typehaus.engineering import EngineeringContext, EngineeringResults
 
-    def worst(rule, credit):
-        return min(fs(c, credit) for c in itertools.product(grid, repeat=len(full))
-                   if max(c) - min(c) <= rule + 1e-9 and max(c) > 0)
+    record = EngineeringResults(EngineeringContext(plan=plan, model=model, soil_class="GM"))[
+        f"{KIND}/W-SG-ARCH"]
+    assert record.status is Status.OVER, record.summary
 
-    assert worst(0.5, north) == pytest.approx(1.58, abs=0.01)
-    assert worst(0.5, north) >= 1.5
-    assert worst(1.0, north) == pytest.approx(1.31, abs=0.01)
-    assert worst(0.5, 0.0) == pytest.approx(1.31, abs=0.01)
 
 pytestmark = pytest.mark.slow

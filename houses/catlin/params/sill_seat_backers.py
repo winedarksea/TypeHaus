@@ -2,7 +2,9 @@
 
 A seat's HeadLOK HLGM10s need 2.0" of embedded thread (ESR-1078 Table 2); the 1 1/4" LSL rim
 holds 1 1/4", so 3/4" must land in wood behind it (`notes/exterior_door_sill_beam.md` §3).
-D-M-PORCH: D-B-SUNKEN's band-header LVL plies are already nailed to the rim. D-S-BALCONY: a
+D-M-PORCH: D-B-SUNKEN's band-header ply (one ply of the same 1 1/4" rim stock, pack to pack,
+`params/main_deck.py`, TJ-8000 p.7 2-ply header) is already nailed to the rim, so a 2-ply rim
+is there before the seat. D-S-BALCONY: a
 10" piece of the rim stock on the rim's inner face, a 2-ply rim board, nailed per TJ-8000
 p.7 (side load, 10d, 3 rows; 2 a row on the 10" piece, credited at the row's 560 plf).
 D-M-ENTRY: the same rim-stock ply as BALCONY (2026-11-20): FO-M-ERV-OA's north trimmer

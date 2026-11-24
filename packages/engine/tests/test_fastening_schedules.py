@@ -39,11 +39,12 @@ def test_catlin_counts_the_wall_and_subfloor_schedules(catlin_model_ro):
 
 
 def test_hl_site_bolt_lengths_match_the_hand_note(catlin_model_ro):
-    """houses/catlin/notes/hl_site_bolts.md §3."""
+    """houses/catlin/notes/hl_site_bolts.md §3; since G5 (2026-11-23) only FE's two HL43s,
+    one per face, each bolted through FE + the east rim (6" grip, HL fn 5)."""
     rows = {row["part_number"]: row["count"] for row in hardware_takeoff(catlin_model_ro)
             if row["scope"] == "connector site bolts"}
-    assert rows == {"BOLT-34X8-HDG": 2, "BOLT-12X5-HDG": 2,
-                    "LAG-34X5-HDG": 2, "LAG-12X5-HDG": 2}
+    # §6: the DTT2Z pair's rod, 12 + 2 x 0.810 = 13.62 in -> an 18 in cut.
+    assert rows == {"BOLT-34X8-HDG": 2, "LAG-34X5-HDG": 2, "ROD-12X18-HDG": 1}
 
 
 def test_every_catlin_trim_schedule_bills(catlin_model_ro):

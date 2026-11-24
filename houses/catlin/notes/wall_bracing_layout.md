@@ -39,10 +39,29 @@ storey is a story for R602.10 when it carries a `braced` braced wall line.
   being concrete and R602 is the light-frame chapter.
 - **Main — first story of two.**
 - **Second — the top story.**
-- **Attic — not a story.** IRC R325.6: a habitable attic complying with its four conditions
-  "shall not be considered a story". The model says the same thing structurally: its east
-  and west sides are 1-1/2" rafter plates, not knee walls, so neither can carry a panel and
-  the storey has no `braced` line at all.
+- **Attic — not a story, and graded** (2026-11-22, review D-R1; `checks/structural/habitable_attic.py`).
+  IRC 2018 R325.6 (read 2026-11-23 at up.codes/s/habitable-attic, which prints it as "2018 R325.6
+  Habitable Attic" under the Texas State Residential Code 2018 — a republication, not the ICC's own
+  page: codes.iccsafe.org returns 403, and the UpCodes chapter-3 viewer truncates before R325; a
+  primary-text read of the ICC 2018 book is still owed. WABO's 2019 comment to the Washington
+  council independently calls these "the existing specifications"): "A habitable attic shall not be considered a story where
+  complying with all of the following": (1) occupiable floor area >= 70 sf per R304; (2) that area's
+  ceiling height per R305 — graded as R305.1's sloped-ceiling exception reads it (Minn. R. 1309.0305
+  Exception 1: half of the REQUIRED floor area, R304.1's 70 sf, at 7'-0" and none under 5'-0"), the
+  same arithmetic as `code.R305_ceiling_height`; (3) enclosed by the roof assembly above, knee walls (if applicable) on the
+  sides and the floor-ceiling assembly below; (4) the floor does not extend beyond the exterior
+  walls of the floor below. Catlin: (1) RM-A-STUDIO 134 sf at 5'-0" head; (2) 65 of its 70 required
+  sf at 7'-0" (93%, the sloped-ceiling exception needs half); (3) the studio follows RF-HOUSE over
+  FS-ATTIC, whose east and west sides are 3" rafter plates; (4) the attic deck is 1,293 sf and lies
+  wholly inside the second floor's 1,293 sf, 0 sf beyond. `braced_storeys` now counts the attic as a
+  story the moment any of the four fails (then main reads "first of three", Table R602.10.3(1)),
+  and each line's report prints the reading. **There is no area fraction in the 2018 text.** The
+  one-third (one-half sprinklered) cap is the 2021 IRC R326.3, which Minnesota has not adopted
+  (Minn. R. 1309.0010 adopts the 2018 IRC and ch. 1309 has no part amending R325, read
+  2026-11-23 at revisor.mn.gov);
+  if it does, the habitable attic's aggregate area against one third of the 1,293 sf second floor
+  (431 sf) is the next question, and it turns on whether "aggregate area" counts the 514 sf of
+  finished attic rooms (studio 330 + study 150 + bath 34) or the 239 sf at 5'-0" head.
 
 The attic's wind area does not vanish with the story count — it rides the **eave-to-ridge
 factor**, §3.

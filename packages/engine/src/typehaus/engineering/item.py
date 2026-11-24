@@ -18,8 +18,28 @@ cycle.
 
 from __future__ import annotations
 
+import math
+from collections.abc import Callable, Mapping
 from dataclasses import dataclass, field
 from enum import Enum
+
+#: Below this a value is float noise from a solver, not a quantity.
+_ZERO = 1e-9
+
+
+def num(value: float, sig: int = 4) -> str:
+    """``value`` to at least ``sig`` significant figures, comma-grouped, never an exponent.
+
+    Here, in the leaf, so a calc module can format the numbers in its own working the same
+    way the sheets format everything else (``takeoff/calc_numfmt`` re-exports it).
+    """
+    if not math.isfinite(value):
+        return str(value)
+    if abs(value) < _ZERO:
+        return "0"
+    decimals = min(12, max(0, sig - 1 - math.floor(math.log10(abs(value)))))
+    text = f"{value:,.{decimals}f}"
+    return text.rstrip("0").rstrip(".") if "." in text else text
 
 
 class Status(Enum):
@@ -111,6 +131,9 @@ class Quantity:
     value: float
     unit: str
     quantum: float | None = None
+    #: Plain words for the symbol ("retained height"). Not hashed. Empty falls back to the
+    #: kind's :func:`declare_sheet` labels, then the package's own dictionary.
+    label: str = ""
 
     def rounded(self) -> float:
         """The value as the fingerprint sees it."""
@@ -119,7 +142,37 @@ class Quantity:
         return round(float(self.value) / self.quantum) * self.quantum
 
     def __str__(self) -> str:
-        return f"{self.name} = {self.value:,.4g} {self.unit}".rstrip()
+        return f"{self.name} = {num(self.value)} {self.unit}".rstrip()
+
+
+@dataclass(frozen=True)
+class Step:
+    """One line of a limit state's working: ``symbol = equation = numbers = value unit``.
+
+    The sheet prints these in order, so a reviewer checks each number with a calculator and
+    never opens the code (review E-02). The last steps must arrive at the state's demand and
+    its capacity; a test holds every converted kind to that. Not hashed.
+    """
+
+    symbol: str
+    #: Plain words: "largest bending moment over the snow patterns".
+    meaning: str
+    value: float
+    unit: str = ""
+    #: In symbols, ASCII/Latin-1 only (the PDF font): ``"w L^2 / 8"``. Empty for a value
+    #: read straight off a table row.
+    equation: str = ""
+    #: The equation with numbers in, formatted with :func:`num`: ``"1,246 x 4.979^2 / 8"``.
+    numbers: str = ""
+    #: The clause, table row or method: ``"NDS 2018 Supplement Table 5A, 24F-V4 DF"``.
+    source: str = ""
+
+    def text(self) -> str:
+        parts = [f"`{self.symbol}`"]
+        parts += [p for p in (self.equation, self.numbers) if p]
+        line = " = ".join(parts) + f" = **{num(self.value)}{' ' + self.unit if self.unit else ''}**"
+        return line + (f" — {self.meaning}" if self.meaning else "") + (
+            f" ({self.source})" if self.source else "")
 
 
 @dataclass(frozen=True)
@@ -178,6 +231,8 @@ class LimitState:
     #: ``analytical`` reads and not the other way round — and because the letter is what the
     #: standard prints, so a reviewer checks it against the clause without a mapping.
     combination_factors: tuple[tuple[str, float], ...] = ()
+    #: The arithmetic behind ``demand`` and ``capacity``, in order — see :class:`Step`.
+    working: tuple[Step, ...] = ()
 
     @property
     def ratio(self) -> float:
@@ -188,6 +243,91 @@ class LimitState:
     @property
     def ok(self) -> bool:
         return self.ratio <= 1.0
+
+
+@dataclass(frozen=True)
+class NotCovered:
+    """One limit state or question this calculation does not grade, and who closes it.
+
+    Review E-01: a stamp must say what it does not cover. Printed in the family sheet's
+    last section and in the summary's owner table. Not hashed.
+    """
+
+    what: str
+    why: str
+    #: Who closes it, by role: "the sealing engineer", "the owner (stated basis)",
+    #: "the truss fabricator", "the contractor at excavation".
+    owner: str
+    #: The deliverable or event that closes it.
+    closes_by: str = ""
+
+
+class BasisKind(Enum):
+    """How a stated basis entered the design."""
+
+    OWNER_BASIS = "owner's stated basis"
+    OWNER_ACCEPTED = "owner-accepted"
+    OWNER_READING = "owner's reading of a published row"
+    SPECIFIED = "specified, not yet confirmed"
+
+
+@dataclass(frozen=True)
+class StatedBasis:
+    """A design input that rests on a decision rather than on a code row or a measurement.
+
+    One home for the owner's bases and acceptances (deck snow, the curtains, a catalog
+    reading, an accepted ratio, specified soil), printed in the same table on every sheet
+    that rests on it. Not hashed: changing the wording stales no seal.
+    """
+
+    kind: BasisKind
+    subject: str
+    statement: str
+    #: What it leaves out, or what would bring it back to the owner.
+    reopens_if: str = ""
+    #: Where it is recorded: "owner decision 5", a catalog page and table revision.
+    reference: str = ""
+
+
+@dataclass(frozen=True)
+class Figure:
+    """A free-body sketch, drawn as monospace ASCII from the record's own numbers.
+
+    ASCII so the markdown and the PDF print the same deterministic thing with no image
+    pipeline; lines at most :data:`FIGURE_WIDTH` characters. ``engineering/sketch.py``
+    draws the common shapes.
+    """
+
+    title: str
+    lines: tuple[str, ...]
+    caption: str = ""
+
+
+FIGURE_WIDTH = 72
+
+
+@dataclass(frozen=True)
+class SheetSpec:
+    """What a kind declares for its calculation sheet, beside the records it computes."""
+
+    not_covered: tuple[NotCovered, ...] = ()
+    bases: tuple[StatedBasis, ...] = ()
+    #: Plain words per input name, for the symbol table.
+    labels: Mapping[str, str] = field(default_factory=dict)
+    #: ``record -> Figure``; called on each worked member. Must be deterministic.
+    figure: Callable[[EngineeringRecord], Figure | None] | None = None
+
+
+_SHEETS: dict[str, SheetSpec] = {}
+
+
+def declare_sheet(kind: str, **spec: object) -> None:
+    """Declare a kind's not-covered table, stated bases, labels and figure (see SheetSpec)."""
+    _SHEETS[kind] = SheetSpec(**spec)  # type: ignore[arg-type]
+
+
+def sheet_spec(kind: str) -> SheetSpec:
+    return _SHEETS.get(kind, SheetSpec())
 
 
 @dataclass(frozen=True)
@@ -232,6 +372,14 @@ class EngineeringRecord:
     #: seal is a statement about numbers, and re-classifying a module's coverage should not
     #: stale a stamp over arithmetic that did not move.
     scope: Scope = Scope.SCREENING
+    #: Member-specific exclusions and stated bases, on top of the kind's own
+    #: (:func:`declare_sheet`). Not hashed.
+    not_covered: tuple[NotCovered, ...] = ()
+    bases: tuple[StatedBasis, ...] = ()
+
+    def value(self, name: str) -> float | None:
+        """An input's value by name, or ``None`` — what a figure reads."""
+        return next((q.value for q in self.inputs if q.name == name), None)
 
     @property
     def governing(self) -> LimitState | None:
@@ -269,7 +417,7 @@ def item_id(kind: str, key: str) -> str:
 
 
 def no_calc(kind: str, key: str, *, reason: str = "",
-            oracle: tuple[Oracle, ...] = ()) -> EngineeringRecord:
+            oracle: tuple[Oracle, ...] = (), basis: str = "") -> EngineeringRecord:
     """The record for an item this build computes nothing for.
 
     Deliberately a *record* rather than an absence. ``rafter/RF-GARAGE`` is the case that
@@ -278,7 +426,7 @@ def no_calc(kind: str, key: str, *, reason: str = "",
     to cover and the CLI has a row to print.
     """
     return EngineeringRecord(
-        item_id=item_id(kind, key), kind=kind, key=key, status=Status.NO_CALC,
+        item_id=item_id(kind, key), kind=kind, key=key, status=Status.NO_CALC, basis=basis,
         summary=reason or "no calculation is registered for this kind — an engineer's "
                           "design governs",
         element_tags=(key,), oracle=oracle, scope=Scope.EXTERNAL,

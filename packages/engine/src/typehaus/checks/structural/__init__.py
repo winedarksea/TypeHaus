@@ -23,6 +23,7 @@ from typehaus.checks.structural import (
     footing_size,  # noqa: F401 - registers checks
     fortified_roof,  # noqa: F401 - registers checks
     foundation,  # noqa: F401 - registers checks
+    girt_fastening,  # noqa: F401 - registers checks
     guards,  # noqa: F401 - registers checks
     hanger_seat_fit,  # noqa: F401 - registers checks
     header_prescriptive,  # noqa: F401 - registers checks
@@ -39,12 +40,15 @@ from typehaus.checks.structural import (
     rafter_birdsmouth,  # noqa: F401 - registers checks
     rake_overhang,  # noqa: F401 - registers checks
     ridge,  # noqa: F401 - registers checks
+    rim_header,  # noqa: F401 - registers checks
     sheathing_edge_support,  # noqa: F401 - registers checks
     sill_bearing,  # noqa: F401 - registers checks
     slab_span,  # noqa: F401 - registers checks
     snow,  # noqa: F401 - registers checks
     snow_retention,  # noqa: F401 - registers checks
     soffit,  # noqa: F401 - registers checks
+    soil_parameters,  # noqa: F401 - registers checks
+    srw_chart,  # noqa: F401 - registers checks
     stacked_ladder,  # noqa: F401 - registers checks
     stair_stringers,  # noqa: F401 - registers checks
     stair_winders,  # noqa: F401 - registers checks
@@ -56,7 +60,9 @@ from typehaus.checks.structural import (
     truss_reactions,  # noqa: F401 - registers checks
     truss_wall,  # noqa: F401 - registers checks
     uplift_path,  # noqa: F401 - registers checks
+    veneer_bed,  # noqa: F401 - registers checks
     veneer_cavity,  # noqa: F401 - registers checks
+    veneer_lintel,  # noqa: F401 - registers checks
     wall_posts,  # noqa: F401 - registers checks
     window_module,  # noqa: F401 - registers checks
 )

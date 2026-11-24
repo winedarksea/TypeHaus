@@ -9289,3 +9289,25 @@ Review: `plans/exterior-door-sill-and-approach.md`; design and hand oracle:
   open leaf hides the dimmer.
 - Unchecked: no check sees a wall device behind free-standing furniture or overlapping another
   device's body.
+
+## The 2026-11-22 engineering review, closed (2026-11-23)
+
+Every finding is mapped to a commit or a decision in `notes/engineering_review_2026-11-22.md` §6.
+The register went from 51 items to 32. What left it:
+- `tiered_retaining` x5: Allan Block Table 1.3.
+- the entry piers x8: pinned, with an IBC 1807.3 check.
+- `girt_screw`: an ESR-1078 read.
+- `band_header`: the continuous LSL rim on TJ-8000.
+- the five court loop items: now one.
+
+The owner's calls:
+- **The court soil:** closed on specified soil parameters, with a soil report to confirm them and a printed lean-wall fallback. No geotechnical design and no key.
+- **Court steel:** 3 #5 per footing edge.
+- **The thermal break:** its boards are set after backfill. The veneer gets a bond break, adjustable slotted ties and stainless flashing.
+- **The landing:** the landing tie went to MSTA49Z, DTT2Z and HL43. The HL43 is read east-west, an owner-accepted reading.
+- **Accepted readings:** the HETA 1-ply printed row, and the dowels at 0.92 as is.
+- **The porch curtains:** not wind-rated; stowed in high wind.
+- **The SRW:** the runnel was shortened onto a river-rock pad.
+- **Snow:** snow and perched water are not combined on the court.
+
+Every calc family now shows its working step by step. Each sheet carries its stated bases and a "not covered — who owns it" table, and a lint requires both.

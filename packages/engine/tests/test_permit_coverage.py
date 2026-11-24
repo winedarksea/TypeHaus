@@ -271,10 +271,11 @@ MAX_NON_BLOCKING_ITEMS = {"mn-2020": 30}
 # line. The permit item BLOCKS and is green, so no gate moved; what rose is the count of
 # lines a reviewer can follow to an engineer's work.
 # The KDAT roof-post calculation adds one separately traceable engineered item.
-# RAISED 18 -> 19 on 2026-10-31: "Flush band headers over wall openings". D-B-SUNKEN's header
-# moved out of its wall into FS-M-EAST's band (C3-E2); no table publishes that member with
-# jamb loads at its seats, so `band_header/D-B-SUNKEN` is a computed item awaiting a seal.
-MAX_UNSEALED_ITEMS = {"mn-2020": 19}
+# RAISED 18 -> 19 on 2026-10-31 for "Flush band headers over wall openings", then FELL 19 -> 18 on
+# 2026-11-23: D-B-SUNKEN's header is a 2-ply LSL rim header read off TJ-8000 p.7 (a published row,
+# `structural.rim_header`), so `band_header/D-B-SUNKEN` left the register and nothing replaced it.
+# The merged engineering lanes then measure 16 (reset to the measured count, 2026-11-23).
+MAX_UNSEALED_ITEMS = {"mn-2020": 16}
 
 
 def _engineered_labels(profile) -> set[str]:
@@ -459,7 +460,6 @@ def test_a_prescriptive_failure_is_not_sealed_either() -> None:
 # `haus engineering` lists must reach the checklist through some check's findings, or its
 # item is invisible to the permit gate — which is how 26 deferred items sat outside it.
 _REGISTER_ONLY = {
-    "girt_screw": "a component of the truss wall; no prescriptive check for it to answer",
     "roof_beam": "graded against the authored snow; its roof's lines carry the frame",
     "retaining_system": "the court's closed loop; its walls' own line carries each member",
 }

@@ -19,6 +19,7 @@ HDG_10D = "10d common 0.148x3"
 HDG_16D = "16d common 0.162x3.5"
 HDG_0131_15 = "0.131x1.5 connector nail"
 HDG_0148_15 = "0.148x1.5 connector nail"
+HDG_0148_25 = "10d short common 0.148x2.5"
 
 _CC = "Simpson Strong-Tie C-C-2026"
 _RECORD = "transcribed from the catalog record's AllowableLoads.fasteners"
@@ -85,6 +86,11 @@ CONNECTOR_FASTENERS: dict[str, ConnectorFastening] = {
         "zmax", (), f"{_CC} p.84: the -SDS2 model ships with its (14) SDS 1/4 x 2 screws"),
     "DTT2Z": ConnectorFastening(
         "zmax", (), f"{_CC} p.60: \"Fasteners and crescent washer are included\" (8 SDS25112)"),
+    # A straight strap: half the nails in each member (General Note d), 2-1/2" over the ZIP
+    # (Note b). The landing's collector (params/landing_tie.py).
+    "MSTA49Z": ConnectorFastening(
+        "zmax", _pair(13, HDG_0148_25, "screen top plate", "W-G-W nailer"),
+        f"{_CC} p.290, MSTA49 row: (26) 0.148x2-1/2; p.288 General Notes b, d"),
     # Bolted (decision #147): a through-bolt in the tied member (connects[0]), its length
     # derived from the grip (``takeoff/site_bolts.py``); a lag into the structure tied to
     # (connects[1]), HL fn 7's >= 5".

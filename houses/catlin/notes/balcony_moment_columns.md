@@ -1423,6 +1423,456 @@ T, on-axis       (55,345 + 3,702.1 x 2.6875)/7.3935 − 3,702.1 = 5,129         
 Every row moves in its fourth figure (+0.2% on wind); the dowel development (0.884) still governs
 and the frame's governing ratio does not change. **2" stays.**
 
+## 20. The planter, the stated deck basis, and the beam's statics (2026-11-23, review B-01..B-03, B-10)
+
+**The basis (owner decision 5).** Minnesota deck basis as adopted: 40 psf live + 10 psf dead,
+no snow, no drift. The owner's reasoning — the decks are elevated and wind-swept — is printed
+as the stated basis (`engineering/balcony_loads.DECK_BASIS_STATED`) and listed under "not
+covered — owner". For comparison once: ASCE 7-16 §7.3 balanced flat-roof snow at the 50 psf
+ground snow, C_t 1.2, C_e = I_s = 1.0 is 0.7 x 1.2 x 50 = **42 psf**, above the 40 live; the
+house's `deck_snow_psf = 35` is the figure IRC Table R507.6's 40 psf live already covers
+(`structural.deck_joist_span`). The review's 2.45 ft leeward drift off the south gable (50.3
+psf at the wall) is not applied to these decks. **No snow path is built.** The joists stay
+2x12 at 12" o.c.
+
+**The planter (decision 6).** Over each beam line only, on a dimensioned support bearing
+directly on the beam, so no planter weight enters the plank or the joists. The house's
+allowance (`preferences.toml [structural] balcony_planter`):
+
+```
+soil   11" x 16" x 120 pcf saturated = 11 x 16 / 144 x 120    = 146.67 plf
+box and support                                                =  25.00 plf
+planter, a dead line load over the back span (7.333')         = 171.67 plf
+```
+
+The 120 pcf is the house's own allowance (handbooks print about 100-120 pcf for saturated
+loam; no code table was read) and is replaced by the supplier's saturated figure at purchase.
+It is a DEAD load that may be absent, so it is cased: a planter over neither beam, one beam
+or both. The beams are independent, so per column it is "on" or "off", and every
+combination runs both ways (§25); the stems W1 / E1 take one case each side.
+
+**The beam by statics (B-03).** a = 8", s = 88", b = 20", tributary 9.75' (§5a), w_D = 97.5,
+w_L = 390 plf. Reactions at the south (front, BF) and north (rear, BR) bearings by moments
+about the other support, live on the eight patterns of §4.3.3:
+
+```
+dead   R_BF = 407.0 lb   R_BR = 535.5 lb         (the equal split was 471 / 471)
+live   R_BF = 1,701.8    R_BR = 2,153.9  at each support's own worst pattern
+planter 171.67 x 7.333 / 2 = 629.4 lb at each bearing (it sits on the back span alone)
+```
+
+**The seat (B-01).** The authored pack is 3.5" long (`HeadConnector.bearing_length_in`), no
+longer the 3" of R507.6 the record divided by. NDS §3.10.4 `C_b = (l_b + 0.375)/l_b` for a
+bearing under 6" long and at least 3" in from the member's end (here 8" - 3.5"/2 = 6.25"):
+
+```
+C_b   = (3.5 + 0.375) / 3.5                       = 1.107
+F_c-perp' = 740 x 0.53 (wet) x 1.107              = 434.2 psi
+R_max = 2,689 (§5b) + 629 planter (rear, live on span + north overhang)   -> 3,319 lb
+f_c-perp = 3,319 / (3.5 x 3.5)                    = 270.9 psi    d/c 0.62
+without the planters: 2,689 / 12.25 = 219.5 psi   d/c 0.51
+```
+
+**G4: 0.62 is under the ~0.85 trigger; the 7" double shim pack is not needed.** The other
+beam states with the planter: bending and shear rise by the planter's moment and shear
+(`glulam_beam` prints them); none is near 0.85. C_b is NDS 2018 §3.10.4's formula; the
+section text was not re-read (the reviewer's independent value is the same 1.107).
+
+**Other states closed by statement or number (B-10).** Joist spacing is 12" o.c., not 16".
+Over the north bearing the bottom edge is in compression and unbraced for the 20" overhang:
+M = 487.5 x 1.667² / 2 = 677 lb-ft, f_b = 99 psi against F_b' = 1,920 (C_V caps at 1.0),
+so C_L (no E_min is held) would have to fall below 0.05 for it to govern. Creep: the dead
+deflection (97.5 + 171.7 plf on the back span, K_cr bounded at 2.0, the larger NDS §3.5.2
+value; not re-read) is a few thousandths of an inch. Uplift at a bearing: none under gravity.
+End connections are `column_head_joint`'s.
+
+**Overhangs, accepted (decision 9).** 8" and 20" on a 88" back span against the quarter span
+of 22"; the joists run 9" past the beams. Recorded on the record's notes.
+
+**Prescriptive alternative, report only (goal 1).** IRC Table R507.5, southern pine 3-2x12 at
+an 18' joist span reads 8'-9" (up.codes, D report; one source showed 8'-10"); the back span is
+7.33'. The table is 40 + 10 psf with no planter, so it does not cover this beam. Scaling the
+table's span by the load ratio (the table's governing limit state is not known here) gives
+8.75' x sqrt(487.5 / 659.2) = 7.52' >= 7.33', fitting by a 0.97 margin before any NDS check
+of the 4-1/2" member and its seat on the 3.5" pack. That is not a table read, so it does not
+convert the item; the beam stays engineered, and a 3-ply 2x12 would be a different member
+on the same planter.
+
+## 21. Dowel development on the general equation, and the lap above the joint (2026-11-23, B-07, B-08)
+
+§11c graded the dowel on Table 25.4.2.3's simplified row, 21.2" against 24" (0.884), and the
+sheet cited §25.4.2.4. §25.4.2.4 is the general equation and credits the real cover and
+spacing: `l_d = (3/40)(f_y / (lambda sqrt(f'c))) (psi_t psi_e psi_s psi_g / ((c_b + K_tr)/d_b)) d_b`.
+The #5 dowels, f'c 5,000, ring radius 2.6875":
+
+```
+spacing c-c   2 x 2.6875 x sin(45 deg)  = 3.80"    half = 1.90"
+cover to centre  3" + 0.3125"           = 3.31"    c_b = min(1.90, 3.31) = 1.90"
+(c_b + K_tr)/d_b = (1.90 + 0)/0.625     = 3.04  -> capped at 2.5
+psi_t 1.0 (vertical)  psi_e 1.0 (zinc, §25.4.2.5)  psi_s 0.8 (#6 and smaller)  psi_g 1.0 (Gr 60)
+l_d = (3/40)(60,000 / 70.71)(0.8 / 2.5)(0.625)            = 12.73"   (the 12" floor of §25.4.1.1)
+```
+
+Table 25.4.2.3's 21.2" is the bound. **Embedment 24" -> 48" (owner decision 7):** 12.73 / 48
+= **0.27**. The stem is 109.44" tall and one placement, so 48" is available. 48" is chosen
+for the stem below the joint (§22), not for development. **The 30" projection above the
+joint is authored** (`BarSpec.projection`, B-07) and the lap is graded against it, not
+against the column's height:
+
+```
+class B lap, §25.5.2.1, 1.3 l_d, the column bars at 2" + tie + half a bar = 2.69" to centre,
+  spacing 2 x 3.3125 x sin(45 deg) = 4.68", half 2.34 -> c_b 2.34, (c_b)/d_b 3.74 -> 2.5:
+  l_d 12.73"  ->  1.3 x 12.73 = 16.55"  against the authored 30"    d/c 0.55
+  (Table 25.4.2.3's simplified row: 1.3 x 21.2 = 27.6" against 30": 0.92)
+```
+
+The dowels are straight; the comment that called them "hooked" was wrong and is fixed.
+The state is graded once, in `column_support/<wall>`; `deck_post` prints a cross-reference.
+Constructability: the porch ledger's 1/2" x 6" Titen HD anchors drill into the wall's top
+11" through the dowel zone (dowels 3.3-4.1" off the court face), so `AN-SG-LEDGER-DOWELS`
+tells the crew to skip or relocate any anchor within 8" of a column centre line.
+
+## 22. The stem, the head prop and the strut (2026-11-23, B-05 / D-R3, decision 7) — SUPERSEDED by §27
+
+W-SG-W1/E1 pass IRC Table R404.1.2(8), which has no surcharge column. Each column hands
+its stem the moment M_u of the §2.3.1 case that governs it. `engineering/column_stem.py`:
+
+* **Below the dowels** — plain concrete, ACI 318-19 §14.5.2.1, `M_n = 5 lambda sqrt(f'c) S`,
+  phi 0.60, over the column's 12" plus a 45 deg spread each side along the 48" the dowels
+  run, b = 108": S = 108 x 12² / 6 = 2,592 in³, phi M_n = 0.6 x 5 x 70.71 x 2,592 /
+  12 = **45,820 lb-ft**. The head moment is taken the whole way down as a cantilever with no
+  prop, so the row does not lean on the porch diaphragm.
+* **The head prop** — a propped cantilever with an end moment M puts `3M / 2H` on the prop,
+  and a shear V at the head goes straight to it: `R = V + 3M / 2H`, H = 109.44".
+* **The strut** — the porch diaphragm delivers R in compression to the OPPOSITE stem's head,
+  which takes it as a cantilever from its footing over 12 + 2 x 109.44 = 231" of spread:
+  phi M_n = 0.6 x 5 x 70.71 x (231 x 144/6) / 12 = **97,952 lb-ft**, demand R x H.
+* **The footing under the column point** — the service load spread at 45 deg through the
+  stem onto the 7' strip footing, against the soil class's presumptive allowable: the
+  increment alone.
+
+The balcony's governing M_u is the §25 envelope's (wind with the guard, planter off); the
+numbers are in §25. The review's 760 lb prop (M_u 4,612 lb-ft, no V) is superseded by the
+wind model of §24. **The ledger anchors' own pull-out under R is not graded:** no
+THD50600H6SS allowable is catalogued (`court_daybed_anchor.md`), and ESR-2713 as read
+(FL15730 R9) lists no Type 316 stainless Titen HD. `AN-SG-LEDGER-DOWELS` and the W1/E1 wall
+comment carry the path; a PE or a Simpson letter closes it.
+
+## 23. The head tie on the 1-ply row, and wind uplift of the sealed deck (2026-11-23, B-06, B-09)
+
+**The row (owner decision 8).** A 3-1/2" glulam is ONE member, so its HETA20Z pair is graded on
+FL11473 R6 (report SIM202301, sealed 2023-10-17), p. 10 of 14, **Table 3**, double HETA,
+concrete, **1-ply** columns, SP: 10 nails (0.148 x 1-1/2, five a strap), **uplift 1,920, F1 1,115,
+F2 900 lb** for the pair, +60% for wind already inside (note 1). The lower lateral, 900, is the
+capacity in both directions. The straps are WRAPPED over the beam top, not trimmed: the pack
+(3/4") and the 11-7/8" face leave 16 - 12.625 = 3.375" to lie across the 3.5" top, the two
+overlapping at the centre line, and no written confirmation from Simpson is owed (the old
+`AN-SG-HETA-TRIM` required one). **What the document says that bears on this, quoted:** note 7,
+"F1 loads for double META, HETA, and HHETA on 2- or 3-ply rafter/truss may cause an additional
+1/16" deflection beyond the standard 1/8" limit when the straps are installed not wrapped over
+the heel as shown" — a deflection note for an UNWRAPPED strap, which these are not; and note 6,
+**"Lateral loads for double META, HETA, and HHETA apply only to 2- or 3-ply applications with
+anchors spaced a minimum of 3" apart"**, while the same table prints F1/F2 cells in its 1-ply
+columns. The owner's reading takes the printed 1-ply row; the document's note and table
+disagree, and the catalog edition (Simpson C-C-2026, whose footnote numbering the owner
+quoted) was not available to read. The record is `HETA20Z_1PLY_EMBEDDED_BEAM_ANCHOR` in the
+catalog and `HETA20Z_PAIR_HEAD_1_PLY` in `params/column_heads.py`;
+`integrity.head_connector_agrees` holds them equal. The north entry's 2-/3-ply beams keep the
+2,560 / 1,350 / 1,430 row.
+
+**Wind uplift on the sealed deck (B-06).** The plank is an aluminium watertight system, the
+porch's roof, so ASCE 7-16's "open-jointed walking surface takes no uplift" does not hold. The
+same bound the roof columns use (`asd_solid_band_psf`): 0.6 q G C_f = 0.6 x 18.5 x 0.85 x 1.8
+= 16.98 psf up, less 0.6 x 10 psf of dead (the planter excluded, it may be absent):
+
+```
+uplift per column = (16.98 - 6.0) x 47.12 ft² = 518.0 lb  (engine 519.0: q_h 18.52)
+combined (FL11473 §9 item 4): 519 / 1,920  +  415.6 / 900  =  0.270 + 0.462  =  0.732
+```
+
+The reviewer's hand figure (net C_N -1.5, 380 lb) is under this bound. The joist-to-beam ties
+and the plank's own fastening see the same uplift and are outside this record.
+
+## 24. Wind that the deck bands left out (2026-11-23, B-06)
+
+`balcony_wind`'s bands were the fascia and the beams. Three things stand in the wind and were
+omitted, each now a band at the same Fig. 29.3-1 Case A/B ceiling (C_f 1.80, spent
+conservatively because the figure's own cell is not held), q_h 18.5 psf at the guard top:
+
+```
+0.6 q G C_f = 0.6 x 18.52 x 0.85 x 1.8 = 16.98 psf
+deck fascia + beams (existing)                    363 lb   N-S wind
+guard: balusters at the authored 4" gap, 5/8"-class picket, two rails      208 lb
+the four 12" shafts, 1.0' x 8.70-8.85' each       35.1 ft²  = 596 lb
+the closed porch curtains, top-track half: the 176" front run, 105" drop/2 = 4.375'
+   64.17 ft² = 1,090 lb (E-W wind: one 100.5" flank, 36.64 ft² = 622 lb; a closed
+   enclosure's windward and leeward panels are one net C_f, so the larger panel counts)
+N-S total 2,259 lb, E-W total 1,332 + 597 lb
+```
+
+Each at its own lever: the deck and the curtains' top track at the deck plane (8.70' / 8.85'),
+the shafts at half their height, the guard at its centre. Per column the N-S moment is
+4,412 lb-ft ASD at BF, 4,479 at BR (was 1,104 / 1,123), 7,353 / 7,465 at strength (÷ 0.6). The
+guard's 200 lb at 13.22' (2,643.75 lb-ft) is unchanged. The head sees only the deck, guard and
+curtain shear, (363 + 208 + 1,092) / 4 = **415.6 lb** per column, not the shaft's own wind.
+The curtains are the largest term; a removal is an operational assumption a PE may not accept,
+so they are kept. At the reviewer's coefficients (C_f 1.3 on the curtains, shafts not counted)
+every number below is about 40% lower.
+
+## 25. The envelope with the planter on and off, and the verdicts (2026-11-23, basis 11)
+
+Each §2.3.1 combination with a moment runs at the dead load with the planter (629 lb) and
+without, and two more run with the floor live load absent and only the guard on
+(ASCE 7-16 §4.3.3): `1.2D + 1.6L_g` and `1.2D + 1.0W + L_g` (review B-03/B-04). BR1's column
+loads by statics (§20): dead 1,578 lb (shaft 1,043 + beam 535), live 2,154, planter 629.
+
+```
+                                   Pu        Mu (lb-ft)   
+1.2D + 1.6L + 0.5S, planter on     6,095     4,230
+1.2D + 1.0W + L + 0.5S, on         4,803     10,108 (wind 7,465 + guard 2,644)
+1.2D + 1.0W + L_g, floor absent, planter OFF   1,894   10,108   <- governs, P-M and the joint
+0.9D + 1.0W, planter off           1,420     7,465
+```
+
+(BF1: the same with D 1,432.) `phi M_n` at Pu 1,894 is 23,903 lb-ft (the reviewer's independent strain-compatibility
+script, 45 deg bars, re-run at these loads: 23,857 at 1,718, 23,903 at 1,894, 24,768 at 5,196,
+25,003 at 6,095 — the engine's values to the lb-ft): **P-M 10,222 / 23,903 = 0.43**, wind and the guard summed
+concurrently, which is conservative (nobody leans on a rail in a design windstorm). The flexible
+base's delta, applied to EVERY pair (B-04): 1.016 on this one, against about 1.011 on the rigid base;
+`base_rotation` reports **0.43** (was 0.178 on one non-governing pair).
+
+**The joint (`column_support`, the same pairs, flexible delta), BR1:** the couple at
+M_u = 10,272 lb-ft, P_u = 1,894 lb, ȳ 4.70", the on-axis bar at 2.6875":
+`C = (123,264 + 1,894 x 2.6875) / (4.70 + 2.6875) = 17,374 lb`, `T = C - P_u = 15,480 lb`
+against `phi A_s f_y = 16,740 lb`: **0.92** (engine 15,429, ȳ from the block). It is the
+governing state of `column_support` and the one row over 0.85 — see the report. Bearing on
+the wall top 0.52, shear friction 0.03, development 0.27, **stem flexure below the dowels
+0.23** (M_u 10,534 lb-ft against 45,820), **the strut 0.26**, footing 0.014 (27 psf against
+2,000), the prop **2,776 lb** factored per column (V 1,043 + 3M/2H).
+
+**Without the planters** the rear bearing is 0.51 and every column row is at least as high
+(planter off IS the governing axial). **Sensitivity of the 0.92:** the dowel tension is a
+wind result, not a planter one. With the guard not concurrent with the full design wind it is
+0.66; at the reviewer's coefficients about 0.5.
+
+## 26. The cover study and the base spring at the final loads (2026-11-23)
+
+§14's three covers and §15's flexible-base verdicts re-worked at §25's loads. The column's
+P_u comes from the beam's statics (§20): BF1 dead 1,431.7 / live 1,701.8 lb, BR1 1,578.2 /
+2,153.9; with no planter (the cover study's context) the factored P_u is **4,440.9** (BF1);
+with the house's planter, 5,196.3 (BF1) and 6,095.4 (BR1). The review's independent
+strain-compatibility script, 45 deg bars, matches the engine to 0.1 lb-ft:
+
+```
+phi M_n at P_u 4,440.9 (BF1)      c        phi     phi M_n
+  cover 2"                        2.742"   0.900   24,570.0 lb-ft
+  cover 2 1/2"                    2.859"   0.900   24,555.8
+  cover 3"                        2.973"   0.870   23,893.6
+envelope phi M_n (BF1): 2" 23,856.6 and 2 1/2" 23,889.9 at 1.2D + 1.0W + L_g, floor absent,
+  P_u 1,718.2; 3" 23,776.7 at 1.2D + 1.0W + L, P_u 3,419.8
+phi M_n with the planter: BF1 24,768 at 5,196; BR1 25,003 at 6,095
+```
+
+**The joint at each cover (BR1, §21's general-equation dowel, the flexible delta):** bearing
+C / phi B_n 20,156 / 38,943 (2"), 21,254 / 41,363 (2 1/2"), 22,500 / 43,748 (3"); the dowel
+tension per bar 15,418 (0.92), 16,682 (1.00), **18,160 (1.08)** against 16,740: **3" no longer
+fits** at these loads, quite apart from the pad dowels' hooked development (§14). 2" stays.
+
+**The base spring (`base_rotation`).** The wall top's spring is §4 of
+`column_base_rotation.md`: E I of the wall strip 2.4377e9, k_theta = (4EI/H)(k_f + 3EI/H)/(k_f +
+4EI/H) with k_f the 7' footing on the presumed soil at delta_ref 0.25" / 1.0" (k_v 96,000 /
+24,000 lb/ft³), then R = k_theta L / EI_col, `P_c = P_c,rigid / (1 + 3/R)` capped by the
+exact-spring root, `delta = 1/(1 - P_u / 0.75 P_c)`. Hand script (the library `base_spring`
+module is not used):
+
+```
+          L        P_u      R (0.25" / 1.0")    delta (0.25" / 1.0")
+BF1   104.375"   5,196.3     6.838 / 6.450       1.0456 / 1.0465
+BR1   106.208"   6,095.4     6.763 / 6.379       1.0545 / 1.0556
+```
+
+**What the flexible delta now magnifies (B-04).** The record used to apply it to the larger of
+the two service moments at the factored axial (0.178). It is applied to every §2.3.1 pair
+`deck_post` grades, each against its own phi M_n, and the worst is reported: BF1 10,142 / 23,857
+= **0.425**, BR1 10,272 / 23,903 = **0.430**, the floor-empty wind + guard pair of §25.
+
+**Head drift and seismic (B-12).** `base_rotation` prints the service head displacement by
+`P L³/3EI + P L²/k_theta` and the SDC A statement of §9 (F_x = 0.01 W); no code drift limit is
+claimed for a deck column.
+
+## 27. The verifier's corrections (2026-11-23): wind bands, the joint's own block, the stem, the load path, uplift — curtain numbers withdrawn by §28
+
+An independent verifier reproduced §24-§26 and found gaps. **§27 supersedes the numbers of §22,
+§24, §25 and §26 where they differ; the method is theirs.**
+
+**Wind (§24).** Five corrections to the bands, each from the model: the guard's 3x3 posts
+(5 on the front leg, one every 60 1/4": +4.2 sq ft = +71 lb), the curtains' corner curves, which
+carry the face out to the flank tracks' lines, 10'-0" to 26'-0" = **16'** not the straight run's
+14.67' (64.2 -> 70.0 sq ft: +99 lb), the 1 1/2" plank edge above the fascia (+41 lb), the shafts,
+which end under the beam at **7.76' / 7.91'** and not at the authored Post.height 8.70' / 8.85'
+(-64 lb), and the deck band's lever, its centroid (walking surface 9.875' less half the 13"
+fascia) **9.33'**, not the deck plane. N-S, ASD, 17.00 psf: deck 363 + plank edge 41 + guard 279
++ columns 533 + curtains 1,191 = **2,408 lb**; head shear (deck + plank + guard + curtains)/4 =
+**468.6 lb** (verifier 465.5); base moment per column BF 101 x 9.33' + 298 x 8.70' + 70 x 11.55'
++ 133 x 3.88' = 4,854, engine **4,860 BF / 4,916 BR** (verifier 4,832 / 4,853, within 1.3%).
+The statics areas are 40.70 / 53.55 sq ft.
+
+**The joint's own block (`column_support`).** The couple took the compression block from the
+column's P-M point, which belongs to a different force. The block THIS force produces is
+`A = C / 0.85 f'c`, iterated with `C (y_bar + y_s) = M_u + P_u y_s`. BR1 floor-empty wind + guard,
+P_u 1,894, M_u 11,006 lb-ft (delta 1.016): C 16,852, **T 14,958 per bar** (hand script and engine
+14,957) = **0.894** on phi A_s f_y 16,740; bearing C at 1.2D + 1.0W + L, P_u 4,048,
+M_u 11,204: 19,482 (engine 19,481), 0.50. **The final number, 0.894, is under the 0.92 the owner
+accepted**; the corrected wind alone, on the old block, would have been about 0.99.
+
+**The stem (`column_stem`).** Below the dowels the moment at the tips is `M_u + V_u x`, the head
+shear's lever, x = 48": BF 11,046 + 1,203 x 4' = 15,858 lb-ft; and the 45 deg spread stops at
+the pour's end. W-SG-W1 and W2 are one pour; the rear column stands 23.3" from its north end,
+so the spread is 23.3 + 54 = **77"** (phi M_n 32,802 lb-ft, 0.49), the front column's 108"
+(45,820, 0.35). The footing row takes the same clipped spread (139" rear): 54 / 28 psf of 2,000.
+**The strut row is gone**: it assumed the porch diaphragm delivers each column's prop to the
+opposite stem.
+
+**The load path (the finding that matters).** Under E-W wind all four columns push both stems
+the same way, so the porch cannot prop one stem against the other. The E-W lateral reaches the
+ground through the stems as cantilevers from their footings. Per stem, 1.2D + 1.0W + L_g + 1.6H
+(`column_support`, "stem as a cantilever"):
+
+```
+column  M_u = (E-W wind 3,934 / 0.6 + guard 2,644) x delta 1.015 = 9,334 lb-ft (BF), 9,405 (BR)
+        V_u = 492.8 / 0.6 + 200 = 1,021 lb
+base    M + V H = 9,334 + 1,021 x 9.12' = 18,648 (BF), 18,720 (BR)  -> 37,368 lb-ft per stem
+spread  union of the two columns' 45 deg spreads, clipped = 18.9'  -> 1,978 lb-ft/ft
+soil    1.6 x 40 psf/ft x 6.29'^3 / 6 (active; fill as foundation_unbalanced_fill reads it) = 2,650
+total   4,628 lb-ft/ft  against #6 @ 38" on the earth face, d 8.625":
+        phi M_n = 0.9 x 0.1389 x 60,000 x (8.625 - 0.082) / 12 = 5,340     d/c 0.87
+```
+
+**0.87 is over the owner's 0.85 cost trigger and under 1.0.** It assumes a single curtain of
+the wall's #6 bars on the retained face (its placement is not authored), and the soil active
+(a cantilever stem, not R404.1.2(8)'s propped at-rest 60 pcf). The plain-concrete section alone (no bars) would be 0.39 before soil and 0.91 with it (the verifier,
+on narrower spreads, estimated 0.56 before soil). **What does NOT carry the E-W lateral: the ledger Titen HD anchors
+(no stainless allowable is published), the LUS210SS hangers, the plank as a strut.** They keep the
+props R404.1.2(8) assumes for the soil's thrust, which that table grades. The footings take the
+E-W base shear, about 4 kip at strength; L1's court-sliding cases now read the balcony's E-W wind (1,348 lb ASD) live.
+
+**Uplift (column_head_joint).** Graded by the beam's statics area, as gravity takes it: BF 448 lb,
+BR **590** lb ((17.00 - 6.0) x 53.55), interaction 0.754 / **0.828**. **Not graded, open:** with the
+curtains closed (the lateral design case) the deck roofs a mostly enclosed space, and internal
+pressure adds. Source read: GAF, "A Guide to Using ASCE 7-16" (June 2020) p. 46, a secondary
+summary of the standard: flat-roof C&C GC_p at 10 sq ft, zone 1' -0.9, zone 1 -1.7, zone 2 -2.3,
+zone 3 -3.2; GC_pi -0.18 enclosed, -0.55 partially enclosed. At those 10 sq ft values, q_h 18.52:
+zone 2 partially enclosed `(0.6 x 18.52 x 2.85 - 6) x 53.55 = 1,376 lb` (interaction 1.24),
+zone 2 enclosed 1,155 lb (1.12), zone 3 partially enclosed 1,912 lb. These are UPPER bounds: GC_p
+falls with the effective area and the standard's values at ~50 sq ft are not held in the repo or
+in the source read. The reviewer's 750-920 lb sits between. **This row cannot be closed without
+Fig. 30.3-2A at the true area or a decision on the curtains' enclosure class**; it is reported, not
+graded as a state.
+
+**Shear at d (glulam).** d is now measured from the FACE of the 3.5" seat (d + 1.75" from the
+bearing centre the statics are taken at), NDS §3.4.3.1(a): 2,689 - 812.5 - 487.5 x 1.115 = 1,333 lb
+(3" test case), `f_v` 63.4 psi (0.24) with the planter. It had been measured from the centre line,
+5% conservative. The record's summary now says planter ON (bearing 0.624 ON, 0.51 OFF).
+
+## 28. The porch curtains are not a wind band (2026-11-23, owner)
+
+**Owner basis: the curtains are retractable soft goods and are NOT wind-rated.** They are retracted
+and stowed above the curtain maker's rated wind speed (the specification), so the porch is OPEN for
+wind design and the curtains are not a wind-resisting element. §24's curtain band (1,191 lb N-S, the
+16' face) and every number that used it are withdrawn; §27's other corrections stand. Listed under
+"not covered — owner" on `glulam_beam` and `deck_post` (`balcony_loads.CURTAIN_OWNER_BASIS`): the
+design neither relies on nor grades closed curtains in design wind, **and a reviewer may question
+reliance on an operable closure being retracted.** The track and its header screw to the balcony
+joists' soffit; no closed-in-moderate-wind load is published in the sources held, so none is carried
+by joists, beams, columns, stems or head ties, and no internal pressure is taken under the sealed
+deck (the head-uplift row stays the open-structure reading; §27's "enclosure not graded" bound is
+deleted).
+
+**Wind, ASD, 17.00 psf.** The governing axis is E-W again: deck 508 + plank edge 21 + guard 286 +
+shafts 533 = **1,348 lb** (N-S 363 + 41 + 279 + 533 = 1,216). Per column the base moment is
+132 x 9.33' + 71.5 x 11.55' + 133 x 3.88' = 2,577 by hand, engine **2,578.6 BF / 2,588.8 BR**
+(guard 2,643.75 still governs the ASD moment; at strength wind 4,298 edges guard 4,230). Head shear
+(508 + 21 + 286)/4 = **203.6 lb**.
+
+**Final ratios (prefs context; the planter on and off both run):**
+
+```
+deck_post P-M envelope   0.294 / 0.294   (10,853 -> 7,012 lb-ft / 23,857 floor-empty wind + guard)
+base_rotation            0.295 / 0.296
+column_head_joint        lateral wind 0.226, guard 0.356, uplift 0.233 / 0.307, combined 0.460 / 0.533
+column_support           dowel tension 0.540 / 0.536 (hand couple, own block, 8,962 lb per bar BR),
+                         bearing 0.32, development 0.265, stem below dowels 0.22 / 0.31,
+                         stem as an E-W cantilever with the retained soil 0.774 (superseded by
+                         §29: soil propped at 60 psf/ft, 0.58)
+glulam_beam              bearing 0.624 (planter ON), bending 0.33, shear 0.24
+```
+
+The dowel tension (0.54) is far under the 0.92 the owner accepted; the OWNER-ACCEPTED note is
+reworded on the record (it names no figure above what is printed).
+
+## 29. The retained soil is propped; the stem is free at its top for wind (2026-11-23, load-path review)
+
+**Soil (`column_support`, "stem as a cantilever").** The retained soil pushes INWARD on both W1 and E1
+(opposite ways), so the porch spanning between them takes each stem's top reaction against the
+other's: the soil is PROPPED, the standard top-support assumption of Table R404.1.2(8) (the 40 psf/ft
+active cantilever of §27 is withdrawn). The pressure is the court's own at-rest equivalent fluid
+(`retaining_court.inputs.default_design_input()`, 60 psf/ft, IBC 2018 Table 1610.1), read, not
+copied. Fixed base, pinned top, triangular load: base moment `efp H^3 / 15`, top reaction `efp H^2 /
+10`, H = 6.29' (fill as `foundation_unbalanced_fill` reads it):
+
+```
+soil moment   1.6 x 60 x 6.29^3 / 15 = 1,590 lb-ft/ft      (1,593 by the verifier's hand)
+soil prop     1.6 x 60 x 6.29^2 / 10 =   379 lb/ft factored, into the porch floor
+wind (E-W)    columns M + V H = 14,106 + 14,146 lb-ft over 18.9' = 1,495 lb-ft/ft, NO prop
+total         3,085 lb-ft/ft against phi M_n 5,340                    d/c 0.58
+```
+
+**What carries the soil's prop:** the porch ledgers' Titen HD anchors, the LUS210SS hangers and the
+plank, spanning between W1 and E1. **That path is not graded** (no THD50600H6SS allowable is
+published) and is named as a gap; no column prop rides it. The footings' E-W base shear is read live
+by L1's court-sliding cases (1,348 lb ASD), which replaces §27's "no case carries it".
+
+**Base spring (`base_rotation`).** For E-W wind the stem has no prop, so it is a free-top cantilever:
+`k_theta = 1 / (H/EI + 1/k_f)`, EI/H in series with the footing's rocking, in place of the propped
+stem's 4EI/H and 3EI/H. Hand script, same footing spring as §26: R 1.247 / 0.564 at delta_ref
+0.25" / 1.0" (BF1), delta **1.1152 / 1.2370**; BR1 R 1.234 / 0.558, delta **1.1401 / 1.2959**.
+`base_rotation` reads **0.306 BF / 0.309 BR** (was 0.295 / 0.296); the joint's flexible delta,
+`column_support`'s dowel tension rises to **0.551 / 0.548**, bearing 0.34.
+
+**Other.** The head-joint column-shear label read "base wind / 0.6" and uses the head wind (203.6 lb);
+corrected. `deck_post` no longer prints `tributary_area`, `roof_tributary_area` or `roof_snow` for a
+column on its beam's statics (unused; fingerprint hygiene). **The joist-to-beam uplift ties** on the
+sealed deck (net 11.0 psf up) are named on `column_head_joint`: 11.0 x 1' x 9.75' = 107 lb per tie
+against the catalog's H10ASS 1,040 lb (Simpson C-C-2026 p.300), about 0.10; no check grades them and
+the H2.5ASS at the end joists is not compared.
+
+## 30. Where the soil's prop goes (2026-11-23, coordinator)
+
+The 379 lb/ft factored (237 lb/ft service, `efp H^2 / 10`, efp 60, H 6.29') is **compression**. The
+soil pushes W1 and E1 inward, toward each other, so each stem's head presses on its ledger, the
+ledger (flat on the wall's court face) on the joist ends, and the joists carry it across the porch
+as struts to the other ledger and stem. The joists bear directly on the ledger's face (the LUS210SS
+only seats them), so the Titen HD ledger anchors and the hanger fasteners take **none** of it: they
+keep the gravity shear the Simpson letter L-A-THDSSLDGR23 grades, and would see tension only if the
+soil's thrust reversed, which a retained wall does not do. No anchor swap is needed.
+
+```
+per joist       237 lb/ft x 1.0' o.c.                       =   237 lb
+bearing         237 / (1.5" x 11.25")                       =   14.0 psi on the ledger's side grain
+                Fc-perp, SP No. 2 wet 565 x 0.67            =  378.6 psi          d/c 0.04
+joist as column Le 16.75' strong axis, plank bracing the weak axis: buckles only if E_min'
+                < 3 x 237 x 201"^2 / (pi^2 x 178 in4)        =  16,400 psi (E apparent 1,260,000)
+plank           not a strut, not relied on
+```
+
+**Assumptions to confirm.** The joist ends bear tight on the ledger (a hanger gap of 1/8" lets the
+stem head move that far before the strut engages); the porch is framed before backfill and the two
+sides are backfilled together (L1's `AN-SG-BACKFILL` (b)): a one-sided stage would push the porch
+into the far stem as a cantilever, which this record does not grade. The anchors keep the 8" skip
+at every column (`AN-SG-LEDGER-DOWELS`). The coordinator's request to read a published stainless
+anchor (ESR-3037 Strong-Bolt 2 316 SS, an adhesive 316 rod) is not needed for this load and was not
+read; it would be needed only if a design reversed the thrust.
+
 ---
 
 ## Sources

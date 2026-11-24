@@ -37,7 +37,8 @@ def _inputs(ctx, item_ids, checklist):
         house="catlin", model=ctx.model, item_ids=item_ids, results=ctx.engineering,
         register=ctx.engineering_register, generated="2026-09-18",
         engine_version="test", content_hash="deadbeefdeadbeef",
-        profile_name=ctx.profile.name, checklist=checklist)
+        profile_name=ctx.profile.name, checklist=checklist,
+        profile=ctx.profile, preferences=ctx.preferences)
 
 
 def test_a_screening_record_says_so_in_its_header_and_its_exclusions(catlin_ctx) -> None:
@@ -97,9 +98,16 @@ def test_the_readme_states_where_the_permit_gate_stands(catlin_engineering) -> N
                        content_hash="abc", records=[ctx.engineering[i] for i in item_ids],
                        notes=[], checklist=checklist, has_pdf=False)
     assert "## Where the permit gate stands" in readme
-    # SHUT only on the garage STHD jog (2026-11-20 review); OPEN once that is resolved.
-    assert ("The draft gate is OPEN" in readme) if checklist.ok else \
-        ("Cast-in strap hold-downs (ESR-2920)" in readme)
+    # OPEN, or SHUT naming every open blocking line (whichever the house currently has).
+    if checklist.ok:
+        assert "The draft gate is OPEN" in readme
+    else:
+        from typehaus.findings import GATE_OK
+
+        shut = [item.label for item in checklist.items
+                if item.blocking and item.result not in GATE_OK]
+        assert shut and "The draft gate is SHUT" in readme
+        assert all(label in readme for label in shut)
     assert "CN-BW-EAVE-4: eave blocking" not in readme
     assert "PR-M-S-BATH1-WC-DRAIN" not in readme
     assert "FS-S-WEST" not in readme
@@ -213,3 +221,106 @@ def test_every_front_matter_page_the_doc_lists_is_actually_written(page, catlin_
     assert page in files
 
 pytestmark = pytest.mark.slow
+
+
+def test_the_cover_states_what_is_true_and_names_both_editions(catlin_engineering) -> None:
+    """The cover said "every ratio is within capacity" over items that carry INCOMPLETE and
+    deferred states, and the loads edition was blank because the profile never carried one."""
+    from typehaus.takeoff.calc_package import calc_package
+
+    cover = calc_package(_inputs(*catlin_engineering))["00-cover.md"]
+    assert "every ratio is within capacity" not in cover
+    assert "ASCE/SEI 7-16" in cover
+    assert "Minnesota Residential Code 2020" in cover
+    assert "computed" in cover and "deferred" in cover
+
+
+def test_the_summary_front_page_carries_what_a_reviewer_decides_on(catlin_engineering) -> None:
+    from typehaus.takeoff.calc_package import calc_package
+
+    page = calc_package(_inputs(*catlin_engineering))["00-summary.md"]
+    for expected in ("## Criteria", "## Governing items", "## What changed since the last issue",
+                     "**First issue.**", "## Not covered, and who owns it",
+                     "owner's cost-review trigger", "the limit is 1.000", "Seismic"):
+        assert expected in page, expected
+
+
+def test_the_criteria_page_is_complete_and_reconciles_the_deck_snow(catlin_engineering) -> None:
+    """Live, dead, guard, seismic, every material, and the deck snow comparison once,
+    reconciled with the house input (owner decision 5)."""
+    from typehaus.takeoff.calc_criteria import _criteria
+
+    ctx = catlin_engineering[0]
+    page = _criteria(_inputs(*catlin_engineering))
+    for expected in ("## 3. Gravity loads and seismic", "Live load, floors and decks",
+                     "Guard, concentrated load", "Seismic Design Category",
+                     "## 5. Materials", "f'c, slab concrete", "Grade 60",
+                     "## 6. Codes and standards, by kind", "Soil parameters (retaining court)",
+                     "NOT YET CONFIRMED"):
+        assert expected in page, expected
+    # One source for the deck basis wording: the balcony records' own function.
+    from types import SimpleNamespace
+
+    from typehaus.engineering.balcony_loads import deck_basis_text
+
+    assert deck_basis_text(SimpleNamespace(preferences=ctx.preferences)) in page
+    assert page.count("Minnesota deck basis as adopted") == 1, "the basis prints once"
+    assert "Service conditions" not in page
+
+
+def test_the_register_is_sorted_by_ratio_and_says_where(catlin_engineering) -> None:
+    import re
+
+    from typehaus.takeoff.calc_package import calc_package
+
+    page = calc_package(_inputs(*catlin_engineering))["02-item-register.md"]
+    assert "| Where |" in page and "| States |" in page
+    ratios = [float(m.group(1).strip("*")) for m in
+              re.finditer(r"\| (\*{0,2}\d\.\d{3}\*{0,2}) \| \d+ \| \w+", page)]
+    assert ratios == sorted(ratios, reverse=True)
+    assert re.search(r"\| (basement|main|second|\w+) \(-?[\d.]+, -?[\d.]+ ft\) \|", page)
+
+
+def test_a_changed_item_is_listed_against_the_previous_issue() -> None:
+    from typehaus.engineering.item import EngineeringRecord, LimitState
+    from typehaus.takeoff.calc_summary import changes_since, parse_previous
+
+    record = EngineeringRecord(
+        item_id="deck_post/P-1", kind="deck_post", key="P-1", status=Status.OK,
+        limit_states=(LimitState("axial", 9, 10, "lb", "x"),))
+    previous = parse_previous({
+        "00-cover.md": "**Generated:** 2026-01-01  \n**Model content hash:** `abc123`  \n",
+        "02-item-register.md": (
+            "| Item | Local | Governing | d/c |\n|---|---|---|---|\n"
+            "| `deck_post/P-1` | draft | axial | 0.500 |\n"
+            "| `deck_post/P-2` | draft | axial | 0.100 |\n")})
+    text = changes_since(previous, [record], "def456")
+    assert "model is changed" in text
+    assert "`deck_post/P-1`: d/c 0.500 to 0.900." in text
+    assert "`deck_post/P-2` removed." in text
+    assert "First issue" in changes_since(None, [record], "def456")
+
+
+def test_the_cost_review_trigger_is_not_an_acceptance_limit() -> None:
+    from typehaus.takeoff.calc_summary import ratio_cell, trigger_note
+
+    assert ratio_cell(0.85) == "**0.850**" and ratio_cell(0.849) == "0.849"
+    assert "0.85" in trigger_note() and "1.000" in trigger_note()
+    assert "not an acceptance limit" in trigger_note()
+
+
+def test_a_pdf_table_keeps_an_item_id_whole() -> None:
+    """A code span is measured at the size it is drawn, so an id never breaks mid-token."""
+    from reportlab.pdfbase.pdfmetrics import stringWidth
+
+    from typehaus.takeoff.calc_markdown import CODE_PT, Table_
+    from typehaus.takeoff.calc_pdf_layout import _styles, _table
+
+    item = "thermal_break_transfer/W-SG-ARCH"
+    header = ("Item", "Where", "Elements", "Status", "Governing", "d/c", "States", "Seal",
+              "Checked by")
+    row = (f"`{item}`", "basement (18, -11 ft)", "TB-SG-E1, FT-SG-E1", "Incomplete",
+           "court-to-house joint closure", "5.520", "30", "unsealed",
+           "sunken_garden_court_free_body.md §11")
+    table = _table(Table_(header, (row,)), _styles(), 511.0)
+    assert table._colWidths[0] >= stringWidth(item, "Courier", CODE_PT)

@@ -34,6 +34,7 @@ separate pass; ``tests/test_lateral_system_calcs.py`` reproduces it.
 
 from __future__ import annotations
 
+from typehaus.engineering import lateral_working as W
 from typehaus.engineering.diaphragm_basis import (
     DIAPHRAGM_ASPECT_BLOCKED,
     DIAPHRAGM_ASPECT_UNBLOCKED,
@@ -46,12 +47,15 @@ from typehaus.engineering.item import (
     Oracle,
     Quantity,
     Status,
+    declare_sheet,
     item_id,
 )
+from typehaus.engineering.lateral_anchorage import anchorage
 from typehaus.engineering.lateral_collectors import collector_rows, torsion_rows
 from typehaus.engineering.lateral_lines import panel_geometry_ft
+from typehaus.engineering.lateral_sheet import LABELS, NOT_COVERED, figure
+from typehaus.engineering.owner_bases import LSTA24_DRY, SDPWS_4_2A_READ
 from typehaus.engineering.registry import EngineeringContext, calc, keys, oracled_by
-from typehaus.engineering.retaining_basis import PRESUMPTIVE_FC_PSI
 from typehaus.engineering.roof_lateral import panel_forces, wind_of
 from typehaus.engineering.roof_moment import FrameCase, frame_cases_of, roof_base_moments
 from typehaus.engineering.torsion import Torsion, torsion_for
@@ -73,7 +77,13 @@ BASIS = ("AWC SDPWS-2015 §4.2 (diaphragms, §4.2.5.2 open front) and §4.3 (she
 #: 6: equal-width type-1 knee-brace joints and profile-specific buckling (2026-10-25).
 #: 7: knee-brace F1 interpolated by brace angle; a corner diagonal's clipped-end bearing and
 #:    centre-post contact (2026-10-26).
-BASIS_VERSION = "7"
+#: 8: the N-S chord force over the chords' own spacing and the end-strap couple row
+#:    (``diaphragm_chord``); the canopy and garage decks graded at their SDPWS table
+#:    allowables (347.3 / 308.2 plf); the pier pull-out rows of ``lateral_band`` (2026-11-23).
+#: 9: G5 — the screen's shear leaves at its top plate through its strap, so the screen chord
+#:    rows and the pier pull-out rows are retired (north_entry_piers.md §10p); the N-S couple
+#:    and garage-wall couple rows still read the screen panel's line (2026-11-23).
+BASIS_VERSION = "9"
 
 oracled_by(
     KIND,
@@ -86,7 +96,17 @@ oracled_by(
     # §3/§4 — the delivery to a neighbour (`diaphragm_delivery`), and the envelope.
     Oracle(note="canopy_garage_diaphragm.md", section="§3-§4",
            test="tests/test_diaphragm_delivery_calcs.py"),
+    # §6d — the pier pull-out rows under the screen's tension chord (`lateral_band`); §10p
+    # retires them: the screen strap, the DTT rod tie and the HL43 E-W reading.
+    Oracle(note="north_entry_piers.md", section="§6d",
+           test="tests/test_diaphragm_delivery_calcs.py"),
+    Oracle(note="north_entry_piers.md", section="§10p",
+           test="tests/test_lateral_system_calcs.py"),
 )
+
+
+declare_sheet(KIND, not_covered=NOT_COVERED, bases=(SDPWS_4_2A_READ, LSTA24_DRY),
+              labels=LABELS, figure=figure)
 
 
 def _declared(ctx: EngineeringContext) -> list[str]:
@@ -128,7 +148,7 @@ def _one(ctx: EngineeringContext, tag: str) -> EngineeringRecord:
             item_id=ident, kind=KIND, key=tag,
             basis_version=BASIS_VERSION, basis=BASIS, status=Status.INCOMPLETE,
             summary=f"{tag}: a diaphragm is declared and no distribution could be built on it",
-            missing=("a frame shear to distribute — `engineering/roof_moment` derived none "
+            missing=("a frame shear to distribute — the roof's base-moment pass derived none "
                      "for this roof and it declares no `delivers_to`, so either no wind "
                      "basis resolves, no cast column carries it, or every resisting line "
                      "stands on one station",),
@@ -149,13 +169,20 @@ def _one(ctx: EngineeringContext, tag: str) -> EngineeringRecord:
                 f"{'blocked' if spec.blocked else 'UNBLOCKED'} — "
                 f"{worst_aspect.span_ft:.1f}' between the lines over "
                 f"{worst_aspect.depth_ft:.1f}' of depth on the "
-                f"{_direction(worst_aspect.axis)} case"))
+                f"{_direction(worst_aspect.axis)} case",
+            **W.cw(W.GEOMETRY),
+            working=W.deck_aspect(worst_aspect.span_ft, worst_aspect.depth_ft, limit,
+                                  spec.blocked)))
 
         boundary = max((_boundary_shear_plf(case), case) for case in cases)
         states.append(LimitState(
             "diaphragm unit shear", boundary[0], spec.unit_shear_asd_plf, "plf",
             f"{spec.source}; the larger line reaction on the "
-            f"{_direction(boundary[1].axis)} case over {boundary[1].depth_ft:.1f}' of depth"))
+            f"{_direction(boundary[1].axis)} case over {boundary[1].depth_ft:.1f}' of depth",
+            **W.cw(W.WIND_ASD),
+            working=W.deck_unit_shear(
+                max(boundary[1].columns_governing.shares.values(), default=0.0),
+                boundary[1].diaphragm_shear_lb, boundary[1].depth_ft, spec.unit_shear_asd_plf)))
 
     for case in cases:
         inputs.extend((
@@ -243,18 +270,19 @@ def _one(ctx: EngineeringContext, tag: str) -> EngineeringRecord:
         "PINNED DELIVERY: the open front's chord force (its couple over the chords' "
         "spacing) is graded above in the chords and the end straps; the drift limit is "
         "SDPWS 4.2.5.2's seismic one. What stays with the truss designer is the N-S chord — "
-        "the end trusses' top chords combined with roof gravity — and the 0.03in splice "
-        "slip the rigid/flexible call assumes."
+        "the first and last canopy truss's top chords, `chord_force_y` above, combined with "
+        "roof gravity. The rigid/flexible split is not used: both N-S paths are graded at "
+        "100%, so the splice slip enters no ratio and is not a truss-order input."
     )
     notes.extend((
         chord_note,
         "THE COLLECTOR IS A CLAIM WITH TAGS ON IT: "
         + (", ".join(spec.collector_refs) or "none named")
-        + ". Those members drag the deck's shear into each resisting line; the check that "
-        "they resolve is `structural.lateral_racking`'s, and the CONNECTION at each end of "
+        + ". Those members drag the deck's shear into each resisting line; whether they "
+        "exist and stand on the line is checked separately, and the CONNECTION at each end of "
         "them — the joint a collector actually fails at — is the rows above.",
-        "SCREENING, not a stamped design. Every row above is this engine's own arithmetic "
-        "against a published table, and the seal is what turns it into a design.",
+        "SCREENING, not a stamped design. Every row above is the calculation's own "
+        "arithmetic against a published table, and the seal is what turns it into a design.",
     ))
 
     if missing:
@@ -309,10 +337,12 @@ def _panel(ctx: EngineeringContext, roof_tag: str, wall_tag: str,
     states.append(LimitState(
         f"{wall_tag} unit shear", worst / length_ft, spec.unit_shear_asd_plf, "plf",
         f"{spec.source}; {worst:,.0f} lb over {length_ft:.2f}' on the "
-        f"{_direction(axis)} case"))
+        f"{_direction(axis)} case", **W.cw(W.WIND_ASD),
+        working=W.panel_unit_shear(worst, length_ft, spec.unit_shear_asd_plf, _direction(axis))))
     states.append(LimitState(
         f"{wall_tag} aspect ratio", height_ft / length_ft, spec.aspect_ratio_limit, "",
-        f"SDPWS Table 4.3.4 — {height_ft:.2f}' tall over {length_ft:.2f}' long"))
+        f"SDPWS Table 4.3.4 — {height_ft:.2f}' tall over {length_ft:.2f}' long",
+        **W.cw(W.GEOMETRY), working=W.panel_aspect(height_ft, length_ft, spec.aspect_ratio_limit)))
 
     element = ctx.plan.by_tag(roof_tag)
     band = band_rows(ctx, roof_tag, wall, getattr(element, "diaphragm", None), worst,
@@ -336,7 +366,9 @@ def _panel(ctx: EngineeringContext, roof_tag: str, wall_tag: str,
     states.append(LimitState(
         f"{wall_tag} hold-down tension", tension, capacity, "lb",
         f"{spec.holdown} published uplift; the overturning couple {worst:,.0f} lb x "
-        f"{height_ft:.2f}' over {length_ft:.2f}', with NO dead load credited against it"))
+        f"{height_ft:.2f}' over {length_ft:.2f}', with NO dead load credited against it",
+        **W.cw(W.WIND_NO_DEAD),
+        working=W.panel_holdown(worst, height_ft, length_ft, capacity, spec.holdown)))
     if getattr(hardware_by_model(spec.holdown), "anchorage_in_rating", False):
         return
     notes.append(
@@ -346,68 +378,7 @@ def _panel(ctx: EngineeringContext, roof_tag: str, wall_tag: str,
         f"{allowable.citation.split(':')[0]}. The row above is the overturning couple ALONE, "
         f"because that is the panel's own limit state; the anchor rows add the column's net "
         f"roof uplift, which crosses the same bolt in the same gust.")
-    _anchorage(ctx, wall, tension, worst, states, notes, inputs)
-
-
-def _anchorage(ctx: EngineeringContext, wall: object, tension_lb: float, shear_lb: float,
-               states: list[LimitState], notes: list[str], inputs: list[Quantity]) -> None:
-    """The cast-in anchor under each end of a panel, graded in the pier it stands in.
-
-    ** THE PANEL'S END POST NAMES ITS OWN PIER BY STANDING ON IT. ** A post framed into the
-    panel (``Post.within_wall``) bears on the cast pier at its own plan position, and that
-    pier's diameter and f'c are what the anchor lives in. Nothing is assumed: a post with no
-    pier under it raises no row, because there is then no concrete to design.
-    """
-    from typehaus.engineering.column_head_joint import _net_uplift
-    from typehaus.engineering.holdown_anchor import round_pier_anchor
-    from typehaus.engineering.holdown_anchor import states as anchor_states
-    from typehaus.engineering.pier_basis import _round_size, cast_piers
-
-    posts = [e for e in ctx.plan.all_elements()
-             if getattr(e, "within_wall", None) == getattr(wall, "tag", None)]
-    if not posts:
-        return
-    piers = [p for p in cast_piers(ctx)
-             for post in posts
-             if _same_station(ctx.plan.by_tag(p.tag), post)]
-    # ** THE WORST PIER IS GRADED, ONCE. ** The bases are identical parts carrying the two
-    # ends of one couple, so a row per base would be the same row twice; the smallest pier
-    # at the lowest f'c is the one that answers for the pair.
-    candidates = [(pier, _round_size(getattr(ctx.plan.by_tag(pier.tag), "size", "") or ""))
-                  for pier in piers]
-    ranked = sorted(((pier, size) for pier, size in candidates if size is not None),
-                    key=lambda row: (row[1][0], row[0].specified_fc_psi or 0.0))
-    if ranked:
-        pier, size = ranked[0]
-        inputs.append(Quantity(f"panel_anchor_fc_{wall.tag}",
-                               pier.specified_fc_psi or PRESUMPTIVE_FC_PSI, "psi", 1.0))
-        uplift = _net_uplift(ctx, pier, notes=[]) or 0.0
-        anchor = round_pier_anchor(pier.tag, size[0], pier.specified_fc_psi or PRESUMPTIVE_FC_PSI)
-        states.extend(anchor_states(
-            anchor, tension_lb + uplift, shear_lb / max(len(piers), 1),
-            f"the panel's overturning couple {tension_lb:,.0f} lb plus the column's net "
-            f"roof uplift {uplift:,.0f} lb (0.6D + 0.6W), no dead load credited against "
-            f"either",
-            f"the panel's base shear {shear_lb:,.0f} lb shared by its {len(piers)} bases — "
-            f"put ALL of it on one and the shear row doubles and the interaction still "
-            f"clears"))
-        notes.append(
-            f"THE HOLD-DOWN'S ANCHOR IS GRADED IN ITS PIER, NOT AS A PART: one cast-in "
-            f"5/8in x 10in bolt per base in a round pier, ACI 318-19 Ch. 17, cracked, "
-            f"condition B, with h_ef derived from the bolt's own length and the edge distance "
-            f"the pier's radius gives it on every side. The two bases are identical, so one "
-            f"is graded ({pier.tag}). What is NOT credited: supplementary reinforcement "
-            f"(the cage is not developed as anchor reinforcement), uncracked concrete, and "
-            f"any bearing or friction under the base plate.")
-
-
-def _same_station(pier_element: object, post: object) -> bool:
-    """Same plan position to a tenth of an inch — a post standing on a pier, not near one."""
-    a = getattr(pier_element, "position", None)
-    b = getattr(post, "position", None)
-    if a is None or b is None:
-        return False
-    return all(abs(x - y) < 0.0025 for x, y in zip(a.xy_m, b.xy_m, strict=False))
+    anchorage(ctx, wall, tension, worst, states, notes, inputs)
 
 
 def column_head_reactions(ctx: EngineeringContext) -> dict[str, dict[str, float]]:
@@ -482,7 +453,9 @@ def _panel_boundary(ctx: EngineeringContext, roof_tag: str, wall_tag: str,
             spec.unit_shear_asd_plf, "plf",  # type: ignore[attr-defined]
             f"{spec.source}; the envelope: {wall_tag} at 100% of the "  # type: ignore[attr-defined]
             f"{_direction(axis)} shear, {here[wall_tag]:,.1f} lb delivered along {edge:.3f}' "
-            f"of the deck's boundary on its line"))
+            f"of the deck's boundary on its line", **W.cw(W.WIND_ASD),
+            working=W.boundary(here[wall_tag], edge, spec.unit_shear_asd_plf,  # type: ignore[attr-defined]
+                               wall_tag, _direction(axis))))
 
 
 def _boundary_shear_plf(case: FrameCase) -> float:

@@ -167,3 +167,65 @@ def test_the_asd_and_directionality_constants_are_the_standards():
     """Pinned so a "tuning" edit to either has to argue with a citation, not a diff."""
     assert K_D_BUILDINGS == 0.85     # Table 26.6-1
     assert ASD_WIND_FACTOR == 0.6    # §2.4.1 combinations 5 and 6
+
+
+# --- mean roof height above the LOWEST ADJACENT ground (note §2, 2026-11-22/23) -------------
+
+def _stub(*spots, grade_ft=None, walls=((0.0, 0.0), (36.0, 0.0), (36.0, 67.0), (0.0, 67.0))):
+    """A site with ``spots`` = (x_ft, y_ft, elevation_ft[, kind]) and one wall footprint."""
+    from typehaus import ft
+
+    def spot(x, y, z, kind="grade"):
+        return SimpleNamespace(position=SimpleNamespace(x=ft(x), y=ft(y)),
+                               elevation=ft(z), kind=kind)
+
+    site = SimpleNamespace(spot_elevations=[spot(*s) for s in spots],
+                           grade=ft(grade_ft) if grade_ft is not None else None)
+    roof = SimpleNamespace(eave_z_m=20.9918 * 0.3048, ridge_z_m=30.2939 * 0.3048)
+    wall = SimpleNamespace(is_foundation=False,
+                           axis=tuple((x * 0.3048, y * 0.3048) for x, y in walls))
+    model = SimpleNamespace(roofs=[roof], walls=[wall],
+                            plan=SimpleNamespace(project=SimpleNamespace(site=site)))
+    return site, model
+
+
+_COURT = (9.0, -20.0, -9.0 - 1.4375 / 12, "structure")
+
+
+def test_lowest_ground_is_the_minimum_of_grade_and_adjacent_spots():
+    from typehaus.wind import footprint_bounds_m, lowest_ground_ft
+
+    site, model = _stub((12.0, -2.0, -3.0), _COURT, grade_ft=-2.0 - 10.0 / 12)
+    assert lowest_ground_ft(site, footprint_bounds_m(model)) == pytest.approx(-9.1198, abs=1e-3)
+    assert lowest_ground_ft(_stub()[0]) == 0.0
+
+
+def test_a_remote_low_spot_cannot_drive_the_height():
+    """A swale 60 ft from the walls is not the ground they stand on; the court 20 ft off is."""
+    from typehaus.wind import footprint_bounds_m, lowest_ground_ft
+
+    site, model = _stub((12.0, -2.0, -3.0), (18.0, -85.0, -20.0), grade_ft=-3.0)
+    assert lowest_ground_ft(site, footprint_bounds_m(model)) == pytest.approx(-3.0)
+    # Unfiltered (no footprint) it would have been the swale.
+    assert lowest_ground_ft(site) == pytest.approx(-20.0)
+
+
+def test_mean_roof_height_is_measured_from_the_lowest_adjacent_ground():
+    """Note §2: mean 25.6428 ft above datum + 9.1198 ft of court = 34.7626 ft, K_h 0.73071,
+    q_h 21.0282 psf at 115 mph, Exposure B — worked by hand, not read from the code."""
+    from typehaus.wind import mean_roof_height_ft
+
+    _, model = _stub((12.0, -2.0, -3.0), _COURT, grade_ft=-2.0 - 10.0 / 12)
+    height = mean_roof_height_ft(model)
+    assert height == pytest.approx(34.7626, abs=1e-3)
+    assert velocity_pressure_coefficient(height, "B") == pytest.approx(0.73071, abs=1e-4)
+    basis = wind_basis(_site(design_wind_speed_mph=_V_ULT, wind_exposure="B",
+                             risk_category="II"))
+    assert velocity_pressure_psf(basis, height) == pytest.approx(21.0282, abs=1e-3)
+
+
+def test_a_site_with_no_grade_measures_from_the_datum():
+    from typehaus.wind import mean_roof_height_ft
+
+    _, model = _stub()
+    assert mean_roof_height_ft(model) == pytest.approx(25.6428, abs=1e-3)

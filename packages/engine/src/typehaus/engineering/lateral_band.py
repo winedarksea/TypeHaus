@@ -26,6 +26,8 @@ import math
 from dataclasses import dataclass
 from typing import Any
 
+from typehaus.engineering import lateral_band_working as BW
+from typehaus.engineering.canopy_service import DRY_UNDER_ROOFING
 from typehaus.engineering.item import LimitState, Quantity
 
 _M_PER_FT = 0.3048
@@ -112,8 +114,11 @@ def band_rows(ctx: Any, roof_tag: str, wall: Any, spec: Any, shear_lb: float,
         band = slat_band_on(ctx, wall, line, panel_top_ft, soffit_ft, shear_lb)
         if band is not None:
             slat_rows(ctx, wall, collector, band, states, notes, missing, inputs)
-            _end_bearing(ctx, wall, collector, shear_lb, panel_top_ft, states)
+            strapped = _strapped_out(ctx, wall, notes)
+            _end_bearing(ctx, wall, collector, shear_lb, panel_top_ft, states, strapped)
             _collector_clips(ctx, roof_tag, collector, shear_lb, states, missing, inputs)
+            if strapped:
+                return BandResult(handled=True)
             return BandResult(handled=_holdown_rows(ctx, wall, wall.shear_panel, shear_lb,
                                                     top_ft, states, notes, missing, inputs))
         missing.append(
@@ -125,8 +130,11 @@ def band_rows(ctx: Any, roof_tag: str, wall: Any, spec: Any, shear_lb: float,
             f"the collector")
         return BandResult(handled=True)
     _strap_rows(wall, straps, shear_lb, states, notes, inputs)
-    _end_bearing(ctx, wall, collector, shear_lb, panel_top_ft, states)
+    strapped = _strapped_out(ctx, wall, notes)
+    _end_bearing(ctx, wall, collector, shear_lb, panel_top_ft, states, strapped)
     _collector_clips(ctx, roof_tag, collector, shear_lb, states, missing, inputs)
+    if strapped:
+        return BandResult(handled=True)
     return BandResult(handled=_holdown_rows(ctx, wall, wall.shear_panel, shear_lb, top_ft,
                                             states, notes,
                                             missing, inputs))
@@ -169,13 +177,39 @@ def _strap_rows(wall, straps, shear_lb, states, notes, inputs) -> None:
             f"{COIL_STRAP_CITATION}; {shear_lb:,.1f} lb / cos {math.degrees(theta):.2f}° "
             f"over {len(group)} strap(s); the lesser of the steel {steel:,.0f} lb and "
             f"{nails} {nail} at the post end x {per_nail:.1f} lb, the row pro-rated by "
-            f"its own nails"))
+            f"its own nails", **BW.cw(BW.WIND_ASD),
+            working=BW.strap_tension(shear_lb, math.degrees(theta), len(group), tension, steel,
+                                     per_nail, nails, capacity)))
         notes.append(
             f"BAND, push {label}: {len(group)} tension strap(s) at {math.degrees(theta):.2f}° "
             f"carry {shear_lb:,.1f} lb; their vertical component "
             f"{shear_lb * math.tan(theta):,.1f} lb lifts the bottom-end chord and presses the "
             f"collector down — internal to the frame, and inside the full-height overturning "
             f"below. Compression straps are slack by assumption.")
+
+
+def _strapped_out(ctx, wall, notes) -> bool:
+    """A tension strap at the panel's top, along its line, into another wall: the shear
+    leaves there and never reaches the chords' bases (G5, 2026-11-23). It is graded as a
+    tie joint of the deck the panel stands on (``deck_tie``), with the panel's share in it."""
+    from typehaus.engineering.deck_tie import TENSION_TIE_ROLES
+    from typehaus.hardware.catalog import hardware_by_model
+    from typehaus.model.elements import Wall
+
+    for el in ctx.plan.all_elements():
+        connects = getattr(el, "connects", ()) or ()
+        item = hardware_by_model(getattr(el, "size", "") or "")
+        if wall.tag not in connects or item is None or item.role not in TENSION_TIE_ROLES:
+            continue
+        others = [t for t in connects if t != wall.tag and isinstance(ctx.plan.by_tag(t), Wall)]
+        if others and getattr(el, "axis", None) == _axis_of(ctx, wall):
+            notes.append(
+                f"{wall.tag}'s shear leaves at its top plate through {el.tag} ({el.size}) "
+                f"into {others[0]}, graded with the panel's share in deck_tie; the chords' "
+                f"overturning, base shear, pier pull-out and pad rows carry no N-S and are "
+                f"not graded here (notes/north_entry_piers.md §10p).")
+            return True
+    return False
 
 
 def _members_bearing_on(wall, prefix: str, face: float, line) -> float:
@@ -194,7 +228,8 @@ def _members_bearing_on(wall, prefix: str, face: float, line) -> float:
     return area
 
 
-def _end_bearing(ctx, wall, collector, shear_lb, panel_top_ft, states) -> None:
+def _end_bearing(ctx, wall, collector, shear_lb, panel_top_ft, states,
+                 strapped: bool = False) -> None:
     """The top and base plates bear END-ON on a chord's inner face: compression only, and
     the two chords are the same section, so one face answers for either direction."""
     from typehaus.model.structure import Beam
@@ -216,8 +251,10 @@ def _end_bearing(ctx, wall, collector, shear_lb, panel_top_ft, states) -> None:
     sill_in2 = sum(((cross_section(b.size).width_m or 0.0) / 0.0254)
                    * ((cross_section(b.size).depth_m or 0.0) / 0.0254) for b in sills)
     fc_perp = POST_FC_PERP_PSI * POST_FC_PERP_CM
-    for label, prefix, extra in (("top plate", "plate-top", 0.0),
-                                 ("base plate and sill", "plate-bottom", sill_in2)):
+    # Strapped out at the top plate, the base plate and sill carry no N-S to a chord.
+    rows = (("top plate", "plate-top", 0.0),) + (
+        () if strapped else (("base plate and sill", "plate-bottom", sill_in2),))
+    for label, prefix, extra in rows:
         area = _members_bearing_on(resolved, prefix, face, line) + extra
         if area <= 0.0:
             continue
@@ -226,7 +263,8 @@ def _end_bearing(ctx, wall, collector, shear_lb, panel_top_ft, states) -> None:
             f"the whole {shear_lb:,.1f} lb into ONE chord face over {area:.2f} in2 of end "
             f"grain — AWC NDS 2018 Supplement Table 4D Southern Pine No. 2 timbers Fc-perp "
             f"{POST_FC_PERP_PSI:.0f} psi x wet C_M {POST_FC_PERP_CM}; compression only, so "
-            f"it needs no moment connection and serves either direction"))
+            f"it needs no moment connection and serves either direction", **BW.cw(BW.WIND_ASD),
+            working=BW.end_bearing(shear_lb, area, fc_perp, POST_FC_PERP_PSI, POST_FC_PERP_CM)))
 
 
 def _collector_clips(ctx, roof_tag, collector, shear_lb, states, missing, inputs) -> None:
@@ -262,8 +300,10 @@ def _collector_clips(ctx, roof_tag, collector, shear_lb, states, missing, inputs
     states.append(LimitState(
         f"{collector.tag} eave collector clips", each, worst[1], "lb",
         f"{len(rated)} x {worst[0].size} blocking to {collector.tag}, the lower lateral "
-        f"direction of the catalog row, {shear_lb:,.1f} lb shared equally"
-        + ("; NOMINAL ONLY — the blocking attachment is missing" if attachment_missing else "")))
+        f"direction of the catalog row, {shear_lb:,.1f} lb shared equally; {DRY_UNDER_ROOFING}"
+        + ("; NOMINAL ONLY — the blocking attachment is missing" if attachment_missing else ""),
+        **BW.cw(BW.WIND_ASD),
+        working=BW.collector_clips(shear_lb, len(rated), each, worst[1], worst[0].size)))
 
 
 def _holdown_rows(ctx, wall, spec, shear_lb, top_ft, states, notes, missing, inputs) -> bool:
@@ -304,19 +344,101 @@ def _holdown_rows(ctx, wall, spec, shear_lb, top_ft, states, notes, missing, inp
         f"{spec.holdown}: {shear_lb:,.1f} lb x {height:.3f}' (collector top to the chord "
         f"bases) / {lever:.3f}' chord lever = {shear_lb * height / lever:,.1f} lb, plus the "
         f"column's net roof uplift {uplift:,.1f} lb (0.6D + 0.6W); no wall dead load "
-        f"credited. {allow.citation.split(';')[0]}"))
+        f"credited. {allow.citation.split(';')[0]}", **BW.cw(BW.NET_UPLIFT),
+        working=BW.holdown_full_height(shear_lb, height, lever, uplift, tension,
+                                       allow.uplift_lb, spec.holdown)))
     if lateral:
         states.append(LimitState(
             f"{wall.tag} chord base shear, one base", shear_lb, lateral, "lb",
             f"{spec.holdown} {'F2, oriented along the panel' if along else 'lower lateral'}: "
             f"the base plates bear on ONE chord in compression, so the whole in-plane shear "
-            f"reaches one base, which is the compression chord — no uplift on it to combine"))
+            f"reaches one base, which is the compression chord — no uplift on it to combine",
+            **BW.cw(BW.WIND_ASD), working=BW.base_shear(shear_lb, lateral, spec.holdown, along)))
+    _pullout_rows(ctx, bases, piers, tension, states, missing)
+    _pad_bearing_rows(ctx, bases, piers, shear_lb * height / lever, states, missing)
     item = hardware_by_model(spec.holdown)
     if getattr(item, "anchorage_in_rating", False):
         notes.append(f"{spec.holdown} is cast in and its uplift row is measured through the "
                      f"concrete (cracked), so no separate anchor and no ACI 318 Ch. 17 row "
                      f"stands in for it; the straps want >= 3in to the pier edge.")
     return True
+
+
+#: The low end of ``soil.SOIL_UNIT_WEIGHT_BAND_PCF``: the band end that holds LESS down.
+_PRISM_PCF = 110.0
+
+
+def _pullout_rows(ctx, bases, piers, tension, states, missing) -> None:
+    """Each chord's pier against the full chord tension, at ASCE 7-16 §2.4.1's 0.6D.
+
+    Decision 15 (review C-1). Held down by the shaft, the doweled pad, the soil prism standing
+    on the pad's projection (grade to pad top, the low end of the unit-weight band), and the
+    post and wall dead the pier carries; never the roof or deck dead (the net roof uplift in
+    the tension already spends the roof's 0.6D). ``north_entry_piers.md`` §6d.
+    """
+    from typehaus.engineering.footing_pier import grade_ft
+    from typehaus.engineering.soil import CONCRETE_UNIT_WEIGHT_PCF
+    from typehaus.model.structure import Pad
+
+    grade = grade_ft(ctx)
+    for tag in sorted({t for b in bases for t in b.connects if t in piers}):
+        pier = piers[tag]
+        pad = ctx.plan.by_tag(getattr(ctx.plan.by_tag(tag), "supported_by", "") or "")
+        if grade is None or not isinstance(pad, Pad) or pad.bottom_elevation is None:
+            missing.append(f"the pad under {tag} and Site.grade, for its pull-out row")
+            continue
+        area = _pad_area_ft2(pad)
+        thick = pad.thickness.inches / 12.0
+        top = pad.bottom_elevation.inches / 12.0 + thick
+        shaft_ft2 = pier.gross_area_in2 / 144.0
+        pad_lb = area * thick * CONCRETE_UNIT_WEIGHT_PCF
+        prism_lb = max(area - shaft_ft2, 0.0) * max(grade - top, 0.0) * _PRISM_PCF
+        held = pier.self_weight_lb + pad_lb + prism_lb + pier.carried_dead_lb \
+            + pier.wall_dead_lb
+        states.append(LimitState(
+            f"{tag} pier pull-out under the tension chord", tension, 0.6 * held, "lb",
+            f"0.6 x (shaft {pier.self_weight_lb:,.0f} + doweled pad {pad.tag} "
+            f"{area:.2f} ft2 x {thick * 12:.0f}\" {pad_lb:,.0f} + soil over the pad "
+            f"{grade - top:.2f}' at {_PRISM_PCF:.0f} pcf {prism_lb:,.0f} + post "
+            f"{pier.carried_dead_lb:,.0f} + wall {pier.wall_dead_lb:,.0f}) lb, ASCE 7-16 "
+            f"§2.4.1 0.6D + 0.6W; no deck or roof dead credited", **BW.cw(BW.NET_UPLIFT),
+            working=BW.pullout(tension, pier.self_weight_lb, pad_lb, prism_lb,
+                               pier.carried_dead_lb, pier.wall_dead_lb, held)))
+
+
+def _pad_area_ft2(pad) -> float:
+    ring = [p.xy_m for p in pad.outline]
+    return abs(sum(a[0] * b[1] - b[0] * a[1]
+                   for a, b in zip(ring, ring[1:] + ring[:1], strict=False))) / 2.0 / _M_PER_FT ** 2
+
+
+def _pad_bearing_rows(ctx, bases, piers, overturning, states, missing) -> None:
+    """The compression chord's pad, ASCE 7-16 §2.4.1 D + 0.75L + 0.75S + 0.75(0.6W) (review
+    C-6): gravity plus the overturning couple, gross on the pad against the presumptive
+    allowable (IBC Table 1806.2). The gravity-only case is ``structural.deck_footing_size``'s."""
+    from typehaus.engineering.soil import CONCRETE_UNIT_WEIGHT_PCF, presumptive
+    from typehaus.model.structure import Pad
+
+    soil = presumptive(getattr(ctx, "soil_class", None), basis=getattr(ctx, "soil_basis", None))
+    for tag in sorted({t for b in bases for t in b.connects if t in piers}):
+        pier = piers[tag]
+        pad = ctx.plan.by_tag(getattr(ctx.plan.by_tag(tag), "supported_by", "") or "")
+        if soil is None or not isinstance(pad, Pad):
+            missing.append(f"a soil class and the pad under {tag}, for its bearing row")
+            continue
+        area = _pad_area_ft2(pad)
+        pad_lb = area * pad.thickness.inches / 12.0 * CONCRETE_UNIT_WEIGHT_PCF
+        load = pier.dead_lb + pad_lb + 0.75 * pier.live_lb + 0.75 * overturning
+        states.append(LimitState(
+            f"{pad.tag} bearing under the compression chord", load / area,
+            soil.allowable_bearing_psf, "psf",
+            f"(D {pier.dead_lb:,.0f} + pad {pad_lb:,.0f} + 0.75 x L+S {pier.live_lb:,.0f} + "
+            f"0.75 x overturning {overturning:,.0f}) lb / {area:.2f} ft2, gross, no displaced "
+            f"soil credited; {soil.citation}",
+            combination="ASCE 7-16 §2.4.1 D + 0.75L + 0.75S + 0.75(0.6W), ASD",
+            combination_factors=(("D", 1.0), ("L", 0.75), ("S", 0.75), ("W", 0.45)),
+            working=BW.pad_bearing(pier.dead_lb, pad_lb, pier.live_lb, overturning, area,
+                                   load / area, soil.allowable_bearing_psf)))
 
 
 def _axis_of(ctx, wall) -> str:

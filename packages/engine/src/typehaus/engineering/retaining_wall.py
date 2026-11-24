@@ -25,12 +25,15 @@ row is told. `_Geometry` and `analyse` are re-exported here under their old name
 
 from __future__ import annotations
 
+from typehaus.engineering import retaining_sheet
+from typehaus.engineering import retaining_working as W
 from typehaus.engineering.item import (
     EngineeringRecord,
     LimitState,
     Oracle,
     Quantity,
     Status,
+    declare_sheet,
     item_id,
 )
 from typehaus.engineering.registry import (
@@ -51,8 +54,11 @@ from typehaus.engineering.retaining_basis import (
     analyse,
     material_inputs,
 )
+from typehaus.engineering.retaining_native import native_bearing
 from typehaus.engineering.retaining_system import KIND as SYSTEM_KIND
 from typehaus.engineering.retaining_system import _loops, system_factors
+from typehaus.engineering.retaining_system_cases import soil_inputs as court_soil_inputs
+from typehaus.engineering.retaining_system_cases import soil_stated_basis
 from typehaus.engineering.soil import (
     CONCRETE_UNIT_WEIGHT_PCF,
     SOIL_UNIT_WEIGHT_BAND_PCF,
@@ -69,6 +75,7 @@ __all__ = ["KIND", "BASIS", "BASIS_VERSION", "REQUIRED_FS", "_Case", "_Geometry"
            "compute", "enumerate_walls"]
 
 KIND = "retaining_wall"
+declare_sheet(KIND, **retaining_sheet.WALL_SHEET)
 
 #: Bumped whenever the arithmetic below changes. It rides in the fingerprint, so a seal goes
 #: stale when the *calculation* changes and not only when the model does.
@@ -85,7 +92,11 @@ KIND = "retaining_wall"
 #: (``tier_surcharge``) — thrust, overturning, bearing and stem flexure all moved.
 #: 5 -> 6: IBC Table 1610.1 re-read row by row (``soil.py``) — GM active 45 -> 40. The
 #: at-rest case catlin grades did not move; the fingerprinted active EFP did.
-BASIS_VERSION = "6"
+#: 6 -> 7 (2026-11-23): a restrained wall fingerprints the EFP and soil basis it is graded
+#: on (at-rest; the court's specified/confirmed friction), not the free branch's.
+#: 7 -> 8 (2026-11-23, review A1-09): a ``bearing on the native under the stone`` state, the
+#: footing's pressure spread through the bed at 2:1 on the class-4 native; three new inputs.
+BASIS_VERSION = "8"
 
 
 def _drainage_note(ctx: EngineeringContext, wall) -> str:  # type: ignore[no-untyped-def]
@@ -296,7 +307,8 @@ def _restate(states: tuple, system: tuple[float, float, float, str] | None) -> t
     fs, _demand, _capacity, item = system
     return tuple(
         LimitState("base restraint", REQUIRED_FS, fs, "", f"IRC R404.4 via {item}",
-                   is_safety_factor=True)
+                   is_safety_factor=True, combination=W.SERVICE[0],
+                   combination_factors=W.SERVICE[1], working=W.base_restraint(system))
         if state.name == "sliding" else state
         for state in states)
 
@@ -354,6 +366,11 @@ def _one(ctx: EngineeringContext, wall,  # type: ignore[no-untyped-def]
                     surcharge=_with_tier(surcharge, tiers.get(high, (None, []))[0]))
     states_low = _restate(_limit_states(lower, geometry, soil, base), system)
     states_high = _restate(_limit_states(upper, geometry, soil, base), system)
+    # Bearing on the native under the stone bed (A1-09): the worse end of the band governs.
+    native, native_inputs = (native_bearing(ctx, wall, geometry, (lower, upper), soil)
+                             if base is not soil else (None, ()))
+    if native is not None:
+        states_low, states_high = (*states_low, native), (*states_high, native)
     over_low = any(not state.ok for state in states_low)
     over_high = any(not state.ok for state in states_high)
 
@@ -366,9 +383,15 @@ def _one(ctx: EngineeringContext, wall,  # type: ignore[no-untyped-def]
         Quantity("toe", geometry.toe_ft, "ft", 0.01),
         Quantity("heel", geometry.heel_ft, "ft", 0.01),
         Quantity("toe_embedment", geometry.toe_embedment_ft, "ft", 0.01),
-        Quantity("active_efp", soil.active_efp_psf_per_ft, "psf/ft", 1.0),
+        # The EFP the rows grade at: at-rest for a base-restrained wall, active otherwise.
+        Quantity("at_rest_efp" if restrained else "active_efp",
+                 soil.at_rest_efp_psf_per_ft if restrained else soil.active_efp_psf_per_ft,
+                 "psf/ft", 1.0),
         Quantity("soil_presumed", 1.0 if soil_is_presumed(soil) else 0.0, "-", 0.5),
-        Quantity("friction_coefficient", base.friction_coefficient, "", 0.01),
+        # A restrained wall's sliding is the court's, on the court's soil basis (incl. the
+        # specified/confirmed soil); a free one slides on its own base.
+        *(court_soil_inputs(ctx, soil) if restrained else
+          (Quantity("friction_coefficient", base.friction_coefficient, "", 0.01),)),
         Quantity("allowable_bearing", base.allowable_bearing_psf, "psf", 1.0),
         Quantity("concrete_unit_weight", CONCRETE_UNIT_WEIGHT_PCF, "pcf", 1.0),
         # ** WHAT MAKES CHANGING THE CONCRETE OR THE STEEL STALE THIS WALL'S SEAL. ** f'c,
@@ -379,6 +402,7 @@ def _one(ctx: EngineeringContext, wall,  # type: ignore[no-untyped-def]
         # `retaining_basis.material_inputs`.
         *(Quantity(name, value, unit, tol)
           for name, value, unit, tol in material_inputs(geometry)),
+        *native_inputs,
     ) + ((
         # What makes moving the cross-member, or moving the wall on the FAR side of the
         # court, stale THIS wall's seal. Without these two the fingerprint would cover only
@@ -423,6 +447,8 @@ def _one(ctx: EngineeringContext, wall,  # type: ignore[no-untyped-def]
         "comparable row for row.",
     ) if system is not None else ()) + (tier_low.notes if tier_low is not None else ())
 
+    stated = soil_stated_basis(ctx, soil) if restrained else None
+    bases = (stated,) if stated is not None else ()
     if over_low != over_high:
         return EngineeringRecord(
             item_id=item_id(KIND, tag), kind=KIND, key=tag,
@@ -432,7 +458,7 @@ def _one(ctx: EngineeringContext, wall,  # type: ignore[no-untyped-def]
             inputs=inputs, limit_states=states_low,
             missing=("a measured soil unit weight (no code table publishes one, and this "
                      "wall's answer depends on it)",),
-            notes=notes, element_tags=(tag,),
+            notes=notes, element_tags=(tag,), bases=bases,
         )
 
     # Report the conservative end. Both ends agree on the verdict, so this is the honest
@@ -451,4 +477,5 @@ def _one(ctx: EngineeringContext, wall,  # type: ignore[no-untyped-def]
                  if governing.is_safety_factor else
                  f"{tag}: {governing.name} governs"),
         inputs=inputs, limit_states=states_low, notes=notes, element_tags=(tag,),
+        bases=bases,
     )

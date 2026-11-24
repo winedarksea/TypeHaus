@@ -18,21 +18,20 @@ from _helpers import east_variant_house
 
 pytestmark = pytest.mark.slow
 
+# The four landing piers and the pinned piers under the east posts are footing piers, graded
+# prescriptively (decision 16): no register item in any variant.
 _COMMON = {
-    "deck_post/PT-BW-E", "deck_post/PT-BW-GE", "deck_post/PT-BW-GW", "deck_post/PT-BW-W",
     "deck_tie/FS-BW-FLOOR", "lateral_system/RF-BW-CANOPY", "rafter/RF-BW-CANOPY",
     "roof_beam/BM-BW-RE", "roof_beam/BM-BW-RW",
     # The west chords are 6x6 KDAT in every variant: their heads and bases are graded both
     # ways since 2026-09-30 (notes/canopy_west_band.md §5).
     "wood_roof_post/PT-BW-CNW", "wood_roof_post/PT-BW-CW",
 }
-_PINNED_PIERS = {"column_base/PT-BW-PE", "column_base/PT-BW-PNE",
-                 "deck_post/PT-BW-PE", "deck_post/PT-BW-PNE"}
 
 #: ``variant -> the north entry's engineering items``, per the note's §5-§7.
 EXPECTED = {
-    "steel": _COMMON | _PINNED_PIERS | {"steel_post/PT-BW-RE", "steel_post/PT-BW-RNE"},
-    "kdat": _COMMON | _PINNED_PIERS | {"wood_roof_post/PT-BW-RE", "wood_roof_post/PT-BW-RNE"},
+    "steel": _COMMON | {"steel_post/PT-BW-RE", "steel_post/PT-BW-RNE"},
+    "kdat": _COMMON | {"wood_roof_post/PT-BW-RE", "wood_roof_post/PT-BW-RNE"},
     "cast": _COMMON | {
         "base_rotation/PT-BW-RE", "base_rotation/PT-BW-RNE",
         "column_base/PT-BW-RE", "column_base/PT-BW-RNE",

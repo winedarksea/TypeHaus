@@ -478,3 +478,44 @@ HETA20Z_EMBEDDED_BEAM_ANCHOR = StructuralHardware(
                   "Simpson's, and no HETA12/16 is listed in ZMAX or stainless"),
     ),
 )
+
+#: The same strap read on Table 3's **1-ply** columns, for a single-ply member wrapped over
+#: (review B-09, owner decision 8): a capacity record only, so nothing here is ordered or billed
+#: (the part is ``HETA20Z``). The model string is a house label for the row, not a Simpson part.
+HETA20Z_1PLY_EMBEDDED_BEAM_ANCHOR = StructuralHardware(
+    tag="simpson-heta20z-1ply-embedded-truss-anchor",
+    name="HETA20Z embedded truss anchor pair, 1-ply row (capacity record)",
+    role=ROLE_EMBEDDED_BEAM_ANCHOR,
+    manufacturer=_SIMPSON,
+    model="HETA20Z-1PLY",
+    source="Simpson Strong-Tie HETA double installation, Table 3's 1-ply Rafter / Truss "
+           "columns, concrete, SP: the same part and nails as ``HETA20Z`` with the 1-ply "
+           "figures",
+    allowable=AllowableLoads(
+        uplift_lb=1920.0,
+        lateral_f1_lb=1115.0,
+        lateral_f2_lb=900.0,
+        load_duration_factor=1.6,
+        species="SP — Table 3, double HETA, 1-ply, concrete: uplift 1,920, F1 1,115, F2 900 lb "
+                "for the PAIR (the 2- or 3-ply row is 2,560 / 1,350 / 1,430)",
+        fasteners="(10) 0.148 x 1-1/2 in nails, half in each strap (Table 3 note 4), into the "
+                  "1-ply member; the straps WRAPPED over the member's top; spoons 4 in into "
+                  "f'c >= 2,500 psi concrete, anchors >= 3 in apart; lowest four holes of each "
+                  "strap filled (Table 2 note 2)",
+        citation=("Simpson Strong-Tie Florida product approval FL11473 R6 (report SIM202301, "
+                  "sealed 2023-10-17, floridabuilding.org), p. 10 of 14, TABLE 3: DETAL20 and "
+                  "Double META, HETA, and HHETA — HETA, concrete, 1-ply: 10 nails, uplift "
+                  "1,920, F1 1,115, F2 900. Note 1: already +60 % for wind. Note 3: spoons "
+                  "outward and no more than 1/8 in wider than the truss. **Note 6 reads: "
+                  "\"Lateral loads for double META, HETA, and HHETA apply only to 2- or 3-ply "
+                  "applications with anchors spaced a minimum of 3 in apart\" — while the "
+                  "table prints 1-ply F1/F2 cells.** OWNER-ACCEPTED READING of a "
+                  "self-conflicting document (2026-11-23): the owner's reading (decision 8) "
+                  "takes the "
+                  "printed 1-ply row; the document's note and its table disagree, and the "
+                  "catalog edition (Simpson C-C-2026) was not read. Note 7: F1 on 2- or 3-ply "
+                  "may add 1/16 in of deflection beyond 1/8 in when the straps are NOT "
+                  "wrapped over the heel — a deflection note for unwrapped straps; these are "
+                  "wrapped. Limitations §9 item 4: combined directions sum to under 1.0."),
+    ),
+)

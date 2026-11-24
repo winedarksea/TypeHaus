@@ -14,6 +14,7 @@ from typehaus.model.refs import Embed, PublishedHole, PublishedSpan
 from typehaus.model.registry import register_constructor, register_element
 from typehaus.model.sheathing_nailing import SheathingNailing
 from typehaus.model.slabs import Slab, SlabThermalBreak
+from typehaus.model.truss_order import TrussOrder
 from typehaus.quantities import Length, Point2D, inch
 
 
@@ -104,11 +105,22 @@ class JoistSpec(HausModel):
     # end, where the edge line stands on a wall and spans nothing. Emitted as ``rim``
     # members keyed ``edge-rim-*`` (``resolve/model.EDGE_RIM_PREFIX``).
     edge_rims: tuple[Literal["lo", "hi"], ...] = ()
+    # WHERE AN EDGE RIM'S SPLICE IS. Two floor fields meeting at a bearing line each derive an
+    # edge rim ending at the seam, so the joint stands on the seam; the crew runs one board
+    # past it. ``edge_rim_extend`` lengthens this field's edge rim past the field's low / high
+    # END (along the joist axis) onto the neighbour's edge; the neighbour's ``edge_rim_trim``
+    # shortens its own rim by the same stretch, so the splice stands where the extension ends
+    # (TJ-8000 p.5: at least 12" beyond a rim-header opening, ``structural.rim_header``).
+    edge_rim_extend: tuple[Length, Length] | None = None
+    edge_rim_trim: tuple[Length, Length] | None = None
 
     @model_validator(mode="after")
     def validate_rim_extensions(self):
         if self.rim_end_extensions and any(v.meters < 0 for v in self.rim_end_extensions):
             raise ValueError("rim end extensions must be nonnegative")
+        for pair in (self.edge_rim_extend, self.edge_rim_trim):
+            if pair and any(v.meters < 0 for v in pair):
+                raise ValueError("edge rim extend/trim must be nonnegative")
         if self.station_ties > 0 and not self.sill_tie:
             raise ValueError("station_ties names no part: set sill_tie")
         return self
@@ -335,6 +347,9 @@ class FloorSystem(Element):
     # The joist maker's span-table row for this field, where one is read (``Slab``'s field,
     # same drift guards). ``structural.ijoist_span`` grades it in place of its own table.
     published_span: PublishedSpan | None = None
+    # A truss field's order criteria: bearing centres and the loads beyond the published
+    # row's uniform one (``model/truss_order``), printed on S-001 and graded nowhere else.
+    truss_order: TrussOrder | None = None
     source: str | None = None
 
 

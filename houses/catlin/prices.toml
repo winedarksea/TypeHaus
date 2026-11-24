@@ -1069,24 +1069,19 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 # banded; HDG 16d nails are inside the framing rate. Backups and their prices:
 # notes/column_head_connector_options.md.
 "HETA20Z" = { low = 3.0, high = 6.0 }  # 12 ea, all authored — six joints, a pair each (FL11473 Table 3 rates the pair): the four balcony corners and PT-BW-E/-GE. The canopy's east pair (CN-BW-TIE-RE*/RNE*) is 4 more ONLY under EAST_POST_SYSTEM = "cast" (16 ea)
-# The landing's two tie lines (params/landing_tie.py). HL33HDG into W-G-W (CN-BW-GWTIE-LO/-HI),
-# retail $13.99 (fastenersplus, 2026-09-21). Since 2026-10-13 the stem tie (4 HL35HDG on
-# blocks, Titen HD into the ICF) is gone with the garage landing; line 1 is two 3 ga HL43HDG
-# from BM-BW-FE into W-G-S, retail ~$30-35, made to order 4-5 weeks (fastenersplus /
-# benefast, 2026-10-13). Their bolts and lags are counted since decision #147 (lengths derived
-# from the grip, notes/hl_site_bolts.md); ESTIMATES for HDG A307 with nut and washer, no read.
-# deck_tie/FS-BW-FLOOR closes at 0.778 (notes/north_entry_piers.md §10h).
-"HL33HDG" = { low = 12.0, high = 20.0 }  # 2 ea — into W-G-W
-"HL43HDG" = { low = 30.0, high = 45.0 }  # 2 ea — CN-BW-GSTIE-LO/-HI, BM-BW-FE into W-G-S
-"BOLT-12X5-HDG" = { low = 1.5, high = 3.0 }  # HL33 through W-BW-SCREEN
+# The landing's two tie joints (params/landing_tie.py, G5 2026-11-23). Joint W: one MSTA49Z
+# strap, screen top plate into W-G-W. Joint FE: a DTT2Z pair on a 1/2" HDG rod (N-S) and one 3 ga
+# HL43HDG per face of BM-BW-FE (E-W), retail ~$30-35, made to order 4-5 weeks (fastenersplus /
+# benefast, 2026-10-13). The HL33HDG line and its bolts and lags are gone. Bolts, lags and the
+# rod are ESTIMATES for HDG A307 with nut and washer, not reads. deck_tie/FS-BW-FLOOR is 0.876.
+"HL43HDG" = { low = 30.0, high = 45.0 }  # 2 ea — one per face of BM-BW-FE into W-G-S
+"MSTA49Z" = { low = 8.0, high = 16.0 }  # 1 ea — joint W; ESTIMATE, no read
+"ROD-12X18-HDG" = { low = 5.0, high = 12.0 }  # 1 ea — DTT2Z pair through W-G-S; ESTIMATE with two nuts and washers
 "BOLT-34X8-HDG" = { low = 4.0, high = 7.0 }  # HL43 through BM-BW-FE + the last joist
-"LAG-12X5-HDG" = { low = 1.0, high = 2.0 }  # HL33 into W-G-W
 "LAG-34X5-HDG" = { low = 2.5, high = 4.5 }  # HL43 into W-G-S
-# KDAT 4x4 tie blocks and fillers, each an offcut plus cutting and M4 end treatment: LIST
-# BANDS, not quotes. The 3-1/2" cube is CN-BW-GWTIE-BLK (through the garage corner
-# cladding); the 26-1/2" filler gives the HL33's leg a 3-1/2" face in the screen's end
-# stud pack (CN-BW-GWTIE-FILLER).
-"TIE-BLOCK-4X4-KDAT" = { low = 3.0, high = 8.0 }  # 1 ea — CN-BW-GWTIE-BLK
+# KDAT 4x4 filler, an offcut plus cutting and M4 end treatment: a LIST BAND, not a quote.
+# It sits at the strap line between the screen's end pack and the garage face and takes the
+# push north (CN-BW-GWTIE-FILLER).
 "FILLER-4X4-KDAT" = { low = 6.0, high = 14.0 }  # 1 ea — CN-BW-GWTIE-FILLER
 # The two CENTRE balcony pillars' post caps, and since 2026-09-10 the canopy's two WEST
 # columns as well. A 3-1/2" glulam landing on a 6x6 is a CCQ, not the PC6Z: that cap is
@@ -1519,8 +1514,8 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 # a member being drawn together — so an 8" SDWS leaves only 5" of plain shank and stands 1"
 # of thread inside the members it is supposed to be pulling down. It jacks the girt off the
 # block. Nothing in the house had ever stated the thread length, which is why this stood for
-# eleven days; see notes/catlin_truss_engineering.md §3 and the `girt_screw/W-A-N1`
-# engineering item. SDWS221000DB would fix the engagement at 10"; the owner wants an 8" screw.
+# eleven days; see notes/catlin_truss_engineering.md §3 and `structural.girt_fastening`
+# (a prescriptive ESR-1078 read since 2026-11-23). SDWS221000DB would fix the engagement at 10"; the owner wants an 8" screw.
 # "SDWS22800DB" = { low = 1.15, high = 1.75 }  # was 1128 ea — superseded by TLOK08
 #
 # FastenMaster TimberLOK, ICC-ES ESR-1078 (reissued 2026-01): 2" thread at every length
@@ -1586,7 +1581,7 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 "HTT4" = { low = 11, high = 18 }  # 2 ea — CN-G-BWHD-SW, CN-G-BWHD-S-DR
 "SSTB16" = { low = 8, high = 15 }  # 2 ea — CN-G-BWAB-SW, CN-G-BWAB-S-DR (nut + washer in the high end)
 "STHD14RJ" = { low = 24, high = 42 }  # 7 ea — across the main floor band: 3 derived corners, the NE pair, the entry pair
-"DTT2Z" = { low = 22, high = 38 }  # 0 ea — the second-floor NE pair went with WIN-S-BED3-N (2026-11-16)
+"DTT2Z" = { low = 22, high = 38 }  # 2 ea — the landing's joint FE pair (G5, 2026-11-23); the second-floor NE pair went with WIN-S-BED3-N (2026-11-16)
 
 # The court daybed's four ropes (2026-10-13), UNCONFIRMED allowances: a galvanized Crosby
 # G-209 1/2" shackle at rigging-supply retail, and a shop-fabricated U-saddle for a 3-ply
@@ -3416,10 +3411,10 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 # blank (material = milling), then seven stud notches scribed to the as-built stations,
 # eased arris, oil, and screwing down through the fingers (labour).
 "FT-MUD-STRW-BENCH" = { material = { low = 80, high = 200 }, labour = { low = 300, high = 700 } }  # 1 ea
-# TR-SG-LEADER-SE's splash basin (2026-09-23): a ~24" granite boulder basin from a stone yard,
-# set on 4" of compacted stone, plus the 2' x 6' river-rock apron on fabric beyond its notch.
-# Placement is two people and a dolly for a ~250-400 lb stone — the rate, not a machine.
-"FT-SPLASH-BASIN-GRANITE-24" = { material = { low = 250, high = 800 }, labour = { low = 150, high = 400 } }  # 1 ea
+# TR-SG-LEADER-SE's splash pad (2026-11-24; a ~24" granite basin, 2026-09-23, before it): 4' x 3' of
+# washed river rock 4" deep on fabric (~0.15 cy). An estimate, not a quote: stone-yard material and one
+# person with a wheelbarrow; no machine.
+"FT-SPLASH-PAD-RIVER-ROCK" = { material = { low = 40, high = 120 }, labour = { low = 60, high = 160 } }  # 1 ea
 # The fold-down leaf is now 19 7/8" x 16" against the fixed desk's 29"; its allowance
 # is nearly the desk's, because on a leaf the BOARD is the cheap half. Material carries a pair
 # of Sugatsune EB-303/EP-BL folding table brackets (revised quote pending), a full-length
@@ -5398,8 +5393,13 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 # 27 SF/cy) is therefore historical — it is 11.36 cy today — and the $/SF-of-face rate it argues
 # for is unaffected, which is the point of having re-united the unit.
 # 2026-10-29: labour 15-34 -> 10-25/SF: 3-man crew + compactor/skid steer $1.5-2.3k/day at 100-150 SF face/day (judgement); dig and pad bill elsewhere. Keep the two rows identical.
-"RETAINING_BLOCK_12" = { material = { low = 15, high = 26 }, labour = { low = 10, high = 25 }, unit = "SF" }  # 28.0 SF of face — the two balcony returns only
-"RETAINING_BLOCK_12_WASHED" = { material = { low = 15, high = 26 }, labour = { low = 10, high = 25 }, unit = "SF" }  # 278.7 SF of face — the three perimeter legs; the WASH itself is in [envelope_layers], not here
+# 2026-11-23: all five legs are 52" (six 8" courses + a 4" AB Capstone, base 4" lower, owner decision 4), so the
+# face is 52/48 of the above: 30.3 + 301.9 = 332.2 SF. The CAPSTONES bill inside that face at the block rate
+# (no separate cap price exists): no separate cap row.
+# NOT BILLED: the 4" perforated drain pipe in its sock (~86 LF: 76.7 LF of legs and returns plus three 3' stubs
+# into the court's wall column) and the capstone adhesive (one 29 oz tube per 60 LF, ~2 tubes).
+"RETAINING_BLOCK_12" = { material = { low = 15, high = 26 }, labour = { low = 10, high = 25 }, unit = "SF" }  # 30.3 SF of face — the two balcony returns only
+"RETAINING_BLOCK_12_WASHED" = { material = { low = 15, high = 26 }, labour = { low = 10, high = 25 }, unit = "SF" }  # 301.9 SF of face — the three perimeter legs; the WASH itself is in [envelope_layers], not here
 # THE NORTH ENTRY SCREEN'S SKIRT (2026-09-11), and it is in this table only because its one
 # layer is STRUCTURE — a self-supporting single skin bills through takeoff/wall_structure.py
 # rather than envelope_layers, on the same footing as RETAINING_BLOCK_12 above it. Priced per
@@ -8887,6 +8887,7 @@ solar_modules = true
 # clause is the half that went.
 [steel_members]
 "L3.5x3.5x0.25" = { material = { low = 14, high = 24 }, labour = { low = 20, high = 45 } }  # 3.79 LF — BM-M-FIRE-LINTEL, A36 HDG angle
+"L3x3x0.25" = { material = { low = 12, high = 21 }, labour = { low = 20, high = 45 } }  # 7.78 LF — the brick veneer's two HDG loose lintels; ESTIMATE scaled from the 3.5" row by weight
 # The canopy's two EAST posts when EAST_POST_SYSTEM = "steel" (2026-09-29): HSS 4x4x1/4 A500 Gr
 # C, 6'-2 3/4" each, with the U-saddle and the base plate WELDED ON, galvanized after
 # fabrication (ASTM A123) and powder-coated. ONE fabricated piece, so it is priced `ea`

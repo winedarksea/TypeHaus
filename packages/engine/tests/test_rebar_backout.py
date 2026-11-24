@@ -33,9 +33,12 @@ _CATLIN = Path(__file__).resolve().parents[3] / "houses" / "catlin"
 #: note's §1 table still lists them and needs re-working.
 _SCHEDULE = {
     ("column", "#3", "hdg-a767"): (91, 118.5),
-    ("column", "#5", "hdg-a767"): (96, 558.8),
+    # +33.4 lb (L2, decision 7): 16 column dowels 24" -> 48" into the stems, 16 x 2' x 1.043.
+    ("column", "#5", "hdg-a767"): (96, 592.2),
     ("footing", "#4", "hdg-a767"): (51, 261.5),  # +3: the Ufer bar (#123)
-    ("footing", "#5", "hdg-a767"): (179, 1465.9),
+    # +36 / +265.3 lb on 2026-11-23 (G3): 2 footings x (6 edge #5 x 11.0' + 12 splices x
+    # (27.6 + 6 + 27.6)") = 254.4 ft x 1.043.
+    ("footing", "#5", "hdg-a767"): (215, 1731.2),
     ("foundation wall", "#3", "hdg-a767"): (12, 16.2),
     ("foundation wall", "#4", "hdg-a767"): (294, 1644.8),  # STHD bars; garage's 5 -> 2 SSTB
     ("foundation wall", "#5", "hdg-a767"): (110, 1045.8),
@@ -99,8 +102,8 @@ _SCHEDULE = {
 # (ESR-2920 §4.2, notes/sthd_esr2920.md), 807.6" in all.
 # -9.9 lb, -3 pieces on 2026-11-20b (note addendum): the garage's five STHD bars out, the two
 # SSTB16 bars (C-C-2026 p. 43) in.
-_TOTAL_LB = 5241.0
-_TOTAL_PIECES = 843
+_TOTAL_LB = 5539.7
+_TOTAL_PIECES = 879
 
 @pytest.fixture(scope="module")
 def rows(catlin_model):
@@ -245,4 +248,6 @@ def test_the_concrete_the_steel_sits_in_is_the_note_s_volume(catlin_model) -> No
     # 44.0 on 2026-11-10: the Ufer bar in FT-B-W1/W2, +26.6 lb (decision #123).
     # 45.06 on 2026-11-20: the STHD bars (+45.0 lb) over the re-read 116.54 cy (was 44.67).
     # 44.97 the same day: the garage's STHD bars out, two SSTB bars in (-9.9 lb).
-    assert total_lb / total_cy == pytest.approx(44.97, rel=0.02)
+    # 47.58 on 2026-11-23: FT-SG-W2/E2's G3 edge ties, +265.3 lb.
+    # 47.87 with L2's deeper column dowels (+33.4 lb).
+    assert total_lb / total_cy == pytest.approx(47.87, rel=0.02)

@@ -310,3 +310,53 @@ The flank rims oversail the rear plank 5/8" more (balcony note §19): A_s 29.836
 column at the deck plane. The record reads **126.92 × 8.6979 = 1,103.9 / × 8.8507 = 1,123.3 lb-ft**
 (front / rear). The frame takes the same storey shear, so its solve moves by the same +0.19 %
 and the record stays long by the margins above.
+
+## Addendum 2026-11-23 — the balcony's wind bands, statics reactions and planter (§3a-§3c)
+
+`balcony_moment_columns.md` §20-§25 changed what the records consume, so the graph follows.
+
+**Wind (§3a).** The record's base moment is no longer one shear at the deck plane: it sums the
+deck and the closed curtains (at the deck plane), the guard's balusters and rails (at their
+centroid, above the column top) and the shaft's own wind (spread over the column), N-S, 2,259 lb
+ASD over four columns: **4,860 lb-ft front, 4,916 rear** (hand, §24/§27: q_h 18.52 psf from K_z 0.644 at
+22.3', 0.6 q G C_f = 17.0 psf; deck and plank edge at the deck's centroid, guard with posts at its
+centroid, the shaft over its own 7.76' / 7.91', the curtains at the top track). The graph applies each band
+where it acts, as a node shear, a node moment for the guard's lever, and a uniform member load on
+the column, so the base moment it produces is the record's over the record's own height. The model's
+columns are 3-6 % shorter (the beam centreline) and the N-S beam ties each pair of tops, so the
+stiffer front column draws more: the solve reads about 5 % and 10 % under the record, which errs long. The oracle tolerance for wind is 12 % (6 % for the lever-only
+guard).
+
+**Guard (§3b).** Applied E-W whatever the wind's axis. The record takes the 200 lb wholly on one
+column; N-S the beam (hinged on its cap, axially stiff) shares a push with the column at its far
+end and would hand back part of that bound. The wind axis is N-S now that the curtains stand in
+it, which is why the guard no longer follows it.
+
+**Gravity (§3c).** The planter (171.67 plf, balcony note §20) is in the DEAD case over each
+beam's back span, the planted case; the records also grade it off. Dead reactions by hand: 407 /
+536 lb of deck plus 629.4 lb of planter at each bearing, plus the shaft: the solve reads 1,037 /
+1,165 lb of load plus self weight 2,061 / 2,208 lb, the records' dead + planter. **Live:** the graph
+carries the full pattern, 390 x 9.667' = 3,770 lb between the pair; each record column takes its
+own worst of the eight patterns (1,702 / 2,154 lb), so the records' pair is the sum of two maxima,
+3,856 lb, 2.2 % above.
+
+## Addendum 2026-11-23b — the porch curtains are not a wind band (§3a)
+
+Owner basis: the curtains are retractable soft goods, stowed in high wind, so the porch is open and
+no curtain load is applied anywhere. The wind case is the deck band at its centroid, the guard with
+its posts at its centroid and the shaft over its own 7.76' / 7.91', **E-W**, 1,348 lb ASD over four
+columns: **2,579 lb-ft front, 2,589 rear** (hand: 132 x 9.33' + 71.5 x 11.55' + 133 x 3.88' =
+2,577). The wind axis is E-W again, so it and the guard share the axis; the oracle tolerances
+(6 % lever, 12 % wind) are unchanged. The earlier addendum's 4,860 / 4,916 figures are withdrawn.
+
+
+## Addendum 2026-11-23c — the landing's ties after G5 (§3e)
+
+The 2026-10-13 joints are re-parted (`params/landing_tie.py`, north_entry_piers.md §10p).
+Joint W is one `MSTA49Z` strap, a tension tie along its run (N-S), so its node takes a **DY
+spring only**. Joint FE is a `DTT2Z` pair on a rod (N-S) plus one `HL43HDG` per face (E-W), so
+it springs both ways. `analytical/ties.py` reads the direction from `deck_tie.carries_of`, so
+a part springs only the way it is published to carry. Stiffness stays at the 1/2" γ, 95,459
+lb/in per part, for the same equal-distribution reason as before. That is a question for the
+engineer of record, not a gap. `test_the_landing_ties_are_springs_on_their_members` passes as
+built.

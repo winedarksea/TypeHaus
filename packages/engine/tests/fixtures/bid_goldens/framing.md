@@ -3,8 +3,8 @@
 **House:** Catlin House  
 **Trade:** Framing  
 **Engine:** 0.1.2  
-**Model hash:** 8153c37a5b1e5377  
-**Lines:** 280
+**Model hash:** 6332b36fea9ab839  
+**Lines:** 281
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks and their boards, and the tape on every member top. Trusses and engineered wood are called out by the profile. Set the windows and exterior doors (supplied under Windows and doors).
 
@@ -18,16 +18,16 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 |---|---|---|---|---|---|
 | 0.75x3.5 Poplar trim, 1x4 S4S, paint grade, 8' (0.75x3.5:poplar-trim-paint) | 2 | pc | blocking | 16 LF | building |
 | 1.0x3.5 SPF No. 2 & Btr framing lumber, 8' (1.0x3.5:spf) | 1 | pc | blocking | 8 LF | building |
-| 1 1/4" x 11 7/8" LSL rim board 1.3E, 8' (1.25x11.875 rim) | 4 | pc | rim board, sister joist | 32 LF | building |
+| 1 1/4" x 11 7/8" LSL rim board 1.3E, 8' (1.25x11.875 rim) | 6 | pc | rim board, sister joist | 48 LF | building |
 | 1 1/4" x 11 7/8" LSL rim board 1.3E, 10' (1.25x11.875 rim) | 1 | pc | rim board | 10 LF | building |
 | 1 1/4" x 11 7/8" LSL rim board 1.3E, 14' (1.25x11.875 rim) | 2 | pc | rim board | 28 LF | building |
 | 1 1/4" x 11 7/8" LSL rim board 1.3E, 16' (1.25x11.875 rim) | 4 | pc | rim board | 64 LF | building |
-| 1 1/4" x 11 7/8" LSL rim board 1.3E, 20' (1.25x11.875 rim) | 12 | pc | rim board | 240 LF | building |
+| 1 1/4" x 11 7/8" LSL rim board 1.3E, 20' (1.25x11.875 rim) | 13 | pc | rim board | 260 LF | building |
 | 1.5x11.875 SPF No. 2 & Btr framing lumber, 8' (1.5x11.875:spf) | 5 | pc | blocking | 40 LF | building |
 | 1 1/2" x 14" LSL, 8' (1.5x14 LSL) | 5 | pc | blocking | 40 LF | building |
 | 1 3/4" x 11 7/8" LSL 1.55E, 16' (1.75x11.875 LSL) | 2 | pc | rim board | 32 LF | building |
 | 1 3/4" x 11 7/8" LSL 1.55E, 20' (1.75x11.875 LSL) | 2 | pc | rim board | 40 LF | building |
-| 1 3/4" x 11 7/8" LVL 2.0E, 8' (1.75x11.875 LVL) | 12 | pc | sister joist, trimmer | 96 LF | building |
+| 1 3/4" x 11 7/8" LVL 2.0E, 8' (1.75x11.875 LVL) | 11 | pc | sister joist, trimmer | 88 LF | building |
 | 1 3/4" x 11 7/8" LVL 2.0E, 10' (1.75x11.875 LVL) | 2 | pc | trimmer | 20 LF | building |
 | 1 3/4" x 11 7/8" LVL 2.0E, 20' (1.75x11.875 LVL) | 4 | pc | trimmer | 80 LF | building |
 | 11 7/8" TJI 230, 8' (11.875 TJI 230) | 21 | pc | blocking, joist | 168 LF | building |
@@ -38,9 +38,9 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 11 7/8" floor truss, 10' (11.875 floor truss) | 4 | ea | trimmer | 40 LF | building |
 | 11 7/8" floor truss, 12' (11.875 floor truss) | 5 | ea | joist | 60 LF | building |
 | 11 7/8" floor truss, 18' (11.875 floor truss) | 40 | ea | joist, sister joist, trimmer | 720 LF | building |
-| 1x4 SPF No. 2 & Btr framing lumber, 8' (1x4:spf) | 21 | pc | girt strapping | 168 LF | building |
-| 1x4 SPF No. 2 & Btr framing lumber, 10' (1x4:spf) | 28 | pc | ceiling furring, girt strapping | 280 LF | building |
-| 1x4 SPF No. 2 & Btr framing lumber, 20' (1x4:spf) | 5 | pc | girt strapping | 100 LF | building |
+| 1x4 SPF No. 2 & Btr framing lumber, 8' (1x4:spf) | 27 | pc | girt strapping | 216 LF | building |
+| 1x4 SPF No. 2 & Btr framing lumber, 10' (1x4:spf) | 26 | pc | ceiling furring, girt strapping | 260 LF | building |
+| 1x4 SPF No. 2 & Btr framing lumber, 20' (1x4:spf) | 4 | pc | girt strapping | 80 LF | building |
 | 1x4 Structural 1 plywood, 8' (1x4:struct-1-plywood) | 24 | pc | ceiling furring, girt strapping | 192 LF | building |
 | 1x4 Structural 1 plywood, 10' (1x4:struct-1-plywood) | 15 | pc | girt strapping | 150 LF | building |
 | 1 3/4" x 11 7/8" LVL 2.0E, 8' (2-1.75x11.875 LVL) | 6 | pc | header (2-ply) | 48 LF | building |
@@ -54,8 +54,9 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2.125x11.25 KDAT southern yellow pine No. 2 (treated exterior framing), 20' (2.125x11.25:kdat) | 1 | pc | sister joist | 20 LF | building |
 | 24 gable roof truss, 24' (24 gable roof truss) | 2 | ea | roof truss | 48 LF | building |
 | 24 roof truss, 24' (24 roof truss) | 14 | ea | roof truss | 336 LF | building |
-| 25 ga. resilient channel 1/2" resilient channel, 8' (25 ga. resilient channel:resilient-channel) | 7 | pc | girt strapping | 56 LF | building |
-| 25 ga. resilient channel 1/2" resilient channel, 14' (25 ga. resilient channel:resilient-channel) | 20 | pc | girt strapping | 280 LF | building |
+| 25 ga. resilient channel 1/2" resilient channel, 8' (25 ga. resilient channel:resilient-channel) | 8 | pc | girt strapping | 64 LF | building |
+| 25 ga. resilient channel 1/2" resilient channel, 12' (25 ga. resilient channel:resilient-channel) | 3 | pc | girt strapping | 36 LF | building |
+| 25 ga. resilient channel 1/2" resilient channel, 14' (25 ga. resilient channel:resilient-channel) | 17 | pc | girt strapping | 238 LF | building |
 | 2x10 SPF No. 2 & Btr framing lumber, 8' (2x10) | 2 | pc | hanger board | 16 LF | building |
 | 2x10 SPF No. 2 & Btr framing lumber, 10' (2x10) | 1 | pc | hanger board | 10 LF | building |
 | 2x10 SPF No. 2 & Btr framing lumber, 8' (2x10:spf) | 10 | pc | blocking, ceiling furring | 80 LF | building |
@@ -68,7 +69,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2x3 SPF No. 2 & Btr framing lumber, 8' (2x3) | 6 | pc | corner stud, plate, stud | 48 LF | building |
 | 2x4 SPF No. 2 & Btr framing lumber, 92 5/8" PET (2x4) | 83 | pc | corner stud, king stud, stud | 640.7 LF | building |
 | 2x4 SPF No. 2 & Btr framing lumber, 8' (2x4) | 150 | pc | blocking, corner stud, cripple stud, header, jack stud, king stud, ledger, outlooker, partition backer, plate, raked top plate, sill, stud | 1200 LF | building |
-| 2x4 SPF No. 2 & Btr framing lumber, 104 5/8" PET (2x4) | 253 | pc | corner stud, king stud, stud | 2205.8 LF | building |
+| 2x4 SPF No. 2 & Btr framing lumber, 104 5/8" PET (2x4) | 242 | pc | corner stud, king stud, stud | 2109.9 LF | building |
 | 2x4 SPF No. 2 & Btr framing lumber, 10' (2x4) | 31 | pc | partition backer, plate, raked top plate | 310 LF | building |
 | 2x4 SPF No. 2 & Btr framing lumber, 14' (2x4) | 12 | pc | plate | 168 LF | building |
 | 2x4 KDAT southern yellow pine No. 2 (treated exterior framing), 8' (2x4:kdat) | 215 | pc | girt strapping, truss ladder blocking | 1720 LF | building |
@@ -80,8 +81,8 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2x4 Pressure-treated southern yellow pine No. 2 (sill plate), 8' (2x4:pt-syp) | 4 | pc | plate | 32 LF | building |
 | 2x4 SPF No. 2 & Btr framing lumber, 8' (2x4:spf) | 16 | pc | blocking, ceiling furring, girt strapping | 128 LF | building |
 | 2x6 SPF No. 2 & Btr framing lumber, 92 5/8" PET (2x6) | 110 | pc | corner stud, king stud, stud | 849.1 LF | building |
-| 2x6 SPF No. 2 & Btr framing lumber, 8' (2x6) | 386 | pc | blocking, corner stud, cripple stud, door blocking, header, jack stud, king stud, plate, raked top plate, sill, strongback, stud | 3088 LF | building |
-| 2x6 SPF No. 2 & Btr framing lumber, 104 5/8" PET (2x6) | 202 | pc | corner stud, king stud, stud | 1761.2 LF | building |
+| 2x6 SPF No. 2 & Btr framing lumber, 8' (2x6) | 385 | pc | blocking, corner stud, cripple stud, door blocking, header, jack stud, king stud, plate, raked top plate, sill, strongback, stud | 3080 LF | building |
+| 2x6 SPF No. 2 & Btr framing lumber, 104 5/8" PET (2x6) | 208 | pc | corner stud, king stud, stud | 1813.5 LF | building |
 | 2x6 SPF No. 2 & Btr framing lumber, 116 5/8" PET (2x6) | 6 | pc | king stud, stud | 58.3 LF | building |
 | 2x6 SPF No. 2 & Btr framing lumber, 10' (2x6) | 48 | pc | plate, raked top plate, strongback | 480 LF | building |
 | 2x6 SPF No. 2 & Btr framing lumber, 12' (2x6) | 5 | pc | plate | 60 LF | building |
@@ -105,7 +106,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2x8 KDAT southern yellow pine No. 2 (treated exterior framing), 8' (2x8:kdat) | 8 | pc | joist, rim board, sister joist | 64 LF | building |
 | 2x8 Pressure-treated southern yellow pine No. 2 (sill plate), 8' (2x8:pt-syp) | 4 | pc | plate | 32 LF | building |
 | 2x8 Pressure-treated southern yellow pine No. 2 (sill plate), 16' (2x8:pt-syp) | 3 | pc | plate | 48 LF | building |
-| 2x8 SPF No. 2 & Btr framing lumber, 8' (2x8:spf) | 39 | pc | blocking | 312 LF | building |
+| 2x8 SPF No. 2 & Btr framing lumber, 8' (2x8:spf) | 40 | pc | blocking | 320 LF | building |
 | 2x12 KDAT southern yellow pine No. 2 (treated exterior framing), 20' (3-2x12:kdat) | 6 | pc | joist (3-ply) | 120 LF | building |
 | 2x4 KDAT southern yellow pine No. 2 (treated exterior framing), 8' (3-2x4:kdat) | 135 | pc | truss girt block (3-ply) | 1080 LF | building |
 | 2x6 KDAT southern yellow pine No. 2 (treated exterior framing), 8' (3-2x6:kdat) | 9 | pc | truss girt block (3-ply) | 72 LF | building |
@@ -120,7 +121,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | item | quantity | unit | detail | storeys |
 |---|---|---|---|---|
 | Aluminum deck board (Wahoo AridDek, Granite), 1 1/2" subfloor (aluminum-deck:subfloor) | 189.6 | SF | 6 sheets 4x8 over 189.6 SF net; 6.0 sheets in the takeoff | building |
-| CDX sheathing plywood, 4- or 5-ply, Exposure 1, 1/2" exterior wall (cdx-plywood:exterior wall) | 103 | sheets 4x10 | 103 sheets 4x10 over 3059.6 SF net | building |
+| CDX sheathing plywood, 4- or 5-ply, Exposure 1, 1/2" exterior wall (cdx-plywood:exterior wall) | 101 | sheets 4x10 | 101 sheets 4x10 over 3059.6 SF net | building |
 | CDX sheathing plywood, 4- or 5-ply, Exposure 1, 19/32" roof (cdx-plywood:roof) | 49 | sheets 4x8 | 49 sheets 4x8 over 1544.4 SF net | building |
 | CDX sheathing plywood, 4- or 5-ply, Exposure 1, 1/2" sheathing rip (cdx-plywood:sheathing rip) | 1 | sheets 4x8 | 1 sheets 4x8 over 3.0 SF net | building |
 | 3/4" plywood subfloor, 3/4" fireblock (plywood-subfloor:fireblock) | 1 | sheets 4x8 | 1 sheets 4x8 over 11.3 SF net | building |
@@ -130,8 +131,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | Structural 1 plywood, 3/8" buck rip (struct-1-plywood:buck rip) | 18 | sheets 4x8 | 18 sheets 4x8 over 450.3 SF net | building |
 | Structural 1 plywood, 19/32" roof (struct-1-plywood:roof) | 28 | sheets 4x8 | 28 sheets 4x8 over 882.8 SF net | building |
 | Trex Enhance Basics composite decking, Tide Pool (square edge), 15/16" subfloor (trex-enhance-basics:subfloor) | 6 | sheets 4x8 | 6 sheets 4x8 over 168.7 SF net | building |
-| ZIP System sheathing, 7/16" exterior wall (zip-sheathing:exterior wall) | 1 | sheets 4x8 | 1 sheets 4x8 over 26.5 SF net | building |
-| ZIP System sheathing, 7/16" exterior wall (zip-sheathing:exterior wall) | 25 | sheets 4x9 | 25 sheets 4x9 over 662.9 SF net | building |
+| ZIP System sheathing, 7/16" exterior wall (zip-sheathing:exterior wall) | 27 | sheets 4x9 | 27 sheets 4x9 over 689.4 SF net | building |
 | ZIP System sheathing, 7/16" sheathing rip (zip-sheathing:sheathing rip) | 1 | sheets 4x8 | 1 sheets 4x8 over 1.7 SF net | building |
 
 ## Connectors and fasteners, by part
@@ -141,10 +141,11 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | HDG smooth-shank connector nail, 0.131in x 1.5in (0.131x1.5 connector nail:connector fasteners) | 84 | ea |  | building |
 | HDG smooth-shank connector nail, 0.148in x 1.5in (0.148x1.5 connector nail:connector fasteners) | 972 | ea |  | building |
 | HDG 10d common nail, 0.148in x 3in, ASTM A153 (10d common 0.148x3:connector fasteners) | 40 | ea |  | building |
-| HDG 10d common nail, 0.148in x 3in, ASTM A153 (10d common 0.148x3:treated framing nails (allowance)) | 897 | ea |  | building |
+| HDG 10d common nail, 0.148in x 3in, ASTM A153 (10d common 0.148x3:treated framing nails (allowance)) | 903 | ea |  | building |
+| HDG smooth-shank strap nail, 0.148in x 2.5in (10d short common 0.148x2.5:connector fasteners) | 26 | ea |  | building |
 | HDG smooth-shank strap nail, 0.148in x 2.5in (10d short common 0.148x2.5:diaphragm joint strap nails) | 72 | ea |  | building |
 | HDG 16d common nail, 0.162in x 3.5in (16d common 0.162x3.5:connector fasteners) | 248 | ea |  | building |
-| Bright 8d common smooth-shank nail, 0.131in x 2.5in (8d common 0.131x2.5 bright:sheathing nails) | 7,243 | ea |  | building |
+| Bright 8d common smooth-shank nail, 0.131in x 2.5in (8d common 0.131x2.5 bright:sheathing nails) | 7,238 | ea |  | building |
 | HDG 8d common smooth-shank nail, 0.131in x 2.5in (8d common 0.131x2.5:connector fasteners) | 176 | ea |  | building |
 | HDG 8d common smooth-shank nail, 0.131in x 2.5in (8d common 0.131x2.5:diaphragm 8d nails) | 452 | ea |  | building |
 | HDG 8d common smooth-shank nail, 0.131in x 2.5in (8d common 0.131x2.5:sheathing nails) | 1,037 | ea |  | building |
@@ -152,16 +153,16 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | A35Z framing angle (A35Z:joist bearing) | 2 | ea |  | building |
 | A35Z framing angle (A35Z:joist bearing) | 16 | ea |  | building |
 | A35Z framing angle (A35Z:joist bearing) | 4 | ea |  | building |
-| A35Z framing angle (A35Z:modeled connector) | 6 | ea |  | building |
+| A35Z framing angle (A35Z:modeled connector) | 18 | ea |  | building |
 | A35Z framing angle (A35Z:slat brace centre post tie) | 4 | ea |  | main |
 | A35Z framing angle (A35Z:trimmer bearing) | 2 | ea |  | building |
 | A35Z framing angle (A35Z:wall-top blocking station) | 45 | ea |  | building |
 | ABU44 standoff post base (4x4) (ABU44:post base) | 2 | ea |  | building |
 | ACE6Z adjustable end post cap (6x beam end on 6x6), MAX nailing (ACE6Z:modeled connector) | 4 | ea |  | building |
-| 1/2 in HDG A307 hex bolt with nut and washer (BOLT-12X5-HDG:connector site bolts) | 2 | ea |  | building |
 | 3/4 in HDG A307 hex bolt with nut and washer (BOLT-34X8-HDG:connector site bolts) | 2 | ea |  | building |
 | CBSTQ66Z-SDS2 cast-in column base (6x6) (CBSTQ66Z-SDS2:modeled connector) | 4 | ea |  | building |
 | CS16 coiled strap, 16 ga (CS16:stacked wall) | 2 | ea |  | building |
+| DTT2Z screw hold-down / tension tie (DTT2Z:modeled connector) | 2 | ea |  | building |
 | Pocket door frame, galvanized steel cassette, 2x4 wall (to 220 lb) (EKC3680:pocket door frame kit) | 2 | ea |  | building |
 | KDAT 4x4 filler, 26-1/2" long, nailed into a stud pack (FILLER-4X4-KDAT:modeled connector) | 1 | ea |  | building |
 | Screw-pin anchor shackle, 1/2 in, galvanized, 2 t (no swivel: a bed must not spin) (G-209-1/2:suspension anchor) | 4 | ea |  | basement |
@@ -179,7 +180,6 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | HHUS410 face-mount hanger, 2-ply 1-3/4" LVL (HHUS410:hung framing) | 2 | ea |  | building |
 | HHUS410 face-mount hanger, 2-ply 1-3/4" LVL (HHUS410:hung framing) | 1 | ea |  | building |
 | HHUS410 face-mount hanger, 2-ply 1-3/4" LVL (HHUS410:hung framing) | 1 | ea |  | building |
-| HL33HDG heavy angle, 7 ga, hot-dip galvanized (HL33HDG:modeled connector) | 2 | ea |  | building |
 | HL43HDG heavy angle, 3 ga, hot-dip galvanized (HL43HDG:modeled connector) | 2 | ea |  | building |
 | HeadLOK flat-head structural wood screw (0.191 in shank) (HLGM10:girt door sill beam seats) | 24 | ea |  | building |
 | HTT4 tension tie (bolted hold-down) (HTT4:modeled connector) | 2 | ea |  | building |
@@ -190,7 +190,6 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | IUS2.37/11.88 face-mount I-joist hanger (IUS2.37/11.88:hung framing) | 2 | ea |  | building |
 | IUS2.37/11.88 face-mount I-joist hanger (IUS2.37/11.88:hung framing) | 2 | ea |  | building |
 | KBS1Z knee-brace stabilizer (ZMAX), two per brace end (KBS1Z:slat brace connector) | 8 | ea |  | main |
-| 1/2 in HDG hex lag screw with washer (LAG-12X5-HDG:connector site bolts) | 2 | ea |  | building |
 | 3/4 in HDG hex lag screw with washer (LAG-34X5-HDG:connector site bolts) | 2 | ea |  | building |
 | LS30 skewable angle, gable-end stud to rafter (LS30:gable end wall) | 22 | ea |  | building |
 | LS30Z skewable angle, diaphragm blocking end (LS30Z:diaphragm blocking end angles) | 32 | ea |  | building |
@@ -211,6 +210,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | LUS ZMAX face-mount joist hanger (LUS28Z:hung framing) | 2 | ea |  | building |
 | LUS28Z face-mount hanger, 2x8 (ZMAX) (LUS28Z:modeled connector) | 2 | ea |  | building |
 | LUS face-mount joist hanger (LUS:hung framing) | 3 | ea |  | building |
+| MSTA49Z strap tie, 18 ga, 1-1/4" x 49", ZMAX (MSTA49Z:modeled connector) | 1 | ea |  | building |
 | MSTC52 medium strap tie, 16 ga, 52 in, floor to floor (MSTC52:modeled connector) | 2 | ea |  | building |
 | PDPAWL 0.157 x 2-7/8 in powder-actuated pin, 1 in washer, mech. galvanized (PDPAWL-287MG:partition plate on slab) | 43 | ea |  | basement |
 | Pocket door frame, galvanized steel cassette, 2x6 wall (to 220 lb) (POCKET-FRAME-ECLISSE-2X6:pocket door frame kit) | 1 | ea |  | building |
@@ -223,15 +223,16 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | PROD-RUBBER-REDUCER — bevelled rubber edge for 3/4 in. mats (PROD-RUBBER-REDUCER:doorway transition / hardware) | 2 | ea |  | basement |
 | PROD-RUBBER-REDUCER — rubber reducer for 1/8 in. sheet vinyl (PROD-RUBBER-REDUCER:doorway transition / hardware) | 2 | ea |  | attic, basement |
 | PROD-SCHLUTER-SCHIENE — aluminium, height to the tile (PROD-SCHLUTER-SCHIENE:doorway transition / hardware) | 3 | ea |  | second |
+| 1/2 in HDG threaded rod with two nuts and washers (ROD-12X18-HDG:connector site bolts) | 1 | ea |  | building |
 | RSRS-01 roof sheathing ring-shank nail, 0.113in x 2-3/8in, full round head (RSRS-01 0.113x2.375:sheathing nails) | 3,138 | ea |  | building |
 | S-5-N Mini nail-strip seam clamp (S-5-N Mini:modeled connector) | 21 | ea |  | building |
 | 10d common ring-shank nail, 0.148in x 3in, Type 304 (S10ACN:treated framing nails (allowance)) | 848 | ea |  | building |
-| 8d common ring-shank nail, 0.131in x 2.5in, Type 304 (S8ACN:sheathing nails) | 72 | ea |  | building |
+| 8d common ring-shank nail, 0.131in x 2.5in, Type 304 (S8ACN:sheathing nails) | 70 | ea |  | building |
 | HDG steel U-saddle on a 4 1/2 in (3-ply 2x) joist line, two 5/8 in through-bolts (SADDLE-4.5-2x58-HDG:suspension anchor) | 4 | ea |  | basement |
 | Strong-Drive SD connector screw, #10 x 1-1/2in (SD10112:connector fasteners) | 48 | ea |  | building |
-| Strong-Drive SD connector screw, #9 x 1-1/2in (SD9112:connector fasteners) | 1,400 | ea |  | building |
+| Strong-Drive SD connector screw, #9 x 1-1/2in (SD9112:connector fasteners) | 1,544 | ea |  | building |
 | Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600:partition top plate, blocking between parallel members) | 72 | ea |  | building |
-| Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600:partition top plate, perpendicular framing above) | 108 | ea |  | building |
+| Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600:partition top plate, perpendicular framing above) | 109 | ea |  | building |
 | Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600:partition top plate, under a parallel member) | 12 | ea |  | building |
 | slat brace plate screw (SDWS22400DB:slat brace plate screw) | 16 | ea |  | main |
 | SDWS Timber Screw (0.220 in shank), ridge plate to wall top plates (SDWS22600DB:ridge plate) | 36 | ea |  | building |
@@ -248,7 +249,6 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | THA422 top-flange floor truss hanger (THA422:hung framing) | 1 | ea |  | building |
 | THA422 top-flange floor truss hanger (THA422:hung framing) | 2 | ea |  | building |
 | Titen HD 1/2 in x 6 in Type 316 stainless screw anchor, deck ledger to concrete (THD50600H6SS:modeled connector) | 18 | ea |  | building |
-| KDAT 4x4 tie block, 3-1/2" long, screwed to the tied member (TIE-BLOCK-4X4-KDAT:modeled connector) | 1 | ea |  | building |
 | TimberLOK heavy-duty wood screw (0.189 in shank) (TLOK08:eave gutter girt standoffs) | 72 | ea |  | building |
 | TimberLOK heavy-duty wood screw (0.189 in shank) (TLOK08:girt wall blocks) | 1,158 | ea |  | building |
 | Strong-Drive WSV SUBFLOOR screw, #9 x 2-1/2in (WSV212S:sheathing nails) | 4,786 | ea |  | building |
@@ -314,7 +314,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 
 | item | quantity | unit | detail | storeys |
 |---|---|---|---|---|
-| CDX sheathing plywood, 4- or 5-ply, Exposure 1, 1/2" — wall (cdx-plywood:0.5) | 3,141.7 | SF net |  | building |
+| CDX sheathing plywood, 4- or 5-ply, Exposure 1, 1/2" — wall (cdx-plywood:0.5) | 3,143.8 | SF net |  | building |
 | CDX sheathing plywood, 4- or 5-ply, Exposure 1, 19/32" — roof (cdx-plywood:0.594) | 1,544.4 | SF net |  | building |
 | 1/2" MDO plywood, two-sided overlay, painted white, 1/2" — wall (mdo-plywood-interior:0.5) | 80.8 | SF net |  | building |
 | SPF No. 2 & Btr framing lumber finish, 3/4" — window return (spf:0.75) | 2.5 | SF net |  | building |
@@ -336,7 +336,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | rough opening, 9" x 9" (no type) (None) | 2 | ea | 9" x 9" | main, second |
 | rough opening, 10.5" x 6.5" (no type) (None) | 2 | ea | 10 1/2" x 6 1/2" | second |
 | rough opening, 12" x 10" (no type) (None) | 1 | ea | 12" x 10" | main |
-| rough opening, 14" x 20" arched (no type) (None) | 1 | ea | 14" x 20" | basement |
+| rough opening, 14" x 20" (no type) (None) | 1 | ea | 14" x 20" | basement |
 | rough opening, 30" x 80" (no type) (None) | 1 | ea | 30" x 80" | second |
 | rough opening, 32" x 80" (no type) (None) | 1 | ea | 32" x 80" | second |
 | rough opening, 34" x 25" (no type) (None) | 1 | ea | 34" x 25" | main |
@@ -344,13 +344,14 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | rough opening, 63.31" x 1.75" (no type) (None) | 1 | ea | 63 5/16" x 1 3/4" | basement |
 | rough opening, 63.31" x 2.75" (no type) (None) | 1 | ea | 63 5/16" x 2 3/4" | basement |
 | rough opening, 63.31" x 17.75" (no type) (None) | 1 | ea | 63 5/16" x 17 3/4" | basement |
-| rough opening, 63.31" x 80" arched (no type) (None) | 1 | ea | 63 5/16" x 80" | basement |
+| rough opening, 63.31" x 80" (no type) (None) | 1 | ea | 63 5/16" x 80" | basement |
 
 ## Steel members
 
 | item | quantity | unit | detail | storeys |
 |---|---|---|---|---|
 | L3 1/2" x 3 1/2" x 1/4" steel angle (L3.5x3.5x0.25) | 3.79 | LF |  | main |
+| L3" x 3" x 1/4" steel angle (L3x3x0.25) | 7.78 | LF |  | basement |
 
 ## Appendix A — elements, per line
 
@@ -395,6 +396,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 24 gable roof truss, 24' (24 gable roof truss) | — |
 | 24 roof truss, 24' (24 roof truss) | — |
 | 25 ga. resilient channel 1/2" resilient channel, 8' (25 ga. resilient channel:resilient-channel) | — |
+| 25 ga. resilient channel 1/2" resilient channel, 12' (25 ga. resilient channel:resilient-channel) | — |
 | 25 ga. resilient channel 1/2" resilient channel, 14' (25 ga. resilient channel:resilient-channel) | — |
 | 2x10 SPF No. 2 & Btr framing lumber, 8' (2x10) | — |
 | 2x10 SPF No. 2 & Btr framing lumber, 10' (2x10) | — |
@@ -466,12 +468,12 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | Structural 1 plywood, 19/32" roof (struct-1-plywood:roof) | — |
 | Trex Enhance Basics composite decking, Tide Pool (square edge), 15/16" subfloor (trex-enhance-basics:subfloor) | — |
 | ZIP System sheathing, 7/16" exterior wall (zip-sheathing:exterior wall) | — |
-| ZIP System sheathing, 7/16" exterior wall (zip-sheathing:exterior wall) | — |
 | ZIP System sheathing, 7/16" sheathing rip (zip-sheathing:sheathing rip) | — |
 | HDG smooth-shank connector nail, 0.131in x 1.5in (0.131x1.5 connector nail:connector fasteners) | — |
 | HDG smooth-shank connector nail, 0.148in x 1.5in (0.148x1.5 connector nail:connector fasteners) | — |
 | HDG 10d common nail, 0.148in x 3in, ASTM A153 (10d common 0.148x3:connector fasteners) | — |
 | HDG 10d common nail, 0.148in x 3in, ASTM A153 (10d common 0.148x3:treated framing nails (allowance)) | — |
+| HDG smooth-shank strap nail, 0.148in x 2.5in (10d short common 0.148x2.5:connector fasteners) | — |
 | HDG smooth-shank strap nail, 0.148in x 2.5in (10d short common 0.148x2.5:diaphragm joint strap nails) | — |
 | HDG 16d common nail, 0.162in x 3.5in (16d common 0.162x3.5:connector fasteners) | — |
 | Bright 8d common smooth-shank nail, 0.131in x 2.5in (8d common 0.131x2.5 bright:sheathing nails) | — |
@@ -488,10 +490,10 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | A35Z framing angle (A35Z:wall-top blocking station) | — |
 | ABU44 standoff post base (4x4) (ABU44:post base) | — |
 | ACE6Z adjustable end post cap (6x beam end on 6x6), MAX nailing (ACE6Z:modeled connector) | — |
-| 1/2 in HDG A307 hex bolt with nut and washer (BOLT-12X5-HDG:connector site bolts) | — |
 | 3/4 in HDG A307 hex bolt with nut and washer (BOLT-34X8-HDG:connector site bolts) | — |
 | CBSTQ66Z-SDS2 cast-in column base (6x6) (CBSTQ66Z-SDS2:modeled connector) | — |
 | CS16 coiled strap, 16 ga (CS16:stacked wall) | — |
+| DTT2Z screw hold-down / tension tie (DTT2Z:modeled connector) | — |
 | Pocket door frame, galvanized steel cassette, 2x4 wall (to 220 lb) (EKC3680:pocket door frame kit) | — |
 | KDAT 4x4 filler, 26-1/2" long, nailed into a stud pack (FILLER-4X4-KDAT:modeled connector) | — |
 | Screw-pin anchor shackle, 1/2 in, galvanized, 2 t (no swivel: a bed must not spin) (G-209-1/2:suspension anchor) | HA-SG-DAYBED-NE, HA-SG-DAYBED-NW, HA-SG-DAYBED-SE, HA-SG-DAYBED-SW |
@@ -509,7 +511,6 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | HHUS410 face-mount hanger, 2-ply 1-3/4" LVL (HHUS410:hung framing) | — |
 | HHUS410 face-mount hanger, 2-ply 1-3/4" LVL (HHUS410:hung framing) | — |
 | HHUS410 face-mount hanger, 2-ply 1-3/4" LVL (HHUS410:hung framing) | — |
-| HL33HDG heavy angle, 7 ga, hot-dip galvanized (HL33HDG:modeled connector) | — |
 | HL43HDG heavy angle, 3 ga, hot-dip galvanized (HL43HDG:modeled connector) | — |
 | HeadLOK flat-head structural wood screw (0.191 in shank) (HLGM10:girt door sill beam seats) | — |
 | HTT4 tension tie (bolted hold-down) (HTT4:modeled connector) | — |
@@ -520,7 +521,6 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | IUS2.37/11.88 face-mount I-joist hanger (IUS2.37/11.88:hung framing) | — |
 | IUS2.37/11.88 face-mount I-joist hanger (IUS2.37/11.88:hung framing) | — |
 | KBS1Z knee-brace stabilizer (ZMAX), two per brace end (KBS1Z:slat brace connector) | SB-BW-BAND |
-| 1/2 in HDG hex lag screw with washer (LAG-12X5-HDG:connector site bolts) | — |
 | 3/4 in HDG hex lag screw with washer (LAG-34X5-HDG:connector site bolts) | — |
 | LS30 skewable angle, gable-end stud to rafter (LS30:gable end wall) | — |
 | LS30Z skewable angle, diaphragm blocking end (LS30Z:diaphragm blocking end angles) | — |
@@ -541,6 +541,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | LUS ZMAX face-mount joist hanger (LUS28Z:hung framing) | — |
 | LUS28Z face-mount hanger, 2x8 (ZMAX) (LUS28Z:modeled connector) | — |
 | LUS face-mount joist hanger (LUS:hung framing) | — |
+| MSTA49Z strap tie, 18 ga, 1-1/4" x 49", ZMAX (MSTA49Z:modeled connector) | — |
 | MSTC52 medium strap tie, 16 ga, 52 in, floor to floor (MSTC52:modeled connector) | — |
 | PDPAWL 0.157 x 2-7/8 in powder-actuated pin, 1 in washer, mech. galvanized (PDPAWL-287MG:partition plate on slab) | SL-B-FLOOR |
 | Pocket door frame, galvanized steel cassette, 2x6 wall (to 220 lb) (POCKET-FRAME-ECLISSE-2X6:pocket door frame kit) | — |
@@ -553,6 +554,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | PROD-RUBBER-REDUCER — bevelled rubber edge for 3/4 in. mats (PROD-RUBBER-REDUCER:doorway transition / hardware) | D-B-GYM, D-B-SAUNA |
 | PROD-RUBBER-REDUCER — rubber reducer for 1/8 in. sheet vinyl (PROD-RUBBER-REDUCER:doorway transition / hardware) | D-A-POCKET, D-B-BATH |
 | PROD-SCHLUTER-SCHIENE — aluminium, height to the tile (PROD-SCHLUTER-SCHIENE:doorway transition / hardware) | D-S-BATH1, D-S-SUITEBATH, O-S-VANITY |
+| 1/2 in HDG threaded rod with two nuts and washers (ROD-12X18-HDG:connector site bolts) | — |
 | RSRS-01 roof sheathing ring-shank nail, 0.113in x 2-3/8in, full round head (RSRS-01 0.113x2.375:sheathing nails) | — |
 | S-5-N Mini nail-strip seam clamp (S-5-N Mini:modeled connector) | — |
 | 10d common ring-shank nail, 0.148in x 3in, Type 304 (S10ACN:treated framing nails (allowance)) | — |
@@ -578,7 +580,6 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | THA422 top-flange floor truss hanger (THA422:hung framing) | — |
 | THA422 top-flange floor truss hanger (THA422:hung framing) | — |
 | Titen HD 1/2 in x 6 in Type 316 stainless screw anchor, deck ledger to concrete (THD50600H6SS:modeled connector) | — |
-| KDAT 4x4 tie block, 3-1/2" long, screwed to the tied member (TIE-BLOCK-4X4-KDAT:modeled connector) | — |
 | TimberLOK heavy-duty wood screw (0.189 in shank) (TLOK08:eave gutter girt standoffs) | — |
 | TimberLOK heavy-duty wood screw (0.189 in shank) (TLOK08:girt wall blocks) | — |
 | Strong-Drive WSV SUBFLOOR screw, #9 x 2-1/2in (WSV212S:sheathing nails) | — |
@@ -626,7 +627,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | rough opening, 9" x 9" (no type) (None) | AO-M-ERV-OA, AO-S-ERV-EA |
 | rough opening, 10.5" x 6.5" (no type) (None) | AO-S-XFER-PLANT-HI, AO-S-XFER-PLANT-LO |
 | rough opening, 12" x 10" (no type) (None) | AO-M-XFER-MUD |
-| rough opening, 14" x 20" arched (no type) (None) | AO-B-BRICK-WIN |
+| rough opening, 14" x 20" (no type) (None) | AO-B-BRICK-WIN |
 | rough opening, 30" x 80" (no type) (None) | D-S-STUDY2 |
 | rough opening, 32" x 80" (no type) (None) | O-S-VANITY |
 | rough opening, 34" x 25" (no type) (None) | AO-M-FIRE-NICHE |
@@ -634,8 +635,9 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | rough opening, 63.31" x 1.75" (no type) (None) | AO-B-SUNKEN-SEAT |
 | rough opening, 63.31" x 2.75" (no type) (None) | AO-B-SUNKEN-TREAD-BED |
 | rough opening, 63.31" x 17.75" (no type) (None) | AO-SG-BRKBM-TREAD-BED |
-| rough opening, 63.31" x 80" arched (no type) (None) | AO-B-BRICK-DOOR |
+| rough opening, 63.31" x 80" (no type) (None) | AO-B-BRICK-DOOR |
 | L3 1/2" x 3 1/2" x 1/4" steel angle (L3.5x3.5x0.25) | BM-M-FIRE-LINTEL |
+| L3" x 3" x 1/4" steel angle (L3x3x0.25) | BM-B-BRICK-LINTEL-DOOR, BM-B-BRICK-LINTEL-WIN |
 
 ## Appendix B — drawings
 

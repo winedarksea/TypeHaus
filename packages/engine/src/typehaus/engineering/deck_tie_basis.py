@@ -113,7 +113,7 @@ def _tie_targets(ctx: EngineeringContext, on_deck: set[str]) -> dict[str, Any]:
 
 
 def wall_ties(ctx: EngineeringContext, deck: Any) -> list[TieJoint]:
-    """Every joint tying this deck to another structure's wall, one per (member, wall)."""
+    """Every joint tying this deck to another structure's wall, one per (member, wall, part)."""
     from typehaus.model.enums import ConnectorKind
     from typehaus.model.structure import Connector
 
@@ -129,9 +129,11 @@ def wall_ties(ctx: EngineeringContext, deck: Any) -> list[TieJoint]:
         members = [t for t in part.connects if t in framing]
         targets = [t for t in part.connects if t in walls and t not in framing]
         if members and targets:
-            groups.setdefault((members[0], targets[0]), []).append(part)
+            # One joint per PART MODEL: a tension tie and an angle at one member/wall
+            # carry different directions (deck_tie.capacity).
+            groups.setdefault((members[0], targets[0], part.size or ""), []).append(part)
     out = []
-    for (member, wall_tag), parts in sorted(groups.items()):
+    for (member, wall_tag, _model), parts in sorted(groups.items()):
         points = [_xy_ft(p.position) for p in parts]
         wall = walls[wall_tag]
         (x0, y0), (x1, y1) = (_xy_ft(ctx.plan.by_tag(wall.start_node).position),
@@ -149,6 +151,48 @@ def wall_ties(ctx: EngineeringContext, deck: Any) -> list[TieJoint]:
             on_concrete=wall_tag in concrete, service_condition=service[0],
             service_basis=service[1], member_axis=_plan_axis(ctx, member)))
     return out
+
+
+def _chord_push_loads(ctx: EngineeringContext, panels: dict, wind_loads: dict) -> None:
+    """A strapped-out panel's band still pushes a chord outward through its slats; the base
+    share of that push leaves through the chord's base into its pier and the landing (review
+    M4). Taken in the panel's own direction, at the chord, the sense that adds to its share."""
+    from typehaus.engineering.wood_roof_post import compute as post_records
+    from typehaus.model.structure import Post
+
+    strapped = {tag for tag in panels if strap_point(ctx, tag)}
+    worst: dict[str, tuple[float, Any]] = {}
+    for record in post_records(ctx):
+        post = ctx.plan.by_tag(record.key)
+        wall = getattr(post, "within_wall", None) if isinstance(post, Post) else None
+        base = next((q.value for q in record.inputs if q.name == "band_push_base_lb"), 0.0)
+        # One compression bay per sense pushes ONE chord: the larger, not both.
+        if wall in strapped and base > worst.get(wall, (0.0, None))[0]:
+            worst[wall] = (base, post)
+    for wall, (base, post) in sorted(worst.items()):
+        (x0, y0), (x1, y1) = panels[wall]
+        axis = "y" if abs(y1 - y0) >= abs(x1 - x0) else "x"
+        x, y = _xy_ft(post.position)
+        wind_loads[axis].append(Load(
+            f"{post.tag} band push base share ({wall}'s slats)",
+            base if axis == "x" else 0.0, base if axis == "y" else 0.0, x, y))
+
+
+def strap_point(ctx: EngineeringContext, wall_tag: str) -> tuple[float, float] | None:
+    """Plan point (ft) of a tension strap tying ``wall_tag`` to another wall, else ``None``."""
+    from typehaus.engineering.deck_tie import TENSION_TIE_ROLES
+    from typehaus.hardware.catalog import hardware_by_model
+    from typehaus.model.elements import Wall
+    from typehaus.model.structure import Connector
+
+    for el in ctx.plan.all_elements():
+        if not isinstance(el, Connector) or wall_tag not in el.connects:
+            continue
+        item = hardware_by_model(el.size or "")
+        if item is not None and item.role in TENSION_TIE_ROLES and any(
+                t != wall_tag and isinstance(ctx.plan.by_tag(t), Wall) for t in el.connects):
+            return _xy_ft(el.position)
+    return None
 
 
 def _plan_axis(ctx: EngineeringContext, tag: str) -> str | None:
@@ -305,11 +349,14 @@ def loads_on(ctx: EngineeringContext, deck: Any, wind: DeckWind
                 if tag not in panels:
                     continue
                 (x0, y0), (x1, y1) = panels[tag]
+                # Where a collector strap takes the share out at the panel's top, it enters
+                # the tie system there (landing_tie.py, north_entry_piers.md §10p).
+                at = strap_point(ctx, tag) or ((x0 + x1) / 2, (y0 + y1) / 2)
                 wind_loads[axis].append(Load(
                     f"{tag} panel share of {roof.tag}",
-                    force if axis == "x" else 0.0, force if axis == "y" else 0.0,
-                    (x0 + x1) / 2, (y0 + y1) / 2))
+                    force if axis == "x" else 0.0, force if axis == "y" else 0.0, *at))
 
+    _chord_push_loads(ctx, panels, wind_loads)
     for wall, (x0, y0), (x1, y1) in on_deck:
         resolved = ctx.model.wall(wall.tag)
         height = (resolved.z1_m - resolved.z0_m) / _FT

@@ -51,6 +51,10 @@ PLACEHOLDER = ("<<", ">>")
 
 _REQUIRED = ("id", "scope", "covers", "engineer", "license", "sealed_on")
 
+#: ``[defaults]`` keys every ``[[signoff]]`` inherits unless it sets its own, so a PE types
+#: name, licence and date once. The placeholder refusal covers this table too.
+DEFAULT_KEYS = ("engineer", "license", "sealed_on", "document")
+
 
 @dataclass(frozen=True)
 class ExternalDesign:
@@ -173,18 +177,37 @@ def load_register(house_dir: Path | None) -> EngineeringRegister:
     entries = data.get("signoff", [])
     if not isinstance(entries, list):
         raise ValueError(f"{path}: [[signoff]] must be an array of tables")
-    signoffs = tuple(_signoff(entry, path, index) for index, entry in enumerate(entries))
+    defaults = _defaults(data.get("defaults", {}), path)
+    signoffs = tuple(_signoff(entry, path, index, defaults)
+                     for index, entry in enumerate(entries))
     _refuse_duplicates(signoffs, path)
     return EngineeringRegister(signoffs=signoffs)
 
 
-def _signoff(entry: Any, path: Path, index: int) -> Signoff:
+def _defaults(table: Any, path: Path) -> dict[str, Any]:
+    """The ``[defaults]`` table: only :data:`DEFAULT_KEYS`, never a placeholder."""
+    where = f"{path}: [defaults]"
+    if not isinstance(table, dict):
+        raise ValueError(f"{where} must be a table")
+    unknown = sorted(set(table) - set(DEFAULT_KEYS))
+    if unknown:
+        raise ValueError(f"{where} has unknown key(s) {', '.join(unknown)}; "
+                         f"allowed: {', '.join(DEFAULT_KEYS)}")
+    _refuse_placeholders(table, where)
+    return dict(table)
+
+
+def _signoff(entry: Any, path: Path, index: int,
+             defaults: Mapping[str, Any] | None = None) -> Signoff:
     where = f"{path}: [[signoff]] #{index + 1}"
     if not isinstance(entry, dict):
         raise ValueError(f"{where} is not a table")
+    entry = {**(defaults or {}), **entry}
     for key in _REQUIRED:
         if key not in entry:
-            raise ValueError(f"{where} is missing required key `{key}`")
+            raise ValueError(f"{where} is missing required key `{key}`"
+                             + (" (or set it once in [defaults])" if key in DEFAULT_KEYS
+                                else ""))
     # Before anything is parsed, and before the date in particular: an unedited scaffold
     # would otherwise fail on `sealed_on` and send the reader to fix the wrong field.
     _refuse_placeholders(entry, where)

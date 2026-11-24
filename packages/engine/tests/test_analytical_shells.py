@@ -115,25 +115,27 @@ def test_the_earth_pressure_is_the_bands_average_and_zero_above_the_soil(load):
     wall_plates = [p for p in shells.plates if p.tag == "W-SG-E2"]
     pressures = [by_plate[p.id].pressure_pa / PSF_TO_PA for p in wall_plates]
     # The deepest band cannot exceed the profile's own value at the base of the wall.
-    assert max(pressures) <= inputs["active_efp"] * inputs["retained_height"] + 1e-6
+    efp = inputs.get("at_rest_efp") or inputs["active_efp"]
+    assert max(pressures) <= efp * inputs["retained_height"] + 1e-6
     # And nothing is negative: above the retained soil the profile is zero, never suction.
     assert min(pressures) >= 0.0
 
 
 # --------------------------------------------------------------- typed load combinations
-def test_the_one_combination_catlin_declares_survives_into_the_export(load):
+def test_a_clause_numbered_combination_survives_into_the_export(load):
     """It did not, and nothing said so.
 
-    ``girt_screw``'s ``"ASCE 7-16 §2.4.1(7) 0.6W"`` was read back out of its own prose, and
-    the clause number in front of the factors made it unparseable — so the only combination
-    in the house was dropped in silence and the export carried unit cases alone.
+    A combination named ``"ASCE 7-16 §2.4.1(7) 0.6W"`` (``girt_screw``'s, until that item left
+    the register on 2026-11-22) was read back out of its own prose, and the clause number in
+    front of the factors made it unparseable — so it was dropped in silence. ``deck_tie``'s
+    ``"ASCE 7-16 §2.4.1(5) 0.6W"`` is the same shape and carries the test now.
     """
     model = build_analytical_model(load.ctx)
     named = {combination.name: combination for combination in model.combinations}
-    wind = named.get("ASCE 7-16 §2.4.1(7) 0.6W")
+    wind = named.get("ASCE 7-16 §2.4.1(5) 0.6W")
     assert wind is not None, sorted(named)
     assert wind.factors == {LoadCaseKind.WIND: 0.6}
-    assert wind.source.startswith("girt_screw/")
+    assert wind.source.startswith("deck_tie/")
 
 
 def test_the_moment_columns_export_the_combination_that_actually_governed(load):

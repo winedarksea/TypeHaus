@@ -192,7 +192,7 @@ def test_the_pier_cage_is_the_aci_minimum_and_slenderness_must_be_computed():
     assert magnifier == pytest.approx(1.01, abs=0.01)
 
 
-def test_the_14_inch_cage_meets_the_floor_on_the_gross_area(catlin_engineering):
+def test_the_14_inch_cage_meets_the_floor_on_the_gross_area():
     """§13b: (6) #5 clears 1% of a 14" gross; no §10.3.1.2 reduced-area claim (F5-106)."""
     gross = math.pi * 7.0 ** 2
     assert gross == pytest.approx(153.94, abs=0.01)
@@ -200,12 +200,7 @@ def test_the_14_inch_cage_meets_the_floor_on_the_gross_area(catlin_engineering):
     assert 6 * 0.31 / gross == pytest.approx(0.01208, abs=0.0001)
     bar_circle = 7.0 - 2.0 - 0.375 - 0.3125
     assert 2 * bar_circle * math.sin(math.pi / 6) >= 6 * 0.625, "dowels beside: psi_r 1.0"
-    results = catlin_engineering.engineering
-    for tag in ("PT-BW-W", "PT-BW-GW", "PT-BW-PE", "PT-BW-PNE"):
-        state = next(s for s in results[f"deck_post/{tag}"].limit_states
-                     if s.name == "longitudinal steel")
-        assert state.demand == pytest.approx(0.01 * gross, abs=0.001)
-        assert state.capacity == pytest.approx(1.86, abs=0.001)
+    # The piers left `deck_post` as footing piers (decision 16, §6c); the cage is as drawn.
 
 
 def test_the_footing_is_sized_for_the_load_and_the_retired_pad_was_not():
@@ -226,27 +221,13 @@ def test_the_module_agrees_with_this_note(catlin_engineering):
     assert set(records) == {"BM-BW-RW", "BM-BW-RE"}
     # §5 worked the 3-ply 2x12; since 2026-09-30 the headers are 5-1/2" x 11-7/8" glulam and
     # canopy_west_band.md §7 is the hand pass (bearing on the post governs, 0.326 since the
-    # 2026-10-28 flush headers) and the trusses' chord bearing (0.877, 2026-10-31).
+    # 2026-10-28 flush headers) and the trusses' chord bearing (0.662 since 2026-11-23, per truss with the drift placed).
     for record in records.values():
         states = {state.name: state for state in record.limit_states}
         assert set(states) == {"bending", "shear", "bearing on the post", "deflection",
                                "truss bearing on the beam"}
         assert states["bending"].ratio == pytest.approx(0.162, abs=0.002)
         assert states["bearing on the post"].ratio == pytest.approx(0.326, abs=0.002)
-        # canopy_west_band.md §7, 2026-10-31: the trusses' 5.5" chord bearing governs.
-        assert states["truss bearing on the beam"].ratio == pytest.approx(0.877, abs=0.002)
+        # canopy_west_band.md §7c, 2026-11-23: the trusses' 5.5" chord bearing governs.
+        assert states["truss bearing on the beam"].ratio == pytest.approx(0.662, abs=0.002)
         assert max(s.ratio for s in states.values()) == states["truss bearing on the beam"].ratio
-
-
-def test_the_pad_hook_is_graded_against_the_pads_own_cover(catlin_engineering):
-    """§6 2026-09-17: the foot rests on the PAD's 3" bottom cover, not the cage's 2"."""
-    db = 0.625
-    ldh = 60_000 * (5_000 / 15_000 + 0.6) / (55 * math.sqrt(5_000)) * db ** 1.5
-    available = 12.0 - 3.0 - db   # the engine also deducts one bar diameter
-    results = catlin_engineering.engineering
-    # The pinned east posts' piers carry the moment cage in `kdat` (the `cast` columns did).
-    for tag in ("PT-BW-PE", "PT-BW-PNE"):
-        state = next(s for s in results[f"deck_post/{tag}"].limit_states
-                     if s.name == "dowel anchorage into the base")
-        assert state.demand == pytest.approx(ldh, abs=0.01)
-        assert state.capacity == pytest.approx(available, abs=0.01)

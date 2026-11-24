@@ -2282,9 +2282,9 @@
 "canvas_objects/FURN-SG-DAYBED/body_z0_m": -2.3225125,
 "canvas_objects/FURN-SG-DAYBED/body_z1_m": -1.5859125,
 "canvas_objects/FURN-SG-DAYBED/z_m": -2.3225125,
-"canvas_objects/FURN-SG-SPLASH-BASIN/body_z0_m": -1.016,
-"canvas_objects/FURN-SG-SPLASH-BASIN/body_z1_m": -0.6604,
-"canvas_objects/FURN-SG-SPLASH-BASIN/z_m": -1.016,
+"canvas_objects/FURN-SG-SPLASH-PAD/body_z0_m": -1.016,
+"canvas_objects/FURN-SG-SPLASH-PAD/body_z1_m": -0.9652,
+"canvas_objects/FURN-SG-SPLASH-PAD/z_m": -1.016,
 "canvas_objects/FX-A-STUBATH-LAV/body_z0_m": 6.118098,
 "canvas_objects/FX-A-STUBATH-LAV/body_z1_m": 7.191248,
 "canvas_objects/FX-A-STUBATH-LAV/z_m": 6.118098,
@@ -3020,7 +3020,7 @@
 "construction_returns/CR-PLANT-RIM-FOAM/z1_m": 6.096,
 "construction_returns/CR-PLAY-CEIL-RC/z0_m": -0.314325,
 "construction_returns/CR-PLAY-CEIL-RC/z1_m": -0.301625,
-"construction_returns/CR-PORCH-MASONRY-RETURN/z0_m": -1.2192,
+"construction_returns/CR-PORCH-MASONRY-RETURN/z0_m": -1.3208,
 "construction_returns/CR-PORCH-MASONRY-RETURN/z1_m": 0.0,
 "construction_returns/CR-SAUNA-LINER-RETURN/z0_m": -2.7797125,
 "construction_returns/CR-SAUNA-LINER-RETURN/z1_m": -0.3413125,
@@ -4037,16 +4037,16 @@
 "footing_beddings/FB-B-W1/z1_m": -3.0337125,
 "footing_beddings/FB-B-W2/z0_m": -3.2115125,
 "footing_beddings/FB-B-W2/z1_m": -3.0337125,
-"footing_beddings/FB-RG-BLOCK/z0_m": -1.3716,
-"footing_beddings/FB-RG-BLOCK/z1_m": -1.2192,
-"footing_beddings/FB-RG-EAST-BALCONY/z0_m": -1.3716,
-"footing_beddings/FB-RG-EAST-BALCONY/z1_m": -1.2192,
-"footing_beddings/FB-RG-EAST/z0_m": -1.3716,
-"footing_beddings/FB-RG-EAST/z1_m": -1.2192,
-"footing_beddings/FB-RG-WEST-BALCONY/z0_m": -1.3716,
-"footing_beddings/FB-RG-WEST-BALCONY/z1_m": -1.2192,
-"footing_beddings/FB-RG-WEST/z0_m": -1.3716,
-"footing_beddings/FB-RG-WEST/z1_m": -1.2192,
+"footing_beddings/FB-RG-BLOCK/z0_m": -1.4732,
+"footing_beddings/FB-RG-BLOCK/z1_m": -1.3208,
+"footing_beddings/FB-RG-EAST-BALCONY/z0_m": -1.4732,
+"footing_beddings/FB-RG-EAST-BALCONY/z1_m": -1.3208,
+"footing_beddings/FB-RG-EAST/z0_m": -1.4732,
+"footing_beddings/FB-RG-EAST/z1_m": -1.3208,
+"footing_beddings/FB-RG-WEST-BALCONY/z0_m": -1.4732,
+"footing_beddings/FB-RG-WEST-BALCONY/z1_m": -1.3208,
+"footing_beddings/FB-RG-WEST/z0_m": -1.4732,
+"footing_beddings/FB-RG-WEST/z1_m": -1.3208,
 "footing_beddings/FB-SG-ARCH/soakaway_z0_m": -4.4561125,
 "footing_beddings/FB-SG-ARCH/z0_m": -4.1513125,
 "footing_beddings/FB-SG-ARCH/z1_m": -3.0845125,
@@ -4707,6 +4707,12 @@
 144,
 "6ac48ce58535"
 ],
+"geometry/0WA1308RE7-00/body": [
+-2.6114375,
+-2.5511125,
+32,
+"50377236566e"
+],
 "geometry/0XZM97P9X9/body": [
 4.1783594,
 4.2037594,
@@ -4760,6 +4766,12 @@
 7.4399775,
 2,
 "b1b07f25abfa"
+],
+"geometry/15F5GM1E3J/body": [
+1.184275,
+1.216025,
+16,
+"31ddf5adad2b"
 ],
 "geometry/17M93C11P3-box/body": [
 -1.7305655,
@@ -5265,6 +5277,12 @@
 8,
 "3c4d41a19688"
 ],
+"geometry/1JXQ975X9E::framing/member:edge-rim-0-027-0": [
+2.746375,
+3.048,
+8,
+"3c4d41a19688"
+],
 "geometry/1JXQ975X9E::framing/member:header-FO-S-ERV-CHASE-1": [
 2.746375,
 3.048,
@@ -5506,6 +5524,12 @@
 "3c4d41a19688"
 ],
 "geometry/1JXQ975X9E::framing/member:rim-0": [
+2.746375,
+3.048,
+8,
+"3c4d41a19688"
+],
+"geometry/1JXQ975X9E::framing/member:sister-0-0": [
 2.746375,
 3.048,
 8,
@@ -5936,6 +5960,12 @@
 -0.139446,
 102,
 "8bdd6cafc40c"
+],
+"geometry/22EP86JJ4Q/body": [
+-0.1524,
+-0.0381,
+32,
+"b8c02b008f3a"
 ],
 "geometry/23NF4WJS89-run/body": [
 -3.2369125,
@@ -6429,6 +6459,12 @@
 24,
 "cf2ce0c62236"
 ],
+"geometry/310GJ6VFEJ/body": [
+-1.1541125,
+-1.0779125,
+2,
+"21030275f677"
+],
 "geometry/31MM8G5WV4-run/body": [
 -1.5876248,
 6.277633,
@@ -6515,9 +6551,9 @@
 ],
 "geometry/3BF9ZDQPT1/layer:sheathing": [
 -2.5955625,
--0.3413125,
+-0.301625,
 8,
-"12e4cc821f4a"
+"2032658fa7f4"
 ],
 "geometry/3BF9ZDQPT1/layer:shiplap-liner": [
 -2.5955625,
@@ -6527,27 +6563,27 @@
 ],
 "geometry/3BF9ZDQPT1/layer:stud": [
 -2.5955625,
--0.3413125,
+-0.301625,
 8,
-"12e4cc821f4a"
+"2032658fa7f4"
 ],
 "geometry/3BF9ZDQPT1/layer:waterproofing": [
 -2.5955625,
--0.3413125,
+-0.301625,
 8,
-"12e4cc821f4a"
+"2032658fa7f4"
 ],
 "geometry/3BF9ZDQPT1/layer:xps-a": [
 -2.5955625,
--0.3413125,
+-0.301625,
 8,
-"12e4cc821f4a"
+"2032658fa7f4"
 ],
 "geometry/3BF9ZDQPT1/layer:xps-b": [
 -2.5955625,
--0.3413125,
+-0.301625,
 8,
-"12e4cc821f4a"
+"2032658fa7f4"
 ],
 "geometry/3BF9ZDQPT1::framing/member:plate-bottom": [
 -2.5955625,
@@ -6556,16 +6592,16 @@
 "f5962a2f7d38"
 ],
 "geometry/3BF9ZDQPT1::framing/member:plate-top-0": [
--0.3794125,
--0.3413125,
+-0.339725,
+-0.301625,
 8,
-"0ce1d8a6488d"
+"67bb0d4ceaa3"
 ],
 "geometry/3BF9ZDQPT1::framing/member:plate-top-1": [
--0.4175125,
--0.3794125,
+-0.377825,
+-0.339725,
 8,
-"3b0cbbb86f77"
+"1b920b6fd9d1"
 ],
 "geometry/3BF9ZDQPT1::framing/member:roughhead-0": [
 -1.0525125,
@@ -6623,45 +6659,45 @@
 ],
 "geometry/3BF9ZDQPT1::framing/member:stud-000": [
 -2.5574625,
--0.4175125,
+-0.377825,
 8,
-"53b39e549478"
+"0bc4a3174cbf"
 ],
 "geometry/3BF9ZDQPT1::framing/member:stud-001": [
 -2.5574625,
--0.4175125,
+-0.377825,
 8,
-"53b39e549478"
+"0bc4a3174cbf"
 ],
 "geometry/3BF9ZDQPT1::framing/member:stud-002": [
 -2.5574625,
--0.4175125,
+-0.377825,
 8,
-"53b39e549478"
+"0bc4a3174cbf"
 ],
 "geometry/3BF9ZDQPT1::framing/member:stud-003": [
 -2.5574625,
--0.4175125,
+-0.377825,
 8,
-"53b39e549478"
+"0bc4a3174cbf"
 ],
 "geometry/3BF9ZDQPT1::framing/member:stud-004": [
 -2.5574625,
--0.4175125,
+-0.377825,
 8,
-"53b39e549478"
+"0bc4a3174cbf"
 ],
 "geometry/3BF9ZDQPT1::framing/member:stud-005": [
 -2.5574625,
--0.4175125,
+-0.377825,
 8,
-"53b39e549478"
+"0bc4a3174cbf"
 ],
 "geometry/3BF9ZDQPT1::framing/member:stud-006": [
 -2.5574625,
--0.4175125,
+-0.377825,
 8,
-"53b39e549478"
+"0bc4a3174cbf"
 ],
 "geometry/3DMD5550VF/body": [
 2.181225,
@@ -6909,6 +6945,12 @@
 72,
 "7975ed7b9793"
 ],
+"geometry/3YJ57A701F/body": [
+-0.1524,
+-0.0381,
+32,
+"b8c02b008f3a"
+],
 "geometry/3YN7X1FEQJ/body": [
 -0.4699,
 -0.3175,
@@ -7052,6 +7094,18 @@
 0.6334125,
 2,
 "156bac9d6aaf"
+],
+"geometry/4MRJFJH8C7/body": [
+-0.1524,
+-0.0381,
+32,
+"b8c02b008f3a"
+],
+"geometry/4P47AE0VFN-00/body": [
+-0.4937125,
+-0.492125,
+2,
+"52cc01c09247"
 ],
 "geometry/4PQRD03TG8-box-support/body": [
 2.2725062,
@@ -7379,27 +7433,27 @@
 ],
 "geometry/51B78YHGNF-BF-033/body": [
 -1.9304,
--1.651,
+-1.7018,
 2,
-"eb8bbe33d380"
+"85977aea8217"
 ],
 "geometry/51B78YHGNF-BF-034/body": [
--1.651,
--1.3716,
+-1.7018,
+-1.4732,
 2,
-"59ef98402826"
+"ff9de00c203b"
 ],
 "geometry/51B78YHGNF-BF-035/body": [
--1.3716,
+-1.4732,
 -1.3208,
 2,
-"d77f75cdf35d"
+"8d84377b8cf6"
 ],
 "geometry/51B78YHGNF-BF-036/body": [
--1.3716,
+-1.4732,
 -1.3208,
 2,
-"d77f75cdf35d"
+"8d84377b8cf6"
 ],
 "geometry/51B78YHGNF-BF-037/body": [
 -1.3208,
@@ -7493,137 +7547,173 @@
 ],
 "geometry/51B78YHGNF-BF-052/body": [
 -1.1684,
--1.0922,
+-1.154113,
 2,
-"4840bcd6cb89"
+"9094cacae971"
 ],
 "geometry/51B78YHGNF-BF-053/body": [
 -1.1684,
--1.0922,
+-1.154113,
 2,
-"4840bcd6cb89"
+"9094cacae971"
 ],
 "geometry/51B78YHGNF-BF-054/body": [
+-1.154113,
 -1.0922,
--1.0414,
 2,
-"348d517511cc"
+"c4b5c826a501"
 ],
 "geometry/51B78YHGNF-BF-055/body": [
+-1.154113,
 -1.0922,
--1.0414,
 2,
-"348d517511cc"
+"c4b5c826a501"
 ],
 "geometry/51B78YHGNF-BF-056/body": [
 -1.0922,
--1.0414,
+-1.077913,
 2,
-"348d517511cc"
+"bec0ad50f0f3"
 ],
 "geometry/51B78YHGNF-BF-057/body": [
 -1.0922,
--1.0414,
+-1.077913,
 2,
-"348d517511cc"
+"bec0ad50f0f3"
 ],
 "geometry/51B78YHGNF-BF-058/body": [
--1.0414,
--1.016,
+-1.0922,
+-1.077913,
 2,
-"5486a54d8420"
+"bec0ad50f0f3"
 ],
 "geometry/51B78YHGNF-BF-059/body": [
--1.0414,
--1.016,
+-1.0922,
+-1.077913,
 2,
-"5486a54d8420"
+"bec0ad50f0f3"
 ],
 "geometry/51B78YHGNF-BF-060/body": [
+-1.077913,
 -1.0414,
--1.016,
 2,
-"5486a54d8420"
+"01e1baee65a8"
 ],
 "geometry/51B78YHGNF-BF-061/body": [
+-1.077913,
+-1.0414,
+2,
+"01e1baee65a8"
+],
+"geometry/51B78YHGNF-BF-062/body": [
+-1.077913,
+-1.0414,
+2,
+"01e1baee65a8"
+],
+"geometry/51B78YHGNF-BF-063/body": [
+-1.077913,
+-1.0414,
+2,
+"01e1baee65a8"
+],
+"geometry/51B78YHGNF-BF-064/body": [
 -1.0414,
 -1.016,
 2,
 "5486a54d8420"
 ],
-"geometry/51B78YHGNF-BF-062/body": [
--1.016,
--0.978154,
-2,
-"6a78531316ab"
-],
-"geometry/51B78YHGNF-BF-063/body": [
--1.016,
--0.978154,
-2,
-"6a78531316ab"
-],
-"geometry/51B78YHGNF-BF-064/body": [
--1.016,
--0.978154,
-2,
-"6a78531316ab"
-],
 "geometry/51B78YHGNF-BF-065/body": [
--0.978154,
--0.9525,
+-1.0414,
+-1.016,
 2,
-"88c96b4e0067"
+"5486a54d8420"
 ],
 "geometry/51B78YHGNF-BF-066/body": [
--0.978154,
--0.9525,
+-1.0414,
+-1.016,
 2,
-"88c96b4e0067"
+"5486a54d8420"
 ],
 "geometry/51B78YHGNF-BF-067/body": [
+-1.0414,
+-1.016,
+2,
+"5486a54d8420"
+],
+"geometry/51B78YHGNF-BF-068/body": [
+-1.016,
+-0.978154,
+2,
+"6a78531316ab"
+],
+"geometry/51B78YHGNF-BF-069/body": [
+-1.016,
+-0.978154,
+2,
+"6a78531316ab"
+],
+"geometry/51B78YHGNF-BF-070/body": [
+-1.016,
+-0.978154,
+2,
+"6a78531316ab"
+],
+"geometry/51B78YHGNF-BF-071/body": [
 -0.978154,
 -0.9525,
 2,
 "88c96b4e0067"
 ],
-"geometry/51B78YHGNF-BF-068/body": [
--0.9525,
--0.9398,
-2,
-"c71986a9e272"
-],
-"geometry/51B78YHGNF-BF-069/body": [
--0.9525,
--0.9398,
-2,
-"c71986a9e272"
-],
-"geometry/51B78YHGNF-BF-070/body": [
--0.9525,
--0.9398,
-2,
-"c71986a9e272"
-],
-"geometry/51B78YHGNF-BF-071/body": [
--0.9398,
--0.9144,
-2,
-"5b38df1f22c3"
-],
 "geometry/51B78YHGNF-BF-072/body": [
--0.9398,
--0.9144,
+-0.978154,
+-0.9525,
 2,
-"5b38df1f22c3"
+"88c96b4e0067"
 ],
 "geometry/51B78YHGNF-BF-073/body": [
+-0.978154,
+-0.9525,
+2,
+"88c96b4e0067"
+],
+"geometry/51B78YHGNF-BF-074/body": [
+-0.9525,
+-0.9398,
+2,
+"c71986a9e272"
+],
+"geometry/51B78YHGNF-BF-075/body": [
+-0.9525,
+-0.9398,
+2,
+"c71986a9e272"
+],
+"geometry/51B78YHGNF-BF-076/body": [
+-0.9525,
+-0.9398,
+2,
+"c71986a9e272"
+],
+"geometry/51B78YHGNF-BF-077/body": [
 -0.9398,
 -0.9144,
 2,
 "5b38df1f22c3"
 ],
-"geometry/51B78YHGNF-BF-074/body": [
+"geometry/51B78YHGNF-BF-078/body": [
+-0.9398,
+-0.9144,
+2,
+"5b38df1f22c3"
+],
+"geometry/51B78YHGNF-BF-079/body": [
+-0.9398,
+-0.9144,
+2,
+"5b38df1f22c3"
+],
+"geometry/51B78YHGNF-BF-080/body": [
 -0.9398,
 -0.9144,
 2,
@@ -8391,6 +8481,12 @@
 18,
 "816adcbd19fc"
 ],
+"geometry/6RP5ZRM8AC/body": [
+-0.204851,
+-0.122301,
+168,
+"773bae7f132d"
+],
 "geometry/6RW73D2Q06-box-support/body": [
 4.246372,
 4.341622,
@@ -8414,6 +8510,12 @@
 6.5619184,
 24,
 "c858a8769b39"
+],
+"geometry/6WY7YYP1B2/body": [
+-0.1524,
+-0.0381,
+32,
+"b8c02b008f3a"
 ],
 "geometry/6YZ33WQNQH/body": [
 -0.4699,
@@ -9278,6 +9380,12 @@
 0.1639618,
 914,
 "d350870d1ae6"
+],
+"geometry/8E5HFJYK0Q-00/body": [
+-2.6114375,
+-2.5511125,
+32,
+"50377236566e"
 ],
 "geometry/8F8ER9WZ7X-box-support/body": [
 2.2304375,
@@ -11702,6 +11810,12 @@
 -2.6543,
 24,
 "9875cc1054e8"
+],
+"geometry/C6PAZ5WY1C/body": [
+-0.1524,
+-0.0381,
+32,
+"b8c02b008f3a"
 ],
 "geometry/C75K1P71SX-box/body": [
 -1.7303115,
@@ -23190,14 +23304,14 @@
 "geometry/CBW126AAAA/layer:air-gap": [
 -2.6019125,
 -0.3386582,
-208,
-"d9f0df1eeb91"
+12,
+"be437247a4d6"
 ],
 "geometry/CBW126AAAA/layer:brick": [
 -2.6019125,
 -0.3386582,
-208,
-"d9f0df1eeb91"
+12,
+"be437247a4d6"
 ],
 "geometry/CBX301AAAA/frame": [
 -1.6491797,
@@ -24074,12 +24188,6 @@
 -1.0525125,
 2,
 "0c9e3b54eb0d"
-],
-"geometry/CES7V86D9V/body": [
-0.27305,
-0.33655,
-16,
-"fc6be1875817"
 ],
 "geometry/CEWX9GPQMQ/return-0-0-0": [
 -0.56515,
@@ -32619,29 +32727,11 @@
 2,
 "6dc455ea4c5e"
 ],
-"geometry/CMFS01AAAA::framing/member:bearing-block-1-000-cheek-hi": [
--0.263525,
--0.0381,
-8,
-"019dcc357ddd"
-],
-"geometry/CMFS01AAAA::framing/member:bearing-block-1-000-cheek-lo": [
--0.263525,
--0.0381,
-8,
-"019dcc357ddd"
-],
-"geometry/CMFS01AAAA::framing/member:bearing-block-1-000-rail-bottom": [
+"geometry/CMFS01AAAA::framing/member:bearing-block-1-000": [
 -0.301625,
--0.263525,
-8,
-"6d029dbcf714"
-],
-"geometry/CMFS01AAAA::framing/member:bearing-block-1-000-rail-top": [
--0.0381,
 0.0,
 8,
-"7bbc6bf9443f"
+"80db91a70531"
 ],
 "geometry/CMFS01AAAA::framing/member:bearing-block-1-001": [
 -0.301625,
@@ -32697,65 +32787,65 @@
 8,
 "80db91a70531"
 ],
-"geometry/CMFS01AAAA::framing/member:bearing-block-1-010": [
--0.301625,
-0.0,
-8,
-"80db91a70531"
-],
-"geometry/CMFS01AAAA::framing/member:bearing-block-1-011-cheek-hi": [
+"geometry/CMFS01AAAA::framing/member:bearing-block-1-010-cheek-hi": [
 -0.263525,
 -0.0381,
 8,
 "019dcc357ddd"
 ],
-"geometry/CMFS01AAAA::framing/member:bearing-block-1-011-cheek-lo": [
+"geometry/CMFS01AAAA::framing/member:bearing-block-1-010-cheek-lo": [
 -0.263525,
 -0.0381,
 8,
 "019dcc357ddd"
 ],
-"geometry/CMFS01AAAA::framing/member:bearing-block-1-011-rail-bottom": [
+"geometry/CMFS01AAAA::framing/member:bearing-block-1-010-rail-bottom": [
 -0.301625,
 -0.263525,
 8,
 "6d029dbcf714"
 ],
-"geometry/CMFS01AAAA::framing/member:bearing-block-1-011-rail-top": [
+"geometry/CMFS01AAAA::framing/member:bearing-block-1-010-rail-top": [
 -0.0381,
 0.0,
 8,
 "7bbc6bf9443f"
 ],
-"geometry/CMFS01AAAA::framing/member:bearing-block-1-012": [
+"geometry/CMFS01AAAA::framing/member:bearing-block-1-011": [
 -0.301625,
 0.0,
 8,
 "80db91a70531"
 ],
-"geometry/CMFS01AAAA::framing/member:bearing-block-1-013-cheek-hi": [
+"geometry/CMFS01AAAA::framing/member:bearing-block-1-012-cheek-hi": [
 -0.263525,
 -0.0381,
 8,
 "019dcc357ddd"
 ],
-"geometry/CMFS01AAAA::framing/member:bearing-block-1-013-cheek-lo": [
+"geometry/CMFS01AAAA::framing/member:bearing-block-1-012-cheek-lo": [
 -0.263525,
 -0.0381,
 8,
 "019dcc357ddd"
 ],
-"geometry/CMFS01AAAA::framing/member:bearing-block-1-013-rail-bottom": [
+"geometry/CMFS01AAAA::framing/member:bearing-block-1-012-rail-bottom": [
 -0.301625,
 -0.263525,
 8,
 "6d029dbcf714"
 ],
-"geometry/CMFS01AAAA::framing/member:bearing-block-1-013-rail-top": [
+"geometry/CMFS01AAAA::framing/member:bearing-block-1-012-rail-top": [
 -0.0381,
 0.0,
 8,
 "7bbc6bf9443f"
+],
+"geometry/CMFS01AAAA::framing/member:bearing-block-1-013": [
+-0.301625,
+0.0,
+8,
+"80db91a70531"
 ],
 "geometry/CMFS01AAAA::framing/member:bearing-block-1-014": [
 -0.301625,
@@ -32763,13 +32853,7 @@
 8,
 "80db91a70531"
 ],
-"geometry/CMFS01AAAA::framing/member:bearing-block-1-015": [
--0.301625,
-0.0,
-8,
-"80db91a70531"
-],
-"geometry/CMFS01AAAA::framing/member:bearing-block-1-017": [
+"geometry/CMFS01AAAA::framing/member:bearing-block-1-016": [
 -0.301625,
 0.0,
 8,
@@ -33081,29 +33165,47 @@
 2,
 "6dc455ea4c5e"
 ],
-"geometry/CMFS02AAAA::framing/member:bearing-block-0-002-cheek-hi": [
+"geometry/CMFS02AAAA::framing/member:bearing-block-0-001-cheek-hi": [
 -0.263525,
 -0.0381,
 8,
 "019dcc357ddd"
 ],
-"geometry/CMFS02AAAA::framing/member:bearing-block-0-002-cheek-lo": [
+"geometry/CMFS02AAAA::framing/member:bearing-block-0-001-cheek-lo": [
 -0.263525,
 -0.0381,
 8,
 "019dcc357ddd"
 ],
-"geometry/CMFS02AAAA::framing/member:bearing-block-0-002-rail-bottom": [
+"geometry/CMFS02AAAA::framing/member:bearing-block-0-001-p1-rail-bottom": [
 -0.301625,
 -0.263525,
 8,
 "6d029dbcf714"
 ],
-"geometry/CMFS02AAAA::framing/member:bearing-block-0-002-rail-top": [
+"geometry/CMFS02AAAA::framing/member:bearing-block-0-001-p1-rail-top": [
 -0.0381,
 0.0,
 8,
 "7bbc6bf9443f"
+],
+"geometry/CMFS02AAAA::framing/member:bearing-block-0-001-rail-bottom": [
+-0.301625,
+-0.263525,
+8,
+"6d029dbcf714"
+],
+"geometry/CMFS02AAAA::framing/member:bearing-block-0-001-rail-top": [
+-0.0381,
+0.0,
+8,
+"7bbc6bf9443f"
+],
+"geometry/CMFS02AAAA::framing/member:bearing-block-0-002": [
+-0.301625,
+0.0,
+8,
+"80db91a70531"
 ],
 "geometry/CMFS02AAAA::framing/member:bearing-block-0-003": [
 -0.301625,
@@ -33148,12 +33250,6 @@
 "80db91a70531"
 ],
 "geometry/CMFS02AAAA::framing/member:bearing-block-0-010": [
--0.301625,
-0.0,
-8,
-"80db91a70531"
-],
-"geometry/CMFS02AAAA::framing/member:bearing-block-0-011": [
 -0.301625,
 0.0,
 8,
@@ -33232,12 +33328,6 @@
 "80db91a70531"
 ],
 "geometry/CMFS02AAAA::framing/member:sister-0-0": [
--0.301625,
-0.0,
-8,
-"80db91a70531"
-],
-"geometry/CMFS02AAAA::framing/member:sister-0-1": [
 -0.301625,
 0.0,
 8,
@@ -33668,6 +33758,12 @@
 0.0,
 8,
 "7bbc6bf9443f"
+],
+"geometry/CMFS04AAAA::framing/member:sister-0-0": [
+-0.301625,
+0.0,
+8,
+"80db91a70531"
 ],
 "geometry/CMFS04AAAA::framing/member:trimmer-FO-M-STAIR-0-0": [
 -0.301625,
@@ -64173,19 +64269,13 @@
 2,
 "f6fb720675b7"
 ],
-"geometry/CSW147AAAA/layer:staggered-studs": [
+"geometry/CSW147AAAA/layer:stud": [
 3.048,
 5.7912,
 2,
 "7981cbeae3a4"
 ],
 "geometry/CSW147AAAA::framing/member:backing-0-000": [
-3.1496,
-3.33375,
-8,
-"fbb77ad51bd3"
-],
-"geometry/CSW147AAAA::framing/member:backing-0-001": [
 3.1496,
 3.33375,
 8,
@@ -64251,6 +64341,12 @@
 8,
 "303fe9bc96a6"
 ],
+"geometry/CSW147AAAA::framing/member:backing-2-002": [
+4.1656,
+4.40055,
+8,
+"303fe9bc96a6"
+],
 "geometry/CSW147AAAA::framing/member:backing-3-000": [
 4.8768,
 5.06095,
@@ -64263,25 +64359,31 @@
 8,
 "35a5dea7566f"
 ],
-"geometry/CSW147AAAA::framing/member:backing-4-000-box-0": [
+"geometry/CSW147AAAA::framing/member:backing-3-002": [
+4.8768,
+5.06095,
+8,
+"35a5dea7566f"
+],
+"geometry/CSW147AAAA::framing/member:backing-4-000": [
 5.08,
 5.26415,
 8,
 "945f5b143533"
 ],
-"geometry/CSW147AAAA::framing/member:backing-4-000-box-1": [
+"geometry/CSW147AAAA::framing/member:backing-4-001-box-0": [
 5.08,
 5.26415,
 8,
 "945f5b143533"
 ],
-"geometry/CSW147AAAA::framing/member:backing-4-000-box-2": [
+"geometry/CSW147AAAA::framing/member:backing-4-001-box-1": [
 5.16255,
 5.26415,
 8,
 "f8eea839e7c7"
 ],
-"geometry/CSW147AAAA::framing/member:backing-4-001": [
+"geometry/CSW147AAAA::framing/member:backing-4-002": [
 5.08,
 5.26415,
 8,
@@ -64348,36 +64450,6 @@
 "2902d6e507c1"
 ],
 "geometry/CSW147AAAA::framing/member:stud-007": [
-3.10515,
-5.718175,
-8,
-"2902d6e507c1"
-],
-"geometry/CSW147AAAA::framing/member:stud-008": [
-3.10515,
-5.718175,
-8,
-"2902d6e507c1"
-],
-"geometry/CSW147AAAA::framing/member:stud-009": [
-3.10515,
-5.718175,
-8,
-"2902d6e507c1"
-],
-"geometry/CSW147AAAA::framing/member:stud-010": [
-3.10515,
-5.718175,
-8,
-"2902d6e507c1"
-],
-"geometry/CSW147AAAA::framing/member:stud-011": [
-3.10515,
-5.718175,
-8,
-"2902d6e507c1"
-],
-"geometry/CSW147AAAA::framing/member:stud-012": [
 3.10515,
 5.718175,
 8,
@@ -67401,6 +67473,12 @@
 18,
 "06628dad9d91"
 ],
+"geometry/D9RT7NGEG8-00/body": [
+-0.50165,
+-0.441325,
+32,
+"7b80f37910b6"
+],
 "geometry/D9Z3MBW6KV-run/body": [
 -3.0227905,
 -0.448082,
@@ -67977,6 +68055,12 @@
 650,
 "14fbe7af6489"
 ],
+"geometry/F4129D9A2N/body": [
+-0.1524,
+-0.0381,
+32,
+"b8c02b008f3a"
+],
 "geometry/F5569DXC7B-run/body": [
 5.7912,
 6.1214,
@@ -68408,6 +68492,12 @@
 1.1557594,
 2,
 "aa90fa657344"
+],
+"geometry/GA9XME0R7M/body": [
+-0.5699125,
+-0.4937125,
+2,
+"c2596e016b15"
 ],
 "geometry/GBATRH18K6-box-support/body": [
 -0.2643187,
@@ -71962,10 +72052,10 @@
 "ac68d55c0b2b"
 ],
 "geometry/HSFTHD5JAJ/body": [
-0.56515,
-0.65405,
+1.1557,
+1.2446,
 2,
-"f444de7cc5d0"
+"65063c0cc221"
 ],
 "geometry/HTZ1RGAGXP-run/body": [
 2.8702527,
@@ -72134,6 +72224,12 @@
 0.2544445,
 914,
 "0396656a2d8a"
+],
+"geometry/JT1ZECAEWG/body": [
+-0.1524,
+-0.0381,
+32,
+"b8c02b008f3a"
 ],
 "geometry/JV56ZZP8TZ-run/body": [
 3.8227,
@@ -72452,6 +72548,12 @@
 0.5842,
 2,
 "d0915fde4364"
+],
+"geometry/M0A12SREVJ/body": [
+-0.1524,
+-0.0381,
+32,
+"b8c02b008f3a"
 ],
 "geometry/M2BE9KCQQ7/body": [
 2.2433885,
@@ -73148,6 +73250,12 @@
 3.58394,
 2,
 "791b17da2eaf"
+],
+"geometry/N1CSMHCRDQ/body": [
+-0.1524,
+-0.0381,
+32,
+"b8c02b008f3a"
 ],
 "geometry/N2Z2AA6EGB-box-support/body": [
 7.171563,
@@ -74619,6 +74727,12 @@
 56,
 "1559c023b212"
 ],
+"geometry/P6V7YHYKFF/body": [
+-0.1524,
+-0.0381,
+32,
+"b8c02b008f3a"
+],
 "geometry/P6WSEM39FM/body": [
 2.7778202,
 2.8303982,
@@ -75052,10 +75166,16 @@
 "8a3924a0bdd0"
 ],
 "geometry/PYYM5Z66YC/body": [
--0.201676,
--0.125476,
+-0.106426,
+-0.030226,
 16,
-"e055c3e669fa"
+"d2d3ad02405d"
+],
+"geometry/PZ8324BQ2Z/body": [
+-0.204851,
+-0.122301,
+168,
+"fcd8d3dfbb95"
 ],
 "geometry/Q1GM2C34KQ-run/body": [
 -1.4772,
@@ -75686,6 +75806,12 @@
 6.616573,
 2,
 "b4a54a5f127c"
+],
+"geometry/QSE8YK0EAK/body": [
+-0.1524,
+-0.0381,
+32,
+"b8c02b008f3a"
 ],
 "geometry/QTA0001AAA-box-support/body": [
 7.692898,
@@ -77073,12 +77199,6 @@
 2,
 "b8c6fe0d1e17"
 ],
-"geometry/RDSEPP2CCP/body": [
-0.88265,
-0.94615,
-16,
-"7cedce5d2796"
-],
 "geometry/REEA36N7AS-run/body": [
 1.1312906,
 2.8311094,
@@ -77368,34 +77488,34 @@
 "aa2c57e7edc8"
 ],
 "geometry/RGW102AAAA/layer:srw-block": [
--1.2192,
+-1.3208,
 0.0,
 2,
-"9d590c7e3bd6"
+"6993e54184a0"
 ],
 "geometry/RGW103AAAA/layer:srw-block": [
--1.2192,
+-1.3208,
 0.0,
 2,
-"9d590c7e3bd6"
+"6993e54184a0"
 ],
 "geometry/RGW104AAAA/layer:srw-block": [
--1.2192,
+-1.3208,
 0.0,
 2,
-"9d590c7e3bd6"
+"6993e54184a0"
 ],
 "geometry/RGW105AAAA/layer:srw-block": [
--1.2192,
+-1.3208,
 0.0,
 2,
-"9d590c7e3bd6"
+"6993e54184a0"
 ],
 "geometry/RGW106AAAA/layer:srw-block": [
--1.2192,
+-1.3208,
 0.0,
 2,
-"9d590c7e3bd6"
+"6993e54184a0"
 ],
 "geometry/RKGTAV787W-box-support/body": [
 0.3850428,
@@ -82227,12 +82347,6 @@
 8,
 "1f09581df6ba"
 ],
-"geometry/VZYJM83Z1V/body": [
-0.56515,
-0.65405,
-2,
-"f444de7cc5d0"
-],
 "geometry/W4AN3C35D4-box-support/body": [
 -0.2643187,
 -0.238125,
@@ -82423,7 +82537,7 @@
 2.8876625,
 6.858,
 216,
-"7d6c7206b04d"
+"53e5b0fd107f"
 ],
 "geometry/WK41TSMA97-box-support/body": [
 0.240172,
@@ -82887,6 +83001,12 @@
 24,
 "46af677ff501"
 ],
+"geometry/X5DHN3YANZ-00/body": [
+-1.08585,
+-1.025525,
+32,
+"d9a1e1e195fb"
+],
 "geometry/X7400QBP4T/body": [
 -2.0939125,
 -1.9415125,
@@ -82983,11 +83103,23 @@
 24,
 "6c810c7445e9"
 ],
+"geometry/XHA0VRSWMW/body": [
+-0.1524,
+-0.0381,
+32,
+"b8c02b008f3a"
+],
 "geometry/XJR4KE400J-run/body": [
 6.2484,
 6.69925,
 144,
 "7dd2eaf387b6"
+],
+"geometry/XJS864FKEX-00/body": [
+-1.0779125,
+-1.076325,
+2,
+"0bd58e5cd016"
 ],
 "geometry/XM4GM4VEZS-run/body": [
 -1.5868597,
@@ -84077,57 +84209,57 @@
 ],
 "geometry/Z4NRTGEDY5/layer:gwb-a": [
 -2.5955625,
--0.3413125,
+-0.301625,
 6,
-"9057d6e61aa5"
+"f7b4ba386935"
 ],
 "geometry/Z4NRTGEDY5/layer:sheathing": [
 -2.5955625,
--0.3413125,
+-0.301625,
 6,
-"9057d6e61aa5"
+"f7b4ba386935"
 ],
 "geometry/Z4NRTGEDY5/layer:stud": [
 -2.5955625,
--0.3413125,
+-0.301625,
 6,
-"9057d6e61aa5"
+"f7b4ba386935"
 ],
 "geometry/Z4NRTGEDY5/layer:waterproofing": [
 -2.5955625,
--0.3413125,
+-0.301625,
 6,
-"9057d6e61aa5"
+"f7b4ba386935"
 ],
 "geometry/Z4NRTGEDY5/layer:xps-a": [
 -2.5955625,
--0.3413125,
+-0.301625,
 6,
-"9057d6e61aa5"
+"f7b4ba386935"
 ],
 "geometry/Z4NRTGEDY5/layer:xps-b": [
 -2.5955625,
--0.3413125,
+-0.301625,
 6,
-"9057d6e61aa5"
+"f7b4ba386935"
 ],
 "geometry/Z4NRTGEDY5::framing/member:cripple-head-0-01": [
 -0.4968875,
--0.4175125,
+-0.377825,
 8,
-"55ddc2cf510d"
+"cc373622f114"
 ],
 "geometry/Z4NRTGEDY5::framing/member:cripple-head-0-02": [
 -0.4968875,
--0.4175125,
+-0.377825,
 8,
-"55ddc2cf510d"
+"cc373622f114"
 ],
 "geometry/Z4NRTGEDY5::framing/member:cripple-head-0-03": [
 -0.4968875,
--0.4175125,
+-0.377825,
 8,
-"55ddc2cf510d"
+"cc373622f114"
 ],
 "geometry/Z4NRTGEDY5::framing/member:door-block-D-B-SUNKEN--1-0": [
 -2.4050625,
@@ -84197,51 +84329,51 @@
 ],
 "geometry/Z4NRTGEDY5::framing/member:jack-0-l0": [
 -2.5574625,
--0.4175125,
+-0.377825,
 8,
-"53b39e549478"
+"0bc4a3174cbf"
 ],
 "geometry/Z4NRTGEDY5::framing/member:jack-0-l1": [
 -2.5574625,
--0.4175125,
+-0.377825,
 8,
-"53b39e549478"
+"0bc4a3174cbf"
 ],
 "geometry/Z4NRTGEDY5::framing/member:jack-0-r0": [
 -2.5574625,
--0.4175125,
+-0.377825,
 8,
-"53b39e549478"
+"0bc4a3174cbf"
 ],
 "geometry/Z4NRTGEDY5::framing/member:jack-0-r1": [
 -2.5574625,
--0.4175125,
+-0.377825,
 8,
-"53b39e549478"
+"0bc4a3174cbf"
 ],
 "geometry/Z4NRTGEDY5::framing/member:king-0-l0": [
 -2.5574625,
--0.4175125,
+-0.377825,
 8,
-"53b39e549478"
+"0bc4a3174cbf"
 ],
 "geometry/Z4NRTGEDY5::framing/member:king-0-l1": [
 -2.5574625,
--0.4175125,
+-0.377825,
 8,
-"53b39e549478"
+"0bc4a3174cbf"
 ],
 "geometry/Z4NRTGEDY5::framing/member:king-0-r0": [
 -2.5574625,
--0.4175125,
+-0.377825,
 8,
-"53b39e549478"
+"0bc4a3174cbf"
 ],
 "geometry/Z4NRTGEDY5::framing/member:king-0-r1": [
 -2.5574625,
--0.4175125,
+-0.377825,
 8,
-"53b39e549478"
+"0bc4a3174cbf"
 ],
 "geometry/Z4NRTGEDY5::framing/member:plate-bottom-0-passage-0": [
 -2.5955625,
@@ -84256,28 +84388,28 @@
 "f5962a2f7d38"
 ],
 "geometry/Z4NRTGEDY5::framing/member:plate-top-0": [
--0.3794125,
--0.3413125,
+-0.339725,
+-0.301625,
 8,
-"0ce1d8a6488d"
+"67bb0d4ceaa3"
 ],
 "geometry/Z4NRTGEDY5::framing/member:plate-top-1": [
--0.4175125,
--0.3794125,
+-0.377825,
+-0.339725,
 8,
-"3b0cbbb86f77"
+"1b920b6fd9d1"
 ],
 "geometry/Z4NRTGEDY5::framing/member:stud-000": [
 -2.5574625,
--0.4175125,
+-0.377825,
 8,
-"53b39e549478"
+"0bc4a3174cbf"
 ],
 "geometry/Z4NRTGEDY5::framing/member:stud-001": [
 -2.5574625,
--0.4175125,
+-0.377825,
 8,
-"53b39e549478"
+"0bc4a3174cbf"
 ],
 "geometry/Z5314GVSNX/layer:brick": [
 1.2430125,
@@ -84701,15 +84833,15 @@
 "layout_lines/LL-W-M-TUBDK-S/top_z_m": 0.48895,
 "layout_lines/LL-W-M-TUBDK-W/base_z_m": 0.0,
 "layout_lines/LL-W-M-TUBDK-W/top_z_m": 0.48895,
-"layout_lines/LL-W-RG-BLOCK/base_z_m": -1.2192,
+"layout_lines/LL-W-RG-BLOCK/base_z_m": -1.3208,
 "layout_lines/LL-W-RG-BLOCK/top_z_m": 0.0,
-"layout_lines/LL-W-RG-EAST-BALCONY/base_z_m": -1.2192,
+"layout_lines/LL-W-RG-EAST-BALCONY/base_z_m": -1.3208,
 "layout_lines/LL-W-RG-EAST-BALCONY/top_z_m": 0.0,
-"layout_lines/LL-W-RG-EAST/base_z_m": -1.2192,
+"layout_lines/LL-W-RG-EAST/base_z_m": -1.3208,
 "layout_lines/LL-W-RG-EAST/top_z_m": 0.0,
-"layout_lines/LL-W-RG-WEST-BALCONY/base_z_m": -1.2192,
+"layout_lines/LL-W-RG-WEST-BALCONY/base_z_m": -1.3208,
 "layout_lines/LL-W-RG-WEST-BALCONY/top_z_m": 0.0,
-"layout_lines/LL-W-RG-WEST/base_z_m": -1.2192,
+"layout_lines/LL-W-RG-WEST/base_z_m": -1.3208,
 "layout_lines/LL-W-RG-WEST/top_z_m": 0.0,
 "layout_lines/LL-W-S-BD1/base_z_m": 3.048,
 "layout_lines/LL-W-S-BD1/top_z_m": 5.7912,
@@ -85369,6 +85501,12 @@
 2,
 "e76b7cb538bf"
 ],
+"member/1JXQ975X9E/edge-rim-0-027-0": [
+2.746375,
+3.048,
+2,
+"e76b7cb538bf"
+],
 "member/1JXQ975X9E/header-FO-S-ERV-CHASE-1": [
 2.746375,
 3.048,
@@ -85615,6 +85753,12 @@
 2,
 "e76b7cb538bf"
 ],
+"member/1JXQ975X9E/sister-0-0": [
+2.746375,
+3.048,
+2,
+"e76b7cb538bf"
+],
 "member/1JXQ975X9E/trimmer-FO-S-ERV-CHASE-0-0": [
 2.746375,
 3.048,
@@ -85802,16 +85946,16 @@
 "43e0540ac7f0"
 ],
 "member/3BF9ZDQPT1/plate-top-0": [
--0.3794125,
--0.3413125,
+-0.339725,
+-0.301625,
 2,
-"f93434adc01d"
+"f0de00c704df"
 ],
 "member/3BF9ZDQPT1/plate-top-1": [
--0.4175125,
--0.3794125,
+-0.377825,
+-0.339725,
 2,
-"477bcc2507a6"
+"4ba720a142ae"
 ],
 "member/3BF9ZDQPT1/roughhead-0": [
 -1.0525125,
@@ -85869,45 +86013,45 @@
 ],
 "member/3BF9ZDQPT1/stud-000": [
 -2.5574625,
--0.4175125,
+-0.377825,
 2,
-"b6b252624237"
+"f948381c109e"
 ],
 "member/3BF9ZDQPT1/stud-001": [
 -2.5574625,
--0.4175125,
+-0.377825,
 2,
-"b6b252624237"
+"f948381c109e"
 ],
 "member/3BF9ZDQPT1/stud-002": [
 -2.5574625,
--0.4175125,
+-0.377825,
 2,
-"b6b252624237"
+"f948381c109e"
 ],
 "member/3BF9ZDQPT1/stud-003": [
 -2.5574625,
--0.4175125,
+-0.377825,
 2,
-"b6b252624237"
+"f948381c109e"
 ],
 "member/3BF9ZDQPT1/stud-004": [
 -2.5574625,
--0.4175125,
+-0.377825,
 2,
-"b6b252624237"
+"f948381c109e"
 ],
 "member/3BF9ZDQPT1/stud-005": [
 -2.5574625,
--0.4175125,
+-0.377825,
 2,
-"b6b252624237"
+"f948381c109e"
 ],
 "member/3BF9ZDQPT1/stud-006": [
 -2.5574625,
--0.4175125,
+-0.377825,
 2,
-"b6b252624237"
+"f948381c109e"
 ],
 "member/3TKS0Y8EH7/header-0": [
 7.070898,
@@ -96013,29 +96157,11 @@
 2,
 "eaca74db251b"
 ],
-"member/CMFS01AAAA/bearing-block-1-000-cheek-hi": [
--0.263525,
--0.0381,
-2,
-"b8f15f8c2970"
-],
-"member/CMFS01AAAA/bearing-block-1-000-cheek-lo": [
--0.263525,
--0.0381,
-2,
-"b8f15f8c2970"
-],
-"member/CMFS01AAAA/bearing-block-1-000-rail-bottom": [
+"member/CMFS01AAAA/bearing-block-1-000": [
 -0.301625,
--0.263525,
-2,
-"0d85c1985bcb"
-],
-"member/CMFS01AAAA/bearing-block-1-000-rail-top": [
--0.0381,
 0.0,
 2,
-"94aa84910cbe"
+"07a4d7ea6917"
 ],
 "member/CMFS01AAAA/bearing-block-1-001": [
 -0.301625,
@@ -96091,65 +96217,65 @@
 2,
 "07a4d7ea6917"
 ],
-"member/CMFS01AAAA/bearing-block-1-010": [
--0.301625,
-0.0,
-2,
-"07a4d7ea6917"
-],
-"member/CMFS01AAAA/bearing-block-1-011-cheek-hi": [
+"member/CMFS01AAAA/bearing-block-1-010-cheek-hi": [
 -0.263525,
 -0.0381,
 2,
 "b8f15f8c2970"
 ],
-"member/CMFS01AAAA/bearing-block-1-011-cheek-lo": [
+"member/CMFS01AAAA/bearing-block-1-010-cheek-lo": [
 -0.263525,
 -0.0381,
 2,
 "b8f15f8c2970"
 ],
-"member/CMFS01AAAA/bearing-block-1-011-rail-bottom": [
+"member/CMFS01AAAA/bearing-block-1-010-rail-bottom": [
 -0.301625,
 -0.263525,
 2,
 "0d85c1985bcb"
 ],
-"member/CMFS01AAAA/bearing-block-1-011-rail-top": [
+"member/CMFS01AAAA/bearing-block-1-010-rail-top": [
 -0.0381,
 0.0,
 2,
 "94aa84910cbe"
 ],
-"member/CMFS01AAAA/bearing-block-1-012": [
+"member/CMFS01AAAA/bearing-block-1-011": [
 -0.301625,
 0.0,
 2,
 "07a4d7ea6917"
 ],
-"member/CMFS01AAAA/bearing-block-1-013-cheek-hi": [
+"member/CMFS01AAAA/bearing-block-1-012-cheek-hi": [
 -0.263525,
 -0.0381,
 2,
 "b8f15f8c2970"
 ],
-"member/CMFS01AAAA/bearing-block-1-013-cheek-lo": [
+"member/CMFS01AAAA/bearing-block-1-012-cheek-lo": [
 -0.263525,
 -0.0381,
 2,
 "b8f15f8c2970"
 ],
-"member/CMFS01AAAA/bearing-block-1-013-rail-bottom": [
+"member/CMFS01AAAA/bearing-block-1-012-rail-bottom": [
 -0.301625,
 -0.263525,
 2,
 "0d85c1985bcb"
 ],
-"member/CMFS01AAAA/bearing-block-1-013-rail-top": [
+"member/CMFS01AAAA/bearing-block-1-012-rail-top": [
 -0.0381,
 0.0,
 2,
 "94aa84910cbe"
+],
+"member/CMFS01AAAA/bearing-block-1-013": [
+-0.301625,
+0.0,
+2,
+"07a4d7ea6917"
 ],
 "member/CMFS01AAAA/bearing-block-1-014": [
 -0.301625,
@@ -96157,13 +96283,7 @@
 2,
 "07a4d7ea6917"
 ],
-"member/CMFS01AAAA/bearing-block-1-015": [
--0.301625,
-0.0,
-2,
-"07a4d7ea6917"
-],
-"member/CMFS01AAAA/bearing-block-1-017": [
+"member/CMFS01AAAA/bearing-block-1-016": [
 -0.301625,
 0.0,
 2,
@@ -96469,29 +96589,47 @@
 2,
 "07a4d7ea6917"
 ],
-"member/CMFS02AAAA/bearing-block-0-002-cheek-hi": [
+"member/CMFS02AAAA/bearing-block-0-001-cheek-hi": [
 -0.263525,
 -0.0381,
 2,
 "b8f15f8c2970"
 ],
-"member/CMFS02AAAA/bearing-block-0-002-cheek-lo": [
+"member/CMFS02AAAA/bearing-block-0-001-cheek-lo": [
 -0.263525,
 -0.0381,
 2,
 "b8f15f8c2970"
 ],
-"member/CMFS02AAAA/bearing-block-0-002-rail-bottom": [
+"member/CMFS02AAAA/bearing-block-0-001-p1-rail-bottom": [
 -0.301625,
 -0.263525,
 2,
 "0d85c1985bcb"
 ],
-"member/CMFS02AAAA/bearing-block-0-002-rail-top": [
+"member/CMFS02AAAA/bearing-block-0-001-p1-rail-top": [
 -0.0381,
 0.0,
 2,
 "94aa84910cbe"
+],
+"member/CMFS02AAAA/bearing-block-0-001-rail-bottom": [
+-0.301625,
+-0.263525,
+2,
+"0d85c1985bcb"
+],
+"member/CMFS02AAAA/bearing-block-0-001-rail-top": [
+-0.0381,
+0.0,
+2,
+"94aa84910cbe"
+],
+"member/CMFS02AAAA/bearing-block-0-002": [
+-0.301625,
+0.0,
+2,
+"07a4d7ea6917"
 ],
 "member/CMFS02AAAA/bearing-block-0-003": [
 -0.301625,
@@ -96536,12 +96674,6 @@
 "07a4d7ea6917"
 ],
 "member/CMFS02AAAA/bearing-block-0-010": [
--0.301625,
-0.0,
-2,
-"07a4d7ea6917"
-],
-"member/CMFS02AAAA/bearing-block-0-011": [
 -0.301625,
 0.0,
 2,
@@ -96620,12 +96752,6 @@
 "07a4d7ea6917"
 ],
 "member/CMFS02AAAA/sister-0-0": [
--0.301625,
-0.0,
-2,
-"07a4d7ea6917"
-],
-"member/CMFS02AAAA/sister-0-1": [
 -0.301625,
 0.0,
 2,
@@ -97044,6 +97170,12 @@
 0.0,
 2,
 "94aa84910cbe"
+],
+"member/CMFS04AAAA/sister-0-0": [
+-0.301625,
+0.0,
+2,
+"07a4d7ea6917"
 ],
 "member/CMFS04AAAA/trimmer-FO-M-STAIR-0-0": [
 -0.301625,
@@ -119053,12 +119185,6 @@
 2,
 "eec631a02000"
 ],
-"member/CSW147AAAA/backing-0-001": [
-3.1496,
-3.33375,
-2,
-"eec631a02000"
-],
 "member/CSW147AAAA/backing-1-000": [
 3.8989,
 4.08305,
@@ -119119,6 +119245,12 @@
 2,
 "53f5e01f78e1"
 ],
+"member/CSW147AAAA/backing-2-002": [
+4.1656,
+4.40055,
+2,
+"53f5e01f78e1"
+],
 "member/CSW147AAAA/backing-3-000": [
 4.8768,
 5.06095,
@@ -119131,25 +119263,31 @@
 2,
 "f7809631728b"
 ],
-"member/CSW147AAAA/backing-4-000-box-0": [
+"member/CSW147AAAA/backing-3-002": [
+4.8768,
+5.06095,
+2,
+"f7809631728b"
+],
+"member/CSW147AAAA/backing-4-000": [
 5.08,
 5.26415,
 2,
 "6734df9324e5"
 ],
-"member/CSW147AAAA/backing-4-000-box-1": [
+"member/CSW147AAAA/backing-4-001-box-0": [
 5.08,
 5.26415,
 2,
 "6734df9324e5"
 ],
-"member/CSW147AAAA/backing-4-000-box-2": [
+"member/CSW147AAAA/backing-4-001-box-1": [
 5.16255,
 5.26415,
 2,
 "7cf973067694"
 ],
-"member/CSW147AAAA/backing-4-001": [
+"member/CSW147AAAA/backing-4-002": [
 5.08,
 5.26415,
 2,
@@ -119216,36 +119354,6 @@
 "51451d2d8a27"
 ],
 "member/CSW147AAAA/stud-007": [
-3.10515,
-5.718175,
-2,
-"51451d2d8a27"
-],
-"member/CSW147AAAA/stud-008": [
-3.10515,
-5.718175,
-2,
-"51451d2d8a27"
-],
-"member/CSW147AAAA/stud-009": [
-3.10515,
-5.718175,
-2,
-"51451d2d8a27"
-],
-"member/CSW147AAAA/stud-010": [
-3.10515,
-5.718175,
-2,
-"51451d2d8a27"
-],
-"member/CSW147AAAA/stud-011": [
-3.10515,
-5.718175,
-2,
-"51451d2d8a27"
-],
-"member/CSW147AAAA/stud-012": [
 3.10515,
 5.718175,
 2,
@@ -123141,21 +123249,21 @@
 ],
 "member/Z4NRTGEDY5/cripple-head-0-01": [
 -0.4968875,
--0.4175125,
+-0.377825,
 2,
-"47daa34f88fe"
+"c8628fdcd4ec"
 ],
 "member/Z4NRTGEDY5/cripple-head-0-02": [
 -0.4968875,
--0.4175125,
+-0.377825,
 2,
-"47daa34f88fe"
+"c8628fdcd4ec"
 ],
 "member/Z4NRTGEDY5/cripple-head-0-03": [
 -0.4968875,
--0.4175125,
+-0.377825,
 2,
-"47daa34f88fe"
+"c8628fdcd4ec"
 ],
 "member/Z4NRTGEDY5/door-block-D-B-SUNKEN--1-0": [
 -2.4050625,
@@ -123225,51 +123333,51 @@
 ],
 "member/Z4NRTGEDY5/jack-0-l0": [
 -2.5574625,
--0.4175125,
+-0.377825,
 2,
-"b6b252624237"
+"f948381c109e"
 ],
 "member/Z4NRTGEDY5/jack-0-l1": [
 -2.5574625,
--0.4175125,
+-0.377825,
 2,
-"b6b252624237"
+"f948381c109e"
 ],
 "member/Z4NRTGEDY5/jack-0-r0": [
 -2.5574625,
--0.4175125,
+-0.377825,
 2,
-"b6b252624237"
+"f948381c109e"
 ],
 "member/Z4NRTGEDY5/jack-0-r1": [
 -2.5574625,
--0.4175125,
+-0.377825,
 2,
-"b6b252624237"
+"f948381c109e"
 ],
 "member/Z4NRTGEDY5/king-0-l0": [
 -2.5574625,
--0.4175125,
+-0.377825,
 2,
-"b6b252624237"
+"f948381c109e"
 ],
 "member/Z4NRTGEDY5/king-0-l1": [
 -2.5574625,
--0.4175125,
+-0.377825,
 2,
-"b6b252624237"
+"f948381c109e"
 ],
 "member/Z4NRTGEDY5/king-0-r0": [
 -2.5574625,
--0.4175125,
+-0.377825,
 2,
-"b6b252624237"
+"f948381c109e"
 ],
 "member/Z4NRTGEDY5/king-0-r1": [
 -2.5574625,
--0.4175125,
+-0.377825,
 2,
-"b6b252624237"
+"f948381c109e"
 ],
 "member/Z4NRTGEDY5/plate-bottom-0-passage-0": [
 -2.5955625,
@@ -123284,28 +123392,28 @@
 "43e0540ac7f0"
 ],
 "member/Z4NRTGEDY5/plate-top-0": [
--0.3794125,
--0.3413125,
+-0.339725,
+-0.301625,
 2,
-"f93434adc01d"
+"f0de00c704df"
 ],
 "member/Z4NRTGEDY5/plate-top-1": [
--0.4175125,
--0.3794125,
+-0.377825,
+-0.339725,
 2,
-"477bcc2507a6"
+"4ba720a142ae"
 ],
 "member/Z4NRTGEDY5/stud-000": [
 -2.5574625,
--0.4175125,
+-0.377825,
 2,
-"b6b252624237"
+"f948381c109e"
 ],
 "member/Z4NRTGEDY5/stud-001": [
 -2.5574625,
--0.4175125,
+-0.377825,
 2,
-"b6b252624237"
+"f948381c109e"
 ],
 "member/ZEF56D047J/backing-0-000": [
 6.930898,
@@ -123619,7 +123727,7 @@
 2.8971875,
 6.858,
 10,
-"66857eab3544"
+"10cc12c7f802"
 ],
 "pipe_runs/PR-A-CW-STUBATH/z_start_m": 2.8971875,
 "pipe_runs/PR-A-HW-STUBATH/z_end_m": 6.858,
@@ -125570,6 +125678,10 @@
 "solids/BC-M-GEC-ROD-RUN/z1_m": 0.0,
 "solids/BC-M-GEC-UFER-RUN/z0_m": -2.4384,
 "solids/BC-M-GEC-UFER-RUN/z1_m": 0.0,
+"solids/BM-B-BRICK-LINTEL-DOOR/z0_m": -0.5699125,
+"solids/BM-B-BRICK-LINTEL-DOOR/z1_m": -0.4937125,
+"solids/BM-B-BRICK-LINTEL-WIN/z0_m": -1.1541125,
+"solids/BM-B-BRICK-LINTEL-WIN/z1_m": -1.0779125,
 "solids/BM-BW-FE/z0_m": -0.208026,
 "solids/BM-BW-FE/z1_m": -0.023876,
 "solids/BM-BW-GARAGE-SEAT/z0_m": -0.392176,
@@ -126006,18 +126118,16 @@
 "solids/CN-BW-GCLIP-6/z1_m": 2.289175,
 "solids/CN-BW-GCLIP-7/z0_m": 2.181225,
 "solids/CN-BW-GCLIP-7/z1_m": 2.289175,
+"solids/CN-BW-GSDTT-N/z0_m": -0.204851,
+"solids/CN-BW-GSDTT-N/z1_m": -0.122301,
+"solids/CN-BW-GSDTT-S/z0_m": -0.204851,
+"solids/CN-BW-GSDTT-S/z1_m": -0.122301,
 "solids/CN-BW-GSTIE-HI/z0_m": -0.106426,
 "solids/CN-BW-GSTIE-HI/z1_m": -0.030226,
-"solids/CN-BW-GSTIE-LO/z0_m": -0.201676,
-"solids/CN-BW-GSTIE-LO/z1_m": -0.125476,
-"solids/CN-BW-GWTIE-BLK/z0_m": 0.56515,
-"solids/CN-BW-GWTIE-BLK/z1_m": 0.65405,
-"solids/CN-BW-GWTIE-FILLER/z0_m": 0.56515,
-"solids/CN-BW-GWTIE-FILLER/z1_m": 0.65405,
-"solids/CN-BW-GWTIE-HI/z0_m": 0.88265,
-"solids/CN-BW-GWTIE-HI/z1_m": 0.94615,
-"solids/CN-BW-GWTIE-LO/z0_m": 0.27305,
-"solids/CN-BW-GWTIE-LO/z1_m": 0.33655,
+"solids/CN-BW-GSTIE-LO/z0_m": -0.106426,
+"solids/CN-BW-GSTIE-LO/z1_m": -0.030226,
+"solids/CN-BW-GWTIE-FILLER/z0_m": 1.1557,
+"solids/CN-BW-GWTIE-FILLER/z1_m": 1.2446,
 "solids/CN-BW-HGR-CNW/z0_m": -0.3933952,
 "solids/CN-BW-HGR-CNW/z1_m": -0.2695702,
 "solids/CN-BW-HGR-CW/z0_m": -0.3933952,
@@ -126042,6 +126152,8 @@
 "solids/CN-BW-PLATE-N/z1_m": 1.3335,
 "solids/CN-BW-PLATE-S/z0_m": 1.2192,
 "solids/CN-BW-PLATE-S/z1_m": 1.3335,
+"solids/CN-BW-SCREEN-STRAP/z0_m": 1.184275,
+"solids/CN-BW-SCREEN-STRAP/z1_m": 1.216025,
 "solids/CN-BW-SNOW-E-1-BOLT-1/z0_m": 2.2972041,
 "solids/CN-BW-SNOW-E-1-BOLT-1/z1_m": 2.3060395,
 "solids/CN-BW-SNOW-E-1-BOLT-2/z0_m": 2.2972041,
@@ -126182,6 +126294,30 @@
 "solids/CN-M-HP3-C3/z1_m": -0.3175,
 "solids/CN-M-HP3-C4/z0_m": -0.4699,
 "solids/CN-M-HP3-C4/z1_m": -0.3175,
+"solids/CN-M-N2-PACK-1/z0_m": -0.1524,
+"solids/CN-M-N2-PACK-1/z1_m": -0.0381,
+"solids/CN-M-N2-PACK-2/z0_m": -0.1524,
+"solids/CN-M-N2-PACK-2/z1_m": -0.0381,
+"solids/CN-M-N2-PACK-3/z0_m": -0.1524,
+"solids/CN-M-N2-PACK-3/z1_m": -0.0381,
+"solids/CN-M-N2-PACK-4/z0_m": -0.1524,
+"solids/CN-M-N2-PACK-4/z1_m": -0.0381,
+"solids/CN-M-N2-PACK-5/z0_m": -0.1524,
+"solids/CN-M-N2-PACK-5/z1_m": -0.0381,
+"solids/CN-M-N2-PACK-6/z0_m": -0.1524,
+"solids/CN-M-N2-PACK-6/z1_m": -0.0381,
+"solids/CN-M-N2-PACK-END-1/z0_m": -0.1524,
+"solids/CN-M-N2-PACK-END-1/z1_m": -0.0381,
+"solids/CN-M-N2-PACK-END-2/z0_m": -0.1524,
+"solids/CN-M-N2-PACK-END-2/z1_m": -0.0381,
+"solids/CN-M-N2-PACK-END-3/z0_m": -0.1524,
+"solids/CN-M-N2-PACK-END-3/z1_m": -0.0381,
+"solids/CN-M-N2-PACK-END-4/z0_m": -0.1524,
+"solids/CN-M-N2-PACK-END-4/z1_m": -0.0381,
+"solids/CN-M-N2-PACK-END-5/z0_m": -0.1524,
+"solids/CN-M-N2-PACK-END-5/z1_m": -0.0381,
+"solids/CN-M-N2-PACK-END-6/z0_m": -0.1524,
+"solids/CN-M-N2-PACK-END-6/z1_m": -0.0381,
 "solids/CN-M-RADON-CLAMP1/z0_m": 7.350125,
 "solids/CN-M-RADON-CLAMP1/z1_m": 7.369175,
 "solids/CN-M-RADON-CLAMP2/z0_m": 7.851775,
@@ -129725,12 +129861,12 @@
 "solids/EX-HOUSE-BF-33/z0_m": -2.144712,
 "solids/EX-HOUSE-BF-33/z1_m": -1.9304,
 "solids/EX-HOUSE-BF-34/z0_m": -1.9304,
-"solids/EX-HOUSE-BF-34/z1_m": -1.651,
-"solids/EX-HOUSE-BF-35/z0_m": -1.651,
-"solids/EX-HOUSE-BF-35/z1_m": -1.3716,
-"solids/EX-HOUSE-BF-36/z0_m": -1.3716,
+"solids/EX-HOUSE-BF-34/z1_m": -1.7018,
+"solids/EX-HOUSE-BF-35/z0_m": -1.7018,
+"solids/EX-HOUSE-BF-35/z1_m": -1.4732,
+"solids/EX-HOUSE-BF-36/z0_m": -1.4732,
 "solids/EX-HOUSE-BF-36/z1_m": -1.3208,
-"solids/EX-HOUSE-BF-37/z0_m": -1.3716,
+"solids/EX-HOUSE-BF-37/z0_m": -1.4732,
 "solids/EX-HOUSE-BF-37/z1_m": -1.3208,
 "solids/EX-HOUSE-BF-38/z0_m": -1.3208,
 "solids/EX-HOUSE-BF-38/z1_m": -1.2446,
@@ -129767,57 +129903,69 @@
 "solids/EX-HOUSE-BF-52/z0_m": -1.2192,
 "solids/EX-HOUSE-BF-52/z1_m": -1.1684,
 "solids/EX-HOUSE-BF-53/z0_m": -1.1684,
-"solids/EX-HOUSE-BF-53/z1_m": -1.0922,
+"solids/EX-HOUSE-BF-53/z1_m": -1.154113,
 "solids/EX-HOUSE-BF-54/z0_m": -1.1684,
-"solids/EX-HOUSE-BF-54/z1_m": -1.0922,
-"solids/EX-HOUSE-BF-55/z0_m": -1.0922,
-"solids/EX-HOUSE-BF-55/z1_m": -1.0414,
-"solids/EX-HOUSE-BF-56/z0_m": -1.0922,
-"solids/EX-HOUSE-BF-56/z1_m": -1.0414,
+"solids/EX-HOUSE-BF-54/z1_m": -1.154113,
+"solids/EX-HOUSE-BF-55/z0_m": -1.154113,
+"solids/EX-HOUSE-BF-55/z1_m": -1.0922,
+"solids/EX-HOUSE-BF-56/z0_m": -1.154113,
+"solids/EX-HOUSE-BF-56/z1_m": -1.0922,
 "solids/EX-HOUSE-BF-57/z0_m": -1.0922,
-"solids/EX-HOUSE-BF-57/z1_m": -1.0414,
+"solids/EX-HOUSE-BF-57/z1_m": -1.077913,
 "solids/EX-HOUSE-BF-58/z0_m": -1.0922,
-"solids/EX-HOUSE-BF-58/z1_m": -1.0414,
-"solids/EX-HOUSE-BF-59/z0_m": -1.0414,
-"solids/EX-HOUSE-BF-59/z1_m": -1.016,
+"solids/EX-HOUSE-BF-58/z1_m": -1.077913,
+"solids/EX-HOUSE-BF-59/z0_m": -1.0922,
+"solids/EX-HOUSE-BF-59/z1_m": -1.077913,
 "solids/EX-HOUSE-BF-6/z0_m": -3.821107,
 "solids/EX-HOUSE-BF-6/z1_m": -3.795712,
-"solids/EX-HOUSE-BF-60/z0_m": -1.0414,
-"solids/EX-HOUSE-BF-60/z1_m": -1.016,
-"solids/EX-HOUSE-BF-61/z0_m": -1.0414,
-"solids/EX-HOUSE-BF-61/z1_m": -1.016,
-"solids/EX-HOUSE-BF-62/z0_m": -1.0414,
-"solids/EX-HOUSE-BF-62/z1_m": -1.016,
-"solids/EX-HOUSE-BF-63/z0_m": -1.016,
-"solids/EX-HOUSE-BF-63/z1_m": -0.978154,
-"solids/EX-HOUSE-BF-64/z0_m": -1.016,
-"solids/EX-HOUSE-BF-64/z1_m": -0.978154,
-"solids/EX-HOUSE-BF-65/z0_m": -1.016,
-"solids/EX-HOUSE-BF-65/z1_m": -0.978154,
-"solids/EX-HOUSE-BF-66/z0_m": -0.978154,
-"solids/EX-HOUSE-BF-66/z1_m": -0.9525,
-"solids/EX-HOUSE-BF-67/z0_m": -0.978154,
-"solids/EX-HOUSE-BF-67/z1_m": -0.9525,
-"solids/EX-HOUSE-BF-68/z0_m": -0.978154,
-"solids/EX-HOUSE-BF-68/z1_m": -0.9525,
-"solids/EX-HOUSE-BF-69/z0_m": -0.9525,
-"solids/EX-HOUSE-BF-69/z1_m": -0.9398,
+"solids/EX-HOUSE-BF-60/z0_m": -1.0922,
+"solids/EX-HOUSE-BF-60/z1_m": -1.077913,
+"solids/EX-HOUSE-BF-61/z0_m": -1.077913,
+"solids/EX-HOUSE-BF-61/z1_m": -1.0414,
+"solids/EX-HOUSE-BF-62/z0_m": -1.077913,
+"solids/EX-HOUSE-BF-62/z1_m": -1.0414,
+"solids/EX-HOUSE-BF-63/z0_m": -1.077913,
+"solids/EX-HOUSE-BF-63/z1_m": -1.0414,
+"solids/EX-HOUSE-BF-64/z0_m": -1.077913,
+"solids/EX-HOUSE-BF-64/z1_m": -1.0414,
+"solids/EX-HOUSE-BF-65/z0_m": -1.0414,
+"solids/EX-HOUSE-BF-65/z1_m": -1.016,
+"solids/EX-HOUSE-BF-66/z0_m": -1.0414,
+"solids/EX-HOUSE-BF-66/z1_m": -1.016,
+"solids/EX-HOUSE-BF-67/z0_m": -1.0414,
+"solids/EX-HOUSE-BF-67/z1_m": -1.016,
+"solids/EX-HOUSE-BF-68/z0_m": -1.0414,
+"solids/EX-HOUSE-BF-68/z1_m": -1.016,
+"solids/EX-HOUSE-BF-69/z0_m": -1.016,
+"solids/EX-HOUSE-BF-69/z1_m": -0.978154,
 "solids/EX-HOUSE-BF-7/z0_m": -3.795712,
 "solids/EX-HOUSE-BF-7/z1_m": -3.694112,
-"solids/EX-HOUSE-BF-70/z0_m": -0.9525,
-"solids/EX-HOUSE-BF-70/z1_m": -0.9398,
-"solids/EX-HOUSE-BF-71/z0_m": -0.9525,
-"solids/EX-HOUSE-BF-71/z1_m": -0.9398,
-"solids/EX-HOUSE-BF-72/z0_m": -0.9398,
-"solids/EX-HOUSE-BF-72/z1_m": -0.9144,
-"solids/EX-HOUSE-BF-73/z0_m": -0.9398,
-"solids/EX-HOUSE-BF-73/z1_m": -0.9144,
-"solids/EX-HOUSE-BF-74/z0_m": -0.9398,
-"solids/EX-HOUSE-BF-74/z1_m": -0.9144,
-"solids/EX-HOUSE-BF-75/z0_m": -0.9398,
-"solids/EX-HOUSE-BF-75/z1_m": -0.9144,
+"solids/EX-HOUSE-BF-70/z0_m": -1.016,
+"solids/EX-HOUSE-BF-70/z1_m": -0.978154,
+"solids/EX-HOUSE-BF-71/z0_m": -1.016,
+"solids/EX-HOUSE-BF-71/z1_m": -0.978154,
+"solids/EX-HOUSE-BF-72/z0_m": -0.978154,
+"solids/EX-HOUSE-BF-72/z1_m": -0.9525,
+"solids/EX-HOUSE-BF-73/z0_m": -0.978154,
+"solids/EX-HOUSE-BF-73/z1_m": -0.9525,
+"solids/EX-HOUSE-BF-74/z0_m": -0.978154,
+"solids/EX-HOUSE-BF-74/z1_m": -0.9525,
+"solids/EX-HOUSE-BF-75/z0_m": -0.9525,
+"solids/EX-HOUSE-BF-75/z1_m": -0.9398,
+"solids/EX-HOUSE-BF-76/z0_m": -0.9525,
+"solids/EX-HOUSE-BF-76/z1_m": -0.9398,
+"solids/EX-HOUSE-BF-77/z0_m": -0.9525,
+"solids/EX-HOUSE-BF-77/z1_m": -0.9398,
+"solids/EX-HOUSE-BF-78/z0_m": -0.9398,
+"solids/EX-HOUSE-BF-78/z1_m": -0.9144,
+"solids/EX-HOUSE-BF-79/z0_m": -0.9398,
+"solids/EX-HOUSE-BF-79/z1_m": -0.9144,
 "solids/EX-HOUSE-BF-8/z0_m": -3.694112,
 "solids/EX-HOUSE-BF-8/z1_m": -3.668718,
+"solids/EX-HOUSE-BF-80/z0_m": -0.9398,
+"solids/EX-HOUSE-BF-80/z1_m": -0.9144,
+"solids/EX-HOUSE-BF-81/z0_m": -0.9398,
+"solids/EX-HOUSE-BF-81/z1_m": -0.9144,
 "solids/EX-HOUSE-BF-9/z0_m": -3.668718,
 "solids/EX-HOUSE-BF-9/z1_m": -3.617913,
 "solids/FB-B-CN-DT-1/z0_m": -3.1607125,
@@ -130060,6 +130208,18 @@
 "solids/FH-S-BATH1-COLD-LEAD-RUN/z1_m": 4.29895,
 "solids/FH-S-BATH1-SENSOR-RUN/z0_m": 3.06705,
 "solids/FH-S-BATH1-SENSOR-RUN/z1_m": 4.29895,
+"solids/FL-B-BRICK-BASE-E-1/z0_m": -2.6114375,
+"solids/FL-B-BRICK-BASE-E-1/z1_m": -2.5511125,
+"solids/FL-B-BRICK-BASE-W-1/z0_m": -2.6114375,
+"solids/FL-B-BRICK-BASE-W-1/z1_m": -2.5511125,
+"solids/FL-B-BRICK-DOOR-HEAD-1/z0_m": -0.50165,
+"solids/FL-B-BRICK-DOOR-HEAD-1/z1_m": -0.441325,
+"solids/FL-B-BRICK-DOOR-ISOL-1/z0_m": -0.4937125,
+"solids/FL-B-BRICK-DOOR-ISOL-1/z1_m": -0.492125,
+"solids/FL-B-BRICK-WIN-HEAD-1/z0_m": -1.08585,
+"solids/FL-B-BRICK-WIN-HEAD-1/z1_m": -1.025525,
+"solids/FL-B-BRICK-WIN-ISOL-1/z0_m": -1.0779125,
+"solids/FL-B-BRICK-WIN-ISOL-1/z1_m": -1.076325,
 "solids/FO-A-ERV-CHASE-fireblock-sheet/z0_m": 6.096,
 "solids/FO-A-ERV-CHASE-fireblock-sheet/z1_m": 6.11505,
 "solids/FO-A-ERV-CHASE-fireblock-wool/z0_m": 6.0071,
@@ -135654,11 +135814,11 @@
 "walls/W-B-S1/z0_m": -2.7797125,
 "walls/W-B-S1/z1_m": -0.3413125,
 "walls/W-B-S2-FR/z0_m": -2.5955625,
-"walls/W-B-S2-FR/z1_m": -0.3413125,
+"walls/W-B-S2-FR/z1_m": -0.301625,
 "walls/W-B-S2/z0_m": -2.7797125,
 "walls/W-B-S2/z1_m": -2.5955625,
 "walls/W-B-S3-FR/z0_m": -2.5955625,
-"walls/W-B-S3-FR/z1_m": -0.3413125,
+"walls/W-B-S3-FR/z1_m": -0.301625,
 "walls/W-B-S3/z0_m": -2.7797125,
 "walls/W-B-S3/z1_m": -2.5955625,
 "walls/W-B-S4/z0_m": -2.7797125,
@@ -135911,15 +136071,15 @@
 "walls/W-M-W4/z1_m": 3.048,
 "walls/W-M-WELL/z0_m": 0.02605,
 "walls/W-M-WELL/z1_m": 3.0861,
-"walls/W-RG-BLOCK/z0_m": -1.2192,
+"walls/W-RG-BLOCK/z0_m": -1.3208,
 "walls/W-RG-BLOCK/z1_m": 0.0,
-"walls/W-RG-EAST-BALCONY/z0_m": -1.2192,
+"walls/W-RG-EAST-BALCONY/z0_m": -1.3208,
 "walls/W-RG-EAST-BALCONY/z1_m": 0.0,
-"walls/W-RG-EAST/z0_m": -1.2192,
+"walls/W-RG-EAST/z0_m": -1.3208,
 "walls/W-RG-EAST/z1_m": 0.0,
-"walls/W-RG-WEST-BALCONY/z0_m": -1.2192,
+"walls/W-RG-WEST-BALCONY/z0_m": -1.3208,
 "walls/W-RG-WEST-BALCONY/z1_m": 0.0,
-"walls/W-RG-WEST/z0_m": -1.2192,
+"walls/W-RG-WEST/z0_m": -1.3208,
 "walls/W-RG-WEST/z1_m": 0.0,
 "walls/W-S-BA-E/plate_seat_z_m": 3.06705,
 "walls/W-S-BA-E/plate_top_z_m": 5.794375,

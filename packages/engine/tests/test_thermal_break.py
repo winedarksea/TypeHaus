@@ -70,7 +70,8 @@ _ALL = (*_FOOT, *_STEM, _BEAM)
 #     closure 5.5e-6 x 30 x 323.0 = 0.053295" on the footing boards and the beam's;
 #   * a 2" footing board: σ/E x t = 3.5/525 x 2.0 = 0.013333" against 2.0/35 = 0.057143";
 #   * D: W-B-BRICK is 3.375" longer and take_down books it at 8 psf, +16.7 lb (3.375 x
-#     89.104 / 144 x 8): 267,687.3, FS (66,921.8 + 27,557.2) / 27,315.75 = 3.4588. The beam itself, now inside the slab's 12" reach, is court structure and is
+#     89.104 / 144 x 8): 267,687.3, FS (66,921.8 + 27,557.2) / 27,315.75 = 3.4588. The
+#     beam itself, now inside the slab's 12" reach, is court structure and is
 #     NOT house weight (it would have added 3,994 lb). ΣA, T and the near line are unchanged.
 _PATH = {
     "house slab-edge bearing": (22_155.0, 151_200.0, 0.1465),
@@ -78,13 +79,19 @@ _PATH = {
     "house slab strut compression": (14.6528, 2_040.0, 0.00718),
     "house global sliding": (1.5, 3.7480, 0.4002),
     "house far-wall soil bearing": (61_342.1, 153_355.2, 0.4000),
-    "court sliding under break thrust": (0.0, 71_474.1, 0.0),
+    "court sliding under break thrust": (0.0, 108_183.3, 0.0),
 }
 # §11m: the exact beam-on-bed solution (transfer matrices, not FE) and the winter bound.
 # The W1|W2 / E1|E2 joints were graded plain (44.07 psi vs 212.13, 0.2077) until 2026-10-11,
 # when FT-SG-W2/E2's 6 #4 were spliced across them: now 6 splice bars, cracked, as the run.
-_WINTER = {"court winter tension, side run": (37_015.11, 64_800.0, 0.5712),
-           "court winter tension, spliced joint": (37_015.11, 64_800.0, 0.5712)}
+# 2026-11-23 (free body §15j): winter contraction is rigid-plastic at a section through the
+# side lines — the smaller side's friction, the house side of the strut — graded at the
+# specified maximum bed friction 1.00: W1/E1 footings 22,050 + their stems 27,204 (+1,368 of
+# W2/E2 past the strut axis) + heel soil to the stem tops at 130 pcf 74,691 + W-SG-BRKBM 3,994
+# = 129,306 lb; 1.00 x 129,306 / 2 lines = 64,653 against the existing 6 #4 (64,800). The
+# E2|E1 joint: 6 #4 + 6 #5 splices (3.06 in², 165,240). Court sliding reads 0.43: 108,183.
+_WINTER = {"court winter tension, side run": (64_653.0, 64_800.0, 0.99773),
+           "court winter tension, spliced joint": (64_653.0, 165_240.0, 0.39127)}
 _LINE = {"house near-line plan flexure": (72_809.2, 287_262.1, 0.25346),
          "house near-line plan shear": (1_694.09, 18_384.78, 0.09215),
          "house slab-edge peak sustained load": (22.5404, 33.33, 0.67628), **_WINTER}
@@ -115,17 +122,17 @@ _CAPPED_TOTAL_LB = 27_315.75
 # 2.1642. The three near-line rows are the line solver's at these loads (the foot boards now
 # take a larger share of T, so they do not scale with the line), not re-derived by hand.
 _PATH_8 = {
-    "house slab-edge bearing": (42_099.5, 151_200.0, 0.27844),
-    "house slab-edge sustained load": (42_099.5, 50_394.96, 0.83539),
-    "house slab strut compression": (27.8436, 2_040.0, 0.013649),
-    "house global sliding": (1.5, 2.3451, 0.6396),
+    "house slab-edge bearing": (45_070.6, 151_200.0, 0.29809),
+    "house slab-edge sustained load": (45_070.6, 50_394.96, 0.89435),
+    "house slab strut compression": (29.8086, 2_040.0, 0.01461),
+    "house global sliding": (1.5, 2.191299, 0.68453),
     "house far-wall soil bearing": (61_342.1, 153_355.2, 0.4000),
     # Net thrust less the retained soil is NEGATIVE, so the row is a force, not an FS.
-    "court sliding under break thrust": (0.0, 71_474.1, 0.0),
+    "court sliding under break thrust": (0.0, 108_183.3, 0.0),
     # §11m.1 uncapped: the peak stress is OVER the 1/3 rule — the cap carries this row too.
-    "house near-line plan flexure": (116_276.1, 287_262.1, 0.40477),
-    "house near-line plan shear": (2_182.12, 18_384.78, 0.11869),
-    "house slab-edge peak sustained load": (46.5839, 33.33, 1.39766),
+    "house near-line plan flexure": (124_482.0, 287_262.1, 0.43334),
+    "house near-line plan shear": (2_336.11, 18_384.78, 0.12707),
+    "house slab-edge peak sustained load": (49.8716, 33.33, 1.49630),
     **_WINTER,
 }
 # (demand, capacity, ratio) per row, hand-worked in §11j. No fresh-concrete pressure row on
@@ -136,32 +143,34 @@ _NOTE_8 = {
     # w 12.670 lb/in: M = w x 96² / 8 = 14,595, R 608.1, floor line 608.1 + 12.670 x 13.4375
     # = 778.4 lb; line 43,656.2 − 2 x 778.4 = 42,099.5.
     "foot": {
-        "board strain, pour + closing": (0.0300783, 0.057143, 0.52637),
+        "board strain, pour + closing": (0.0322011, 0.057143, 0.56352),
         **_PATH_8,
     },
     "stem": {
-        "board strain, pour + closing": (0.0050274, 0.071429, 0.070384),
-        "house insulation bearing": (1.05576, 15.0, 0.070384),
-        "house wall flexure": (14_594.8, 307_578.0, 0.047451),
-        "house wall shear": (608.12, 80_570.4, 0.0075476),
-        "house floor-line reaction": (778.36, 5_475.0, 0.14217),
+        "board strain, pour + closing": (0.00538223, 0.071429, 0.07535),
+        "house insulation bearing": (1.13027, 15.0, 0.07535),
+        "house wall flexure": (15_624.8, 307_578.0, 0.05080),
+        "house wall shear": (651.034, 80_570.4, 0.00808),
+        "house floor-line reaction": (833.29, 5_475.0, 0.15220),
         **_PATH_8,
     },
     "beam": {
-        "board strain, pour + closing": (0.0300783, 0.057143, 0.52637),
+        "board strain, pour + closing": (0.0322011, 0.057143, 0.56352),
         **_PATH_8,
     },
 }
-_NOTE_X_IN = 182.29
-_NOTE_SIGMA_PSI = {"TB-SG-W1": 7.896, "TB-SG-W1-STEM": 1.0558, _BEAM: 7.896}
+# §15h body (bed friction 0.43): x = (78,174 + 150,839) / (239.484 + 2 x 467.0) = 195.16",
+# T = 239.484 x 195.16 = 46,737 lb.
+_NOTE_X_IN = 195.16
+_NOTE_SIGMA_PSI = {"TB-SG-W1": 8.4528, "TB-SG-W1-STEM": 1.1303, _BEAM: 8.4528}
 # Every board is formed and stripped, so nothing is locked in. The second column is what
 # each board WOULD carry as a form face (§11i) — `test_a_formed_and_stripped_board_carries_
 # no_pour` reads it back, because a flag with no measured effect is not a lever.
 _NOTE_LOCK_LB = {"TB-SG-W1": 0.0, "TB-SG-W1-STEM": 0.0, _BEAM: 0.0}
 # The beam's lock-in follows its board: 41,162 x 216/240 = 37,046 lb at the 17'-0" court.
 _FORM_FACE_LOCK_LB = {"TB-SG-W1": 233.3, "TB-SG-W1-STEM": 6_238.0, _BEAM: 37_046.0}
-_NOTE_TOTAL_LB = 43_656.2
-_FORM_FACE_TOTAL_LB = 93_644.6             # 43,656.2 + 2 x 233.3 + 2 x 6,237.8 + 37,046.2
+_NOTE_TOTAL_LB = 46_737.2
+_FORM_FACE_TOTAL_LB = 96_725.6             # 46,737.2 + 2 x 233.3 + 2 x 6,237.8 + 37,046.2
 _NOTE_RUN_IN = 323.0
 
 
@@ -176,12 +185,30 @@ def ctx(catlin_plan, catlin_model_ro):
     return EngineeringContext(plan=catlin_plan, model=catlin_model_ro, soil_class="GM")
 
 
+def _boards_of(recs) -> dict:
+    """One view per board of the per-loop records (decision 13): its own rows with the tag
+    stripped, then the loop's shared rows; the joint row is the loop's, not a board's."""
+    out = {}
+    for rec in recs:
+        tags = [t for t in rec.element_tags if t in _ALL or t == rec.key]
+        for tag in tags:
+            own = [dataclasses.replace(st, name=st.name.split(": ", 1)[1])
+                   for st in rec.limit_states if st.name.startswith(f"{tag}: ")]
+            shared = [st for st in rec.limit_states
+                      if ": " not in st.name and st.name != "court-to-house joint closure"]
+            inputs = [dataclasses.replace(q, name=q.name.split(":", 1)[1])
+                      for q in rec.inputs if q.name.startswith(f"{tag}:")] or list(rec.inputs)
+            out[tag] = dataclasses.replace(rec, limit_states=tuple(own + shared),
+                                           inputs=tuple(inputs))
+        out[rec.key] = rec
+    return out
+
+
 @pytest.fixture(scope="module")
 def records(ctx):
-    from typehaus.engineering import EngineeringResults
+    from typehaus.engineering.thermal_break import compute
 
-    results = EngineeringResults(ctx)
-    return {tag: results[f"{KIND}/{tag}"] for tag in _ALL}
+    return _boards_of(compute(ctx))
 
 
 def _state(record, name):
@@ -196,7 +223,7 @@ def test_the_kind_is_computed_and_the_beam_board_is_an_item(ctx) -> None:
     from typehaus.engineering import DEFERRALS, keys_of
 
     assert KIND not in DEFERRALS
-    assert keys_of(KIND, ctx) == sorted(_ALL)
+    assert keys_of(KIND, ctx) == ["W-SG-ARCH"]   # one item per loop (decision 13)
 
 
 def _rows_match(record, expected, tag) -> None:
@@ -215,13 +242,23 @@ def test_every_row_reproduces_section_11l(records, tag) -> None:
     assert _input(records[tag], "house_thrust") == pytest.approx(_CAPPED_TOTAL_LB, rel=1e-6)
 
 
+def test_the_joint_takes_only_post_backfill_movement(records) -> None:
+    """§11r/§15g: boards set after backfill — thermal 0.0533" + (96,201 − 76,808) / 150,839
+    x 1/4" = 0.0321" of sliding = 0.0854" against 25% of the 1/2" EPDM, 0.125"."""
+    joint = _state(records["W-SG-ARCH"], "court-to-house joint closure")
+    assert joint.demand == pytest.approx(0.0854, abs=0.0005)
+    assert joint.capacity == pytest.approx(0.125)
+    assert "boards set after backfill" in joint.citation
+
+
 def test_without_the_cap_basis_8_comes_back(ctx, monkeypatch) -> None:
     """§11j-§11k: the uncapped spring, E and the neutral point back in every row."""
     out = _compute_with(ctx, monkeypatch, compliant=None)
     for tag in _ALL:
         _rows_match(out[tag], _NOTE_8[_group(tag)], tag)
         assert "NEUTRAL POINT" in " ".join(out[tag].notes)
-        assert ("STEM SHRINKAGE" in " ".join(out[tag].notes)) == (tag in _STEM)
+        # One record per loop: its stems put the shrinkage flag on it.
+        assert "STEM SHRINKAGE" in " ".join(out[tag].notes)
     for tag, sigma in _NOTE_SIGMA_PSI.items():
         assert _input(out[tag], "board_stress") == pytest.approx(sigma, abs=1e-3)
         assert _input(out[tag], "board_lock_in") == _NOTE_LOCK_LB[tag]
@@ -230,21 +267,23 @@ def test_without_the_cap_basis_8_comes_back(ctx, monkeypatch) -> None:
         assert _input(out[tag], "house_thrust") == pytest.approx(_NOTE_TOTAL_LB, rel=1e-4)
     assert _input(out["TB-SG-W1"], "court_run") == pytest.approx(_NOTE_RUN_IN, abs=1e-3)
     assert _input(out["TB-SG-W1"], "delta_T") == 30.0
-    note = next(n for n in out["TB-SG-W1-STEM"].notes if n.startswith("SENSITIVITY"))
+    note = " ".join(n for n in out["TB-SG-W1-STEM"].notes if n.startswith("SENSITIVITY"))
     # x1.5 by hand: S 359.23, x = 153,718 / 962.99 = 159.63", T 57,342; the stem's floor
     # line 1.3870 psi x 12 x 61.4375" = 1,022.6 (0.187); line 55,297 (0.366, 1.097).
-    assert "house floor-line reaction 0.142 -> 0.105 / 0.187 / 0.222" in note
-    assert "house slab-edge bearing 0.278 -> 0.205 / 0.366 / 0.434" in note
+    assert "house floor-line reaction 0.152 -> 0.109 / 0.207 / 0.253" in note
+    assert "house slab-edge bearing 0.298 -> 0.213 / 0.406 / 0.495" in note
     # §11k: the graded 1/3 rule goes over inside the band (x1.5) — why basis 9 exists.
-    assert "house slab-edge sustained load 0.835 -> 0.615 / 1.097 / 1.303" in note
+    assert "house slab-edge sustained load 0.894 -> 0.640 / 1.217 / 1.486" in note
 
 
 @pytest.mark.parametrize("tag", _ALL)
 def test_basis_9_is_ok_with_nothing_open(records, tag) -> None:
+    """Every row passes, the joint (§11r, boards set after backfill) included."""
     record = records[tag]
+    assert all(s.ok for s in record.limit_states), tag
     assert record.status is Status.OK
     assert record.missing == ()
-    assert record.basis_version == "10"
+    assert record.basis_version == "11"
     notes = " ".join(record.notes)
     for flag in ("RETIRED WITH THE BARS", "RETIRED WITH THE STRIP", "ESTIMATED MODULUS",
                  "FORMED AND STRIPPED", "SENSITIVITY ON E", "STRESS-CAPPED"):
@@ -274,7 +313,7 @@ def _compute_with(ctx, monkeypatch, **values):
     real = geo.isolation_boards(ctx)
     monkeypatch.setattr(geo, "isolation_boards",
                         lambda _ctx: [b.model_copy(update=values) for b in real])
-    return {r.key: r for r in tb.compute(ctx)}
+    return _boards_of(tb.compute(ctx))
 
 
 def test_an_unnamed_product_holds_every_row_open(ctx, monkeypatch) -> None:
@@ -304,7 +343,7 @@ def test_no_service_temperature_holds_the_thermal_rows_open(ctx) -> None:
     from typehaus.engineering import thermal_break as tb
     from typehaus.engineering.thermal_break_board import TEMPERATURE_MISSING
 
-    out = {r.key: r for r in tb.compute(_with_site(ctx, concrete_service_temperature=None))}
+    out = _boards_of(tb.compute(_with_site(ctx, concrete_service_temperature=None)))
     record = out["TB-SG-W1"]
     assert TEMPERATURE_MISSING in record.missing
     # Not even a pressure row is left: a stripped board never meets fresh concrete.
@@ -332,7 +371,7 @@ def test_a_formed_and_stripped_board_carries_no_pour(ctx, monkeypatch) -> None:
     # sustained rule reads 1.733 (93,644.6 − 2 x 3,144.3; 1.864 at 19'-0") and the beam's
     # board is over again.
     assert _state(out["TB-SG-W1"], "house slab-edge sustained load").ratio == pytest.approx(
-        87_356.1 / 50_395.0, rel=1e-3)
+        90_327.2 / 50_395.0, rel=1e-3)
     assert _state(out[_BEAM], "board strain, pour + closing").ratio > 1.0
     assert out[_BEAM].status is Status.OVER
     # The cap does not replace the stripping: a board cast against adds its pour in full.
@@ -354,7 +393,7 @@ def test_the_beam_board_inherits_the_stripping_statement(ctx, monkeypatch) -> No
     monkeypatch.undo()
     from typehaus.engineering import thermal_break as tb
 
-    assert _input({r.key: r for r in tb.compute(ctx)}[_BEAM], "board_lock_in") == 0.0
+    assert _input(_boards_of(tb.compute(ctx))[_BEAM], "board_lock_in") == 0.0
 
 
 def test_a_stripped_board_must_name_its_placement_annotation(ctx, monkeypatch) -> None:
@@ -383,7 +422,7 @@ def test_the_slab_edge_reads_the_authored_grade(ctx, monkeypatch) -> None:
     real = path.house_slab
     monkeypatch.setattr(path, "house_slab",
                         lambda c, f: (slab, real(c, f)[1]) if real(c, f) else None)
-    record = {r.key: r for r in tb.compute(ctx)}["TB-SG-W1"]
+    record = _boards_of(tb.compute(ctx))["TB-SG-W1"]
     state = _state(record, "house slab-edge bearing")
     assert state.capacity == pytest.approx(15.0 * 3.5 * 432.0)
     assert state.ratio == pytest.approx(22_155.0 / 22_680.0, rel=1e-4)
@@ -403,8 +442,8 @@ def test_the_slab_edge_reads_the_authored_grade(ctx, monkeypatch) -> None:
     # Uncapped, the same fallback reads OVER — the row is graded, not silently dropped.
     uncapped = _compute_with(ctx, monkeypatch, compliant=None)["TB-SG-W1"]
     edge = _state(uncapped, "house slab-edge bearing")
-    assert edge.ratio == pytest.approx(42_099.5 / 22_680.0, rel=1e-3)
-    assert uncapped.status is Status.OVER and uncapped.missing == ()
+    assert edge.ratio == pytest.approx(45_070.6 / 22_680.0, rel=1e-3)
+    assert uncapped.status is Status.OVER
 
 
 def test_the_sheets_sustained_load_rule_is_graded_and_foamular_400_fails_it(
@@ -418,7 +457,7 @@ def test_the_sheets_sustained_load_rule_is_graded_and_foamular_400_fails_it(
     real = path.house_slab
     monkeypatch.setattr(path, "house_slab",
                         lambda c, f: (slab, real(c, f)[1]) if real(c, f) else None)
-    record = {r.key: r for r in tb.compute(ctx)}["TB-SG-W1"]
+    record = _boards_of(tb.compute(ctx))["TB-SG-W1"]
     state = _state(record, "house slab-edge sustained load")
     assert state.ratio == pytest.approx(22_155.0 / (0.3333 * 40.0 * 1_512.0), rel=1e-4)
     assert record.status is Status.OVER
@@ -499,11 +538,11 @@ def test_the_line_solver_is_hetenyi_far_from_its_ends() -> None:
 
 
 def test_the_court_side_joint_is_spliced(records) -> None:
-    """§11m.2 (2026-10-11): 6 #4 in each braced run, and 6 #4 splice bars across W1|W2 /
-    E1|E2 (``BarSpec.continues_into``), so the joint is graded cracked, not plain."""
+    """§11m.2 / §15j: 6 #4 in each braced run, and 6 #4 + 6 #5 splice bars across W1|W2 /
+    E1|E2 (``BarSpec.continues_into``), so the joint is graded cracked."""
     record = records["TB-SG-W1"]
     assert _input(record, "winter_tension_steel") == pytest.approx(1.20)
-    assert _input(record, "winter_joint_steel") == pytest.approx(1.20)
+    assert _input(record, "winter_joint_steel") == pytest.approx(3.06)
     assert not any(n.startswith("WINTER JOINT") for n in record.notes)
     assert not [s for s in record.limit_states if "unreinforced joint" in s.name]
 

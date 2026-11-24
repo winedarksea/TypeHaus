@@ -148,8 +148,9 @@ EXT_2X6 = Assembly(
         #
         # ONE 8" FASTENMASTER TIMBERLOK (TLOK08) PER CROSSING, through girt (1-1/2") +
         # block (4-1/2") + sheathing (1/2"), 1-1/2" into the stud. One fastener pass, no
-        # nails, and it is the entire load path: the block bears the cladding's gravity in
-        # direct compression on the sheathing, so the screw is a pure withdrawal element.
+        # nails, and it is the entire load path. The wall is vertical, so the cladding's ~11 lb
+        # weight acts PARALLEL to the sheathing, hung off its face: it shears the block joint
+        # and pries the block onto the screw (D + 0.6W, notes/catlin_truss_engineering.md 3.5a).
         # Mark the stud line across the girt face as it is laid so the screw is not blind.
         #
         # THE CLAMPED STACK IS 6.0", not 6.5": girt 1-1/2" + block 4-1/2". The sheathing is
@@ -161,8 +162,13 @@ EXT_2X6 = Assembly(
         # THE SDWS22800DB THIS WALL CARRIED UNTIL 2026-09-12 CANNOT DO THAT. Every SDWS22
         # 5" and longer threads 3" (IAPMO UES ER-192 Table 1), so at 8" it stands 1"
         # of thread inside the 6.0" stack and jacks the girt off the block instead of
-        # pulling it down. Graded as `girt_screw/W-A-N1`; see
+        # pulling it down. A published read of ESR-1078 Tables 1A/2/3, graded by
+        # `structural.girt_fastening` (no engineering item); see
         # notes/catlin_truss_engineering.md §3.
+        #
+        # THE GIRT ORDER: KDAT stock at ACQ-D retention <= 0.40 pcf. TimberLOK's coating is
+        # the alternate to hot-dip galvanizing only up to that retention (ESR-1078 §4.1.7,
+        # Table 6 exposure conditions 1 and 3: dry or fresh-water, no salt).
         #
         # `course_offset=inch(0)` is the swept phase for the 24" module, not a default left
         # in place: the whole 1/8" sweep from -16" to +8" was run against the openings, and

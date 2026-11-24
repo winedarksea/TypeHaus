@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import math
 
+from typehaus.engineering import thermal_break_working as W
 from typehaus.engineering.item import LimitState, Quantity
 
 _IN = 1.0 / 0.0254
@@ -88,19 +89,25 @@ def winter_rows(ctx, board, free_bodies: dict, soil, states, missing, inputs,
     if not body or soil is None or not soil.at_rest_efp_psf_per_ft:
         return
     relax = H_RESISTING_FACTOR * soil.active_efp_psf_per_ft / soil.at_rest_efp_psf_per_ft
-    pcf, h, friction = max(((float(k), h, f) for k, (h, f) in body.items()),
-                           key=lambda r: (r[2] - relax * r[1], -r[0]))
+    # Rigid-plastic: the tension at a section through the side lines is the SMALLER side's
+    # friction — the house side of the strut, or the far side less the relaxed soil push.
+    rows = []
+    for k, (h, friction, house, how, parts) in body.items():
+        far = max(0.0, friction - house - relax * h)
+        rows.append((min(house, far), float(k), h, friction, house, far, how, parts))
+    total, pcf, h, friction, house, far, how, parts = max(rows, key=lambda r: (r[0], -r[1]))
+    relief = (H_RESISTING_FACTOR, soil.active_efp_psf_per_ft, soil.at_rest_efp_psf_per_ft)
     lines = _runs(ctx, board.structure, board.ax)
     if not lines:
         missing.append(f"the side lines of loop {board.loop_ref} — the court's winter tension")
         return
-    total = max(0.0, friction - relax * h)
     demand = total / len(lines)
     inputs += [Quantity("winter_tension", demand, "lb", 1.0)]
-    head = (f"80 °F below set, the joint open: loop {board.loop_ref}'s base friction "
-            f"{friction:,.0f} lb less {relax:.2f} x its retained soil {h:,.0f} lb "
-            f"(K_a/K_0 {soil.active_efp_psf_per_ft:.0f}/{soil.at_rest_efp_psf_per_ft:.0f}, "
-            f"x0.9 resisting) at {pcf:.0f} pcf = {total:,.0f} lb over {len(lines)} side lines")
+    head = (f"80 °F below set, the joint open, rigid-plastic: min(house side {house:,.0f} "
+            f"(its heel soil at the band's top), far side {friction - house:,.0f} at {pcf:.0f} "
+            f"pcf less 0.9 x K_a/K_0 = {relax:.2f} x the retained soil {h:,.0f} = {far:,.0f}) = "
+            f"{total:,.0f} lb "
+            f"over {len(lines)} side lines ({how})")
     runs, joints, spliced = [], [], []
     for members in lines.values():
         for lo, hi, wall, foot in members:
@@ -131,16 +138,26 @@ def winter_rows(ctx, board, free_bodies: dict, soil, states, missing, inputs,
             f"{head}. The weakest run, {wall} on {foot}: {n} bars continuous along it, As "
             f"{area:.3f} in², phi 0.90 x fy {REINFORCEMENT_FY_PSI:,.0f} (cracked, concrete "
             f"not credited). Rigid-plastic upper bound; valid while the friction NORTH of the "
-            f"run is no more than {total:,.0f} lb (free body §11m.2)", combination="1.0T"))
+            f"run is no more than {total:,.0f} lb (free body §11m.2)",
+            combination=W.WINTER[0], combination_factors=W.WINTER[1],
+            working=W.winter(total, len(lines), demand, area, REINFORCEMENT_FY_PSI,
+                             PHI_TENSION * area * REINFORCEMENT_FY_PSI, friction, house, far,
+                             relax, h, pcf, parts, relief,
+                             f"steel continuous along the weakest run ({wall}, {n} bars)")))
     if spliced:
         area, n, at, f0, f1 = min(spliced)
         inputs.append(Quantity("winter_joint_steel", area, "in2", 0.0001))
         states.append(LimitState(
             "court winter tension, spliced joint", demand,
             PHI_TENSION * area * REINFORCEMENT_FY_PSI, "lb",
-            f"{head}; at the {f0}|{f1} joint ({at:.1f}\") {n} bars cross it (lapped splices, "
-            f"BarSpec.continues_into), As {area:.3f} in², phi 0.90 x fy — cracked, concrete "
-            f"not credited (free body §11m.2)", combination="1.0T"))
+            f"{head}; at the {f0}|{f1} joint ({at:.1f}\") {n} bars cross it (lapped splices "
+            f"through the joint), As {area:.3f} in², phi 0.90 x fy — cracked, concrete "
+            f"not credited (free body §11m.2)",
+            combination=W.WINTER[0], combination_factors=W.WINTER[1],
+            working=W.winter(total, len(lines), demand, area, REINFORCEMENT_FY_PSI,
+                             PHI_TENSION * area * REINFORCEMENT_FY_PSI, friction, house, far,
+                             relax, h, pcf, parts, relief,
+                             f"steel across the spliced joint ({n} bars)")))
     graded = []
     for at, w0, w1, f0, f1, solids in joints:
         fc = min(fc_psi(concrete_spec_for(ctx.plan, ctx.plan.by_tag(t))) or 0.0
@@ -164,4 +181,5 @@ def winter_rows(ctx, board, free_bodies: dict, soil, states, missing, inputs,
         f"{width:.0f}\" x {depth:.0f}\" (thickness less 2\", ACI 318-19 §14.5.1.7), phi 0.60 "
         f"x 5 sqrt(f'c {fc:,.0f}) (§14.5.2.1, read for a direct tension); the stem (a later "
         f"placement) and the base friction's eccentricity not credited",
-        combination="1.0T"))
+        combination=W.WINTER[0], combination_factors=W.WINTER[1],
+        working=W.winter_joint(demand, width, depth, fc, cap, demand / (width * depth))))

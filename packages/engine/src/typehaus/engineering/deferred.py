@@ -45,9 +45,12 @@ class Deferral:
     #: The permit-set line the deliverable unblocks.
     unblocks: str
     oracle: tuple[Oracle, ...] = field(default_factory=tuple)
+    #: The code sections the deferral rests on, printed as the sheet's references.
+    citations: tuple[str, ...] = ()
 
     def record(self, key: str) -> EngineeringRecord:
-        return no_calc(self.kind, key, reason=self.reason, oracle=self.oracle)
+        return no_calc(self.kind, key, reason=self.reason, oracle=self.oracle,
+                       basis="; ".join(self.citations))
 
 
 DEFERRALS: dict[str, Deferral] = {}
@@ -64,39 +67,31 @@ def _declare(deferral: Deferral) -> Deferral:
 
 _declare(Deferral(
     kind="rafter",
-    reason="the roof resolves no rafter member at all — it is trussed, or framed on a "
-           "ridge beam — so there is no member for any span table to describe and the "
-           "component manufacturer's sealed design governs. A roof framed in an ENGINEERED "
-           "PROFILE is not here: its maker publishes a span table, reading one is a "
-           "prescriptive act, and `structural.rafter_span` grades it against an authored "
-           "`Roof.published_span` instead (2026-09-11). RF-BW-CANOPY carries a DRIFT "
-           "case the fabricator has to be quoted against — a quote priced on \"50 psf "
-           "ground snow\" buys ordinary trusses (notes/north_entry_piers.md §3, and "
-           "preferences.toml [structural] roof_beam_snow_psf)",
-    designer="truss or I-joist manufacturer's engineer of record — the component design "
-             "only. The chain below the heel is no longer a second role here: the fabricator "
-             "PUBLISHES its reactions, and `structural.truss_reactions` grades that chain "
-             "against published connector allowables once they are quoted into the model "
-             "(`Roof.published_reactions`, 2026-09-20)",
+    reason="the roof resolves no rafter member at all (it is trussed, or framed on a ridge "
+           "beam), so no span table describes it and the component manufacturer's design "
+           "governs. A roof framed in an engineered profile is not here: its maker's "
+           "published span table is read directly. RF-BW-CANOPY carries a drift case the "
+           "fabricator has to be quoted against; a quote on ground snow alone buys "
+           "ordinary trusses (notes/north_entry_piers.md §3)",
+    designer="truss or I-joist manufacturer's engineer of record, for the component only. "
+             "The truss fabricator's design is the component only; the chain below the heel "
+             "is checked against its published reactions once they are entered",
     deliverable="a sealed component design and placement plan for the roof, covering the "
-                "profile, the web stiffener and hanger schedule, and the ground-snow AND "
-                "drift case this site carries. **Where the roof declares a diaphragm, the "
-                "end trusses' TOP CHORDS are its chords** and carry the axial force "
-                "`lateral_system/<roof>` prints as `chord_force_*` IN ADDITION TO the "
-                "gravity case — combined axial and bending at that section is the "
-                "fabricator's own chart, and the plated splice has to carry the full force "
-                "in tension. The splice SLIP the engine assumed "
-                "(`DiaphragmSpec.chord_splice_slip`) is the third term of SDPWS 4.2.2 and "
-                "decides the rigid/flexible call, so a detail that slips materially more "
-                "moves the shear split: confirm it or state the real value. Its bearing and "
-                "uplift reaction schedule is "
-                "the intake half: quote each row into `Roof.published_reactions` and the "
-                "chain below the heel is graded as a published read, not sealed here",
-    unblocks="Roof framing — the S-603 rafter/truss line and the roof-load permit item; "
-             "the uplift line (structural.uplift_capacity, structural.truss_reactions) "
-             "closes on the quoted reactions",
+                "profile, the web stiffener and hanger schedule, and the ground-snow and "
+                "drift case this site carries, within the criteria the order states: the "
+                "loads, the drift on each truss, the bearings, the deflection limits and the "
+                "maximum net uplift per heel. Where the roof declares a diaphragm, the first "
+                "and last trusses' top chords carry the chord force the lateral calculation "
+                "prints, in addition to gravity, with the plated splice in tension. No "
+                "splice-slip value is asked for. The supplier's reaction schedule is quoted "
+                "onto the roof and checked against the specified reactions",
+    unblocks="Roof framing, the S-603 rafter/truss line and the roof-load permit item; the "
+             "supplier's reactions close the component line once entered, the supporting "
+             "structure being already checked on the specified ones",
     oracle=(Oracle(note="catlin_truss_engineering.md",
                    test="tests/test_wind_loads.py"),
+            Oracle(note="canopy_truss_criteria.md",
+                   test="tests/test_truss_criteria.py"),
             Oracle(note="uplift_load_path.md",
                    test="tests/test_uplift_load_path.py")),
 ))
@@ -179,21 +174,22 @@ def _rafter_keys(ctx: EngineeringContext) -> list[str]:
 
 _declare(Deferral(
     kind="veneer_anchor",
-    reason="an anchored masonry wythe stands farther off its backing than any row of the "
-           "adopted IRC Table R703.8.4(1) — catlin's W-B-BRICK is 6 1/2in back of brick to "
-           "face of stud, where the 2018 IRC (MN 2020) stops at 4 1/2in for W1.7 wire and "
-           "publishes no W2.8 row. The 2021/2024 IRC's W2.8 adjustable wire row reaches 6 "
-           "5/8in, so the same wall is prescriptive there; under the adopted edition it is "
-           "an alternate. This engine computes no masonry anchor",
-    designer="the owner, asking the building official to accept the 2024 IRC row under "
-             "R104.11; failing that, the structural engineer of record (or the anchor "
-             "supplier's engineer) for a TMS 402 anchor design",
-    deliverable="AHJ acceptance under R104.11 of IRC 2024 Table R703.8.4(1)'s W2.8 "
-                "adjustable wire row (6 5/8in max to the backing) with R703.8.4.1's "
-                "spacing, or a TMS 402 anchor design for the measured standoff. Retires "
-                "with no house edit once the profile adopts the 2021 or 2024 IRC",
+    reason="the anchored brick stands 6 1/2in back of its backing's studs, past the 4 1/2in the "
+           "adopted Minnesota edition's tie table (IRC Table R703.8.4(1), 2018 base) allows and "
+           "with no W2.8 row. The 2024 IRC's table carries a W2.8 adjustable-wire row to "
+           "6 5/8in, and the ties are detailed to it: every tie on a stud, none into a "
+           "concrete end, W2.8 with two pintle legs. The item is a dependency on the code in "
+           "force on the permit application date, not a design left undone",
+    designer="the owner, as the permit applicant: the application date is the owner's to set",
+    deliverable="the permit application filed on or after the date Minnesota's 2024-based "
+                "residential code takes effect, when the profile's edition carries the row and "
+                "this item retires with no house edit; failing that, a written request to the "
+                "building official under IRC R104.11 to accept the 2024 row, made before the "
+                "application",
     unblocks="the veneer anchorage detail and the wall section through the wythe",
-    oracle=(Oracle(note="sunken_garden_veneer_beam.md", section="§6k",
+    citations=("IRC R703.8.4", "IRC Table R703.8.4(1)", "IRC R104.11",
+               "TMS 402-22 Table 6 (veneer tie types, as BIA TN 3C prints it)"),
+    oracle=(Oracle(note="sunken_garden_veneer_beam.md", section="§6k, §6l",
                    test="tests/test_veneer_cavity.py"),),
 ))
 
@@ -211,10 +207,9 @@ def _veneer_anchor_keys(ctx: EngineeringContext) -> list[str]:
 # ``engineering/thermal_break.py``, as a reserve. Its deliverable prose is that module's
 # NOT-GRADED note; settlement keeps every item INCOMPLETE until a measured modulus exists.
 
-# NOTE — ``tiered_retaining`` is COMPUTED since 2026-09-20: ``engineering/segmental_wall.py``
-# grades the unit's own free body, and its NOT-GRADED note carries this deferral's deliverable
-# (global stability of the pair with the geotechnical engineer; the unit, reinforcement and
-# levelling pad with the SRW supplier's engineer).
+# NOTE — ``tiered_retaining`` is RETIRED (2026-11-23): R404.4 does not engage at <= 48" of fill,
+# and the raised-garden legs are read off Allan Block's Table 1.3 by
+# ``structural.srw_gravity_chart`` (``engineering/srw_chart``). Nothing is deferred for them.
 
 
 def _footingless_walls(ctx: EngineeringContext) -> list:

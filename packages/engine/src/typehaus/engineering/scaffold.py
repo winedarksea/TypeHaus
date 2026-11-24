@@ -9,7 +9,7 @@ owner, after a PE has actually stamped something, and that act is the seal.
 What the scaffold saves is the mechanical half: which items exist, what each one's scope
 sentence is, and above all the FINGERPRINT of each, which a person otherwise has to obtain
 one at a time with ``haus engineering --fingerprint`` and paste without transcription
-error. Forty items is forty chances to fat-finger a hex string into a stamp that then reads
+error. Every item is another chance to fat-finger a hex string into a stamp that then reads
 FRESH against nothing.
 
 **One block per kind**, not per item. A PE stamps a *scope* — "the retaining walls", "the
@@ -23,7 +23,9 @@ Three shapes, and the difference is whether it is honest to pre-fill anything:
 * **INCOMPLETE** — computed, but an input is missing. The block is present and uncommented,
   headed by the union of what is missing, because a PE may well be the person who supplies
   it; the fingerprints are populated so the stamp pins the model it was made against.
-* **NO_CALC** — deferred to somebody else's design. The block is UNCOMMENTED and carries an
+* **NO_CALC** — deferred to somebody else's design. Written to a SECOND file
+  (:func:`scaffold_external`, ``engineering-external.toml.draft``) so a PE with no supplier
+  document never has to delete it. The block is UNCOMMENTED and carries an
   ``[signoff.external]`` acceptance per item instead of a fingerprint: the supplier's
   document, its revision, its sha256 and the envelope it was issued for. There is no model
   fingerprint such an item could have, which is why this exists — until 2026-09-18 the block
@@ -37,6 +39,7 @@ Three shapes, and the difference is whether it is honest to pre-fill anything:
 from __future__ import annotations
 
 from collections.abc import Iterable, Sequence
+from dataclasses import dataclass
 
 from typehaus.engineering.fingerprint import fingerprint
 from typehaus.engineering.item import EngineeringRecord, Status
@@ -50,6 +53,17 @@ REVISION = "<<supplier's revision marking, e.g. Rev C 2026-08-14>>"
 SHA256 = "<<sha256 of that document, lowercase hex>>"
 ENVELOPE = "<<the spans, loads and conditions the document was issued for>>"
 
+
+@dataclass(frozen=True)
+class SealDefaults:
+    """The four fields every block repeats, typed once. Unset ones stay visible blanks."""
+
+    engineer: str = ENGINEER
+    license: str = LICENSE
+    sealed_on: str = SEALED_ON
+    document: str = DOCUMENT
+
+
 _HEADER = """\
 # THIS FILE IS NOT A SEAL.
 #
@@ -60,14 +74,14 @@ _HEADER = """\
 #
 # To use it:
 #   1. A licensed professional reviews `calcs.pdf` in this bundle and stamps it.
-#   2. Fill in the engineer, the license, the date and the path to the stamped document,
-#      for the blocks they actually sealed. DELETE the blocks they did not.
-#      The same four blanks repeat in every block, so four find-and-replaces fill them
-#      all: <<ENGINEER NAME, PE>>, <<STATE 00000>>, <<YYYY-MM-DD>>, <<path/to/sealed.pdf>>.
-#      A block marked DEFERRED records an outside designer's document (a truss
-#      fabricator's sealed design); delete it until that document exists.
+#   2. Fill in [defaults] below, once: the engineer, the license, the date and the stamped
+#      document. Every [[signoff]] inherits them. (`haus handoff --engineer ... --license
+#      ... --sealed-on ...` writes them in.) DELETE the blocks the engineer did not seal.
 #   3. Copy this file to `houses/{house}/engineering.toml`.
-#   4. Run `haus engineering --require-seal` and `haus print --sealed`.
+#   4. Items an outside designer owns (a truss fabricator's sealed design) are in
+#      `engineering-external.toml.draft`, not here: append its blocks to the file above once
+#      the designer's document exists.
+#   5. Run `haus engineering --require-seal` and `haus print --sealed`.
 #
 # The fingerprints below are already filled in and MUST NOT be edited. Each pins a seal to
 # the exact inputs its calculation consumed; leave one out and the item reads "stamped, not
@@ -80,29 +94,94 @@ _HEADER = """\
 # Generated: {generated}
 # Engine:    {engine_version}
 # Model:     {content_hash}
+{pdf_line}"""
+
+_EXTERNAL_HEADER = """\
+# THIS FILE IS NOT A SEAL, AND IT IS NOT LOADED BY ITSELF.
+#
+# The items below are designed by somebody else (a truss fabricator, a supplier). This
+# engine computes nothing for them, so there is no fingerprint: each block pins the
+# designer's own document instead. The blocks are kept out of `engineering.toml.draft` so a
+# PE who has no such document never has to delete them.
+#
+# To use it, once the designer's sealed document exists:
+#   1. Fill in each [signoff.external."<item>"]: the document, its revision, its sha256 and
+#      the envelope it was issued for, in the designer's own terms.
+#   2. Fill in the engineer, license and date (the person accepting the document).
+#   3. Append the blocks to `houses/{house}/engineering.toml`. They inherit its [defaults].
+#   4. Run `haus engineering --require-seal`.
+#
+# Generated: {generated}
+# Engine:    {engine_version}
+# Model:     {content_hash}
 """
 
 
 def scaffold_register(records: Iterable[EngineeringRecord], *, house: str, generated: str,
-                      engine_version: str, content_hash: str) -> str:
-    """Render the draft register. Pure — the caller decides where it lands."""
-    by_kind: dict[str, list[EngineeringRecord]] = {}
-    for record in records:
-        by_kind.setdefault(record.kind, []).append(record)
+                      engine_version: str, content_hash: str,
+                      defaults: SealDefaults | None = None,
+                      document_sha256: str | None = None) -> str:
+    """Render the draft register. Pure — the caller decides where it lands.
 
-    blocks = [_block(kind, sorted(group, key=lambda r: r.item_id))
-              for kind, group in sorted(by_kind.items())]
-    header = _HEADER.format(house=house, generated=generated,
-                            engine_version=engine_version, content_hash=content_hash)
+    Deferred kinds are NOT in it: see :func:`scaffold_external`. ``defaults`` pre-fills the
+    ``[defaults]`` table (a blank stays a visible blank); ``document_sha256`` is printed as a
+    comment, the digest of ``calcs.pdf`` as generated, before anybody stamps it.
+    """
+    defaults = defaults or SealDefaults()
+    by_kind = _by_kind(records)
+    blocks = [_block(kind, group) for kind, group in by_kind.items()
+              if not _is_deferred(group)]
+    pdf_line = (f"# calcs.pdf: sha256 {document_sha256} (as generated, before it is stamped)\n"
+                if document_sha256 else "")
+    header = _HEADER.format(house=house, generated=generated, engine_version=engine_version,
+                            content_hash=content_hash, pdf_line=pdf_line)
+    return header + "\n" + _defaults_table(defaults) + "\n" + "\n".join(blocks)
+
+
+def scaffold_external(records: Iterable[EngineeringRecord], *, house: str, generated: str,
+                      engine_version: str, content_hash: str,
+                      defaults: SealDefaults | None = None) -> str:
+    """The deferred kinds' acceptance blocks, as a second draft; ``""`` when there are none.
+
+    Each block carries its own engineer, license and date (typed values when given), so the
+    file stands alone; the supplier's document, revision, digest and envelope are always
+    blanks, because only somebody holding that document can fill them.
+    """
+    defaults = defaults or SealDefaults()
+    blocks = [_deferred_block(kind, group, defaults)
+              for kind, group in _by_kind(records).items() if _is_deferred(group)]
+    if not blocks:
+        return ""
+    header = _EXTERNAL_HEADER.format(house=house, generated=generated,
+                                     engine_version=engine_version,
+                                     content_hash=content_hash)
     return header + "\n" + "\n".join(blocks)
 
 
+def _by_kind(records: Iterable[EngineeringRecord]) -> dict[str, list[EngineeringRecord]]:
+    by_kind: dict[str, list[EngineeringRecord]] = {}
+    for record in records:
+        by_kind.setdefault(record.kind, []).append(record)
+    return {kind: sorted(group, key=lambda r: r.item_id)
+            for kind, group in sorted(by_kind.items())}
+
+
+def _is_deferred(records: Sequence[EngineeringRecord]) -> bool:
+    return {record.status for record in records} <= {Status.NO_CALC}
+
+
+def _defaults_table(defaults: SealDefaults) -> str:
+    lines = ["[defaults]  # typed once; every [[signoff]] below inherits these",
+             f'engineer = "{_escape(defaults.engineer)}"',
+             f'license = "{_escape(defaults.license)}"',
+             f'sealed_on = "{_escape(defaults.sealed_on)}"',
+             f'document = "{_escape(defaults.document)}"']
+    return "\n".join(lines) + "\n"
+
+
 def _block(kind: str, records: Sequence[EngineeringRecord]) -> str:
-    statuses = {record.status for record in records}
-    if Status.OVER in statuses:
+    if Status.OVER in {record.status for record in records}:
         return _over_block(kind, records)
-    if statuses <= {Status.NO_CALC}:
-        return _deferred_block(kind, records)
     lines = [f"# --- {kind} ({len(records)} item(s)) " + "-" * max(1, 56 - len(kind))]
     missing = sorted({text for record in records for text in record.missing})
     if missing:
@@ -127,7 +206,8 @@ def _over_block(kind: str, records: Sequence[EngineeringRecord]) -> str:
     return "\n".join(lines) + "\n"
 
 
-def _deferred_block(kind: str, records: Sequence[EngineeringRecord]) -> str:
+def _deferred_block(kind: str, records: Sequence[EngineeringRecord],
+                    defaults: SealDefaults) -> str:
     """A kind this engine computes nothing for: an EXTERNAL acceptance, and who owns it.
 
     ** THIS BLOCK USED TO BE WRITTEN OUT COMMENTED, WHICH LEFT THE WORKFLOW WITH NO ENDING.
@@ -153,23 +233,21 @@ def _deferred_block(kind: str, records: Sequence[EngineeringRecord]) -> str:
         lines.append(f"#   deliverable: {deferral.deliverable}")
         lines.append(f"#   unblocks:    {deferral.unblocks}")
     lines.append("#")
-    lines.extend(_signoff_lines(kind, records, pin=False, external=True))
+    lines.extend(_signoff_lines(kind, records, pin=False, external=True, seal=defaults))
     return "\n".join(lines) + "\n"
 
 
 def _signoff_lines(kind: str, records: Sequence[EngineeringRecord],
-                   *, pin: bool = True, external: bool = False) -> list[str]:
-    scope = _scope(kind, records)
-    lines = [
-        "[[signoff]]",
-        f'id = "{kind}"',
-        f'scope = "{_escape(scope)}"',
-        f'engineer = "{ENGINEER}"',
-        f'license = "{LICENSE}"',
-        f'sealed_on = "{SEALED_ON}"',
-        f'document = "{DOCUMENT}"',
-        "covers = [",
-    ]
+                   *, pin: bool = True, external: bool = False,
+                   seal: SealDefaults | None = None) -> list[str]:
+    """One ``[[signoff]]``. ``seal`` is given only where the block must stand alone (the
+    external file); everywhere else the four fields come from ``[defaults]``."""
+    lines = ["[[signoff]]", f'id = "{kind}"', f'scope = "{_escape(_scope(kind, records))}"']
+    if seal is not None:
+        lines += [f'engineer = "{_escape(seal.engineer)}"',
+                  f'license = "{_escape(seal.license)}"',
+                  f'sealed_on = "{_escape(seal.sealed_on)}"']
+    lines.append("covers = [")
     lines.extend(f'    "{record.item_id}",' for record in records)
     lines.append("]")
     if pin:

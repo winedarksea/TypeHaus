@@ -247,6 +247,26 @@ The 25" x 10" strips (IRC Table R403.1(1)) keep their tops, so the house excavat
 Against the model (cut 1,070.9, backfill 375.6, cap 72.6, column 50.9, haul 784.7): cut +1.0%,
 backfill +0.1%, cap +9.1%, column +0.4%, haul +0.4% — the same per-bed-cone gap as 7c.
 
+### 7e. Amended 2026-11-23: the raised-garden bases drop 4"
+
+All five raised-garden legs now read off AB Table 1.3 (`notes/raised_garden_srw.md` §10): base
+4" lower, top held at 0'-0", so each wall body runs 4" deeper and its bed's top drops -48" ->
+**-52"**. Cut is unchanged (the beds are not hosted digs).
+
+- Cap: the lowest cap band is the court S strip's, -40" - 12" = -52", so the beds now sit wholly
+  under every band. Before, they stood 4" into the S band and 1" into the E (-37") band; read off
+  each bed's own prism there, **43.1 cf** of deduction leaves. The walls take the depth the beds
+  vacated, and each wall body is half its bed's plan (BLOCK 2.415 on 4.831 m², the side legs
+  1.935 on 3.871), so they add back about half of it: walls 71.9 -> 93.5 cf, **+21.5 cf**.
+  Net -21.6 cf of deduction -> **cap 1,794.5 + 21.6 = 1,816.1 cf = 67.3 cy**.
+- Fill: wall bodies 2.415 + 2 x 1.935 + 2 x 0.325 = 6.935 m² = 74.65 SF, x 4/12 = 24.9 cf more
+  standing; the beds keep their volume. Fill 10,551 - 24.9 = 10,526.1 cf (389.9 cy).
+- Native 10,526.1 - 1,816.1 = 8,710.0 cf = 322.6 cy; **backfill 322.6 + 50.7 = 373.3 cy**.
+- Haul (28,641 - 10,526.1 / 0.85) x 1.30 = **21,134.5 cf = 782.8 cy**.
+
+Against the model (cut 1,070.9, backfill 373.8, cap 73.3, haul 786.0): cut +0.9%, backfill
++0.1%, cap +9.0%, haul +0.4%. The cap gap is still the per-bed-cone gap of 7c.
+
 ## 8. What is NOT graded here
 
 The slope's stability and the soil's OSHA class (no soils report; Type A is presumed, §7a);

@@ -22,7 +22,7 @@ from typehaus.takeoff.calc_pdf import (
     pdf_sources,
     sheet_order,
 )
-from typehaus.takeoff.calc_pdf_layout import MARGIN_R, PAGE
+from typehaus.takeoff.calc_pdf_layout import MARGIN_L, MARGIN_R, PAGE, WIDE_MARGIN_R
 
 FILES = {
     "README.md": "# repo navigation, not package content\n",
@@ -337,7 +337,10 @@ def test_the_real_catlin_package_never_overhangs_the_frame(catlin_ctx):
     width, story = _measured(files)
     widest = max((f.wrap(width, 10_000)[0] for f in story if hasattr(f, "wrap")),
                  default=0.0)
-    assert widest <= width + 0.5, f"{widest:.1f}pt into a {width:.1f}pt frame"
+    # A table of WIDE_COLUMNS or more (the register's nine) may run into the right margin, to
+    # the title block's edge, and no further.
+    limit = max(width, (PAGE[0] - MARGIN_L - WIDE_MARGIN_R) * 72)
+    assert widest <= limit + 0.5, f"{widest:.1f}pt into a {limit:.1f}pt limit"
 
 
 def test_an_overflowing_table_takes_it_out_of_the_wide_columns_only():
@@ -481,7 +484,8 @@ def test_no_boilerplate_line_is_printed_twice(catlin_ctx):
     records = [catlin_ctx.engineering[i] for i in item_ids]
     authored = {text for record in records for text in
                 (*record.notes, *record.missing, record.summary, record.basis,
-                 *[state.citation for state in record.limit_states])}
+                 *[state.citation for state in record.limit_states],
+                 *[step.text() for state in record.limit_states for step in state.working])}
     kinds = sorted({record.kind for record in records}, key=len, reverse=True)
 
     def mask(line: str) -> str:
@@ -504,14 +508,15 @@ def test_no_boilerplate_line_is_printed_twice(catlin_ctx):
 
 
 def test_the_package_stays_inside_its_page_budget(catlin_ctx):
-    """** THE CEILING: 150 PAGES WITHOUT THE APPENDIX, 220 WITH IT. **
+    """** THE CEILING: 200 PAGES WITHOUT THE APPENDIX, 260 WITH IT. **
 
     The 2026-09-18 package was 307 pages (C-4 D-4 R-4 O-2 A-22 SR-1 S-79 **X-192**), and 55
     per-member appendix sheets were 63% of it. Measured on 2026-09-22 after the restructure:
     89 pages default (X-1, one divider), 121 with ``--appendix`` (X-33, one per-family table
     per design family). The ceiling is generous against those, because other work adds
     engineered items — it is here to catch a return to a sheet per member, not to pin a
-    count.
+    count. 2026-11-23: 167 / 200 once every family shows its working step by step (review
+    E-02), printed once per template; the ceiling rose with it.
     """
     from typehaus.checks import evaluate_permit_checklist, run_checks
     from typehaus.takeoff.calc_package import PackageInputs, calc_package
@@ -525,8 +530,8 @@ def test_the_package_stays_inside_its_page_budget(catlin_ctx):
         generated="2026-09-22", engine_version="test", content_hash="deadbeef",
         profile_name=catlin_ctx.profile.name,
         checklist=evaluate_permit_checklist(report, catlin_ctx.profile)))
-    assert len(paginate(files)) <= 150
-    assert len(paginate(files, include_appendix=True)) <= 220
+    assert len(paginate(files)) <= 200
+    assert len(paginate(files, include_appendix=True)) <= 260
 
 
 def test_the_cli_offers_the_appendix_flag_on_both_deliverables():

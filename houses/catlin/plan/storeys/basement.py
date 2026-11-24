@@ -10,12 +10,14 @@ from ..doorway_transitions import D_B_BATH_VINYL_REDUCER, D_B_PLAY_MAT_ZBAR, D_B
 from typehaus import (
     Alarm,
     AlarmKind,
-    Arch,
+    Beam,
     BarSpec,
     ControlLayer,
     Door,
     DrainDish,
     FloorOpening,
+    Flashing,
+    FormedFlashingSection,
     FoundationWall,
     FramingSpec,
     HumidityClass,
@@ -35,6 +37,7 @@ from typehaus import (
     SlabThermalBreak,
     Soffit,
     StructuralRole,
+    TrimKind,
     Wall,
     WallPaneling,
     Window,
@@ -291,6 +294,12 @@ NODES = [
     # both 1/2" joints off these two nodes.
     Node(uid="CBN020AAAA", tag="N-B-BRICK-E", position=pt(ft(26, 5.5), inch(-4.06)),
          open_end=True),
+    # The veneer lintels' ends: 4" of bearing past each jamb of AO-B-BRICK-WIN (x 161"..175")
+    # and AO-B-BRICK-DOOR (x 224 11/32"..287 21/32"), on the brick's centre line (y -7 13/16").
+    Node(uid="AJQZFAJA54", tag="N-B-LINTEL-WIN-W", position=pt(inch(157), inch(-7.8125)), open_end=True),
+    Node(uid="B1V1GP5A21", tag="N-B-LINTEL-WIN-E", position=pt(inch(179), inch(-7.8125)), open_end=True),
+    Node(uid="FMVJN56WM2", tag="N-B-LINTEL-DOOR-W", position=pt(inch(220.34375), inch(-7.8125)), open_end=True),
+    Node(uid="ZV7YRY3Z02", tag="N-B-LINTEL-DOOR-E", position=pt(inch(291.65625), inch(-7.8125)), open_end=True),
 ]
 
 # The 8" perimeter's vertical steel, structured — the same `#5 @ 41" o.c.` the string
@@ -515,17 +524,21 @@ WALLS = [
     # `interior_room` is authored on both rather than left to the storey's outward sign:
     # there are two wall edges on each of these node pairs now (the curb and the framing),
     # and an asymmetric stack should not depend on how the loop happens to wind.
+    # top=90 5/16" lands the double top plate on the main floor's joists (z -11 7/8"): these are
+    # BEARING walls and the floor bears on the plate. It stood at 88 3/4", 1 9/16" short, a
+    # modelling gap with nothing in it (the concrete walls fill that band with a sill plate).
+    # None (underside of the floor above) would stop at the finished ceiling, -12.5", 5/8" short.
     Wall(uid="3BF9ZDQPT1", tag="W-B-S2-FR", start_node="N-B-S1F", end_node="N-B-S2F",
          assembly="SAUNA_LINER_ON_GARDEN_FRAMED",
          alignment=face("sheathing-ext"),
          interior_room="RM-B-SAUNA",
-         base_elevation=inch(-102.1875), top=inch(88.75),
+         base_elevation=inch(-102.1875), top=inch(90.3125),
          structural_role=StructuralRole.BEARING),
     Wall(uid="Z4NRTGEDY5", tag="W-B-S3-FR", start_node="N-B-S2F", end_node="N-B-S3F",
          assembly="GARDEN_FRAMED_2X6",
          alignment=face("sheathing-ext"),
          interior_room="RM-B-GYM",
-         base_elevation=inch(-102.1875), top=inch(88.75),
+         base_elevation=inch(-102.1875), top=inch(90.3125),
          structural_role=StructuralRole.BEARING),
     # The east 8'-10" of the old W-B-S3, split off 4" west of the court's east face
     # (see N-B-S3 — the split used to sit on the wall AXIS, half a wall inside the soil).
@@ -1220,9 +1233,10 @@ OPENINGS = [
     # holes the wythe in front of them needs, each with its own segmental brick arch — not a
     # duplicate Window/Door, which would double the schedule and takeoff.
     # Positioned off N-B-BRICK-W, 3 1/2" west of N-B-S1F (2026-11-04), so each offset is
-    # the window's/door's own plus 3 1/2". Segmental, not semicircular: the
-    # rise is ~1/7 of clear width, and ``height`` includes it, so the springline is
-    # ``height - rise``. ``sill_height`` is re-datumed off W-B-BRICK's own base
+    # the window's/door's own plus 3 1/2". FLAT HEADS on a steel angle lintel each (2026-11-23,
+    # decision 11; BEAMS below): they were segmental arches, which IRC R703.8.3 does not
+    # allow in place of a lintel. ``height`` stays the old crown, so the head does not
+    # move. ``sill_height`` is re-datumed off W-B-BRICK's own base
     # (-8'-5", not -9'): the window's 3'-8" becomes 3'-1", the door's 7" threshold becomes 0.
     # 3'-10 1/2" follows WIN-B-SAUNA (3'-7" off N-B-S1F) onto its stud bay centre. The reveal and the window it
     # reveals must stay concentric — `integrity.reveal_concentric` FAILs if they are more
@@ -1230,10 +1244,8 @@ OPENINGS = [
     # land at -65 7/16").
     RoughOpening(uid="CBO601AAAA", tag="AO-B-BRICK-WIN", host="W-B-BRICK",
                  position=from_node("N-B-BRICK-W", inch(46.5)),
-                 width=inch(14), height=inch(20), sill_height=inch(37),
-                 arch=Arch(rise=inch(2))),
-    # The 80-inch crown is below the door head, overlapping its rectangular opening.
-    # The 78-inch project headroom criterion is measured at the crown.
+                 width=inch(14), height=inch(20), sill_height=inch(37)),
+    # The 80-inch head is below the door head, overlapping its rectangular opening.
     # The sauna reveal also overlaps its window; neither is an egress opening.
     #
     # WIDTH AND POSITION ARE NOT FREE THE WAY HEIGHT IS. This reveal drifted 6" east of
@@ -1242,8 +1254,7 @@ OPENINGS = [
     # grades that now, and test_catlin_contract_m3 pins both pairs. Edit the two together.
     RoughOpening(uid="CBO602AAAA", tag="AO-B-BRICK-DOOR", host="W-B-BRICK",
                  position=from_node("N-B-BRICK-W", inch(109.84375)),
-                 width=inch(63.3125), height=inch(80), sill_height=ft(0),
-                 arch=Arch(rise=inch(8))),
+                 width=inch(63.3125), height=inch(80), sill_height=ft(0)),
 ]
 
 ROOMS = [
@@ -1605,5 +1616,75 @@ SOFFITS = [
     # plan/mep_drainage.py. The soffit only ever covered what that reroute left exposed.
 ]
 
-ELEMENTS = [*NODES, *WALLS, *OPENINGS, *ROOMS, *ALARMS, *SLABS, *PADS, *FLOOR_OPENINGS,
+# --- the veneer's lintels (2026-11-23, decision 11) -----------------------------------------
+#
+# IRC R703.8.3: veneer over an opening bears on a noncombustible lintel, 4" each side, and
+# Table R703.8.3.1's 3x3x1/4 spans 6'-0" with no story above (the porch joists clear the wythe
+# by 2"). Both reveals are inside it (14" and 63 5/16"), so ONE section serves both. HOT-DIP
+# GALVANIZED, ASTM A123 (3.9 mils on 1/4" steel): R703.8.3 lets a coated lintel stand in
+# place of a painted one, and AGA puts a 3.9-5.0 mil coating on structural steel at 70 to
+# 90+ years to first maintenance in an industrial atmosphere (notes/sunken_garden_veneer_beam.md
+# §6l).
+# Stainless is not a table read and precast has no row; the angle is both read and long-lived.
+# Long leg vertical (a 3x3 has no short one), the vertical leg behind the brick, the horizontal
+# leg 3" under its 3 5/8" face: the brick overhangs it by 5/8". Soffit on the reveal's head,
+# flashing over it per R703.8.5 (the wall section; the engine does not model it).
+BEAMS = [
+    Beam(uid="310GJ6VFEJ", tag="BM-B-BRICK-LINTEL-WIN", start_node="N-B-LINTEL-WIN-W", end_node="N-B-LINTEL-WIN-E",
+         size="L3x3x0.25", bearing_refs=("W-B-BRICK",), top_elevation=inch(-42.4375),
+         engineering_note="L3x3x1/4 hot-dip galvanized (ASTM A123) steel angle lintel over AO-B-BRICK-WIN, 4 in bearing each side: IRC Table R703.8.3.1, 3x3x1/4, no story above, 6 ft"),
+    Beam(uid="GA9XME0R7M", tag="BM-B-BRICK-LINTEL-DOOR", start_node="N-B-LINTEL-DOOR-W",
+         end_node="N-B-LINTEL-DOOR-E", size="L3x3x0.25", bearing_refs=("W-B-BRICK",),
+         top_elevation=inch(-19.4375),
+         engineering_note="L3x3x1/4 hot-dip galvanized (ASTM A123) steel angle lintel over AO-B-BRICK-DOOR, 4 in bearing each side: IRC Table R703.8.3.1, 3x3x1/4, no story above, 6 ft"),
+]
+
+# --- the veneer's base bond break and its flashing (2026-11-23, owner: "bond break at the base") ---
+#
+# The wythe stands on W-SG-BRKBM, which moves with the court (thermal closure and opening, the
+# backfill's sliding). IRC R703.8.5 flashes beneath the first course; BIA TN 28D recommends a
+# bond break there ("permits differential movement among the materials"). One run is both: a
+# brake-formed Type 316 stainless sheet on the beam's top, dry (no mortar bond to the beam), the first course
+# bedded on it, its inboard leg turned up the backup 2" behind the foam, its drip hanging 3/8"
+# past the face. The court slides under the wythe, so each tie takes friction drag and not
+# stiffness x displacement (`structural.veneer_cavity_width`, notes/sunken_garden_veneer_beam.md
+# §6m). Two runs: none under the door's reveal, where there is no brick. WEEPS (R703.8.6, 3/16"
+# every 33" at most, immediately over this flashing) are open head joints over each run:
+# notes/veneer_opening_detail.md; the model carries none. Over each lintel the same sheet
+# (R703.8.5), lapped up the backup and out over the angle, so the water an opening head sheds
+# leaves at its weeps. The sheet is Type 316 stainless (owner, 2026-11-23: the court is salty;
+# plan/veneer_materials.py). Stainless stays out of any joint with galvanized: each head sheet
+# stands on a 1/16" EPDM strip (FL-B-BRICK-*-ISOL) over the HDG angle, which it never touches.
+FLASHINGS = [
+    Flashing(uid="0WA1308RE7", tag="FL-B-BRICK-BASE-W", kind=TrimKind.DRIP_FLASHING, host_ref="W-B-BRICK",
+             path=(pt(inch(114.5), inch(-6.0)), pt(inch(224.34375), inch(-6.0))),
+             top_elevation=inch(-102.4375), depth=inch(0.375), thickness=inch(4.0),
+             material="stainless-steel-flashing", back_side="right",
+             section=FormedFlashingSection(profile="counter", upstand=inch(2), drip=inch(0.375))),
+    Flashing(uid="8E5HFJYK0Q", tag="FL-B-BRICK-BASE-E", kind=TrimKind.DRIP_FLASHING, host_ref="W-B-BRICK",
+             path=(pt(inch(287.65625), inch(-6.0)), pt(inch(317.5), inch(-6.0))),
+             top_elevation=inch(-102.4375), depth=inch(0.375), thickness=inch(4.0),
+             material="stainless-steel-flashing", back_side="right",
+             section=FormedFlashingSection(profile="counter", upstand=inch(2), drip=inch(0.375))),
+    Flashing(uid="X5DHN3YANZ", tag="FL-B-BRICK-WIN-HEAD", kind=TrimKind.DRIP_FLASHING, host_ref="W-B-BRICK",
+             path=(pt(inch(157), inch(-6.0)), pt(inch(179), inch(-6.0))),
+             top_elevation=inch(-42.375), depth=inch(0.375), thickness=inch(4.0),
+             material="stainless-steel-flashing", back_side="right",
+             section=FormedFlashingSection(profile="counter", upstand=inch(2), drip=inch(0.375))),
+    Flashing(uid="D9RT7NGEG8", tag="FL-B-BRICK-DOOR-HEAD", kind=TrimKind.DRIP_FLASHING, host_ref="W-B-BRICK",
+             path=(pt(inch(220.34375), inch(-6.0)), pt(inch(291.65625), inch(-6.0))),
+             top_elevation=inch(-19.375), depth=inch(0.375), thickness=inch(4.0),
+             material="stainless-steel-flashing", back_side="right",
+             section=FormedFlashingSection(profile="counter", upstand=inch(2), drip=inch(0.375))),
+    Flashing(uid="XJS864FKEX", tag="FL-B-BRICK-WIN-ISOL", kind=TrimKind.WRB_COUNTERFLASHING, host_ref="W-B-BRICK",
+             path=(pt(inch(157), inch(-6.0)), pt(inch(179), inch(-6.0))),
+             top_elevation=inch(-42.375), depth=inch(0.0625), thickness=inch(4.0),
+             material="epdm", back_side="right"),
+    Flashing(uid="4P47AE0VFN", tag="FL-B-BRICK-DOOR-ISOL", kind=TrimKind.WRB_COUNTERFLASHING, host_ref="W-B-BRICK",
+             path=(pt(inch(220.34375), inch(-6.0)), pt(inch(291.65625), inch(-6.0))),
+             top_elevation=inch(-19.375), depth=inch(0.0625), thickness=inch(4.0),
+             material="epdm", back_side="right"),
+]
+
+ELEMENTS = [*NODES, *WALLS, *OPENINGS, *BEAMS, *FLASHINGS, *ROOMS, *ALARMS, *SLABS, *PADS, *FLOOR_OPENINGS,
             *PANELING, *SOFFITS]

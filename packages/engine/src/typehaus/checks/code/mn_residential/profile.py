@@ -32,6 +32,10 @@ MN_2020 = JurisdictionProfile(
     # than being folded into the name — and why the name states the RESIDENTIAL edition,
     # the one the great majority of these rules come from.
     nec_base=f"{NEC.EDITION} (MN adoption effective 2026-08-17)",
+    # MN Rules 1309.0010 adopts the 2018 IRC and 1305.0011 the 2018 IBC; the 2018 IRC's
+    # Chapter 44 lists ASCE/SEI 7-16 (read on UpCodes, 2026-11-23). Neither rule names ASCE 7.
+    asce_edition="ASCE/SEI 7-16 (referenced by the 2018 IRC and IBC adopted in "
+                 "MN Rules 1309.0010 and 1305.0011)",
     coverage_statement=(
         "Encodes a declared subset. "
         "Habitability, egress and circulation: R304.1 habitable floor area, R305 ceiling "
@@ -761,8 +765,14 @@ MN_2020 = JurisdictionProfile(
         # Added 2026-09-22, when `wall_panel` left the register as a manufacturer read:
         # without a line the question would vanish from every register.
         PermitItemSpec("Exterior wall covering — wind pressure",
-                       ("structural.cladding_wind", "structural.cladding_fastener"),
-                       ("IRC R703.1.2", "ASCE 7-16 §30.3")),
+                       ("structural.cladding_wind", "structural.cladding_fastener",
+                        "structural.girt_fastening"),
+                       ("IRC R703.1.2", "ASCE 7-16 §30.3", "ICC-ES ESR-1078")),
+        # Added 2026-11-22, when the `tiered_retaining` walls Table 1.3 describes left the
+        # register as a manufacturer read (the same shape as the cladding line above).
+        PermitItemSpec("Segmental gravity retaining walls — published chart row",
+                       ("structural.srw_gravity_chart",),
+                       ("IRC R404.4", "Allan Block Commercial Installation Manual Table 1.3")),
         PermitItemSpec("Roof framing outside the rafter span table",
                        ("structural.rafter_span",),
                        ("IRC R802.4",), blocking=False),

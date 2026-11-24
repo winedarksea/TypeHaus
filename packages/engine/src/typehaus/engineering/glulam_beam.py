@@ -1,45 +1,27 @@
 """The NDS pass on a structural glulam carrying a deck.
 
-**An engineering item again, since 2026-09-18, and the round trip is the point.** It was
-one until 2026-09-11, when it was retired on the reasoning that the *supplier* publishes a
-table — Anthony/Canfor's Power Preserved Glulam Deck Guide tabulates exactly this beam
-against exactly this joist span — and reading a published table is a prescriptive act, not
-something a seal adds to. That reasoning is still right about the table. What it got wrong
-is which member the table describes.
+**Why it is engineered and not a table read.** The supplier's deck guide tabulates this beam
+against this joist span, but its row is DRY-USE and these beams stand in weather, so the
+published read goes UNKNOWN (``PublishedSpan.service_condition``) and this record carries the
+verdict.
 
-** THE PUBLISHED ROW IS DRY-USE AND THESE BEAMS STAND IN WEATHER. ** That was known on the
-day the kind was retired — it is written into the row's own ``condition`` string, and this
-module's wet-service arithmetic ran beside the PASS as an *advisory*. So the verdict came
-from a row that does not cover the member, and the only calculation modelling the real
-service condition was the one carrying no weight. Worse, in leaving the registered-kind
-tuple it left the seal machinery entirely: no record, no fingerprint, and — the part that
-would have caught it — **no oracle lint**, so nothing checked that its hand-worked note
-still existed or still agreed.
+**What governs, and what does not.** These are catlin's two balcony beams: 3-1/2" x
+11-7/8" preservative-treated southern yellow pine, 24F-V5M1/SP, on two bearings with 8" and
+20" overhangs, carrying a 9.75' strip at the Minnesota deck basis (40 + 10 psf, no snow — the
+owner's stated basis, ``balcony_loads``) and a house-authored saturated planter over the back
+span. Bearing on the 3.5" pack governs; bending, shear and deflection are not close. The
+member is that deep because the owner wanted planter margin, and the record says so rather
+than implying the depth was solved for.
 
-``PublishedSpan.service_condition`` now makes the mismatch loud: the published read goes
-UNKNOWN naming it, and this record carries the verdict.
-
-**What governs, and what does not.** These are catlin's three balcony beams: 3-1/2" x
-11-7/8" preservative-treated southern yellow pine, 24F-V5M1/SP, spanning 8'-8" between the
-corner columns at 50 psf over a 10'-0" joist span. Bending governs at about a third of
-capacity; shear and bearing are not close, and deflection is nowhere near L/360. The member
-is that deep because the owner wanted planter margin, not because a span demanded it, and
-the record says so rather than implying the depth was solved for.
-
-**Wet service.** Every one of these stands in weather with no enclosure above it, so
-AWC NDS Table 5.3.1's wet-service factors apply and are applied: ``C_M`` 0.80 on Fb, 0.875
-on Fv, 0.53 on Fc-perp and 0.833 on E. A glulam design value quoted dry and used outdoors
-is the single most common way to overstate one of these by a quarter.
-
-**Hand-worked basis.** ``houses/catlin/notes/balcony_moment_columns.md`` §5, §5b;
-``tests/test_pier_calcs.py`` reproduces it. It is a registered ``Oracle`` again, which is
-what ``tests/test_calc_package.py``'s lint checks.
+**Wet service**: AWC NDS Table 5.3.1's ``C_M`` (0.80 Fb, 0.875 Fv, 0.53 Fc-perp, 0.833 E).
+The working and the sheet declaration are ``glulam_beam_working``.
 """
 
 from __future__ import annotations
 
 from typing import Any
 
+from typehaus.engineering import glulam_beam_working as W
 from typehaus.engineering.deck_tributary import beam_tributary_ft as _beam_tributary_ft
 from typehaus.engineering.deck_tributary import joist_span_ft as _joist_span_ft
 from typehaus.engineering.item import (
@@ -48,6 +30,7 @@ from typehaus.engineering.item import (
     Oracle,
     Quantity,
     Status,
+    declare_sheet,
     item_id,
 )
 from typehaus.engineering.registry import EngineeringContext, calc, keys, oracled_by
@@ -58,13 +41,10 @@ BASIS = "AWC NDS 2018 Ch. 3 and 5, ANSI 117 combination values, wet service"
 
 #: Bumped whenever the arithmetic below changes.
 #:
-#: 1: the kind as it stood before 2026-09-11.
-#: 2: re-registered 2026-09-18, with ``C_D`` a parameter rather than a frozen 1.0.
-#: 3: 2026-09-22, each beam loaded with its own tributary (``_beam_tributary_ft``), not the
-#:    full joist span.
-#: 4: 2026-09-22, the beam's own two bearings and overhangs by statics under patterned live
-#:    load (``overhang_beam``), not ``wL/2`` over the node-to-node length.
-BASIS_VERSION = "4"
+#: 2: ``C_D`` a parameter. 3: each beam's own tributary. 4: two bearings and overhangs by
+#: statics under patterned live load. 5: the authored seat with ``C_b``, the planter as dead
+#: load, and the load basis, creep, uplift and stability stated (review B-01/B-02/B-10).
+BASIS_VERSION = "5"
 
 #: IRC R507.1 / Table R301.5 — 40 psf live plus 10 psf dead, re-exported from
 #: ``typehaus/loads.py``. One definition since 2026-09-18; there were three.
@@ -107,8 +87,16 @@ SNOW_LOAD_DURATION_FACTOR = 1.15
 LIVE_DEFLECTION_DENOMINATOR = 360.0
 
 #: IRC R507.6 — the minimum bearing a deck beam takes on wood or metal; on concrete or
-#: masonry it is 3". These beams land on cast columns, so 3" is the figure.
+#: masonry it is 3". The pure ``nds_states`` takes this when no seat is authored; the record
+#: reads the authored seat (``HeadConnector.bearing_length_in``) instead.
 BEARING_LENGTH_IN = 3.0
+#: NDS 2018 §3.10.4: ``C_b = (l_b + 0.375) / l_b`` for a bearing under 6" long and at least 3"
+#: in from the member's end. The pack is a flat plate, so the whole length counts.
+BEARING_ADJUSTMENT_MAX_LENGTH_IN = 6.0
+BEARING_ADJUSTMENT_MIN_END_IN = 3.0
+#: NDS 2018 §3.5.2 K_cr, taken at 2.0: the larger of its two values (the other, for seasoned
+#: glulam in dry service, is smaller), so the long-term figure here is a bound. Not re-read.
+CREEP_FACTOR_BOUND = 2.0
 
 _M_PER_FT = 0.3048
 #: How far a bearing post may sit off the beam's axis, or past its ends, and still bear it.
@@ -143,17 +131,31 @@ def _volume_factor(width_in: float, depth_in: float, span_ft: float) -> float:
     return float(min(factor, 1.0))
 
 
+def bearing_adjustment(length_in: float, end_distance_in: float | None) -> float:
+    """NDS 2018 §3.10.4 ``C_b``; 1.0 where the bearing is 6" or longer or nearer than 3" to
+    the end, or where the end distance is not known."""
+    if (end_distance_in is None or length_in >= BEARING_ADJUSTMENT_MAX_LENGTH_IN
+            or end_distance_in < BEARING_ADJUSTMENT_MIN_END_IN):
+        return 1.0
+    return (length_in + 0.375) / length_in
+
+
 def nds_states(width_in: float, depth_in: float, span_ft: float,
                tributary_ft: float, *,
                overhangs_ft: tuple[float, float] = (0.0, 0.0),
                load_duration_factor: float = LOAD_DURATION_FACTOR,
                live_psf: float = DECK_LIVE_LOAD_PSF,
-               dead_psf: float = DECK_DEAD_LOAD_PSF) -> tuple[LimitState, ...]:
+               dead_psf: float = DECK_DEAD_LOAD_PSF,
+               bearing_length_in: float = BEARING_LENGTH_IN,
+               bearing_end_distance_in: float | None = None,
+               planter_plf: float = 0.0) -> tuple[LimitState, ...]:
     """The four NDS limit states for one glulam deck beam, wet service applied.
 
     ``span_ft`` is the BACK span between the two bearings and ``overhangs_ft`` what runs past
     each; demands are the envelope of ``overhang_beam`` over the live patterns. ``C_D`` and
     the load intensities are parameters with a deck's values as their defaults.
+    ``bearing_length_in`` is the seat (NDS §3.10.4 ``C_b`` applies where
+    ``bearing_end_distance_in`` is known); ``planter_plf`` is dead load on the back span.
     """
     from typehaus.engineering.overhang_beam import envelope
 
@@ -164,15 +166,18 @@ def nds_states(width_in: float, depth_in: float, span_ft: float,
     volume = _volume_factor(width_in, depth_in, span_ft)
     fb = GLULAM_FB_PSI * WET_FB * load_duration_factor * volume
     fv = GLULAM_FV_PSI * WET_FV * load_duration_factor
-    fc_perp = GLULAM_FC_PERP_PSI * WET_FC_PERP
+    c_b = bearing_adjustment(bearing_length_in, bearing_end_distance_in)
+    fc_perp = GLULAM_FC_PERP_PSI * WET_FC_PERP * c_b
     modulus = GLULAM_E_PSI * WET_E
 
     env = envelope(a_ft, span_ft, b_ft, dead_psf * tributary_ft, live_psf * tributary_ft,
-                   modulus * inertia, depth_in / 12.0)
+                   modulus * inertia, depth_in / 12.0 + bearing_length_in / 24.0,
+                   extra_dead_plf=(0.0, planter_plf, 0.0))
     bending_psi = env.moment_lb_ft * 12.0 / section_modulus
-    # NDS §3.4.3.1(a): V at d from the support; 1.5 V / A on a rectangle.
+    # NDS §3.4.3.1(a): V at d from the FACE of the support (the seat's edge, half its length
+    # in from the bearing centre the statics are taken at); 1.5 V / A on a rectangle.
     shear_psi = 1.5 * env.shear_at_d_lb / (width_in * depth_in)
-    bearing_psi = max(env.reactions_lb) / (width_in * BEARING_LENGTH_IN)
+    bearing_psi = max(env.reactions_lb) / (width_in * bearing_length_in)
     # IRC Table R301.7 note b: a cantilever's L is twice its length. The worst ratio governs.
     deflections = [(env.span_deflection_in, span_ft * 12.0, "the back span")]
     deflections += [(tip, 2.0 * over * 12.0, f"the {over:.2f}' overhang tip (L = 2 x)")
@@ -181,6 +186,13 @@ def nds_states(width_in: float, depth_in: float, span_ft: float,
     deflection_in, length_in, where = max(
         deflections, key=lambda d: d[0] / (d[1] / LIVE_DEFLECTION_DENOMINATOR))
     deflection_limit_in = length_in / LIVE_DEFLECTION_DENOMINATOR
+    work = W.nds_working(
+        b=width_in, d=depth_in, a=a_ft, s=span_ft, c=b_ft, trib=tributary_ft, live=live_psf,
+        dead=dead_psf, planter=planter_plf, cd=load_duration_factor, cv=volume, cb=c_b,
+        seat=bearing_length_in, env=env, sm=section_modulus, ei=modulus * inertia,
+        where=where, defl=deflection_in, span_in=length_in, limit_in=deflection_limit_in,
+        fb=fb, fv=fv, fcp=fc_perp)
+    combo = dict(combination=W.D_PLUS_L[0], combination_factors=W.D_PLUS_L[1])
 
     return (
         LimitState("bending", bending_psi, fb, "psi",
@@ -188,18 +200,21 @@ def nds_states(width_in: float, depth_in: float, span_ft: float,
                    f"Fb {GLULAM_FB_PSI:,.0f} psi (24F-V5M1/SP) x C_M "
                    f"{WET_FB:.2f} (Table 5.3.1, wet service) x C_D "
                    f"{load_duration_factor:.2f} (Table 2.3.2) x C_V "
-                   f"{volume:.3f} (§5.3.6 volume factor, x = 20)"),
+                   f"{volume:.3f} (§5.3.6 volume factor, x = 20)", working=work[0], **combo),
         LimitState("shear parallel to grain", shear_psi, fv, "psi",
-                   f"AWC NDS 2018 §3.4.3.1(a), V taken at d from the support — Fv "
-                   f"{GLULAM_FV_PSI:,.0f} psi x C_M {WET_FV:.3f}"),
+                   f"AWC NDS 2018 §3.4.3.1(a), V taken at d from the FACE of the "
+                   f"{bearing_length_in:g}\" seat (d + half the seat from its centre) — Fv "
+                   f"{GLULAM_FV_PSI:,.0f} psi x C_M {WET_FV:.3f}", working=work[1], **combo),
         LimitState("bearing, compression perpendicular", bearing_psi, fc_perp, "psi",
-                   f"AWC NDS 2018 §3.10, the larger reaction by statics, over IRC "
-                   f"R507.6's {BEARING_LENGTH_IN:.0f}\" on concrete — Fc-perp "
-                   f"{GLULAM_FC_PERP_PSI:,.0f} psi x C_M {WET_FC_PERP:.2f}"),
+                   f"AWC NDS 2018 §3.10, the larger reaction by statics, over the "
+                   f"{bearing_length_in:g}\" seat — Fc-perp {GLULAM_FC_PERP_PSI:,.0f} psi x "
+                   f"C_M {WET_FC_PERP:.2f} x C_b {c_b:.3f} (§3.10.4"
+                   f"{'' if c_b != 1.0 else ', not claimed'})", working=work[2], **combo),
         LimitState("live-load deflection", deflection_in, deflection_limit_in, "in",
                    f"IRC Table R301.7 L/{LIVE_DEFLECTION_DENOMINATOR:.0f} on the "
                    f"{live_psf:.0f} psf live load alone, at {where} — E "
-                   f"{GLULAM_E_PSI:,.0f} psi x C_M {WET_E:.3f}"),
+                   f"{GLULAM_E_PSI:,.0f} psi x C_M {WET_E:.3f}", working=work[3],
+                   combination=W.L_ALONE[0], combination_factors=W.L_ALONE[1]),
     )
 
 
@@ -222,9 +237,19 @@ def section_of(beam: Any) -> tuple[float, float] | None:
 
 oracled_by(
     KIND,
-    Oracle(note="balcony_moment_columns.md", section="§5, §5b",
+    Oracle(note="balcony_moment_columns.md", section="§5, §5b, §20",
            test="tests/test_pier_calcs.py"),
 )
+
+
+def _sheet() -> None:
+    from typehaus.engineering.owner_bases import CURTAINS, DECK_SNOW, OVERHANGS
+
+    declare_sheet(KIND, not_covered=W.NOT_COVERED, bases=(DECK_SNOW, CURTAINS, OVERHANGS),
+                  labels=W.LABELS, figure=W.figure)
+
+
+_sheet()
 
 
 def _glulam_deck_beams(ctx: EngineeringContext) -> dict[str, tuple[Any, Any]]:
@@ -265,8 +290,9 @@ def compute(ctx: EngineeringContext) -> list[EngineeringRecord]:
     return [_one(ctx, tag, beam, deck) for tag, (beam, deck) in sorted(beams.items())]
 
 
-def _bearings(ctx: EngineeringContext, beam: Any) -> tuple[float, float, float] | str:
-    """``(overhang at start, back span, overhang at end)`` in ft, or why not.
+def _bearing_stations(ctx: EngineeringContext, beam: Any) -> (
+        tuple[tuple[float, str], tuple[float, str], tuple[float, float, float]] | str):
+    """``((t, post) at the low bearing, (t, post) at the high one, (a, span, b) ft)``, or why not.
 
     Stations are the ``bearing_refs`` posts projected onto the node-to-node axis. Exactly
     two distinct bearings are graded; one is a cantilever and three are continuous, and
@@ -281,7 +307,7 @@ def _bearings(ctx: EngineeringContext, beam: Any) -> tuple[float, float, float] 
     if length <= 0.0:
         return "two distinct nodes to take the beam's length between"
     ux, uy = (x1 - x0) / length, (y1 - y0) / length
-    stations: list[float] = []
+    stations: list[tuple[float, str]] = []
     for ref in beam.bearing_refs or ():
         position = getattr(ctx.plan.by_tag(ref), "position", None)
         if position is None or not hasattr(position, "xy_m"):
@@ -290,29 +316,51 @@ def _bearings(ctx: EngineeringContext, beam: Any) -> tuple[float, float, float] 
         t, off = px * ux + py * uy, abs(px * uy - py * ux)
         if off > _BEARING_TOL_M or not -_BEARING_TOL_M <= t <= length + _BEARING_TOL_M:
             return f"bearing ref {ref} under {beam.tag}'s axis ({off / _M_PER_FT:.2f}' off it)"
-        if all(abs(t - other) > 0.0762 for other in stations):
-            stations.append(min(max(t, 0.0), length))
+        if all(abs(t - other) > 0.0762 for other, _ in stations):
+            stations.append((min(max(t, 0.0), length), ref))
     if len(stations) != 2:
         why = ("a single bearing is a cantilever" if len(stations) == 1 else
                "no bearing_refs" if not stations else
                f"{len(stations)} bearings make a continuous beam")
         return f"exactly two bearings under {beam.tag} ({why}; this pass grades two)"
     lo, hi = sorted(stations)
-    return lo / _M_PER_FT, (hi - lo) / _M_PER_FT, (length - hi) / _M_PER_FT
+    return lo, hi, (lo[0] / _M_PER_FT, (hi[0] - lo[0]) / _M_PER_FT, (length - hi[0]) / _M_PER_FT)
+
+
+def _bearings(ctx: EngineeringContext, beam: Any) -> tuple[float, float, float] | str:
+    """``(overhang at start, back span, overhang at end)`` in ft, or why not."""
+    stations = _bearing_stations(ctx, beam)
+    return stations if isinstance(stations, str) else stations[2]
+
+
+def _seat(ctx: EngineeringContext, beam: Any) -> tuple[float, str] | None:
+    """``(seat length in, where it is authored)``: the least ``HeadConnector.bearing_length_in``
+    among the posts this beam bears on, or ``None`` where none is authored."""
+    lengths = []
+    for ref in beam.bearing_refs or ():
+        connector = getattr(ctx.plan.by_tag(ref), "head_connector", None)
+        length = getattr(connector, "bearing_length_in", None)
+        if length:
+            lengths.append((float(length), f"{ref}'s {connector.bearing}"))
+    return min(lengths) if lengths else None
 
 
 def _one(ctx: EngineeringContext, tag: str, beam: Any, deck: Any) -> EngineeringRecord:
+    from typehaus.engineering.balcony_loads import beam_reactions, planter_allowance
+
     ident = item_id(KIND, tag)
     tags = (tag, deck.tag)
     section = _section(beam)
     bearings = _bearings(ctx, beam)
     joist_span_ft = _joist_span_ft(ctx, deck)
     tributary_ft = _beam_tributary_ft(ctx, deck, beam)
+    seat = _seat(ctx, beam)
     missing = [name for name, value in (
         (f"a resolvable cross-section for Beam.size {beam.size!r}", section),
         (bearings, None if isinstance(bearings, str) else bearings),
         (f"resolved joists on {deck.tag} to take the carried span from", joist_span_ft),
         (f"a placed bearing line for {tag} among {deck.tag}'s joists", tributary_ft),
+        (f"a seat length: HeadConnector.bearing_length_in on a post {tag} bears on", seat),
     ) if value is None]
     if missing:
         return EngineeringRecord(
@@ -323,10 +371,22 @@ def _one(ctx: EngineeringContext, tag: str, beam: Any, deck: Any) -> Engineering
 
     width_in, depth_in = section
     a_ft, span_ft, b_ft = bearings
-    states = nds_states(width_in, depth_in, span_ft, tributary_ft, overhangs_ft=(a_ft, b_ft))
+    seat_in, seat_where = seat
+    # NDS §3.10.4 wants the bearing's nearer edge at least 3\" in from the beam's end.
+    end_in = min(a_ft, b_ft) * 12.0 - seat_in / 2.0
+    allowance = planter_allowance(ctx)
+    planter_plf = allowance.plf if allowance else 0.0
+    kwargs = dict(overhangs_ft=(a_ft, b_ft), bearing_length_in=seat_in,
+                  bearing_end_distance_in=end_in)
+    states = nds_states(width_in, depth_in, span_ft, tributary_ft, planter_plf=planter_plf,
+                        **kwargs)
+    bare = nds_states(width_in, depth_in, span_ft, tributary_ft, **kwargs)
     volume = _volume_factor(width_in, depth_in, span_ft)
+    c_b = bearing_adjustment(seat_in, end_in)
     worst = max(states, key=lambda s: s.demand / s.capacity if s.capacity else 0.0)
     over = any(not state.ok for state in states)
+    dead_r, live_r, planter_r = beam_reactions(a_ft, span_ft, b_ft, tributary_ft, planter_plf)
+    spacing_in = float(deck.joists.spacing.inches)
 
     inputs = (
         Quantity("width", width_in, "in", 0.001),
@@ -352,26 +412,66 @@ def _one(ctx: EngineeringContext, tag: str, beam: Any, deck: Any) -> Engineering
         Quantity("C_M_modulus", WET_E, "", 0.001),
         Quantity("C_D", LOAD_DURATION_FACTOR, "", 0.001),
         Quantity("C_V", volume, "", 0.001),
-        Quantity("bearing_length", BEARING_LENGTH_IN, "in", 0.01),
+        Quantity("C_b", c_b, "", 0.001),
+        Quantity("bearing_length", seat_in, "in", 0.01),
+        Quantity("planter_line_load", planter_plf, "plf", 0.1),
     )
+    ei = GLULAM_E_PSI * WET_E * width_in * depth_in ** 3 / 12.0
+    # NDS §3.5.2: long-term deflection of the dead load (deck and planter), K_cr x the
+    # instantaneous figure, on the back span as a simple span's 5wL^4/384EI — a screening
+    # bound, the continuity over the overhangs only reduces it.
+    dead_plf = DECK_DEAD_LOAD_PSF * tributary_ft + planter_plf
+    creep_in = (CREEP_FACTOR_BOUND * 5.0 * dead_plf / 12.0 * (span_ft * 12.0) ** 4
+                / (384.0 * ei))
+    quarter_in = span_ft * 12.0 / 4.0
+    neg_moment = (DECK_DEAD_LOAD_PSF + DECK_LIVE_LOAD_PSF) * tributary_ft * b_ft ** 2 / 2.0
+    neg_fb = neg_moment * 12.0 / (width_in * depth_in ** 2 / 6.0)
+    fb_adj = GLULAM_FB_PSI * WET_FB * LOAD_DURATION_FACTOR * volume
     notes = (
         f"WET SERVICE, and it is the whole reason this is an engineered item rather than a "
         f"table read. The supplier's deck-guide row that covers this beam is published "
         f"DRY-USE (AWC NDS 2018 Table 5.3.1 C_M: {WET_FB:.2f} on Fb, {WET_FV:.3f} on Fv, "
         f"{WET_FC_PERP:.2f} on Fc-perp, {WET_E:.3f} on E), and this beam stands in weather "
-        f"with no enclosure above it. `structural.deck_beam_span` refuses the row on "
-        f"`PublishedSpan.service_condition` and this record carries the verdict.",
+        f"with no enclosure above it. the deck-beam span check refuses the "
+        f"published row for a wet-service condition and this record carries the verdict.",
+        f"THE SEAT is the authored one, {seat_in:g}\" ({seat_where}), not R507.6's 3\" minimum "
+        f"that this record used to divide by: C_b {c_b:.3f} (NDS §3.10.4, a bearing under 6\" "
+        f"at least 3\" in from the end — here {end_in:.2f}\" — and a flat plate, so the whole "
+        f"length counts). Bearing is {_ratio(states, 'bearing, compression perpendicular'):.2f} "
+        f"with the planter ON (this record) and "
+        f"{_ratio(bare, 'bearing, compression perpendicular'):.2f} with it OFF.",
         f"C_V {volume:.3f} (NDS §5.3.6, x = 20) and C_L are NOT cumulative — §5.3.6 takes "
-        f"the LESSER — and the joist field holds the compression edge every 16\", so C_L is "
-        f"1.0 and C_V governs. Leaving C_V out is the commonest error in a hand check here.",
+        f"the LESSER. The joist field holds the compression edge every {spacing_in:g}\" o.c. "
+        f"(not 16\"). Over the north bearing the bottom edge is in compression, unbraced "
+        f"along the {b_ft * 12.0:.0f}\" overhang: the negative moment there is "
+        f"{neg_moment:,.0f} lb-ft, f_b {neg_fb:,.0f} psi against F_b' {fb_adj:,.0f} psi, so "
+        f"C_L (not computed: no E_min is held) would have to fall below {neg_fb / fb_adj:.2f} "
+        f"for it to govern. Unsheathed stage: self weight about 10 plf.",
         f"Tributary {tributary_ft:.2f}' of a {joist_span_ft:.2f}' joist span: half of each "
         f"adjacent bay, plus the joist overhang where this is the outermost bearing.",
         f"Two bearings by statics: {a_ft:.2f}' overhang, {span_ft:.2f}' back span, "
         f"{b_ft:.2f}' overhang, dead load everywhere and live load on each of the eight "
-        f"patterns of the three segments (ASCE 7-16 §4.3.3); the worst of each governs.",
-        "Not graded: lateral-torsional buckling at an unsheathed stage, connection design at "
-        "either end, uplift at a bearing, and long-term creep deflection. IRC R507.5.1's "
-        "cantilever limit is the deck check's.",
+        f"patterns of the three segments (ASCE 7-16 §4.3.3); the worst of each governs. "
+        f"Reactions at the two columns (south, north): dead {dead_r[0]:,.0f} / "
+        f"{dead_r[1]:,.0f} lb, live {live_r[0]:,.0f} / {live_r[1]:,.0f} lb, planter "
+        f"{planter_r[0]:,.0f} / {planter_r[1]:,.0f} lb. The columns are loaded with THESE "
+        f"(the beam statics, patterned live load), not an equal split.",
+        (f"PLANTER: {allowance.describe()} (the house's stated planter allowance). "
+         f"It bears on a support directly on this beam, so none of it enters the plank or "
+         f"the joists; it is dead load, cased with a planter over neither beam, one or both "
+         f"(this record is the planted case)."
+         if allowance else
+         "PLANTER: none stated (the house's planter allowance is absent)."),
+        f"SERVICEABILITY: dead load with creep (NDS §3.5.2 K_cr bounded at "
+        f"{CREEP_FACTOR_BOUND:g}) is {creep_in:.3f}\" on the back span, "
+        f"{creep_in / (span_ft * 12.0) * 100.0:.2f}% of it; live-load deflection is graded above.",
+        "UPLIFT AT A BEARING: none under gravity — every pattern keeps both reactions in "
+        "compression. Wind uplift of the sealed deck and its tie to the column are "
+        "`column_head_joint`'s, and the end connections are its too.",
+        f"OVERHANGS, accepted (owner decision 9): {a_ft * 12.0:.0f}\" south and "
+        f"{b_ft * 12.0:.0f}\" north on a {span_ft * 12.0:.0f}\" back span, against the quarter "
+        f"span of {quarter_in:.0f}\" (IRC R507.5.1); the joists run 9\" past the beams "
+        f"(R507.6.1). Gravity cantilevers, graded here by statics.",
         f"The member is this deep because the owner wanted planter margin, not because a "
         f"span demanded it: {worst.name} governs at "
         f"{worst.demand / worst.capacity:.2f} of capacity.",
@@ -383,6 +483,11 @@ def _one(ctx: EngineeringContext, tag: str, beam: Any, deck: Any) -> Engineering
         summary=(f"{tag}: a {width_in:g}\" x {depth_in:g}\" glulam spanning "
                  f"{span_ft:.2f}' ({a_ft:.2f}' and {b_ft:.2f}' over) carrying "
                  f"{tributary_ft:.2f}' of a {joist_span_ft:.2f}' "
-                 f"joist span, WET service — "
+                 f"joist span with the planter ON, WET service — "
                  f"{describe_states(states)}"),
         inputs=inputs, limit_states=states, notes=notes, element_tags=tags)
+
+
+def _ratio(states: tuple[LimitState, ...], name: str) -> float:
+    state = next(s for s in states if s.name == name)
+    return state.demand / state.capacity

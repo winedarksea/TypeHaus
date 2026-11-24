@@ -14,15 +14,20 @@ STRUCTURE face (the stud or concrete a tie fastens into): the table's maximum, w
 station governs. Back of the wythe to the backing's nearest face (sheathing or foam): the
 1" nominal airspace minimum, least station governs.
 
-**Table R703.8.4(1)** (checked 2026-11-03, notes/sunken_garden_veneer_beam.md §6k). The
-maximum is to the BACKING; the minimum airspace is 1" nominal from the sheathing or foam.
+**Table R703.8.4(1)** (UpCodes: MN 2018, Colorado 2021, Oklahoma 2024, read 2026-11-23;
+notes/sunken_garden_veneer_beam.md §6k). The maximum is to the BACKING; the minimum airspace
+is 1" nominal from the sheathing or foam. Every row is WOOD-STUD backing here.
 
 =================  ====================================  =======================
 edition            W1.7 adjustable wire (9 ga)          W2.8 adjustable (3/16")
 =================  ====================================  =======================
 2015 / 2018 IRC    4 1/2"                                no row
-2021 / 2024 IRC    4 5/8"                                6 5/8"
+2021 IRC           4 5/8"                                6 5/8"
+2024 IRC           4 5/8"                                6 5/8"
 =================  ====================================  =======================
+
+**No row has concrete or masonry backing** (F-02), so a tie goes on a stud and never into a
+concrete stretch: :mod:`typehaus.veneer_tie_layout` stations the ties on the studs.
 
 R703.8.4.1: each tie carries at most 2.67 sf of wall, 32" o.c. horizontally and 24" o.c.
 vertically; 2 sf where the wind pressure exceeds 30 psf.
@@ -49,6 +54,36 @@ HIGH_WIND_PSF = 30.0
 TIE_SPACING_H_IN = 32.0
 TIE_SPACING_V_IN = 24.0
 
+#: TMS 402-22 Table 6 as BIA TN 3C (2022) prints it, "veneer ties meeting the prescriptive tie
+#: type and backing requirements": (axial stiffness lb/in, allowable lb, design strength lb).
+#: ``adjustable_pintle`` is the two-leg eye-and-pintle the W2.8 row needs.
+TIE_TABLE_6 = {"adjustable_pintle": (2500.0, 125.0, 210.0),
+               "adjustable_slotted": (3000.0, 200.0, 330.0)}
+#: TN 3C Table 7, the tributary-area method: tie force = factor x p x At, by tie stiffness
+#: (k <= 2,500 lb/in: 2; <= 5,000: 2.5).
+TIE_FORCE_FACTOR_SOFT = 2.0
+#: ... and 2.5 for 2,500 < k <= 5,000 lb/in (the adjustable slotted row's 3,000).
+TIE_FORCE_FACTOR_STIFF = 2.5
+#: The tie the wythe is detailed with (owner, G8: "adjustable slotted tie"): Table 6's
+#: adjustable slotted row, read as the maker's HB-213 anchor plate with a 3/16" 2-leg compressed
+#: hook (below). Table 6 allows it 200 lb; the product's own working load at a 1 1/4" offset and
+#: 0.05" deflection is 235-332 lb in tension and compression at 4 1/2" and 7 1/2" cavities.
+DETAIL_TIE_KIND = "adjustable_slotted"
+#: A READING: H&B's sheet does not call the plate "slotted"; the product is tested by its maker at
+#: over 200 lbf, tension and compression, at the 1 1/4" maximum offset, equal to Table 6's 200 lb.
+DETAIL_TIE_PRODUCT = ("Hohmann & Barnard HB-213-2X adjustable veneer anchor, 14 ga plate 4\" "
+                      "(the foam's thickness) with 400H-2X hooks, 3/16\" compressed legs; data "
+                      "sheet (c) MiTek / H&B 2013-2021, buildsite.com HB-213-2X 2281554")
+#: The friction taken for brick and mortar on the flashing when none is sourced: an UPPER BOUND
+#: (unverified), not a measurement. McGinley and Borchelt (TMS Journal 9(2), 1991) tested it and
+#: was not opened; a sourced value in ``FRICTION_BRICK_ON_FLASHING`` replaces this.
+FRICTION_UPPER_BOUND = 1.0
+#: Friction of brick and mortar on the base flashing sheet, the input the drag row needs. No
+#: maker publishes it; McGinley and Borchelt, "Friction at Supports of Clay Brick Walls" (TMS
+#: Journal 9(2), 1991) tested it with common flashing and its values were not opened (paywalled).
+#: ``None`` keeps ``structural.veneer_tie_force`` UNKNOWN; set it from a source, never a guess.
+FRICTION_BRICK_ON_FLASHING: float | None = None
+
 
 @dataclass(frozen=True)
 class TieRow:
@@ -56,11 +91,21 @@ class TieRow:
     max_to_backing_in: float
 
 
-#: Table R703.8.4(1), the rows each edition publishes, lightest tie first.
+#: Table R703.8.4(1), the rows each edition publishes, lightest tie first (wood-stud backing).
 _ROWS_2018 = (TieRow("W1.7 adjustable wire (9 ga)", 4.5),)
 _ROWS_2021 = (TieRow("W1.7 adjustable wire (9 ga)", 4.625),
               TieRow("W2.8 adjustable wire (3/16\")", 6.625))
-_ROWS = {2015: _ROWS_2018, 2018: _ROWS_2018, 2021: _ROWS_2021, 2024: _ROWS_2021}
+#: 2024: the 2021 rows, footnotes unchanged (e: 2 pintle legs, offset <= 1 1/4"; f: brick
+#: face to pintle end <= 2"; backing eye >= W2.8, barrel >= 1/4" OD, or plate >= 0.074" x 1 1/4").
+_ROWS_2024 = _ROWS_2021
+_ROWS = {2015: _ROWS_2018, 2018: _ROWS_2018, 2021: _ROWS_2021, 2024: _ROWS_2024}
+#: The edition the ties are DETAILED to (decision 10): the W2.8 row, in force in a 2024-based code.
+DETAIL_EDITION = 2024
+TIE_DETAIL = ("W2.8 (3/16\") adjustable wire tie, 2 pintle legs, offset at most 1 1/4\", brick "
+              "face to pintle end at most 2\"; backing plate at least 0.074\" x 1 1/4\" "
+              "(Table R703.8.4(1)); fastener not smaller than an 8d common nail, long enough to "
+              "seat in the stud through the foam and sheathing. Product: "
+              "H&B HB-213-2X plate with 400H-2X hooks (adjustable slotted, TMS 402-22 Table 6)")
 
 
 def irc_edition(irc_base: str | None) -> int | None:
@@ -190,3 +235,45 @@ def beyond_table(model: Any, irc_base: str | None) -> list[str]:
         if reach is None or covering_row(irc_base, reach.to_structure_in) is None:
             out.append(wythe.tag)
     return out
+
+
+def base_flashing(model: Any, wythe: Any) -> tuple[list[str], float]:
+    """``(flashing runs, brick base left bare in)``: the authored ``Flashing`` runs hosted on
+    the wythe with their top at its base (the bond break and R703.8.5 flashing in one), and
+    the length of base along the wythe they do not cover, net of an opening that reaches the
+    base (a door's reveal has no brick to flash under)."""
+    (ax, ay), (bx, by) = wythe.axis
+    length = math.hypot(bx - ax, by - ay)
+    u = ((bx - ax) / length, (by - ay) / length)
+
+    def along(p) -> float:
+        return ((p[0] - ax) * u[0] + (p[1] - ay) * u[1]) / _M_PER_IN
+
+    brick = next(ly for ly in wythe.layers if ly.function == "structure" and ly.polygon)
+    us = [along(p) for p in brick.polygon]
+    lo, hi = max(0.0, min(us)), min(length / _M_PER_IN, max(us))
+    spans = [(wythe_u(model, o, -1), wythe_u(model, o, 1)) for o in model.openings
+             if o.host_wall == wythe.tag and o.sill_m <= 1e-4]
+    covered, tags = [], []
+    for el in model.plan.all_elements():
+        path = getattr(el, "path", None)
+        if (getattr(el, "host_ref", None) != wythe.tag or path is None
+                or abs(el.top_elevation.meters - wythe.z0_m) > 0.5 * _M_PER_IN):
+            continue
+        pts = [along((p.x.meters, p.y.meters)) for p in path]
+        covered.append((min(pts), max(pts)))
+        tags.append(el.tag)
+    bare = 0.0
+    cuts = sorted({lo, hi, *(c for pair in covered + spans for c in pair)})
+    for a, b in zip(cuts, cuts[1:], strict=False):
+        mid = (a + b) / 2.0
+        if not lo <= mid <= hi:
+            continue
+        if not any(x <= mid <= y for x, y in covered + spans):
+            bare += b - a
+    return sorted(tags), bare
+
+
+def wythe_u(model: Any, opening: Any, side: int) -> float:
+    """An opening's edge along its wythe, in from the wall's start."""
+    return opening.center_along_m / _M_PER_IN + side * opening.width_m / _M_PER_IN / 2.0

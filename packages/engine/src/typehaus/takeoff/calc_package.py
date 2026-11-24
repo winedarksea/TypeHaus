@@ -19,11 +19,10 @@ than none: it is the page a reviewer trusts to place every number behind it.
 
 from __future__ import annotations
 
-from collections.abc import Mapping, Sequence
+from collections.abc import Mapping
 from dataclasses import dataclass, field
 
 from typehaus.emit.md_writer import bullets, callout, document, heading, kv_block, table
-from typehaus.engineering.deferred import DEFERRALS
 from typehaus.engineering.item import EngineeringRecord, Status
 from typehaus.engineering.register import EngineeringRegister
 from typehaus.takeoff.calc_appendix import render_appendix
@@ -37,16 +36,23 @@ from typehaus.takeoff.calc_family import (
     render_conventions,
     render_family,
 )
-from typehaus.takeoff.calc_sheet import STATUS_LABEL, render_sheet, sheet_filename
+from typehaus.takeoff.calc_register import open_items_page, register_page, scope_page
+from typehaus.takeoff.calc_sheet import render_sheet, sheet_filename
+from typehaus.takeoff.calc_summary import (
+    STATE_NAME,
+    parse_previous,
+    render_summary,
+    state_line,
+)
 
 #: Printed on the cover, and meant to be read. A draft package is a working document; a set
 #: that leaves this repo without saying so can be mistaken for one somebody sealed.
 NOT_FOR_CONSTRUCTION = (
-    "NOT FOR CONSTRUCTION. This package is generated from a model by the Type:Haus engine. "
-    "Every result in it is a **draft** calculation: it is this engine's own first-principles "
-    "arithmetic, checked against an independently hand-worked note, and it is not a "
-    "professional engineer's seal. Nothing here may be built from until a licensed engineer "
-    "has reviewed it and stamped the items on the register."
+    "NOT FOR CONSTRUCTION. This package is generated from a model by Type:Haus. Every "
+    "result in it is a **draft** calculation: first-principles arithmetic, checked against an "
+    "independently hand-worked note, and it is not a professional engineer's seal. Nothing "
+    "here may be built from until a licensed engineer has reviewed it and stamped the items "
+    "on the register."
 )
 
 
@@ -76,6 +82,13 @@ class PackageInputs:
     notes_dir: str = "notes/"
     model_revision: str = ""
     records: tuple[EngineeringRecord, ...] = field(default_factory=tuple)
+    #: The ``JurisdictionProfile`` (code and loads editions, seismic category) and the house's
+    #: ``Preferences`` (the deck snow input). Either may be ``None``; the pages then omit them.
+    profile: object = None
+    preferences: object = None
+    #: An earlier package's ``00-cover.md`` and ``02-item-register.md`` for "what changed"
+    #: (:func:`typehaus.takeoff.calc_summary.read_previous`); ``None`` reads "first issue".
+    previous: Mapping[str, str] | None = None
 
     def __post_init__(self) -> None:
         if not self.records:
@@ -92,11 +105,12 @@ def calc_package(inputs: PackageInputs, *, only: str | None = None) -> dict[str,
     files: dict[str, str] = {
         "README.md": _readme(inputs),
         "00-cover.md": _cover(inputs),
+        "00-summary.md": render_summary(inputs, parse_previous(inputs.previous)),
         "01-design-criteria.md": _criteria(inputs),
-        "02-item-register.md": _register_page(inputs),
-        "03-open-items.md": _open_items(inputs),
+        "02-item-register.md": register_page(inputs),
+        "03-open-items.md": open_items_page(inputs),
         "04-assumptions.md": _assumptions(inputs),
-        "05-scope-of-review.md": _scope_of_review(inputs),
+        "05-scope-of-review.md": scope_page(inputs),
         CONVENTIONS_FILE: render_conventions(house=inputs.house),
     }
     kept = [record for record in inputs.records
@@ -130,6 +144,8 @@ def _readme(inputs: PackageInputs) -> str:
         NOT_FOR_CONSTRUCTION,
         heading("How to read this package", 2),
         bullets([
+            "`00-summary.md` — one page: criteria, the ten highest ratios, what changed "
+            "since the last issue, what is open, and what is not covered.",
             "`00-cover.md` — what this is a calculation for, against which model, and "
             "where the permit gate stands.",
             "`01-design-criteria.md` — the loads, the ground and the materials every sheet "
@@ -147,8 +163,10 @@ def _readme(inputs: PackageInputs) -> str:
             f"`appendix/<kind>.md` — the per-member data behind those schedules, one table "
             f"per family with a column per member. Beside it, one nine-section sheet per "
             f"item (`appendix/<kind>__<tag>.md`, {len(inputs.records)} of them) as diffable "
-            f"machine data; the PDF prints neither unless asked (`--appendix`). Nothing in "
-            f"it is a second calculation; it is what the schedule rows are read off.",
+            f"machine data, which the PDF does not print. The per-family tables are in the "
+            f"PDF of a `haus handoff` bundle, and in `haus calcs --pdf` only with "
+            f"`--appendix`. Nothing in it is a second calculation; it is what the schedule "
+            f"rows are read off.",
         ]),
         heading("Regenerating it", 2),
         "This package is generated, not maintained. Re-run `haus calcs "
@@ -164,17 +182,23 @@ def _readme(inputs: PackageInputs) -> str:
 
 def _cover(inputs: PackageInputs) -> str:
     gate = _gate_lines(inputs)
+    profile = inputs.profile
+    edition = getattr(profile, "edition", "")
+    jurisdiction = (f"{inputs.profile_name} — {edition}" if inputs.profile_name and edition
+                    else inputs.profile_name or "not declared")
     revision = ([("Live model revision", f"`{inputs.model_revision}`")]
                 if inputs.model_revision else [])
+    asce = getattr(profile, "asce_edition", "")
     return document(
         heading(f"{inputs.house} — structural calculation package"),
         callout(NOT_FOR_CONSTRUCTION, marker="**Status: DRAFT**"),
         heading("This package", 2),
         kv_block([
             ("House", inputs.house),
-            ("Jurisdiction profile", inputs.profile_name or "not declared"),
+            ("Jurisdiction", jurisdiction),
+            ("Loads standard", asce or "see the design criteria"),
             ("Generated", inputs.generated),
-            ("Engine version", inputs.engine_version or "unknown"),
+            ("Software version", inputs.engine_version or "unknown"),
             ("Model content hash", f"`{inputs.content_hash}`" if inputs.content_hash else ""),
             ("Engineered items", len(inputs.records)),
         ] + revision),
@@ -182,8 +206,9 @@ def _cover(inputs: PackageInputs) -> str:
         gate,
         heading("The two gates", 2),
         bullets([
-            "**draft** — this engine computed the item and every ratio is within capacity. "
-            "That is what a permit-ready printoff is for, and what `haus print` gates on.",
+            "**draft** — the item has been computed and every limit state listed on its sheet "
+            "is within capacity. A limit state the sheet does not list is not evaluated and is "
+            "not implied to pass (section 10 of each calculation). `haus print` gates here.",
             "**sealed** — a licensed professional stamped the item *and* the fingerprint "
             "pinned in `engineering.toml` still matches the model in front of you. "
             "`haus print --sealed` gates here.",
@@ -197,10 +222,12 @@ def _gate_lines(inputs: PackageInputs) -> str:
     counts = _status_counts(inputs.records)
     sealed = sum(1 for record in inputs.records
                  if inputs.register.covering(record.item_id) is not None)
-    rows = [[STATUS_LABEL[status].split(" —")[0], counts.get(status, 0)]
-            for status in (Status.OK, Status.OVER, Status.INCOMPLETE, Status.NO_CALC)]
+    rows = [[STATE_NAME[status], counts.get(status, 0)]
+            for status in (Status.OK, Status.INCOMPLETE, Status.NO_CALC, Status.OVER)]
     rows.append(["items covered by a signoff in engineering.toml", sealed])
-    block = table(["Local calculation status", "Items"], rows)
+    block = (f"{len(inputs.records)} item(s): {state_line(inputs.records)}. A computed item "
+             "is not a complete one; the others are open.\n\n"
+             + table(["Local calculation status", "Items"], rows))
     checklist = inputs.checklist
     if checklist is None:
         return block + "\n\nThe permit checklist was not evaluated for this package."
@@ -211,180 +238,11 @@ def _gate_lines(inputs: PackageInputs) -> str:
     return block + f"\n\nAgainst the declared permit checklist, {verdict} {final}."
 
 
-def _status_counts(records: Sequence[EngineeringRecord]) -> dict[Status, int]:
+def _status_counts(records) -> dict[Status, int]:
     counts: dict[Status, int] = {}
     for record in records:
         counts[record.status] = counts.get(record.status, 0) + 1
     return counts
-
-
-def _scope_of_review(inputs: PackageInputs) -> str:
-    """05 — what a seal over this package would and would not cover. One page.
-
-    The register says what each item *is*; this says what signing it *means*. It is the
-    page a reviewer asked for a scope letter reads, and the reason it is generated rather
-    than written is the same as everywhere else here: a scope that can drift from the items
-    it scopes is worse than none.
-    """
-    computed = [r for r in inputs.records if r.status is Status.OK]
-    incomplete = [r for r in inputs.records if r.status is Status.INCOMPLETE]
-    deferred = [r for r in inputs.records if r.status is Status.NO_CALC]
-    sealed = [r for r in inputs.records
-              if inputs.register.freshness(r)[0].value == "fresh"]
-    return document(
-        heading(f"Scope of review — {inputs.house}"),
-        "What a professional seal over this package covers, and what it does not. "
-        f"{len(inputs.records)} engineered item(s) in three states.",
-        table(["State", "Items", "What a seal over it would mean"], [
-            ["**Computed**", len(computed),
-             "This engine derived a demand and a capacity and the item checks out. A seal "
-             "here is a review of THIS arithmetic against THIS model — the reviewer is "
-             "adopting the calculation, not re-deriving it."],
-            ["**Incomplete**", len(incomplete),
-             "A demand or a capacity is missing an input. Nothing may be sealed here until "
-             "the input is authored; see `03-open-items.md` for what each one needs."],
-            ["**Deferred**", len(deferred),
-             "This engine computes nothing and never will — a component manufacturer's or "
-             "another engineer's sealed design governs. A seal on this package does NOT "
-             "reach these; each names its own responsible designer."],
-        ]),
-        heading("What a seal does not cover, in any state", 2),
-        bullets([
-            "**The model.** A seal is pinned to a fingerprint of the elements it covers "
-            "(`02-item-register.md`). Move one of them and the seal goes stale, by design.",
-            "**Anything outside these item ids.** Every requirement met from a "
-            "prescriptive table is graded by `haus check` and is not in this package.",
-            "**Means and methods, MEP, energy, and the architectural set.** This package "
-            "is structural calculation only.",
-            "**Quantities.** The bill of materials is derived from the same model and is "
-            "the contractor's to confirm.",
-        ]),
-        heading("Where it stands now", 2),
-        f"{len(sealed)} of {len(inputs.records)} item(s) carry a fresh seal in "
-        "`engineering.toml`. The engine reads that file and never writes it: a seal is a "
-        "human act, and this package records it rather than performing it.",
-    )
-
-
-
-# --- register and gap pages --------------------------------------------------------------
-
-def _register_page(inputs: PackageInputs) -> str:
-    rows = []
-    for record in inputs.records:
-        governing = record.governing
-        state, signoff = inputs.register.freshness(record)
-        rows.append([
-            f"`{record.item_id}`",
-            ", ".join(record.element_tags) or record.key,
-            STATUS_LABEL[record.status].split(" —")[0],
-            governing.name if governing else "—",
-            f"{governing.ratio:.3f}" if governing else "—",
-            state.value + (f" ({signoff.id})" if signoff else ""),
-            ", ".join(str(o) for o in record.oracle) or "**none**",
-        ])
-    return document(
-        heading(f"Item register — {inputs.house}"),
-        f"{len(rows)} engineered item(s). One row per element: identity is per element and "
-        "never per group, so moving one wall stales that wall's seal and leaves its "
-        "neighbours alone.",
-        table(["Item", "Elements", "Local", "Governing", "d/c", "Seal",
-               "Independently checked by"], rows),
-        heading("Reading the seal column", 2),
-        bullets([
-            "`unsealed` — no signoff in `engineering.toml` covers this item.",
-            "`unpinned` — a signoff covers it but recorded no fingerprint. It cannot go "
-            "stale, so it satisfies no gate.",
-            "`fresh` — sealed, and the pinned fingerprint still matches this model.",
-            "`stale` — sealed once, and the model or the calculation has moved since. This "
-            "is the only state that reads as done and is not.",
-        ]),
-    )
-
-
-def _open_items(inputs: PackageInputs) -> str:
-    """The gap register — everything not finished, and who owns it.
-
-    Separated from the item register on purpose. Twenty-nine open rows scattered through a
-    forty-six-row table is a list nobody reads to the end; a page whose only content is
-    what is outstanding is one somebody works through.
-    """
-    open_records = [r for r in inputs.records
-                    if r.status in (Status.INCOMPLETE, Status.NO_CALC, Status.OVER)]
-    blocks = [
-        heading(f"Open items — {inputs.house}"),
-        (f"{len(open_records)} of {len(inputs.records)} items are not finished. Nothing on "
-         "this page is a guess that failed: each row is an input this engine does not have "
-         "or a design it does not do, named so that it can be assigned."),
-    ]
-    deferred = [r for r in open_records if r.status is Status.NO_CALC]
-    if deferred:
-        # Items that share one deferral share one row: two trussed roofs are one ask.
-        grouped: dict[tuple[str, str, str], list[str]] = {}
-        for record in deferred:
-            deferral = DEFERRALS.get(record.kind)
-            key = (deferral.designer if deferral else "not assigned",
-                   deferral.deliverable if deferral else record.summary,
-                   deferral.unblocks if deferral else "—")
-            grouped.setdefault(key, []).append(f"`{record.item_id}`")
-        rows = [[", ".join(items), *key] for key, items in grouped.items()]
-        blocks += [
-            heading("A. Deferred to a designer of record", 2),
-            "This engine computes nothing for these, by decision — a fabricator's or a "
-            "supplier's sealed design governs. They are exactly as blocking as they were "
-            "before they had names.",
-            table(["Item", "Designer of record", "What they must produce", "Unblocks"], rows),
-        ]
-    incomplete = [r for r in open_records if r.status is Status.INCOMPLETE]
-    if not incomplete:
-        blocks += [heading("B. Incomplete — the calculation exists, an input does not", 2),
-                   "_None._"]
-    if incomplete:
-        blocks += [
-            heading("B. Incomplete — the calculation exists, an input does not", 2),
-            "Each of these has a computed part and an uncomputed part. The ratio on the "
-            "sheet is real and is **not** the whole answer.",
-            table(["Item", "Governing (of what was computed)", "d/c", "What is missing"],
-                  [[f"`{r.item_id}`",
-                    r.governing.name if r.governing else "—",
-                    f"{r.governing.ratio:.3f}" if r.governing else "—",
-                    " ".join(r.missing)] for r in incomplete]),
-        ]
-    over = [r for r in open_records if r.status is Status.OVER]
-    if not over:
-        blocks += [heading("C. Over capacity", 2), "_None._"]
-    if over:
-        blocks += [
-            heading("C. Over capacity", 2),
-            callout("These items were computed in full and do not check. They are design "
-                    "failures, not gaps.", marker="**Action required**"),
-            table(["Item", "Governing", "d/c", "Citation"],
-                  [[f"`{r.item_id}`", r.governing.name, f"{r.governing.ratio:.3f}",
-                    r.governing.citation] for r in over if r.governing]),
-        ]
-    presumed = [r for r in inputs.records if r.status not in (Status.INCOMPLETE,
-                Status.NO_CALC, Status.OVER) and _presumed_inputs(r)]
-    if presumed:
-        blocks += [
-            heading("D. Graded on a presumed input — draft, not closed", 2),
-            "Each of these checks out on a PUBLISHED table value for the presumed soil, "
-            "not a measurement on this parcel. A geotechnical report confirms or replaces "
-            "the value; until then the row stays here.",
-            table(["Item", "Presumed input", "Governing", "d/c"],
-                  [[f"`{r.item_id}`", ", ".join(_presumed_inputs(r)),
-                    r.governing.name if r.governing else "—",
-                    f"{r.governing.ratio:.3f}" if r.governing else "—"] for r in presumed]),
-        ]
-    if not open_records and not presumed:
-        blocks.append("**Nothing is outstanding.** Every item reached draft.")
-    return document(*blocks)
-
-
-def _presumed_inputs(record) -> list[str]:  # type: ignore[no-untyped-def]
-    """Names of the ``<x>_presumed`` flags a record raised (``base_rotation``'s n_h,
-    ``thermal_break``'s k_v): a published table row standing in for a measurement."""
-    return [q.name.removesuffix("_presumed") for q in record.inputs
-            if q.name.endswith("_presumed") and q.value >= 0.5]
 
 
 def _assumptions(inputs: PackageInputs) -> str:

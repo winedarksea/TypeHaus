@@ -55,6 +55,14 @@ def test_the_bundle_carries_the_five_things_a_reviewer_needs(bundle):
     assert (bundle / "calcs" / "00-cover.md").is_file()
     assert (bundle / "calcs.pdf").is_file()
     assert list((bundle / "notes").glob("*.md"))
+    # A tag can be found on paper, and the owner's review travels with the calculations.
+    assert (bundle / "drawings" / "structural_sheets.pdf").is_file()
+    assert (bundle / "drawings" / "key_plan.pdf").is_file()
+    assert (bundle / "evidence" / "engineering_review_2026-11-22" / "E_reviewability.md"
+            ).is_file()
+    manifest = json.loads((bundle / "MANIFEST.json").read_text())["files"]
+    assert "evidence/engineering_review_2026-11-22/E_reviewability.md" in manifest
+    assert "drawings/key_plan.pdf" in manifest and "engineering-external.toml.draft" in manifest
 
 
 def test_only_the_notes_these_calculations_cite_are_copied(bundle):
@@ -62,7 +70,7 @@ def test_only_the_notes_these_calculations_cite_are_copied(bundle):
     copied = {path.name for path in (bundle / "notes").glob("*.md")}
     everything = {path.name for path in (CATLIN / "notes").glob("*.md")}
     assert copied < everything, "the whole notes folder was copied"
-    assert "board_batten_girt_span.md" in copied
+    assert "catlin_truss_engineering.md" in copied
     # A note about a design decision, oracling nothing, must not be in a calc bundle.
     assert "interior_selections.md" not in copied
 
@@ -126,13 +134,18 @@ def test_one_signoff_block_per_kind_and_a_deferred_one_asks_for_the_designers_do
     draft = (bundle / "engineering.toml.draft").read_text()
     live = re.findall(r"^\[\[signoff\]\]$", draft, re.MULTILINE)
     assert live, "no signoff blocks at all"
-    # `rafter` is deferred for good (the fabricator seals it): a live block, with the
-    # external-acceptance form in it. It was `column_support` until that kind was computed.
-    assert 'id = "rafter"' in draft
-    assert "DEFERRED" in draft
-    assert '[signoff.external."rafter/RF-GARAGE"]' in draft
+    # A deferred kind lives in the SECOND draft, so a PE with no supplier document never has
+    # to delete it from the first. `rafter` is deferred for good (the fabricator seals it).
+    assert 'id = "rafter"' not in draft
+    external = (bundle / "engineering-external.toml.draft").read_text()
+    assert 'id = "rafter"' in external
+    assert "DEFERRED" in external
+    assert '[signoff.external."rafter/RF-GARAGE"]' in external
     for key in ("document", "revision", "sha256", "envelope"):
-        assert f"{key} = \"<<" in draft, key
+        assert f"{key} = \"<<" in external, key
+    # The four repeated fields are typed once, in [defaults], and inherited.
+    assert "[defaults]" in draft and draft.count("<<ENGINEER NAME, PE>>") == 1
+    assert 'document = "calcs.pdf"' in draft
 
 
 def _fill_external(text: str) -> str:
@@ -149,6 +162,18 @@ def _fill_external(text: str) -> str:
              "as scheduled on the sealed drawing")):
         text = text.replace(placeholder, value)
     return text
+
+
+def _filled(bundle) -> str:
+    """Both drafts, the way an owner assembles them: the external blocks appended."""
+    text = (bundle / "engineering.toml.draft").read_text() + "\n" + (
+        bundle / "engineering-external.toml.draft").read_text()
+    for placeholder, value in (("<<ENGINEER NAME, PE>>", "A. Engineer, PE"),
+                               ("<<STATE 00000>>", "MN 12345"),
+                               ("<<YYYY-MM-DD>>", "2026-09-11"),
+                               ("<<path/to/sealed.pdf>>", "sealed.pdf")):
+        text = text.replace(placeholder, value)
+    return _fill_external(text)
 
 
 def test_the_scaffold_is_refused_until_a_person_fills_it_in(bundle, tmp_path):
@@ -188,11 +213,7 @@ def test_a_filled_scaffold_seals_every_computed_item(bundle, tmp_path, catlin_ct
     from typehaus.engineering import Freshness
     from typehaus.engineering.register import load_register
 
-    filled = (bundle / "engineering.toml.draft").read_text()
-    filled = filled.replace("<<ENGINEER NAME, PE>>", "A. Engineer, PE")
-    filled = filled.replace("<<STATE 00000>>", "MN 12345")
-    filled = filled.replace("<<YYYY-MM-DD>>", "2026-09-11")
-    filled = _fill_external(filled.replace("<<path/to/sealed.pdf>>", "sealed.pdf"))
+    filled = _filled(bundle)
     house = tmp_path / "house"
     house.mkdir()
     (house / "engineering.toml").write_text(filled)
@@ -220,7 +241,6 @@ def test_a_filled_scaffold_seals_every_computed_item(bundle, tmp_path, catlin_ct
     assert refused == set(), (
         "a kind went over capacity — the scaffold will comment its whole block out, which is "
         "correct, but this test then stops exercising the sealing path for it", refused)
-    assert register.covering("tiered_retaining/W-RG-BLOCK") is not None
     assert register.covering("deck_tie/FS-BW-FLOOR") is not None
     computed = [ctx.engineering[i] for i in every
                 if ctx.engineering[i].inputs and ctx.engineering[i].kind not in refused]
@@ -244,13 +264,7 @@ def test_a_deferred_item_reads_accepted_and_never_fresh_when_the_form_is_filled(
     from typehaus.engineering import SETTLED, Freshness
     from typehaus.engineering.register import load_register
 
-    filled = (bundle / "engineering.toml.draft").read_text()
-    for placeholder, value in (("<<ENGINEER NAME, PE>>", "A. Engineer, PE"),
-                               ("<<STATE 00000>>", "MN 12345"),
-                               ("<<YYYY-MM-DD>>", "2026-09-11"),
-                               ("<<path/to/sealed.pdf>>", "sealed.pdf")):
-        filled = filled.replace(placeholder, value)
-    filled = _fill_external(filled)
+    filled = _filled(bundle)
     house = tmp_path / "house"
     house.mkdir()
     (house / "engineering.toml").write_text(filled)

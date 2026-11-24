@@ -154,8 +154,8 @@ def test_catlin_grades_the_three_court_walls_through_their_base_restraint(
         record = results[f"{KIND}/{tag}"]
         assert record.status is Status.OK, record.summary
         assert record.governing is not None
-        # Stem flexure governs since 2026-11-02 (#5 @ 10", d/c 0.866), by a hair over the
-        # base restraint's 0.865 (free body §6 addendum 2026-11-02).
+        # Stem flexure governs (#5 @ 10", d/c 0.866) over the base restraint's 0.777 since the
+        # court closed on its specified soil parameters (free body §15h, FS 1.930).
         assert record.governing.name == "stem flexure", record.summary
         assert record.ratio == pytest.approx(0.866, abs=0.005)
         # 1.63 against 1.50. Carried as required/achieved, so the ratio is under 1.
@@ -168,7 +168,9 @@ def test_catlin_grades_the_three_court_walls_through_their_base_restraint(
         # resultant — shortened 20'-0" -> 18'-0" on axes (§12, d/c 0.876); 1.735 when
         # FT-SG-S's toe grew 16" and its strip got heavier (§12a, d/c 0.865).
         by_name = {state.name: state for state in record.limit_states}
-        assert by_name["base restraint"].ratio == pytest.approx(1.5 / 1.735, abs=0.005)
+        # 1.573 since §15 (2026-11-22): one body off the solids, corner squares and spliced
+        # walls in, and the soil pushing on its 25'-0" south face, not the 18'-0" axis.
+        assert by_name["base restraint"].ratio == pytest.approx(1.5 / 1.930, abs=0.005)
         # Per-wall sliding is not a meaningful number once the free body is wrong, so it is
         # gone rather than reported alongside a contradicting one.
         assert "sliding" not in by_name
@@ -182,7 +184,9 @@ def test_catlin_grades_the_three_court_walls_through_their_base_restraint(
         # pinned against did, which is the same class of change and takes the same bump.
         # 4 -> 5 on 2026-09-20: the apron's lateral surcharge (engineering/tier_surcharge.py).
         # 5 -> 6 on 2026-09-21: GM active EFP 45 -> 40 (IBC Table 1610.1).
-        assert record.basis_version == "6"
+        # 6 -> 7 on 2026-11-23: the restrained wall fingerprints the court's soil basis.
+        # 7 -> 8 on 2026-11-23 (review A1-09): the bearing-on-native state and its inputs.
+        assert record.basis_version == "8"
 
     # Every wall the register computes is one a signoff can cover, one at a time.
     assert sorted(results[f"{KIND}/{t}"].item_id for t in ("W-SG-E2",)) == [

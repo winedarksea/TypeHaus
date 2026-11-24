@@ -50,10 +50,12 @@ from typehaus.analytical.graph import Fixity, Support
 def derive_supports(ctx: Any, scope: Any, graph: Any) -> tuple[Support, ...]:
     """Every restrained node, with the claim it is restrained under."""
     from typehaus.engineering.pier_basis import cast_piers
+    from typehaus.engineering.roof_moment import pinned_pier_poles
     from typehaus.model.elements import Wall
     from typehaus.model.structure import Footing, Pad, Post
 
     piers = {pier.tag: pier for pier in cast_piers(ctx)}
+    poles = pinned_pier_poles(ctx)
     out: list[Support] = []
     seen: set[str] = set()
     for tag in scope.posts:
@@ -71,6 +73,13 @@ def derive_supports(ctx: Any, scope: Any, graph: Any) -> tuple[Support, ...]:
                 node=node, fixity=Fixity.FIXED, element_tag=tag, item_id=item_id,
                 basis=(f"lateral system: {tag} is doweled into its base and is the only "
                        f"thing resisting storey shear — {pier.moment_basis}")))
+            continue
+        if pier is not None and tag in poles:
+            out.append(Support(
+                node=node, fixity=Fixity.FIXED, element_tag=tag, item_id=item_id,
+                basis=(f"short pole: {tag} stands free under a pinned post and turns its own "
+                       f"drag around in the soil below grade (IBC 2018 §1807.3.2.1, graded "
+                       f"prescriptively by structural.column_base)")))
             continue
         base = _base_of(ctx, tag)
         carried = graph.post_carries.get(tag, ())

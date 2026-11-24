@@ -115,3 +115,27 @@ def collapsed_tables(rows: Sequence[Collapsed], *, label: str, prefix: str = "")
                 ["Member", "Values"],
                 [[f"`{member}`", values_line(tokens)] for member, tokens in row.values]))
     return "\n\n".join(blocks)
+
+
+@dataclass(frozen=True)
+class RefIndex:
+    """A family's references collapsed (review E-11): ``R<n>`` per template row.
+
+    Rows are in first-appearance order, so the basis stays R1; ``number`` maps every
+    original citation to its row, which is how a limit-state table cites it.
+    """
+
+    rows: tuple[Collapsed, ...]
+    number: dict[str, int]
+
+    def cite(self, text: str) -> str:
+        return f"R{self.number[text]}" if text in self.number else text
+
+
+def reference_index(entries: Sequence[tuple[str, str]]) -> RefIndex:
+    """``(member, citation)`` in reasoning order -> one numbered row per template."""
+    rows = collapse(entries)
+    order = {text: i for i, (_m, text) in reversed(list(enumerate(entries)))}
+    first = sorted(rows, key=lambda row: min(order.get(t, len(order)) for t in expand(row)))
+    number = {text: n for n, row in enumerate(first, start=1) for text in expand(row)}
+    return RefIndex(tuple(first), number)

@@ -23,10 +23,23 @@ the future.
   inspection. Galvashield XPX anodes for the salt-splash court walls are undecided. Curing,
   cold-weather placement and slab joint layout exist only in prose.
 
-- **Sheet layout gaps (decision #146).** Two framing gaps the layout reports UNKNOWN: W-B-S2-FR/
-  -S3-FR top out 1 9/16" under FS-M-WEST's rim with no sill modelled (W-M-S1/S2 joints), and
-  FO-S-STAIR's edge trimmer stands 1 7/8" inboard of W-M-N2/N3B's sheathing with no rim at the
-  wall. D-M-ENTRY's flat head has no cripples above it. Gypsum is not laid sheet by sheet.
+- **Sheet layout (decision #146).** D-M-ENTRY's flat head has no cripples above it. Gypsum is
+  not laid sheet by sheet.
+
+- **SRW drain pipe and capstone adhesive are not billed (review A2-F8).** `SrwChartSection.drain`
+  (`model/srw_chart.py`) is authored on the five raised-garden legs but no takeoff reads it:
+  ~86 LF of 4" perforated pipe in sock (legs plus stubs to the outlet bedding's wall column)
+  and ~2 tubes of capstone adhesive. Bill them off the wall axes and outlet distance, then price
+  them in `prices.toml` beside `RETAINING_BLOCK_12`.
+
+- **Partition-top crossings read the node-to-node axis, not the top plate** (`resolve/partition_fasteners.classify`):
+  W-M-MECH-E is billed a crossing of FS-S-WEST's north LSL rim its plate never reaches (109, one
+  phantom). Clipping to the plate fixes it but reclassifies ~25 walls; take it as its own re-pin.
+
+- **Emit nondeterminism (found 2026-11-23).** The S-100 LOCATING dimension chain
+  (`emit/draw/structural_dimensions.py`) varies with the hash seed; `haus handoff` works around
+  it by re-execing under `PYTHONHASHSEED=0` (`cli/cmd_handoff.py`). Sort the set iteration and
+  drop the re-exec. (The IFC covering-relationship GUIDs are pinned since 2026-11-23.)
 
 ### Left out of decision #142 (metal-wall penetrations)
 
@@ -195,7 +208,6 @@ branch overlaps, ERV trunk/flex/ERV-R-BATH refusals, wall-hung port stub, WC arm
   12kPV instructions name, and the 690.12(D) building label at `ED-M-METER` is also owed.
 - `ED-B-PLAY-N-RC2`..`RC5` (theater, 2026-11-13) were placed to close the 210.52(A) gaps
   between the sconces and tapestries; confirm against the AV and seating layout.
-- **W-B-N2 wall-top restraint (Minn. R. 1309.0404).** `FO-M-STAIR` fills the first three joist spaces against W-B-N2 for x 10'-3"..17'-8 3/4", so no footnote f blocking can stand there and `code.MN_1309_0404_wall_top` reports UNKNOWN. 400 plf x 8' = 3,200 lb goes into the well's edge framing spanning flat between the headers: get the EOR's approved-equivalent detail (a flat strongback or a landing strut) and author it. Basis note `houses/catlin/notes/main_floor_truss_basis.md` §4.
 - Aiming to keep floor transitions flush, looks like ~3/4" thickness makes this easiest. Status 2026-11-15: tile and oak already total 3/4"; the open coverings are LVP (0.28"), the sheet vinyls (0.12", 0.37") and carpet (1.0"). Owner deferred 2026-11-14. Original note: Ditra XL or Ditra Heat + Thinset + 8 mm Tile (Ditra Heat PS 5.5 mm + 3.5 mm thinset (3/8" by 3/8" notch trowel) + 10 mm tile OR Ditra Heat Duo peel and stick (PS) + 2.5 mm thinset (1/4" x 3/8" trowel) + 9 mm tile OR 1.5 mm thinset (compressed by 1/4" by 1/4" trowel) + ditra heat 5.5 mm + 2.5 mm thinset + 9.5 mm tile) == 1/2" plywood (nominal) + 7 mm LVP == 1/2" exacor (12 mm actual) + 7 mm LVP == 1/2" gypsum underlayment (fiberrock) + 6.5 mm LVP == 5/8" actual (Fiberock) underlayment + 3 mm sheet vinyl == 16 mm exacor + feather finish + 2.8 to 3 mm sheet vinyl == 3/4" hardwood ~= 7/16" pad + 1/2" pile carpet (carpet squishes at edges)
 - Is TypeHaus organized such that a contractor building typehaus could hand their chatbot/llm of choice the github repo link and easily get answers they need on the design?
 - Reverse osmosis sink?

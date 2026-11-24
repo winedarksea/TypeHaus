@@ -225,16 +225,17 @@ def test_a_column_on_a_wall_raises_no_item(catlin_cast_ctx) -> None:
     assert not [k for k in keys if "PT-SG-" in k]
 
 
-def test_active_kdat_grades_the_pinned_piers_below_the_wood_posts(catlin_ctx) -> None:
-    keys = {key for key in catlin_ctx.engineering if key.startswith(f"{KIND}/")}
-    assert keys == {f"{KIND}/PT-BW-PE", f"{KIND}/PT-BW-PNE"}
-    for tag in ("PT-BW-PE", "PT-BW-PNE"):
-        record = catlin_ctx.engineering[f"{KIND}/{tag}"]
-        assert record.status is Status.OK, record.summary
-        inputs = {q.name: q.value for q in record.inputs}
-        assert inputs["column_diameter"] == pytest.approx(14.0)
-        assert inputs["lateral_shear_asd"] > 0.0
-        assert inputs["lateral_shear_asd"] < 100.0
+def test_pinned_piers_left_the_register_for_ibc_1807_3(catlin_ctx) -> None:
+    """Decision 16: PE/PNE are short poles graded prescriptively (north_entry_piers.md §6c)."""
+    from typehaus.checks.structural.deck_piers import pinned_pier_embedment
+    from typehaus.findings import Result
+
+    assert not {key for key in catlin_ctx.engineering if key.startswith(f"{KIND}/")}
+    found = {f.element_tags[0]: f for f in pinned_pier_embedment(catlin_ctx)
+             if f.result is Result.PASS}
+    assert set(found) == {"PT-BW-PE", "PT-BW-PNE"}
+    assert "needs d 2.59'" in found["PT-BW-PNE"].message  # jacketed post drag
+    assert "against 3.50'" in found["PT-BW-PNE"].message
 
 
 # --- the §1806.3.4 claim is GRADED, which means it can be refused --------------------------

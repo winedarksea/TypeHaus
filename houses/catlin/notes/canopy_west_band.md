@@ -67,11 +67,13 @@ name (`test_an_unbridged_band_is_incomplete_by_name`).
 ## 3. The band brace — `SB-BW-BAND`
 
 **Demand.** N-S at the deck: the gable triangle 59.259 sf x 16.661 = 987.32 lb plus each east post's head
-half, 16.661 x 5.5/12 x 6.1771 / 2 = 23.585 lb:
+half on its 7 1/2" PVC jacket (2026-11-23; it was the bare 5.5" core), 16.661 x 7.5/12 x 6.1771 / 2
+= 32.16 lb:
 
 ```
-V = 987.32 + 2 x 23.585 = 1,034.49 lb       (100% on this line: the envelope)
+V = 987.32 + 2 x 32.16 = 1,051.64 lb        (engine 1,051.72; 100% on this line: the envelope)
 ```
+Rows below that quote 1,034.49 are the 11-22 working and scale by 1.0166.
 
 The garage path (`canopy_garage_diaphragm.md`) is ALSO graded at 100% of V. That is a deliberate double
 envelope, confirmed by the owner (2026-11-14), not a sum to be reduced.
@@ -316,7 +318,7 @@ anywhere on these posts.
 Own drag, 16.661 psf on 5.5" (w = 7.636 plf), half at each end:
 
 ```
-west   7.636 x 7.6929 / 2 = 29.37 lb        east  7.636 x 6.1771 / 2 = 23.585 lb
+west   7.636 x 7.6929 / 2 = 29.37 lb        east (7 1/2" jacket, 10.413 plf)  10.413 x 6.1771 / 2 = 32.16 lb
 ```
 
 The west posts also take the screen's out-of-plane E-W load at the top plate: the panel spans sill to plate and
@@ -358,7 +360,7 @@ N-S moment = 873.13 lb-ft, fb = 873.13 x 12 / (5.5³/6) = 377.85 psi
 | CBSTQ base uplift + across | 426.44/3,060 + 66.22/485 = 0.1394 + 0.1365 | 0.276 |
 | CBSTQ base uplift + along | 426.44/3,060 + 178.55/1,270 = 0.1394 + 0.1406 | **0.280** |
 | NDS column, combined | below | 0.538 |
-| ACE6Z, RE / RNE | 426.44/1,950 + 23.585/1,760 = 0.2187 + 0.0134 | **0.232** |
+| ACE6Z, RE / RNE | 426.44/1,950 + 32.16/1,760 = 0.2187 + 0.0183 (jacket, 11-23) | **0.237** |
 | A35Z head across, RNE | 23.585/695 | 0.034 |
 | CBSTQ base, RE across | 426.44/3,060 + 23.585/485 = 0.1394 + 0.0486 | 0.188 |
 | CBSTQ base, RNE along | 426.44/3,060 + 23.585/1,270 = 0.1394 + 0.0186 | 0.158 |
@@ -375,10 +377,27 @@ Fc' = 559.94 psi; M = 7.636 x 6.1771²/8 = 36.4 lb-ft, fb = 15.76 psi.
 
 The west heads govern at the cap, 0.550, ahead of the column's 0.538; the deck's 0.907 still governs the record.
 
-### 5d. Dry service at the connectors, wet in the column
+### 5d. ~~Dry service at the connectors~~ — WET by one exposure rule (2026-11-23, review M2)
 
-ESR-2604 §3.2.2 and ESR-3050 §4.1 rate the parts at MC <= 19%: the posts are KDAT on 1" drained standoffs under
-the roof, and the record prints the condition. The column is graded on Table 4D's wet row.
+The canopy zone takes ONE rule (`engineering/canopy_service.py`): exposed to weather under the open canopy →
+WET; under roofing → dry, stated. Every connector here is exposed, so: where the catalog publishes a > 19% column it
+is read; otherwise C_M 0.70 on the dry row. ESR-2604 §3.2.2 (ACE6Z), ESR-3096 (A35Z) and ESR-3050 §4.1 (CBSTQ)
+cover MC <= 19% only, so their wet values are a reading OUTSIDE the reports, said on the record.
+
+```
+KBS1Z slat end   C-C-2026 p. 324, MC > 19%, DF/SP (KDAT SP), type 1: 1,055 @ 45°, 835 @ 30/60
+                 at 45.868°: 1,055 - 220 x 0.868/15 = 1,042.3;  755.2 / 1,042.3          = 0.725
+SDWS plate screws Z' and W' x C_M 0.70                          top 0.406, sill 0.290
+ACE6Z head (CW)  635.5 / (1,950 x 0.70 = 1,365) + 403.5 / (1,760 x 0.70 = 1,232)
+                 = 0.4656 + 0.3275                                                         = 0.793
+ACE6Z head (RE)                                                                            = 0.339
+CBSTQ base       every term x 0.70                       CW along 0.403, RE across 0.294
+A35Z             lower of F1/F2 x 0.70                   CW head 0.233, plate 0.249
+LTP4Z eave clips DRY — on the nailers under the roof sheathing and roofing                 = 0.390
+```
+
+The dry SPF column read 0.760 at the KBS1Z; the wet DF/SP column is the published row for the species and moisture
+actually there. The column itself is still graded on Table 4D's wet row.
 
 ### 5e. The piers are 14" round under a CBSTQ
 
@@ -486,19 +505,33 @@ little; bearing on the post is 0.326.
 
 ### 7c. The trusses' chord bearing on the header
 
-The beam's own design load times the truss spacing is the field truss's reaction, on the chord's 1.5" width times
-the length of chord on the beam (the bottom chord crosses the whole 5 1/2" of bearing):
+**Amended 2026-11-23 (review C-4).** The old reading put the beam's uniform load x 2.0' on every truss, which spreads
+the deck's 6.0' over the 5.375' bearing run (x 1.116) and puts the drift's average on each truss. Each truss now takes
+the load at ITS station, on its own tributary, with NDS 2018 §3.10.4's bearing-area factor.
+
+Trusses at y 37.3333 / 39.3333 / 41.3333; the garage's gable truss stands at 43.2812 and shares the joint bay. Tributary
+widths: T1 (37.3333 - 37.2188) + 1.0 = 1.1146'; T2 2.0'; T3 1.0 + (43.2812 - 41.3333)/2 = 1.974'. The drift triangle is
+the preferences' own: design snow 73.7 = balanced 42 + a mean surcharge 31.7, slope 50.3 / 9.8 = 5.133 psf/ft, so the
+surcharge at a truss is 31.7 + 5.133 (40.219 - y) (the canopy's mid-depth y 40.219):
 
 ```
-R = 1,245.77 plf x 2.0' = 2,491.5 lb
-on 5.50" (outside face to inboard face):  2,491.5 / (1.5 x 5.50) = 302.0 psi
-Fc-perp 650 x C_M 0.53 = 344.5 psi (C_b 1.0, conservative)   ->   0.877
+T1  surcharge 46.5   snow 88.5 psf   R = (88.5 + 10) x 1.1146 x 13.333 = 1,464 lb   1,464 / (1.5 x 5.5) = 177.5 psi
+T2  surcharge 36.2   snow 78.2 psf   R = (78.2 + 10) x 2.0    x 13.333 = 2,353 lb   2,353 / 8.25       = 285.2 psi
+T3  surcharge 26.0   snow 68.0 psf   R = (68.0 + 10) x 1.974  x 13.333 = 2,052 lb   2,052 / 8.25       = 248.8 psi
+Fc-perp 650 x C_M 0.53 = 344.5 psi.  C_b = (1.5 + 0.375) / 1.5 = 1.25 where the chord face is >= 3" from the beam
+end (T2, T3); T1's chord is flush with the end, C_b 1.0.
+T1 177.5 / 344.5 = 0.515    T2 285.2 / 430.6 = 0.662 (governs)    T3 248.8 / 430.6 = 0.578
 ```
 
-It governs both headers at **0.877**, ahead of the post bearing's 0.326. The fabricator's own chord check (SPF
-Fc-perp 425 psi, dry, under the roof) reads 302.0 / 425 = 0.71. A chord that stopped at the header centreline,
-2.75", would read 604.0 psi, 1.753 OVER (`test_a_chord_stopped_at_the_header_centreline_is_over`): that is why
-the heel is at the outside face of bearing and the bottom chord crosses the full 5 1/2".
+It governs both headers at **0.662** (was 0.877), ahead of the post bearing's 0.326. The fabricator's own chord check
+(SPF Fc-perp 425 psi, dry, under the roof) is the supplier's and is in the criteria schedule. A chord that stopped at
+the header centreline, 2.75", would read 570.5 / 430.6 = 1.325 on T2
+(`test_a_chord_stopped_at_the_header_centreline_is_over`): that is why the heel is at the outside face of bearing and
+the bottom chord crosses the full 5 1/2". The beam's own bending and shear keep the uniform 80 sf load, which bounds the three truss lines and the
+joint bay's strip that lands on the garage gable truss. The POSTS take the larger of the uniform model and the truss
+reactions by statics (posts at y 37.5 / 42.479): with R = 1,464 / 2,353 / 2,052 at y 37.333 / 39.333 / 41.333,
+north post = (-1,464 x 0.167 + 2,353 x 1.833 + 2,052 x 3.833)/4.979 = 2,471 lb, south post 5,869 - 2,471 = 3,398 lb against
+the uniform model's 3,393: the drift's +205 lb on the south supports, now modelled (0.326 -> 0.326, bearing 112.3 psi).
 
 ## 8. Backups
 
@@ -515,8 +548,7 @@ Two other bracings of the same band are carried as documented backups; neither i
 
 ## 9. Not graded here / still open
 
-* **The truss end chords (N-S) and their splice slip**: the truss order (`rafter/RF-BW-CANOPY`; the lateral design
-  assumes 0.03" of slip). The truss fabricator's sealed component design and reaction schedule is an external
+* **The truss end chords (N-S), 764 lb**: the truss order (`rafter/RF-BW-CANOPY`; no splice-slip value is asked for). The truss fabricator's sealed component design and reaction schedule is an external
   deliverable; when it arrives, author `Roof.published_reactions` on both roofs and record the component seal in
   `engineering.toml`. `rafter/*`, `structural.truss_reactions` and `uplift_capacity` stay UNKNOWN until then.
 * **The soils report**: 2,000 psf is presumptive and the soil class is presumed, so every record prints it.

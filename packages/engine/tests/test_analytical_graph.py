@@ -83,8 +83,20 @@ def test_lateral_system_columns_are_fixed_and_say_why(analytical, catlin_enginee
 
 
 def test_every_other_post_base_is_pinned(analytical, catlin_engineering) -> None:
-    """A base connector that transfers no moment must not be modelled as if it did."""
+    """A base connector that transfers no moment must not be modelled as if it did.
+
+    Exempt besides the lateral system: a short pole under a pinned post (decision 16). It has
+    no base connector; it is embedded in soil, which IBC 1807.3.2.1 grades as fixity in the
+    ground, and its basis must say so.
+    """
+    from typehaus.engineering.roof_moment import pinned_pier_poles
+
     lateral = {pier.tag for pier in cast_piers(catlin_engineering.ctx) if pier.lateral_system}
+    poles = set(pinned_pier_poles(catlin_engineering.ctx))
+    for support in analytical.supports:
+        if support.element_tag in poles:
+            assert support.fixity is Fixity.FIXED and "1807.3.2.1" in support.basis
+    lateral |= poles
     columns = {member.tag for member in analytical.members if member.category == "column"}
     for support in analytical.supports:
         if support.element_tag in columns and support.element_tag not in lateral:
@@ -113,25 +125,38 @@ def test_a_roof_beam_carries_its_records_own_uniform_load(analytical, catlin_eng
         assert cases == {LoadCaseKind.DEAD, LoadCaseKind.SNOW}
 
 
-def test_a_fixed_column_carries_the_shear_that_makes_its_record_s_base_moment(
+def test_a_fixed_column_carries_the_loads_that_make_its_record_s_base_moment(
         analytical, catlin_engineering) -> None:
-    """``V x h`` at the top must reproduce the ``wind_base_moment`` the record graded."""
+    """Each band at its own lever reproduces the ``wind_base_moment`` the record graded: the
+    deck band's shear at its centroid, the guard's share with its lever above it as a node
+    moment, and the shaft's own wind along the column (balcony note §24). A roof column with
+    no components keeps ``V x h``."""
+    lb = 4.4482216152605
+    nm_to_lb_ft = lb ** -1 / 0.3048
     tops = {support.element_tag: support for support in analytical.supports}
     for pier in cast_piers(catlin_engineering.ctx):
         if not pier.lateral_system or not pier.wind_base_moment_lb_ft:
             continue
         assert pier.tag in tops
         item = f"deck_post/{pier.tag} "
-        load = next((load for load in analytical.node_loads
-                     if load.case is LoadCaseKind.WIND and load.source.startswith(item)),
-                    None)
-        assert load is not None, f"{pier.tag} carries no wind load at its top"
-        # The load must land on the column's OWN top, not on some other node of the graph.
+        loads = [load for load in analytical.node_loads
+                 if load.case is LoadCaseKind.WIND and load.source.startswith(item)]
+        assert loads, f"{pier.tag} carries no wind load at its top"
+        # The loads must land on the column's OWN top, not on some other node of the graph.
         column = [member for member in analytical.members if member.tag == pier.tag]
-        assert any(load.node in (member.n0, member.n1) for member in column)
-        shear_lb = (abs(load.fx_n) + abs(load.fy_n)) / 4.4482216152605
-        moment = shear_lb * pier.height_in / 12.0
+        for load in loads:
+            assert any(load.node in (member.n0, member.n1) for member in column)
+        height_ft = pier.height_in / 12.0
+        moment = sum((abs(load.fx_n) + abs(load.fy_n)) / lb * height_ft
+                     + (abs(load.mx_nm) + abs(load.my_nm)) * nm_to_lb_ft for load in loads)
+        shafts = [load for load in analytical.member_loads
+                  if load.case is LoadCaseKind.WIND and load.source.startswith(item)]
+        for load in shafts:       # uniform over the column: its resultant acts at mid-height
+            member = analytical.member(load.member)
+            span_m = analytical.length_m(member) * (load.x1 - load.x0)
+            moment += (abs(load.w0_n_m) * span_m / lb) * pier.wind_shaft_height_ft / 2.0
         assert moment == pytest.approx(pier.wind_base_moment_lb_ft, rel=1e-6)
+        assert bool(shafts) == bool(pier.wind_shaft_shear_lb)
 
 
 def test_every_member_reaches_two_real_nodes_and_has_length(analytical) -> None:
@@ -156,7 +181,7 @@ def test_no_two_nodes_are_the_same_point(analytical) -> None:
 def test_the_surface_items_are_named_as_gaps(analytical) -> None:
     """A surface this version cannot draw is listed in words, never left silent."""
     surface = {item for item in analytical.scope
-               if item.split("/", 1)[0] in ("retaining_system", "girt_screw")}
+               if item.split("/", 1)[0] in ("retaining_system",)}
     assert surface, "catlin has no surface-member item — the fixture has drifted"
     for item in sorted(surface):
         assert any(line.startswith(f"{item}:") for line in analytical.gaps), (

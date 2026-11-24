@@ -19,6 +19,7 @@ Every link is graded on every break item, because every board's thrust feeds it:
 
 from __future__ import annotations
 
+from typehaus.engineering import thermal_break_working as W
 from typehaus.engineering.item import LimitState
 from typehaus.engineering.thermal_break_board import CONCRETE_PCF, rated
 from typehaus.resolve.slab_clip import floor_outline
@@ -149,7 +150,10 @@ def _slab_edge(slab, total_lb, floor_line_lb, edge_len, t, states, missing) -> N
         f"{total_lb:,.0f} lb of thrust less the floor line's {floor_line_lb:,.0f} into "
         f"{slab.tag}'s {brk.thickness.inches:g}\" {brk.material_ref} perimeter break, "
         f"{depth:.2f}\" x {edge_len:.0f}\"; {how}{modulus}; the near line's own friction not "
-        f"credited"))
+        f"credited",
+        combination=W.THERMAL[0], combination_factors=W.THERMAL[1],
+        working=W.slab_edge(line, total_lb, floor_line_lb, depth, edge_len, area, psi,
+                            psi * area, how, "compressive rating of the slab's perimeter break")))
     frac = brk.sustained_load_fraction
     if frac and brk.psi is not None:
         states.append(LimitState(
@@ -157,7 +161,12 @@ def _slab_edge(slab, total_lb, floor_line_lb, edge_len, t, states, missing) -> N
             f"the same {line:,.0f} lb against the sheet's sustained-load rule, "
             f"{frac:.3g} x {brk.psi:.0f} = {frac * brk.psi:.1f} psi over {depth:.2f}\" x "
             f"{edge_len:.0f}\" (free body §11k: graded as a dead load; no creep-relaxation "
-            f"credit for an imposed deformation)"))
+            f"credit for an imposed deformation)",
+            combination=W.THERMAL[0], combination_factors=W.THERMAL[1],
+            working=W.slab_edge(line, total_lb, floor_line_lb, depth, edge_len, area,
+                                frac * brk.psi, frac * brk.psi * area,
+                                f"the sheet's sustained-load rule: {frac:.3g} x the "
+                                f"{brk.psi:.0f} psi rating", "sustained-load stress limit")))
 
 
 def path_rows(ctx, boards, total_lb: float, floor_line_lb: float, states, missing,
@@ -205,7 +214,10 @@ def path_rows(ctx, boards, total_lb: float, floor_line_lb: float, states, missin
             "house slab strut compression", line / (t * edge_len), PHI_PLAIN * 0.85 * fc, "psi",
             f"{line:,.0f} lb over {t:.2f}\" x {edge_len:.0f}\" of {slab.tag}; phi 0.60 x 0.85 "
             f"f'c (plain, ACI 318-19 Table 21.2.1, §14.5.6). Buckling not credible: a slab on "
-            f"grade is braced continuously by its subgrade"))
+            f"grade is braced continuously by its subgrade",
+            combination=W.THERMAL[0], combination_factors=W.THERMAL[1],
+            working=W.slab_strut(line, t, edge_len, line / (t * edge_len), fc,
+                                 PHI_PLAIN * 0.85 * fc)))
     dead, basis = take_down(ctx, solid, frozenset(t for b in boards for t in b.structure))
     # The shallowest: a stepped near line (FT-B-S2/S3 2" deeper) must not credit the far
     # wall with soil down to the deeper step.
@@ -224,7 +236,10 @@ def path_rows(ctx, boards, total_lb: float, floor_line_lb: float, states, missin
         f"over {depth_ft:.3f}' ({at_rest:,.1f} plf) on the far wall's {edge_len / 12:.2f}' less "
         f"the near face's backfilled {near / 12:.2f}' (its court opening retains nothing); "
         f"passive not credited",
-        is_safety_factor=True))
+        is_safety_factor=True, combination=W.SOIL_SERVICE[0],
+        combination_factors=W.SOIL_SERVICE[1],
+        working=W.global_sliding(soil.friction_coefficient, dead, net, total_lb, fs, basis,
+                                 at_rest, depth_ft, edge_len, near)))
     far = at_rest * edge_len / 12.0 + max(0.0, total_lb - friction)
     cap = 0.5 * soil.lateral_bearing_psf_per_ft * depth_ft ** 2 * edge_len / 12.0
     states.append(LimitState(
@@ -232,4 +247,8 @@ def path_rows(ctx, boards, total_lb: float, floor_line_lb: float, states, missin
         f"at rest {at_rest * edge_len / 12:,.0f} + what friction does not take "
         f"{max(0.0, total_lb - friction):,.0f} lb; vs IBC Table 1806.2 lateral bearing "
         f"{soil.lateral_bearing_psf_per_ft:.0f} psf/ft over {depth_ft:.3f}' x "
-        f"{edge_len / 12:.2f}'"))
+        f"{edge_len / 12:.2f}'",
+        combination=W.SOIL_SERVICE[0], combination_factors=W.SOIL_SERVICE[1],
+        working=W.far_wall(at_rest * edge_len / 12.0, max(0.0, total_lb - friction), far,
+                           soil.lateral_bearing_psf_per_ft, depth_ft, edge_len / 12.0, cap,
+                           friction, total_lb)))

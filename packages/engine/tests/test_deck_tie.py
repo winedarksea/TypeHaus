@@ -29,18 +29,17 @@ def _input(record, prefix):
 
 
 def test_the_tie_is_derived_from_the_authored_hardware(catlin_ctx):
-    """§10h: two joints, a pair each, both wood to wood: FE into W-G-S (wet), the screen into
-    W-G-W (dry). FE runs INTO its wall, the screen alongside its own."""
+    """§10p: FE into W-G-S as two joints (a DTT pair N-S, an HL43 pair E-W), the screen's
+    MSTA49Z collector into W-G-W; all wet, wood to wood."""
     ectx = catlin_ctx.engineering.context
     joints = wall_ties(ectx, ectx.plan.by_tag("FS-BW-FLOOR"))
     assert [(j.member, j.wall, len(j.parts), j.model, j.wall_axis, j.heel_axis,
-             j.on_concrete, j.service_condition, j.member_axis) for j in joints] == [
-        ("BM-BW-FE", "W-G-S", 2, "HL43HDG", "x", None, False, None, "y"),
-        ("W-BW-SCREEN", "W-G-W", 2, "HL33HDG", "y", None, False, "dry", "y")]
-    assert "windblown" in joints[1].service_basis
-    # Joint W is on the end stud pack's east face, a half stud off the axis (§10n, §10o).
-    assert [round(j.x_ft, 4) for j in joints] == [9.5833, 6.3281]
-    assert [round(j.y_ft, 4) for j in joints] == [43.1458, 43.1458]
+             j.on_concrete, j.service_condition) for j in joints] == [
+        ("BM-BW-FE", "W-G-S", 2, "DTT2Z", "x", "y", False, None),
+        ("BM-BW-FE", "W-G-S", 2, "HL43HDG", "x", None, False, None),
+        ("W-BW-SCREEN", "W-G-W", 1, "MSTA49Z", "y", "y", False, None)]
+    assert [round(j.x_ft, 4) for j in joints] == [9.7187, 9.3333, 6.0365]
+    assert [round(j.y_ft, 4) for j in joints] == [43.3125, 43.1458, 43.1458]
 
 
 def test_the_loads_reproduce_section_10b(catlin_ctx):
@@ -54,26 +53,33 @@ def test_the_loads_reproduce_section_10b(catlin_ctx):
     # §10o (2026-11-18): the landing is 3.3177' wide and the seat beams 3.0511' long, the
     # column line 3/16" west behind the garage's 7/16" ZIP.
     assert _input(record, "y:FS-BW-FLOOR deck wind") == pytest.approx(90.355, abs=0.01)
-    assert _input(record, "y:W-BW-SCREEN panel share") == pytest.approx(1034.57, abs=0.1)
+    assert _input(record, "y:W-BW-SCREEN panel share") == pytest.approx(1051.72, abs=0.1)
     canopy = catlin_ctx.engineering["lateral_system/RF-BW-CANOPY"]
     delivered = next(q.value for q in canopy.inputs if q.name == "delivered_shear_y")
     assert _input(record, "y:W-BW-SCREEN panel share") == pytest.approx(delivered)
 
 
-def test_the_verdicts_reproduce_section_10h(catlin_ctx):
-    """§10o: every row passes; E-W wind at W governs at 0.784."""
+def test_the_verdicts_reproduce_section_10p(catlin_ctx):
+    """§10p: the screen's strap governs N-S at 0.876 (its share entering at the strap, the band
+    push base share at PT-BW-CNW, the
+    canopy posts' jacketed drag); E-W is the HL43's at 0.574 — an owner-accepted reading
+    outside the published condition."""
     record = catlin_ctx.engineering[_ITEM]
     assert record.status is Status.OK
+    assert record.governing.name == "tie interaction, N-S wind"
     ns = _state(record, "tie interaction, N-S wind")
-    assert ns.ratio == pytest.approx(0.7615, abs=5e-4)
-    assert record.governing.name == "tie interaction, E-W wind"
+    assert ns.ratio == pytest.approx(0.8755, abs=5e-4)  # + the band push base share (M4)
+    loads = {q.name: q.value for q in record.inputs}
+    assert loads["y:PT-BW-CNW band push base share (W-BW-SCREEN's slats)"] == pytest.approx(
+        151.67, abs=0.1)
+    # M9: what the ties deliver into each garage wall, for that wall's own record.
+    assert loads["delivered_along_W-G-W"] == pytest.approx(1237.97, abs=0.2)
+    assert loads["delivered_along_W-G-S"] == pytest.approx(580.32, abs=0.2)
+    assert "W-BW-SCREEN at W-G-W" in ns.citation
     ew = _state(record, "tie interaction, E-W wind")
-    assert ew.ratio == pytest.approx(0.7838, abs=5e-4)
-    assert _state(record, "tie interaction, guard").ratio == pytest.approx(0.6480, abs=5e-4)
-    assert "579.7 lb along the wall / 1,480.0 + 290.2 lb across it / 740.0" in ew.citation
-    # W's dry service is a judgement named for the engineer of record, on the record.
-    assert any("DRY SERVICE at W-BW-SCREEN/W-G-W" in n and "engineer of record" in n
-               for n in record.notes)
+    assert ew.ratio == pytest.approx(0.5737, abs=5e-4)
+    assert "owner-accepted" in ew.citation
+    assert _state(record, "tie interaction, guard").ratio == pytest.approx(0.4422, abs=5e-4)
 
 
 def test_no_tie_lands_on_concrete_since_the_stem_tie_retired(catlin_ctx):
@@ -97,9 +103,9 @@ def test_the_stem_anchors_reproduce_section_10e():
 
 
 def test_the_hl_reading_by_heel():
-    """§10a: heel across the wall reads F1 across; a vertical heel doubles uplift in the tied
-    member's leg plane (§10h: along the wall for a screen, across it for a beam that runs
-    into it); C_M 0.70 unless the parts author dry service."""
+    """§10a/§10p: heel across the wall reads F1 across; a vertical heel carries F1 along the
+    wall only (owner-accepted reading, 2026-11-23); a tension tie carries its own axis only;
+    C_M 0.70 unless the parts author dry service."""
     from typehaus.engineering.deck_tie import capacity
 
     stem = capacity(TieJoint("FE", "S-DR", ("a", "b"), "HL35HDG", 0, 0, "x", "y"))
@@ -108,13 +114,16 @@ def test_the_hl_reading_by_heel():
                             "dry", "covered"))
     mixed = capacity(TieJoint("SC", "G-W", ("a", "b"), "HL33HDG", 0, 0, "y", None, False,
                               "mixed"))
-    # A beam running INTO its wall: the leg on its side face takes the across force in plane.
-    into = capacity(TieJoint("FE", "G-S", ("a", "b"), "HL43HDG", 0, 0, "x", None, False,
-                             member_axis="y"))
+    fe = capacity(TieJoint("FE", "G-S", ("a", "b"), "HL43HDG", 0, 0, "x", None, False,
+                           member_axis="y"))
+    dtt = capacity(TieJoint("FE", "G-S", ("a", "b"), "DTT2Z", 0, 0, "x", "y", False))
+    strap = capacity(TieJoint("SC", "G-W", ("a",), "MSTA49Z", 0, 0, "y", "y", False))
     assert (stem.along_lb, stem.across_lb) == pytest.approx((518.0, 917.0))
-    assert (wet.along_lb, wet.across_lb) == pytest.approx((1036.0, 518.0))
-    assert (dry.along_lb, dry.across_lb) == pytest.approx((1480.0, 740.0))
-    assert (into.along_lb, into.across_lb) == pytest.approx((892.5, 1785.0))
+    assert (wet.along_lb, wet.across_lb) == pytest.approx((728.0, 0.0))
+    assert (dry.along_lb, dry.across_lb) == pytest.approx((1040.0, 0.0))
+    assert (fe.along_lb, fe.across_lb) == pytest.approx((1011.5, 0.0))
+    assert (dtt.along_lb, dtt.across_lb) == pytest.approx((0.0, 1277.5))
+    assert (strap.along_lb, strap.across_lb) == pytest.approx((1414.0, 0.0))
     assert isinstance(mixed, str)
 
 
@@ -142,6 +151,17 @@ def test_the_bolt_group_arithmetic_by_hand():
     assert y_fe == pytest.approx(-384.13, abs=0.05)
     # One joint cannot take a moment: a mechanism, reported rather than graded.
     assert distribute(joints[:1], loads) == []
+    # §10p: each direction shared among the joints that carry it (strap and DTT N-S only,
+    # HL43 E-W only); the screen share enters at the strap. Strap Y = 562.46 + 1,900.55 x
+    # 1.841146 / 6.779637 = 1,078.6 lb.
+    tie = [TieJoint("S", "G-W", ("a",), "MSTA49Z", 6.036458, 43.1458, "y"),
+           TieJoint("D", "G-S", ("a",), "DTT2Z", 9.71875, 43.3125, "x"),
+           TieJoint("H", "G-S", ("a",), "HL43HDG", 9.395833, 43.1458, "x")]
+    ns = [Load("screen", 0.0, 1034.57, 6.036458, 39.9), Load("deck", 0.0, 90.35, 7.924479, 39.9)]
+    (_, ys), (_, yd), (xh, yh) = distribute(tie, ns, 1.0, [(False, True), (False, True),
+                                                            (True, False)])
+    assert ys == pytest.approx(1078.6, abs=0.2) and yd == pytest.approx(46.3, abs=0.2)
+    assert (xh, yh) == (0.0, 0.0)
 
 
 def test_the_tie_takes_the_landing_piers_out_of_every_lateral_register(catlin_ctx):
@@ -151,7 +171,7 @@ def test_the_tie_takes_the_landing_piers_out_of_every_lateral_register(catlin_ct
     ectx = catlin_ctx.engineering.context
     lateral = {p.tag for p in cast_piers(ectx) if p.lateral_system}
     assert not lateral & set(_LANDING)
-    assert {"PT-BW-PE", "PT-BW-PNE"} <= lateral
+    assert not {"PT-BW-PE", "PT-BW-PNE"} & lateral, "short poles since decision 16"
     for kind in ("base_rotation", "column_base", "column_head_joint"):
         assert not set(keys_of(kind, ectx)) & set(_LANDING), kind
     # The interior landing (retired 2026-10-13) relieved no column and never had an item.

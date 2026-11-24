@@ -3508,6 +3508,62 @@
       "node": "polyline",
       "points": [
         [
+          430.25,
+          108.125
+        ],
+        [
+          431.50000000000006,
+          108.125
+        ],
+        [
+          431.50000000000006,
+          120.0
+        ],
+        [
+          430.25,
+          120.0
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "1JXQ975X9E",
+      "tag": "edge-rim-0-027-0"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          430.25,
+          108.125
+        ],
+        [
+          431.50000000000006,
+          108.125
+        ],
+        [
+          431.50000000000006,
+          120.0
+        ],
+        [
+          430.25,
+          120.0
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": null
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
           396.50000000000006,
           108.125
         ],

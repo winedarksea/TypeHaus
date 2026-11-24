@@ -106,7 +106,8 @@ class BarSpec(HausModel):
     bar: int
     #: Centre-to-centre spacing — the wall-and-slab shape. Exclusive with ``count``.
     spacing: Length | None = None
-    #: How many bars — the cage shape. Exclusive with ``spacing``.
+    #: How many bars — the cage shape. Exclusive with ``spacing``. On a footing or pad mat
+    #: role it is edge steel: that many bars bundled at EACH edge of the mat.
     count: int | None = None
     #: How many layers of this role, e.g. a mat top AND bottom authored as one row. The
     #: quantity multiplies; the flexural lever arm does not, which is why a two-layer mat

@@ -348,7 +348,7 @@ SECOND_BACKING = [
                 elevation=inch(34), height=inch(7.25), profile="2x8",
                 material_ref="spf", purpose="bath 1 chase access panel frame"),
     WallBacking(uid="W2XZ7J1J2X", tag="BK-S-SN3-AP", wall_ref="W-S-SN3",
-                start=inch(72.75), length=inch(14.5),
+                start=inch(77.25), length=inch(14.5),
                 elevation=inch(4), height=inch(7.25), profile="2x8",
                 material_ref="spf", purpose="FURN-S-SUITEBATH-AP access panel frame"),
     # FX-S-BALCONY-HYD's seat, the balcony half of the same 2026-09-15 mount fix. One bay, one

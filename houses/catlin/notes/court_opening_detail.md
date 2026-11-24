@@ -16,7 +16,7 @@ source:
 ### General
 - D-B-SUNKEN: seat, support and membrane bonds per K4-K6.
 - Water plane: the 60 mil waterproofing. Opening membranes lap onto it, shingle-fashion.
-- Veneer arches are self-supporting, under the porch: no lintel, no head flashing (IRC R703.8.5).
+- The veneer reveals are flat-headed on steel lintels with flashed heads and base: `veneer_opening_detail.md` (TR-CATLIN-VENEER-OPENING).
 - WIN-B-SAUNA is 3'-8" above the court, clear of the flood line. Liner vapour return seals inside.
 
 ### Keyed

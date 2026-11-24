@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import math
 
+from typehaus.engineering import thermal_break_working as W
 from typehaus.engineering.item import LimitState, Quantity
 
 _IN = 1.0 / 0.0254
@@ -221,11 +222,17 @@ def line_rows(result: dict, brk, edge_e: float, estimated: bool, psi_cap: tuple[
         "house near-line plan flexure", result["moment"], phi_mn, "lb-in",
         f"{basis}. phi 0.60 x 5 sqrt(f'c) x {b:g}\" x {h:g}\"²/6 (ACI 318-19 §14.5.2.1, "
         f"thickness less 2\" per §14.5.1.7); base friction, passive and the walls on it "
-        f"not credited", combination="1.0T"))
+        f"not credited", combination=W.THERMAL[0], combination_factors=W.THERMAL[1],
+        working=W.near_line(result["load"], result["moment"], result["shear"], phi_mn,
+                            phi_vn, b, h, root, result["bed"], "flexure",
+                            MESH_IN, EC_PER_ROOT_FC)))
     states.append(LimitState(
         "house near-line plan shear", result["shear"], phi_vn, "lb",
         f"the same line: phi 0.60 x 4/3 sqrt(f'c) x {b:g}\" x {h:g}\" (ACI 318-19 §14.5.5.1)",
-        combination="1.0T"))
+        combination=W.THERMAL[0], combination_factors=W.THERMAL[1],
+        working=W.near_line(result["load"], result["moment"], result["shear"], phi_mn,
+                            phi_vn, b, h, root, result["bed"], "shear",
+                            MESH_IN, EC_PER_ROOT_FC)))
     peak = edge_e * result["peak_in"] / brk.thickness.inches
     cap, how = psi_cap
     states.append(LimitState(
@@ -234,4 +241,6 @@ def line_rows(result: dict, brk, edge_e: float, estimated: bool, psi_cap: tuple[
         peak, cap, "psi",
         f"the break's largest stress on the near line (free body §11m.1): E {edge_e:,.0f} x "
         f"{result['peak_in']:.5f}\" / {brk.thickness.inches:g}\" at {result['peak_at']:.1f}\"; "
-        f"vs {how}"))
+        f"vs {how}", combination=W.THERMAL[0], combination_factors=W.THERMAL[1],
+        working=W.near_line_peak(edge_e, result["peak_in"], brk.thickness.inches, peak, cap,
+                                 how)))

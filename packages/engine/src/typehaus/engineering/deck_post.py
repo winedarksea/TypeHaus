@@ -27,16 +27,26 @@ import math
 import re
 from dataclasses import dataclass
 
+from typehaus.engineering import deck_post_working as W  # noqa: N812
+from typehaus.engineering.deck_post_working import PMSection, SwayDetail
+from typehaus.engineering.dowel_development import (
+    confinement_term,
+    development_steps,
+    general_development_in,
+)
 from typehaus.engineering.item import (
     EngineeringRecord,
     LimitState,
     Oracle,
     Quantity,
     Status,
+    Step,
+    declare_sheet,
     item_id,
+    num,
 )
 from typehaus.engineering.pier_basis import (
-    DECK_LIVE_LOAD_PSF,
+    DEAD_LOAD_FACTOR,
     LIVE_LOAD_FACTOR,
     _Pier,
     cast_piers,
@@ -75,8 +85,15 @@ KIND = "deck_post"
 #: to "8" when a WALL-borne column's dowels started being graded for straight development
 #: against the authored ``BarSpec.embedment``; to "9" on 2026-09-30, when an axially loaded
 #: column larger than its load needs, and whose cage misses the gross 1% floor, took ACI 318-19
-#: §10.3.1.2's reduced area for it.
-BASIS_VERSION = "9"
+#: §10.3.1.2's reduced area for it; to "10" on 2026-11-22, when a footing pier (pinned, propped,
+#: a pedestal above grade) left the scope for a prescriptive read (decision 16).
+#: "11" on 2026-11-23 (review B-03/B-04/B-06/B-07/B-08): each column carries its beam's STATICS
+#: reaction and the planter's dead weight, the §2.3.1 envelope runs with the planter on and off
+#: and adds the floor-empty guard patterns, wind includes the guard, shafts and plank edge
+#: (the porch curtains are stowed: owner basis), the lap
+#: is graded against the authored projection, and a wall-borne dowel's development is the
+#: general equation, graded once in ``column_support``.
+BASIS_VERSION = "11"
 BASIS = "IRC R507.4 (no row); ACI 318-19 Ch. 10, 22.4, 25.7 (reinforced) / 14.5 (plain)"
 
 #: ACI 318-19 §2.3 defines a PEDESTAL as a member with a ratio of height to least lateral
@@ -264,6 +281,8 @@ def _slenderness(pier: _Pier) -> tuple[float, float, float, float]:
 #: only asserts that a named note EXISTS on disk, so an oracle pointing at an obsolete
 #: calculation reads exactly like one pointing at a current one. §8 of the new note is the
 #: canopy's lateral hand-working.
+declare_sheet(KIND, not_covered=W.NOT_COVERED, labels=W.LABELS, figure=W.figure)
+
 oracled_by(
     KIND,
     Oracle(note="sunken_garden_piers.md", section="§4", test="tests/test_pier_calcs.py"),
@@ -272,14 +291,22 @@ oracled_by(
 )
 
 
+def _in_scope(ctx: EngineeringContext) -> list[_Pier]:
+    """Cast piers that are COLUMNS. A footing pier (pinned, propped, a pedestal above grade)
+    is part of its footing and graded prescriptively (``engineering/footing_pier.py``)."""
+    from typehaus.engineering.footing_pier import is_footing_pier
+
+    return [pier for pier in cast_piers(ctx) if not is_footing_pier(ctx, pier)]
+
+
 @keys(KIND)
 def enumerate_posts(ctx: EngineeringContext) -> list[str]:
-    return [pier.tag for pier in cast_piers(ctx)]
+    return [pier.tag for pier in _in_scope(ctx)]
 
 
 @calc(KIND)
 def compute(ctx: EngineeringContext) -> list[EngineeringRecord]:
-    return [_one(pier) for pier in cast_piers(ctx)]
+    return [_one(pier) for pier in _in_scope(ctx)]
 
 
 def _one(pier: _Pier) -> EngineeringRecord:
@@ -362,10 +389,14 @@ def _one(pier: _Pier) -> EngineeringRecord:
     return _reinforced_column(pier, area, ratio, shape, demand, minimum_steel, cage, common)
 
 
+def _squash(area_in2: float, steel_in2: float, fc_psi: float = PRESUMPTIVE_FC_PSI) -> float:
+    """``Po`` — ACI 318-19 Eq. 22.4.2.2."""
+    return 0.85 * fc_psi * (area_in2 - steel_in2) + REINFORCEMENT_FY_PSI * steel_in2
+
+
 def _capacity(area_in2: float, steel_in2: float, fc_psi: float = PRESUMPTIVE_FC_PSI) -> float:
     """``phi * alpha * Po`` — ACI 318-19 §22.4.2.1 with Eq. 22.4.2.2."""
-    squash = 0.85 * fc_psi * (area_in2 - steel_in2) + REINFORCEMENT_FY_PSI * steel_in2
-    return PHI_COMPRESSION_TIED * TIED_AXIAL_CAP * squash
+    return PHI_COMPRESSION_TIED * TIED_AXIAL_CAP * _squash(area_in2, steel_in2, fc_psi)
 
 
 def _detailing_states(pier: _Pier, area: float, minimum_steel: float,
@@ -387,28 +418,34 @@ def _detailing_states(pier: _Pier, area: float, minimum_steel: float,
     # ACI's minimum, which is compliant and ordinary. Leaving them eligible to "govern" made
     # every pier in the register read "governing: bar count, d/c 1.00" beside a real axial
     # ratio of 0.04 — see ``LimitState.is_detailing``.
+    def work(name: str) -> tuple:
+        return W.detailing_steps(
+            name, area, steel, minimum_steel, cage.count, _BAR[cage.bar][0], cage.tie_bar,
+            required_tie, cage.tie_spacing_in, tie_limit, cage.bar_diameter_in,
+            cage.tie_diameter_in, pier.diameter_in, eccentricity, magnifier, embedded)
+
     return (
         LimitState("longitudinal steel", minimum_steel, steel, "in2",
                    f"ACI 318-19 §10.6.1.1 minimum {COLUMN_MIN_REINFORCEMENT_RATIO:.2f} Ag",
-                   is_detailing=True),
+                   is_detailing=True, working=work("longitudinal steel")),
         LimitState("steel ratio ceiling", steel, COLUMN_MAX_REINFORCEMENT_RATIO * area, "in2",
                    f"ACI 318-19 §10.6.1.1 maximum {COLUMN_MAX_REINFORCEMENT_RATIO:.2f} Ag",
-                   is_detailing=True),
+                   is_detailing=True, working=work("steel ratio ceiling")),
         LimitState("bar count", float(MIN_BARS_IN_CIRCULAR_TIES), float(cage.count), "bars",
                    "ACI 318-19 §10.7.3.1(b), four within rectangular or circular ties",
-                   is_detailing=True),
+                   is_detailing=True, working=work("bar count")),
         LimitState("tie size", float(required_tie), float(cage.tie_bar), "bar no.",
                    "ACI 318-19 §25.7.2.1 — #3 for longitudinal bars #10 and smaller",
-                   is_detailing=True),
+                   is_detailing=True, working=work("tie size")),
         LimitState("tie spacing", cage.tie_spacing_in, tie_limit, "in",
                    f"ACI 318-19 §25.7.2.2, least of 16db ({16.0 * cage.bar_diameter_in:.1f}\"), "
                    f"48dt ({48.0 * cage.tie_diameter_in:.1f}\"), h ({pier.diameter_in:.1f}\")",
-                   is_detailing=True),
+                   is_detailing=True, working=work("tie spacing")),
         LimitState("minimum eccentricity", eccentricity, embedded, "in",
                    f"ACI 318-19 §6.6.4.5.4 e_min magnified by §6.6.4.5.2 delta_ns "
                    f"{magnifier:.3f}, against the {TIED_EMBEDDED_ECCENTRICITY_RATIO:.2f}h "
                    f"R22.4.2 says the {TIED_AXIAL_CAP:.2f} cap already carries",
-                   is_detailing=True),
+                   is_detailing=True, working=work("minimum eccentricity")),
     )
 
 
@@ -485,9 +522,40 @@ def _phi(strain: float) -> float:
     return PHI_COMPRESSION_TIED + span * (strain - yield_strain) / 0.003
 
 
-def _pm_point(pier: _Pier, cage: _Cage, cover_in: float,
-              axial_lb: float) -> tuple[float, float, float]:
-    """``(phi*Mn in lb-ft, phi, the neutral-axis depth c in inches)`` at a given ``Pu``.
+def _pm_section(pier: _Pier, cage: _Cage, cover_in: float, c: float,
+                offsets: tuple[float, ...]) -> PMSection:
+    """The round section at neutral-axis depth ``c``: force, moment and the pieces they add."""
+    radius = pier.diameter_in / 2.0
+    fc_psi = _fc_psi(pier)
+    beta = _beta_1(fc_psi)
+    bar_area = _BAR[cage.bar].area_in2
+    depth = min(beta * c, 2.0 * radius)
+    area, centroid = _segment(radius, depth)
+    concrete = 0.85 * fc_psi * area
+    force = concrete
+    moment = force * centroid
+    worst_tension = 0.0
+    bars: list[tuple[float, float]] = []
+    for offset in offsets:
+        bar_depth = radius - offset                      # from the extreme compression fibre
+        strain = CONCRETE_ULTIMATE_STRAIN * (c - bar_depth) / c
+        stress = max(-REINFORCEMENT_FY_PSI,
+                     min(REINFORCEMENT_FY_PSI, STEEL_MODULUS_PSI * strain))
+        # A bar inside the stress block displaces concrete that is already counted.
+        if bar_depth <= beta * c:
+            stress -= 0.85 * fc_psi
+        force += stress * bar_area
+        moment += stress * bar_area * offset
+        worst_tension = min(worst_tension, strain)
+        bars.append((offset, stress))
+    return PMSection(force, moment, -worst_tension, area, centroid, tuple(bars), c, depth,
+                     fc_psi, bar_area, concrete)
+
+
+def _pm_point_detail(pier: _Pier, cage: _Cage, cover_in: float,
+                     axial_lb: float) -> tuple[float, float, float, PMSection]:
+    """``(phi*Mn in lb-ft, phi, the neutral-axis depth c in inches, the section at c)`` at a
+    given ``Pu``.
 
     Straight strain compatibility on the round section: bisect the neutral-axis depth until
     ``phi*Pn`` equals the factored axial load, then report ``phi*Mn`` at that same ``c``.
@@ -496,46 +564,30 @@ def _pm_point(pier: _Pier, cage: _Cage, cover_in: float,
     load at all is the conservative answer by a wide margin, since axial compression
     *increases* a lightly loaded column's moment capacity up to the balance point.
     """
-    radius = pier.diameter_in / 2.0
-    fc_psi = _fc_psi(pier)
-    beta = _beta_1(fc_psi)
     offsets = _bar_offsets(pier, cage, cover_in)
-    bar_area = _BAR[cage.bar].area_in2
-
-    def state(c: float) -> tuple[float, float, float]:
-        area, centroid = _segment(radius, min(beta * c, 2.0 * radius))
-        force = 0.85 * fc_psi * area
-        moment = force * centroid
-        worst_tension = 0.0
-        for offset in offsets:
-            depth = radius - offset                      # from the extreme compression fibre
-            strain = CONCRETE_ULTIMATE_STRAIN * (c - depth) / c
-            stress = max(-REINFORCEMENT_FY_PSI,
-                         min(REINFORCEMENT_FY_PSI, STEEL_MODULUS_PSI * strain))
-            # A bar inside the stress block displaces concrete that is already counted.
-            if depth <= beta * c:
-                stress -= 0.85 * fc_psi
-            force += stress * bar_area
-            moment += stress * bar_area * offset
-            worst_tension = min(worst_tension, strain)
-        return (force, moment, -worst_tension)
-
     low, high = 0.05 * pier.diameter_in, 4.0 * pier.diameter_in
     for _ in range(80):
         mid = 0.5 * (low + high)
-        force, _moment, tension = state(mid)
-        if _phi(tension) * force < axial_lb:
+        section = _pm_section(pier, cage, cover_in, mid, offsets)
+        if _phi(section.tension) * section.force < axial_lb:
             low = mid
         else:
             high = mid
     c = 0.5 * (low + high)
-    _force, moment, tension = state(c)
-    phi = _phi(tension)
-    return (phi * moment / 12.0, phi, c)
+    section = _pm_section(pier, cage, cover_in, c, offsets)
+    phi = _phi(section.tension)
+    return (phi * section.moment / 12.0, phi, c, section)
 
 
-def _sway_magnifier(pier: _Pier, axial_lb: float) -> tuple[float, float]:
-    """``(k*lu/r, delta)`` for a cantilever column, ACI 318-19 §6.6.4.
+def _pm_point(pier: _Pier, cage: _Cage, cover_in: float,
+              axial_lb: float) -> tuple[float, float, float]:
+    """``(phi*Mn in lb-ft, phi, c in inches)`` at a given ``Pu`` — see ``_pm_point_detail``."""
+    return _pm_point_detail(pier, cage, cover_in, axial_lb)[:3]
+
+
+def _sway_detail(pier: _Pier, axial_lb: float) -> SwayDetail:
+    """The cantilever column's slenderness and magnifier with every intermediate, ACI 318-19
+    §6.6.4.
 
     ``k`` is ``CANTILEVER_EFFECTIVE_LENGTH_FACTOR``, not ``_slenderness``'s 1.0, and the
     difference is the whole point of this record: ``_slenderness`` designs a LEANING column
@@ -551,22 +603,56 @@ def _sway_magnifier(pier: _Pier, axial_lb: float) -> tuple[float, float]:
     effective = CANTILEVER_EFFECTIVE_LENGTH_FACTOR * pier.height_in
     critical = math.pi ** 2 * stiffness / effective ** 2
     magnifier = max(1.0 / (1.0 - axial_lb / (0.75 * critical)), 1.0) if critical > 0 else 1.0
-    return (slenderness, magnifier)
+    return SwayDetail(slenderness, modulus, inertia, sustained, stiffness, effective, critical,
+                      axial_lb, magnifier, CANTILEVER_EFFECTIVE_LENGTH_FACTOR, pier.height_in,
+                      radius_of_gyration, pier.dead_lb, pier.factored_lb, _fc_psi(pier))
 
 
-def _class_b_lap_in(cage: _Cage, fc_psi: float = PRESUMPTIVE_FC_PSI) -> float:
-    """ACI 318-19 Table 25.4.2.3 development, §25.5.2.1 class B splice, for a #6 or smaller bar.
+def _sway_magnifier(pier: _Pier, axial_lb: float) -> tuple[float, float]:
+    """``(k*lu/r, delta)`` for a cantilever column, ACI 318-19 §6.6.4 (see ``_sway_detail``)."""
+    detail = _sway_detail(pier, axial_lb)
+    return (detail.slenderness, detail.magnifier)
 
-    ``ld = (fy psi_t psi_e psi_s / (25 lambda sqrt(f'c))) db`` with every factor 1.0 —
-    bottom-cast (psi_t 1.0), UNCOATED (psi_e 1.0), and see below, normalweight (lambda 1.0).
-    A class B lap is 1.3 ld, and every bar at a column base is spliced at the same section,
-    which is what makes it class B rather than class A.
+
+def _class_b_lap_in(cage: _Cage, fc_psi: float = PRESUMPTIVE_FC_PSI,
+                    pier: _Pier | None = None) -> float:
+    """A class B splice, ACI 318-19 §25.5.2.1: ``1.3 l_d`` for a #6 or smaller bar.
+
+    ``l_d`` is Table 25.4.2.3's simplified ``(fy psi_t psi_e psi_s / (25 lambda sqrt(f'c))) db``
+    with every factor 1.0 where no ``pier`` is given. Given the pier, it is §25.4.2.4's general
+    equation on the cage's own cover and bar spacing (review B-08), which is shorter. Every bar
+    at a column base is spliced at the same section, which is what makes it class B.
 
     **psi_e is 1.0 even though these bars are galvanized**, and that is not an oversight:
     ACI 318-19's coating factor is written for EPOXY, and §25.4.2.5's zinc-coated (galvanized)
     reinforcement row carries psi_e = 1.0. Zinc does not debond the way epoxy does.
     """
-    return 1.3 * development_length_raw_in(cage.bar_diameter_in, fc_psi)
+    if pier is None:
+        return 1.3 * development_length_raw_in(cage.bar_diameter_in, fc_psi)
+    cover_to_centre, half_spacing = _lap_geometry(cage, pier)
+    return 1.3 * general_development_in(
+        cage.bar_diameter_in, fc_psi, REINFORCEMENT_FY_PSI,
+        confinement_term(cover_to_centre, half_spacing, cage.bar_diameter_in))
+
+
+def _lap_geometry(cage: _Cage, pier: _Pier) -> tuple[float, float]:
+    """``(cover to a vertical bar's centre, half the bars' spacing)`` on the cage's ring."""
+    cover_to_centre = _cover_in(pier) + cage.tie_diameter_in + cage.bar_diameter_in / 2.0
+    ring = pier.diameter_in / 2.0 - cover_to_centre
+    return cover_to_centre, ring * math.sin(math.pi / cage.count)
+
+
+def _lap_steps(cage: _Cage, fc_psi: float, pier: _Pier, lap: float, available: float,
+               simplified: float, authored: bool) -> tuple:
+    """The class B lap's working: ``l_d`` by the general equation, then 1.3 l_d."""
+    cover_to_centre, half_spacing = _lap_geometry(cage, pier)
+    confinement = confinement_term(cover_to_centre, half_spacing, cage.bar_diameter_in)
+    ld = general_development_in(cage.bar_diameter_in, fc_psi, REINFORCEMENT_FY_PSI,
+                                confinement)
+    dev = development_steps(
+        bar_diameter_in=cage.bar_diameter_in, fc_psi=fc_psi, fy_psi=REINFORCEMENT_FY_PSI,
+        cover_to_centre_in=cover_to_centre, half_spacing_in=half_spacing, length_in=ld)
+    return W.lap_steps(dev, lap, available, simplified, authored)
 
 
 def dowel_entry(pier: _Pier):  # noqa: ANN201 — a BarSpec, typed loosely like `reinforcement`
@@ -606,20 +692,38 @@ def _dowel_anchorage(pier: _Pier, cage: _Cage, fc_psi: float) -> LimitState | No
         if entry is None or entry.embedment is None:
             return None
         base_fc = pier.base_fc_psi or PRESUMPTIVE_FC_PSI
-        ld = development_length_in(entry.bar, base_fc)
         cover_in = pier.base_cover_in if pier.base_cover_in is not None else _cover_in(pier)
+        dowel_db = _BAR[entry.bar][1]
+        # The dowels sit one bar inside the verticals on the cage's ring (``column_support``).
+        ring = (pier.diameter_in / 2.0 - _cover_in(pier) - cage.tie_diameter_in
+                - cage.bar_diameter_in / 2.0 - (cage.bar_diameter_in + dowel_db) / 2.0)
+        half_spacing = ring * math.sin(math.pi / cage.count)
+        confinement = confinement_term(cover_in + dowel_db / 2.0, half_spacing, dowel_db)
+        ld = general_development_in(dowel_db, base_fc, REINFORCEMENT_FY_PSI, confinement)
+        simplified = development_length_in(entry.bar, base_fc)
         stem = pier.base_thickness_in - cover_in
         authored = float(entry.embedment.inches)
         refused = authored > stem
+        dev = development_steps(
+            bar_diameter_in=dowel_db, fc_psi=base_fc, fy_psi=REINFORCEMENT_FY_PSI,
+            cover_to_centre_in=cover_in + dowel_db / 2.0, half_spacing_in=half_spacing,
+            length_in=ld)
         return LimitState(
             "dowel anchorage into the base", ld, min(authored, stem), "in",
-            f"ACI 318-19 Table 25.4.2.3 straight development of a #{entry.bar} dowel in the wall "
-            f"below at f'c {base_fc:,.0f} psi, psi_t 1.0 (vertical bar), psi_e 1.0 (zinc, "
-            f"§25.4.2.5); against the authored {authored:g}\" embedment"
+            f"ACI 318-19 §25.4.2.4 general equation for a #{entry.bar} dowel in the wall below "
+            f"at f'c {base_fc:,.0f} psi: (c_b + K_tr)/d_b {confinement:.2f} (c_b the lesser of "
+            f"{cover_in + dowel_db / 2.0:.2f}\" cover to the bar's centre and half the "
+            f"{2.0 * half_spacing:.2f}\" bar spacing; capped at 2.5), psi_s 0.8, psi_t 1.0 "
+            f"(vertical bar), psi_e 1.0 (zinc, §25.4.2.5), the 12\" floor of §25.4.2.1; "
+            f"Table 25.4.2.3's simplified row reads {simplified:.1f}\" and is the bound; "
+            f"against the authored {authored:g}\" embedment"
             + (f" — REFUSED: the stem holds only {stem:.1f}\" ({pier.base_thickness_in:.2f}\" "
                f"less {cover_in:g}\" cover), which is graded instead" if refused else
                f", inside the {pier.base_thickness_in:.2f}\" stem less {cover_in:g}\" cover")
-            + ". No hook at the foot is credited")
+            + ". No hook at the foot is credited",
+            combination=W.NO_LOAD[0],
+            working=W.anchorage_wall_steps(dev, simplified, stem, authored,
+                                           min(authored, stem), refused))
     ldh = hooked_development_length_in(cage.bar, fc_psi, enclosed_by_ties=True,
                                        confined=True)
     # The PAD's cover, not the column's: until 2026-09-23 this read the column cage's 2" and
@@ -636,7 +740,9 @@ def _dowel_anchorage(pier: _Pier, cage: _Cage, fc_psi: float) -> LimitState | No
         f"through the joint, §25.4.3.3), psi_o 1.0 (confined) — against the "
         f"{pier.base_thickness_in:g}\" pour less {cover_in:g}\" cover and one bar "
         f"diameter. CONFIRM the tie continuation and the side cover on the drawing: both "
-        f"psi factors are 1.6 and 1.25 without them")
+        f"psi factors are 1.6 and 1.25 without them", combination=W.NO_LOAD[0],
+        working=W.anchorage_hook_steps(ldh, pier.base_thickness_in, cover_in,
+                                       cage.bar_diameter_in, available))
 
 
 @dataclass(frozen=True)
@@ -650,10 +756,15 @@ class _Combination:
     #: half — so the analysis export carries the combination that actually governed rather
     #: than re-reading it out of ``label``'s prose.
     factors: tuple[tuple[str, float], ...] = ()
+    #: The axial load and the moment as the equation and numbers the sheet prints.
+    axial_eq: str = ""
+    axial_numbers: str = ""
+    moment_eq: str = ""
+    moment_numbers: str = ""
 
 
 def _combinations(pier: _Pier, wind_mu: float, guard_mu: float) -> tuple[_Combination, ...]:
-    """ASCE 7-16 §2.3.1, each at ITS OWN axial load.
+    """ASCE 7-16 §2.3.1, each at ITS OWN axial load, and each with the planter on and off.
 
     ** A LARGER AXIAL IS NOT AUTOMATICALLY CONSERVATIVE ON AN INTERACTION CURVE, AND THAT IS
     THE WHOLE REASON THIS EXISTS. ** Until 2026-09-18 this module took one axial — ``1.2D +
@@ -665,34 +776,59 @@ def _combinations(pier: _Pier, wind_mu: float, guard_mu: float) -> tuple[_Combin
     the full wind moment at ``1.2D + 1.6L``'s axial credited compression that the governing
     case does not have.
 
-    The five are enumerated at their own axial loads and the record reports the governing
-    PAIR. L and S are separated here for the first time — ``_Pier.live_lb`` sums them,
-    because until this the axial was only ever needed as one number.
+    The planter is dead load that may not be there (a planter over this beam, or none), so
+    every combination with a moment runs at both dead loads, and the lower one is the threat
+    below the balance point. The two **floor-empty** guard patterns put the 200 lb guard load
+    on the column with the deck's live load absent (ASCE 7-16 §4.3.3's partial loading):
+    ``1.2D + 1.6L_g`` and ``1.2D + 1.0W + L_g``, the lowest axial a guard load can meet.
 
     The guard's 200 lb (IRC R301.5) is an occupancy live load, so it rides the L term: full
     in combinations 2 and 4, absent where L is. Wind and guard are taken CONCURRENTLY in
     combination 4, which is conservative — nobody leans on a rail in a design windstorm —
-    and cheap, because it is not the case that governs.
+    and cheap, because it is not the case that governs. The deck's live load is the beam's
+    STATICS reaction (``balcony_loads``), not an equal split.
     """
-    dead = pier.dead_lb
-    live = pier.tributary_ft2 * DECK_LIVE_LOAD_PSF
+    live = pier.deck_live_effective_lb
     snow = pier.roof_tributary_ft2 * pier.roof_snow_psf
-    return (
-        _Combination("1.4D", 1.4 * dead, 0.0, (("D", 1.4),)),
-        _Combination("1.2D + 1.6L + 0.5S",
-                     1.2 * dead + 1.6 * live + 0.5 * snow, guard_mu,
-                     (("D", 1.2), ("L", 1.6), ("S", 0.5))),
-        _Combination("1.2D + 1.6S + 0.5W",
-                     1.2 * dead + 1.6 * snow, 0.5 * wind_mu,
-                     (("D", 1.2), ("S", 1.6), ("W", 0.5))),
-        _Combination("1.2D + 1.0W + L + 0.5S",
-                     1.2 * dead + live + 0.5 * snow,
-                     wind_mu + guard_mu / GUARD_LOAD_FACTOR,
-                     (("D", 1.2), ("W", 1.0), ("L", 1.0), ("S", 0.5))),
-        # The one that governs a lightly loaded lateral column, and the one a single-axial
-        # check could not see: full wind at the smallest axial the Code permits.
-        _Combination("0.9D + 1.0W", 0.9 * dead, wind_mu, (("D", 0.9), ("W", 1.0))),
-    )
+    cases = [("", pier.dead_lb)]
+    if pier.planter_lb > 0.0:
+        cases = [(", planter on", pier.dead_lb), (", planter off", pier.dead_unplanted_lb)]
+
+    def combo(label: str, dead: float, d_f: float, l_f: float, s_f: float, moment: float,
+              m_eq: str, m_num: str, factors: tuple[tuple[str, float], ...]) -> _Combination:
+        eq, nums = [f"{d_f:g} D"], [f"{d_f:g} x {num(dead)}"]
+        for symbol, f, value in (("L_deck", l_f, live), ("S", s_f, snow)):
+            if f and value:
+                eq.append(f"{f:g} {symbol}")
+                nums.append(f"{f:g} x {num(value)}")
+        axial = d_f * dead + l_f * live + s_f * snow
+        return _Combination(label, axial, moment, factors, " + ".join(eq), " + ".join(nums),
+                            m_eq, m_num)
+
+    gm, wm = num(guard_mu), num(wind_mu)
+    out: list[_Combination] = [_Combination("1.4D", 1.4 * pier.dead_lb, 0.0, (("D", 1.4),),
+                                            "1.4 D", f"1.4 x {num(pier.dead_lb)}", "0", "0")]
+    for suffix, dead in cases:
+        out += [
+            combo(f"1.2D + 1.6L + 0.5S{suffix}", dead, 1.2, 1.6, 0.5, guard_mu, "M_g", gm,
+                  (("D", 1.2), ("L", 1.6), ("S", 0.5))),
+            combo(f"1.2D + 1.6S + 0.5W{suffix}", dead, 1.2, 0.0, 1.6, 0.5 * wind_mu,
+                  "0.5 M_w", f"0.5 x {wm}", (("D", 1.2), ("S", 1.6), ("W", 0.5))),
+            combo(f"1.2D + 1.0W + L + 0.5S{suffix}", dead, 1.2, 1.0, 0.5,
+                  wind_mu + guard_mu / GUARD_LOAD_FACTOR, "M_w + M_g / 1.6",
+                  f"{wm} + {gm} / 1.6", (("D", 1.2), ("W", 1.0), ("L", 1.0), ("S", 0.5))),
+            # Floor empty, someone leaning on the guard: the guard is the only live load.
+            combo(f"1.2D + 1.6L_guard, floor live absent{suffix}", dead, 1.2, 0.0, 0.0,
+                  guard_mu, "M_g", gm, (("D", 1.2), ("L", 1.6))),
+            combo(f"1.2D + 1.0W + L_guard, floor live absent{suffix}", dead, 1.2, 0.0, 0.0,
+                  wind_mu + guard_mu / GUARD_LOAD_FACTOR, "M_w + M_g / 1.6",
+                  f"{wm} + {gm} / 1.6", (("D", 1.2), ("W", 1.0), ("L", 1.0))),
+            # The one that governs a lightly loaded lateral column, and the one a single-axial
+            # check could not see: full wind at the smallest axial the Code permits.
+            combo(f"0.9D + 1.0W{suffix}", dead, 0.9, 0.0, 0.0, wind_mu, "M_w", wm,
+                  (("D", 0.9), ("W", 1.0))),
+        ]
+    return tuple(out)
 
 
 def _moment_column(pier: _Pier, area: float, ratio: float, shape: str, demand: float,
@@ -721,42 +857,78 @@ def _moment_column(pier: _Pier, area: float, ratio: float, shape: str, demand: f
     fc_psi = _fc_psi(pier)
     capacity = _capacity(area, steel, fc_psi)
     cover_in = _cover_in(pier)
-    phi_mn, phi, neutral_axis = _pm_point(pier, cage, cover_in, demand)
-    slenderness, magnifier = _sway_magnifier(pier, demand)
+    phi_mn, phi, neutral_axis, section = _pm_point_detail(pier, cage, cover_in, demand)
+    sway = _sway_detail(pier, demand)
+    slenderness, magnifier = sway.slenderness, sway.magnifier
     # Both arrive at working stress and are graded at strength — see STRENGTH_FROM_ASD_WIND.
     wind_mu = pier.wind_base_moment_lb_ft * STRENGTH_FROM_ASD_WIND
     guard_mu = pier.guard_base_moment_lb_ft * GUARD_LOAD_FACTOR
     governing = max(wind_mu, guard_mu)
-    lap = _class_b_lap_in(cage, fc_psi)
+    lap = _class_b_lap_in(cage, fc_psi, pier)
+    lap_simplified = _class_b_lap_in(cage, fc_psi)
+    entry = dowel_entry(pier)
+    projection = getattr(entry, "projection", None)
+    lap_available = float(projection.inches) if projection is not None else pier.height_in
 
     # The §2.3.1 envelope, each combination at its own axial load and its own P-M point,
     # and the one with the worst ratio reported. See `_combinations`.
     envelope = []
     for case in _combinations(pier, wind_mu, guard_mu):
-        case_phi_mn, case_phi, _c = _pm_point(pier, cage, cover_in, case.axial_lb)
-        _slender, case_magnifier = _sway_magnifier(pier, case.axial_lb)
-        envelope.append((case, case.moment_lb_ft * case_magnifier, case_phi_mn, case_phi,
-                         case_magnifier))
+        case_phi_mn, case_phi, _c, case_section = _pm_point_detail(pier, cage, cover_in,
+                                                                   case.axial_lb)
+        case_sway = _sway_detail(pier, case.axial_lb)
+        envelope.append((case, case.moment_lb_ft * case_sway.magnifier, case_phi_mn, case_phi,
+                         case_sway.magnifier, case_section, case_sway))
     worst = max(envelope, key=lambda row: row[1] / row[2] if row[2] else 0.0)
-    worst_case, worst_mu, worst_phi_mn, worst_phi, worst_magnifier = worst
+    worst_case, worst_mu, worst_phi_mn, worst_phi, worst_magnifier, worst_section, \
+        worst_sway = worst
+    beta, radius = _beta_1(fc_psi), pier.diameter_in / 2.0
+    loads = W.load_steps(pier, DEAD_LOAD_FACTOR, LIVE_LOAD_FACTOR, demand)
+    p_u = loads[-1:]
+    at_pu = W.pm_steps(section, phi, demand, phi_mn, beta, radius)
 
     states = (
         LimitState("axial, tied column", demand, capacity, "lb",
                    f"ACI 318-19 §22.4.2.1 Pn,max = {TIED_AXIAL_CAP:.2f} Po, phi "
                    f"{PHI_COMPRESSION_TIED:.2f} (Table 21.2.2) — {_fc_note(pier)}, "
-                   f"fy {REINFORCEMENT_FY_PSI:,.0f} psi"),
+                   f"fy {REINFORCEMENT_FY_PSI:,.0f} psi",
+                   combination="ASCE 7-16 §2.3.1 1.2D + 1.6L",
+                   combination_factors=(("D", 1.2), ("L", 1.6)),
+                   working=(*loads, *W.axial_steps(
+                       area, steel, fc_psi, REINFORCEMENT_FY_PSI, _squash(area, steel, fc_psi),
+                       PHI_COMPRESSION_TIED, TIED_AXIAL_CAP, capacity))),
         LimitState("bending at base, wind", wind_mu, phi_mn, "lb-ft",
                    f"ACI 318-19 §22.4 P-M interaction at Pu {demand:,.0f} lb, phi "
                    f"{phi:.2f}, c {neutral_axis:.2f}\" — storey shear at ASCE 7-16 "
-                   f"§2.3.1's 1.0W, the ASD value / {ASD_WIND_FACTOR:.1f}"),
+                   f"§2.3.1's 1.0W, the ASD value / {ASD_WIND_FACTOR:.1f}",
+                   combination=W.SCREEN_WIND[0], combination_factors=W.SCREEN_WIND[1],
+                   working=(*W.moment_steps(
+                       "M_w", "wind moment at the column base", pier.wind_base_moment_lb_ft,
+                       f"/ {ASD_WIND_FACTOR:g}", wind_mu,
+                       "this column's share of the deck wind at each band's own lever "
+                       "(the load basis in the assumptions)"), *p_u, *at_pu)),
         LimitState("bending at base, guard", guard_mu, phi_mn, "lb-ft",
                    f"IRC R301.5 — a 200 lb concentrated load in any direction at the top "
                    f"of the guard, taken wholly on this column rather than shared, at "
-                   f"ASCE 7-16 §2.3.1's {GUARD_LOAD_FACTOR:.1f}L"),
+                   f"ASCE 7-16 §2.3.1's {GUARD_LOAD_FACTOR:.1f}L",
+                   combination=W.SCREEN_GUARD[0], combination_factors=W.SCREEN_GUARD[1],
+                   working=(*W.moment_steps(
+                       "M_g", "guard-load moment at the column base",
+                       pier.guard_base_moment_lb_ft, f"x {GUARD_LOAD_FACTOR:g}", guard_mu,
+                       "IRC R301.5's 200 lb at the top of the guard, wholly on one column"),
+                       *p_u, *at_pu)),
         LimitState("magnified moment (sway)", governing * magnifier, phi_mn, "lb-ft",
                    f"ACI 318-19 §6.6.4.5.2 delta {magnifier:.3f} at k "
                    f"{CANTILEVER_EFFECTIVE_LENGTH_FACTOR:.1f}, k*lu/r {slenderness:.0f} "
-                   f"against §6.2.5's SWAY limit of {SWAY_SLENDERNESS_LIMIT:.0f}"),
+                   f"against §6.2.5's SWAY limit of {SWAY_SLENDERNESS_LIMIT:.0f}",
+                   combination=W.SCREEN_BOTH[0], combination_factors=W.SCREEN_BOTH[1],
+                   working=(
+                       Step("M_max", "the larger of the wind and guard moments", governing,
+                            "lb-ft", "max(M_w, M_g)", f"max({num(wind_mu)}, {num(guard_mu)})"),
+                       *W.sway_steps(sway),
+                       Step("M_mag", "moment magnified for sway", governing * magnifier,
+                            "lb-ft", "delta M_max", f"{num(magnifier)} x {num(governing)}",
+                            "ACI 318-19 §6.6.4.5.2"), *p_u, *at_pu)),
         # ** THE STATE THAT ACTUALLY GRADES THIS COLUMN. ** The three above are one
         # combination's moments against one combination's P-M point; this is the §2.3.1
         # envelope, each case at its own axial load, and on a column below the balance
@@ -768,14 +940,36 @@ def _moment_column(pier: _Pier, area: float, ratio: float, shape: str, demand: f
                    f"a larger Pu RAISES moment capacity below the balance point, so the "
                    f"lowest-axial lateral case is the threat",
                    combination=f"ASCE 7-16 §2.3.1 {worst_case.label}",
-                   combination_factors=worst_case.factors),
-        LimitState("dowel lap, class B", lap, pier.height_in, "in",
-                   "ACI 318-19 Table 25.4.2.3 development x §25.5.2.1's 1.3 for a class B "
-                   "splice with every bar spliced at one section; graded against the "
-                   "column's own height, which is the only bound this model holds on how "
-                   "much lap can physically exist ABOVE the joint. The AUTHORED lap is in "
-                   "the assembly's source and on the drawing"),
-        *((anchorage,) if (anchorage := _dowel_anchorage(pier, cage, fc_psi)) else ()),
+                   combination_factors=worst_case.factors,
+                   working=(
+                       Step("P_u", f"factored axial load of the governing case, "
+                            f"{worst_case.label}", worst_case.axial_lb, "lb",
+                            worst_case.axial_eq, worst_case.axial_numbers,
+                            "ASCE 7-16 §2.3.1; the table of every case is in the assumptions"),
+                       Step("M_0", "its moment before magnification", worst_case.moment_lb_ft,
+                            "lb-ft", worst_case.moment_eq, worst_case.moment_numbers,
+                            "M_w, M_g as in the wind and guard rows"),
+                       *W.sway_steps(worst_sway),
+                       Step("M_u", "magnified moment of the governing case", worst_mu,
+                            "lb-ft", "delta M_0", f"{num(worst_magnifier)} x "
+                            f"{num(worst_case.moment_lb_ft)}", "ACI 318-19 §6.6.4.5.2"),
+                       *W.pm_steps(worst_section, worst_phi, worst_case.axial_lb,
+                                   worst_phi_mn, beta, radius))),
+        LimitState("dowel lap, class B", lap, lap_available, "in",
+                   f"ACI 318-19 §25.5.2.1 1.3 l_d with l_d from §25.4.2.4's general equation "
+                   f"on the cage's own cover and spacing (Table 25.4.2.3's simplified row reads "
+                   f"{lap_simplified:.1f}\"), every bar spliced at one section; against "
+                   + (f"the AUTHORED {lap_available:g}\" dowel projection above the joint "
+                      f"(the drawn projection of the dowel bars)" if projection is not None else
+                      "the column's own height, the only bound this model holds on how much "
+                      "lap can exist ABOVE the joint — draw the dowels' projection"),
+                   combination=W.NO_LOAD[0],
+                   working=_lap_steps(cage, fc_psi, pier, lap, lap_available, lap_simplified,
+                                      projection is not None)),
+        # A dowel into a WALL develops in the stem, and `column_support/<wall>` grades that one
+        # state for all four columns; it is not printed twice (review B-08).
+        *((anchorage,) if (pier.base_kind != "wall"
+                           and (anchorage := _dowel_anchorage(pier, cage, fc_psi))) else ()),
     )
     # ACI 318-19 §10.3.1.2 with a MOMENT on it: the reduced area has to carry the strength
     # rows too (axial and moment; a development LENGTH is not a section strength), so it is
@@ -817,7 +1011,7 @@ def _moment_column(pier: _Pier, area: float, ratio: float, shape: str, demand: f
         "LOAD COMBINATIONS: " + "; ".join(
             f"{case.label} -> Pu {case.axial_lb:,.0f} lb, Mu {mu:,.0f} lb-ft, phi*Mn "
             f"{case_phi_mn:,.0f} lb-ft, d/c {mu / case_phi_mn:.2f}"
-            for case, mu, case_phi_mn, _phi, _delta in envelope) + ". "
+            for case, mu, case_phi_mn, _phi, _delta, _sec, _sw in envelope) + ". "
         f"{worst_case.label} governs. Until 2026-09-18 only 1.2D + 1.6L's axial was used, "
         f"which credited this column with compression the governing case does not have.",
         f"BENDING GOVERNS, and {which} governs the bending: {governing:,.0f} lb-ft against "
@@ -836,6 +1030,17 @@ def _moment_column(pier: _Pier, area: float, ratio: float, shape: str, demand: f
         f"the column's own cage. psi_e is 1.0 for GALVANIZED bar "
         f"(ACI 318-19 §25.4.2.5); it is epoxy coating that takes 1.2-1.5, and reading the "
         f"epoxy row for a galvanized bar would lengthen every lap in this house by half.",
+        (f"LOADS: this column carries its beam's STATICS reaction, not an equal split of the "
+         f"strip (`balcony_loads`): deck dead {pier.deck_dead_effective_lb:,.0f} lb and live "
+         f"{pier.deck_live_effective_lb:,.0f} lb, plus the planter's {pier.planter_lb:,.0f} lb of "
+         f"saturated dead weight where one stands over the beam. Every combination runs with "
+         f"the planter on and off (the lower axial is the threat below the balance point), "
+         f"and two more run with the floor live load absent and only the guard on (ASCE 7-16 "
+         f"§4.3.3). The owner's deck-snow and curtain bases are in §6 of the sheet."
+         if pier.deck_dead_lb is not None else ""),
+        ("DOWEL DEVELOPMENT into the wall is graded once, as `column_support/<wall>`'s "
+         "\"dowel development into the stem\" for all four columns, not repeated here."
+         if pier.base_kind == "wall" else ""),
         (f"f'c IS THE {pier.specified_fc_psi:,.0f} psi THIS POUR SPECIFIES, read from the "
          f"``ConcreteSpec`` on its assembly. Every state above is computed on it, so this "
          f"record and the drawing are quoting one number rather than two."
@@ -874,7 +1079,14 @@ def _moment_column(pier: _Pier, area: float, ratio: float, shape: str, demand: f
             Quantity("phi_Mn", phi_mn, "lb-ft", 1.0),
             Quantity("cover", cover_in, "in", 0.125),
         ),
-        limit_states=states, notes=notes, element_tags=(pier.tag,))
+        limit_states=states, notes=notes, element_tags=(pier.tag,),
+        bases=_bases() if pier.deck_dead_lb is not None else ())
+
+
+def _bases() -> tuple:
+    from typehaus.engineering.owner_bases import CURTAINS, DECK_SNOW
+
+    return (DECK_SNOW, CURTAINS)
 
 
 #: ACI 318-19 §20.5.1.3(a) — cast against and permanently in contact with ground is 3"; a
@@ -1105,23 +1317,27 @@ def _plain_capacity(pier: _Pier, area: float) -> float:
 
 
 def _inputs(pier: _Pier, area: float, steel: float, cage: _Cage | None) -> tuple[Quantity, ...]:
+    # A column on its beam's STATICS reaction carries no roof and no tributary-area demand: the
+    # three unused areas are not inputs (fingerprint hygiene), while the loads are.
+    statics = pier.deck_dead_lb is not None and pier.roof_tributary_ft2 == 0.0
     base = (
         Quantity("column_diameter", pier.diameter_in, "in", 0.5),
         Quantity("column_height", pier.height_in, "in", 0.01),
         Quantity("gross_area", area, "in2", 0.1),
-        Quantity("tributary_area", pier.tributary_ft2, "ft2", 0.01),
+        *(() if statics else (Quantity("tributary_area", pier.tributary_ft2, "ft2", 0.01),)),
         # ** PUBLISHED SEPARATELY, AND NOT SUMMED INTO THE LINE ABOVE. ** A deck carries IRC
         # Table R301.5's 40 psf; a roof carries SNOW, which on this site is 50 and therefore
         # the LARGER. Folding them together would grade the roof's share at 40. It is printed
         # because a reader seeing "tributary_area 0 ft2" beside a four-figure demand would
         # reasonably conclude the demand was invented -- which is the failure this pair of
         # terms exists to make visible.
-        Quantity("roof_tributary_area", pier.roof_tributary_ft2, "ft2", 0.01),
+        *(() if statics else (
+            Quantity("roof_tributary_area", pier.roof_tributary_ft2, "ft2", 0.01),)),
         # The DESIGN snow, which on a house authoring `roof_beam_snow_psf` is the drifted
         # case the beam overhead was designed for and not the ground snow. It is a
         # fingerprint input, so raising the design snow stales a seal — correctly: the
         # demand this record published moved with it.
-        Quantity("roof_snow", pier.roof_snow_psf, "psf", 0.1),
+        *(() if statics else (Quantity("roof_snow", pier.roof_snow_psf, "psf", 0.1),)),
         Quantity("carried_dead", pier.carried_dead_lb, "lb", 1.0),
         # ** PUBLISHED SEPARATELY FOR THE REASON THE ROOF TRIBUTARY IS. ** A wall bearing
         # along a beam this pier carries is POUNDS, not an area, so it appears in no
@@ -1130,8 +1346,11 @@ def _inputs(pier: _Pier, area: float, steel: float, cage: _Cage | None) -> tuple
         # fingerprint, which is the point: retype that wall's cladding and the seal stales,
         # because the demand this record published moved with it.
         Quantity("wall_dead", pier.wall_dead_lb, "lb", 1.0),
-        Quantity("dead_load", pier.dead_lb, "lb", 1.0),
+        # Dead load WITHOUT the planter: a reader reconciling it against the beam's own statics
+        # (and the analytical graph's dead case) finds the planter on the next line, a case.
+        Quantity("dead_load", pier.dead_unplanted_lb, "lb", 1.0),
         Quantity("live_load", pier.live_lb, "lb", 1.0),
+        Quantity("planter_dead", pier.planter_lb, "lb", 1.0),
         Quantity("fc", _fc_psi(pier), "psi", 1.0),
     )
     if cage is None:

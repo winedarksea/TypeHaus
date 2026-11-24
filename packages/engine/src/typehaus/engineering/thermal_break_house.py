@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import math
 
+from typehaus.engineering import thermal_break_working as W
 from typehaus.engineering.item import LimitState, Quantity
 from typehaus.engineering.thermal_break_demand import integrate
 from typehaus.engineering.thermal_break_geometry import Board, z_extent
@@ -107,13 +108,20 @@ def house_wall_rows(ctx, board: Board, patch: dict, states, missing, inputs) -> 
         f"{patch['span']:.2f}\" span, simply supported, maximum moment integrated; "
         f"vs the WHOLE {length:.1f}\" panel, #{bar} @ {spacing:.0f}\": As {area:.4f} in2, "
         f"d {d:.4f}\", a {a:.4f}\", phi 0.90 (ACI 318-19 §22.3); soil left out",
-        combination="1.0T"))
+        combination=W.THERMAL[0], combination_factors=W.THERMAL[1],
+        working=W.wall_flexure(patch["on_wall"], patch["span"], patch["moment"], length, bar,
+                               spacing, section.area_in2, section.diameter_in, cover, h, area,
+                               d, REINFORCEMENT_FY_PSI, fc, a, phi_mn)))
     vc = PHI_SHEAR * 2.0 * math.sqrt(fc) * length * d
     states.append(LimitState(
         "house wall shear", max(patch["bottom_reaction"], patch["top_reaction"]), vc, "lb",
         f"one-way at the support, phi 0.75 x 2 sqrt(f'c) b d over the whole {length:.1f}\" "
-        f"(ACI 318-19 §22.5.5.1); punching retired — the patch runs support to support",
-        combination="1.0T"))
+        f"(ACI 318-19 §22.5.5.1); no punching check: the patch runs support to support, so the "
+        f"panel spans one way",
+        combination=W.THERMAL[0], combination_factors=W.THERMAL[1],
+        working=W.wall_shear(patch["bottom_reaction"], patch["top_reaction"],
+                             max(patch["bottom_reaction"], patch["top_reaction"]), fc, length,
+                             d, vc)))
     _floor_line(ctx, board, patch, states, missing)
 
 
@@ -156,7 +164,7 @@ def _floor_line(ctx, board: Board, patch: dict, states, missing) -> None:
         span_x, span_y = max(sx) - min(sx), max(sy) - min(sy)
         own = span_y > span_x if board.ax == 1 else span_x > span_y
         if own and a_lo < across < a_hi and l_lo - 1.0 <= along <= l_hi + 1.0:
-            anchors.append(parts[1])
+            anchors.append((parts[1], value, allow.citation))
             capacity += value
     demand = patch["top_reaction"] + patch["band"]
     if not anchors:
@@ -166,9 +174,12 @@ def _floor_line(ctx, board: Board, patch: dict, states, missing) -> None:
     states.append(LimitState(
         "house floor-line reaction", demand, capacity, "lb",
         f"top reaction {patch['top_reaction']:,.0f} + the board above the wall top "
-        f"{patch['band']:,.0f} lb; vs {len(anchors)} x {anchors[0]} F2 (perpendicular, "
+        f"{patch['band']:,.0f} lb; vs {len(anchors)} x {anchors[0][0]} F2 "
+        f"{anchors[0][1]:,.0f} lb each (perpendicular, "
         f"ICC-ES ESR-2555 Table 1, at its C_D 1.6 and SG 0.50 — generous for an SPF sill)",
-        combination="1.0T"))
+        combination=W.THERMAL[0], combination_factors=W.THERMAL[1],
+        working=W.floor_line(patch["top_reaction"], patch["band"], demand, anchors,
+                             capacity)))
 
 
 def court_sliding(ctx, ref: str, total: float, free_bodies: dict, states, missing) -> None:
@@ -190,11 +201,18 @@ def court_sliding(ctx, ref: str, total: float, free_bodies: dict, states, missin
              f"soil's {soil_push:,.0f} lb at {pcf:.0f} pcf, against base friction "
              f"{friction:,.0f} lb; passive not credited")
     if net > 0:
-        states.append(LimitState("court sliding under break thrust", REQUIRED_FS,
-                                 friction / net, "", basis, is_safety_factor=True))
+        states.append(LimitState(
+            "court sliding under break thrust", REQUIRED_FS, friction / net, "", basis,
+            is_safety_factor=True, combination=W.SOIL_SERVICE[0],
+            combination_factors=W.SOIL_SERVICE[1],
+            working=W.court_sliding(total, soil_push, friction, net, pcf, friction / net,
+                                    REQUIRED_FS, friction / net)))
         return
     states.append(LimitState(
         "court sliding under break thrust", 0.0, friction / REQUIRED_FS, "lb",
         f"{basis}. The net is {net:,.0f} lb — the thrust never overcomes the soil, so nothing "
         f"pushes the court away: graded as a force, net push 0 against friction / "
-        f"{REQUIRED_FS}"))
+        f"{REQUIRED_FS}",
+        combination=W.SOIL_SERVICE[0], combination_factors=W.SOIL_SERVICE[1],
+        working=W.court_sliding(total, soil_push, friction, net, pcf, None, 0.0,
+                                friction / REQUIRED_FS)))

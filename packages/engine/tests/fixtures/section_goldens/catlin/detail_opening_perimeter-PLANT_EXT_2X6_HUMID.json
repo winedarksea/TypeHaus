@@ -3123,7 +3123,7 @@
         -17.09251968503937,
         119.78346456692913
       ],
-      "content": "EXTERIOR HEAD AND SILL AS A-560.1.1 (HEAD), A-560.1.2 (SILL)",
+      "content": "EXTERIOR HEAD AND SILL AS A-560.2.1 (HEAD), A-560.2.2 (SILL)",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -3471,7 +3471,7 @@
         0.5,
         7.444444444444445
       ],
-      "content": "SHEET A-560.14",
+      "content": "SHEET A-560.15",
       "height": 3.0,
       "height_pt": 7.0,
       "rotation": 0.0,

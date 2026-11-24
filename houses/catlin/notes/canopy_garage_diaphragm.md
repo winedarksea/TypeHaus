@@ -16,7 +16,7 @@ glulam headers `BM-BW-RW`/`-RE`, on four 6x6 KDAT posts) delivering into `RF-GAR
 `north_entry_canopy_lateral.md` §8 (collectors, hold-down anchorage); `north_entry_piers.md` §10 (the landing
 tie, which reads the screen's share); `entry_column_base_fixity.md` §7 (the cast shafts).
 **What is asked of the reviewer:** whether the garage may take the canopy's whole lateral load (§3-§4) and §5a.
-Every row is under 0.92; the closest is the canopy deck's boundary at the screen line (§4d, 0.908 since §11).
+Every row is under 0.92. **Amended 2026-11-23 (§12): the decks are graded at their SDPWS table allowables, so the deck's boundary at the screen line is 0.496, not 0.908; the N-S chord force and the end-strap couple are new.**
 
 ---
 
@@ -63,7 +63,7 @@ N-S  gable triangle 2.222' x 26.667' = 59.259 sf x 16.661                      =
 half joins the deck, the base half goes down the pier):
 
 ```
-kdat   16.661 x (5.5/12) x 6.1771 = 47.17 lb per post -> 23.585 head, 23.585 base
+kdat   16.661 x (7.5/12) x 6.1771 = 64.32 lb per post -> 32.16 head, 32.16 base  (7 1/2" PVC jacket, 11-23)
 steel  16.661 x (4.0/12) x 6.1771 = 34.31 lb per post -> 17.15 head, 17.15 base
 ```
 
@@ -73,6 +73,8 @@ The screen's own face is not in the canopy's demand either; it is the landing ti
 ```
                 E-W                                  N-S
 kdat    623.60 + 2 x 23.585 =   670.77 lb     987.32 + 2 x 23.585 = 1,034.49 lb
+        2026-11-23 (jacketed posts): 623.60 + 64.32 = 687.92 lb; 987.32 + 64.32 = 1,051.64 lb
+        (engine 687.97 / 1,051.72). Rows below this line still quote the 5.5" face.
 steel   623.60 + 2 x 17.15  =   657.91 lb     987.32 + 2 x 17.15  = 1,021.63 lb
 ```
 
@@ -94,8 +96,8 @@ off the joint. The chord force, the couple's path and the drift limit (N/A, earn
 
 **Capacity of the decks.** Both roof decks are 19/32" Structural I. The canopy's blocked capacity is the
 SDPWS Table 4.2A 15/32" row, 8d at 6" boundary and edges, Case 1: 755 plf nominal x 0.92 (SPF, fn. 2) / 2.0 = 347
-plf, **carried at 190 plf** (a deliberate round-down for the 19/32" deck, with G_a at the soft end of its band).
-RF-GARAGE is unblocked: 167.5 plf (Table 4.2C, Case 1). Receiving walls: carried at 182.5 plf (Table 4.3A; the
+plf (**347.3 plf since 2026-11-23, §12; it was carried at a deliberate 190 round-down**).
+RF-GARAGE is unblocked: 308.2 plf since §12 (Table 4.2C, Case 1; was carried at 167.5). Receiving walls: carried at 182.5 plf (Table 4.3A; the
 garage's 7/16" ZIP row at 8d 6" reads 670 x 0.92 / 2 = 308 plf, so the carry is conservative).
 
 ### 3b. The joint
@@ -186,7 +188,7 @@ cantilever chord      M / 23.229 = 88.86 lb      (header centres 23.4375': M / 2
 N-S across the strap  1,034.49 / 6 = 172.42 lb  vs 823.33                            0.209
 local attachment      172.42 + 88.86 = 261.28 lb
    canopy nailer / SPF block  261.28 / 1,079.395 = 0.242     garage nailer  261.28 / 959.462 = 0.272
-along-joint boundary  670.77 / 23.229 = 28.88 plf vs 190                             0.152
+along-joint boundary  670.77 / 23.229 = 28.88 plf vs 347.3 (190 before §12)           0.083
 end strap, chord + N-S   88.07 + 172.42 = 260.49 lb vs 823.33                        0.316
 ```
 
@@ -227,7 +229,7 @@ resultant's x (walls at x 6 and 30, the 987.32 lb band at x 18, the post drags a
 ```
 kdat   x_V = (987.32 x 18.000 + 47.17 x 29.71875) / 1,034.49 = 18.5346
        W-G-E 1,034.49 x (18.5346 - 6)/24 = 540.28 lb     W-G-W 1,034.49 - 540.28 = 494.21 lb
-       increment 540.28 / 24.0 = 22.51 plf vs 167.5   0.134
+       increment 540.28 / 24.0 = 22.51 plf vs 308.2 (167.5 before §12)   0.073
 steel  x_V 18.3935   W-G-E 527.56   W-G-W 494.06    21.98 plf   0.131
 ```
 
@@ -298,10 +300,11 @@ base shear one base takes the whole 1,034.49 lb vs 1,270 (CBSTQ F2 along the pan
 The deck delivers the N-S case along its 6.000' west eave into the header, the collector:
 
 ```
-kdat   1,034.49 / 6.000 = 172.42 plf vs 190    0.907      steel  1,021.63 / 6.000 = 170.27 plf   0.896
+kdat   1,034.49 / 6.000 = 172.42 plf vs 347.3   0.496      steel  1,021.63 / 6.000 = 170.27 plf   0.491
+(190 before §12: 0.907 / 0.896)
 ```
 
-The governing row of `lateral_system/RF-BW-CANOPY`.
+The deck's own row of `lateral_system/RF-BW-CANOPY`; the governing row is now the pier pull-out (§6d of `north_entry_piers.md`).
 
 ### 4e. The landing tie
 
@@ -387,7 +390,7 @@ Fc*               525 x C_D 1.15 = 603.75 psi (snow)
 FcE               0.822 x 440,000 / 13.48² = 1,991 psi
 Cp                r = FcE/Fc* = 3.298, c = 0.8  ->  0.927
 axial             Fc' A = 603.75 x 0.927 x 5.5² = 16,938 lb; d/c = 3,397 / 16,938 = 0.201
-own drag          16.661 psf x 5.5/12 x 6.1771 = 47.17 lb, half at each end
+own drag          16.661 psf x 7.5/12 x 6.1771 = 64.32 lb, half at each end (the jacket, 11-23)
 bending           w = 7.636 plf, M = wL²/8 = 36.4 lb-ft; f_b = 36.4 x 12 / 27.73 = 15.8 psi vs wet Fb x C_D 1.6 = 1,360
 interaction       (f_c/Fc' + f_b/Fb') / (1 - f_c/FcE) = (0.2006 + 0.0116) / 0.9436 = 0.225
 IRC R507.4        6.177' < 14' 6x6 limit (cross-check; the roof's drift snow needs NDS)
@@ -406,8 +409,8 @@ Both go into the soil as a short pole, IBC 1807.3.2.1 non-constrained at S1 150 
 taken at d/3: `A = 2.34 P / (S1 b)`, `d = 0.5 A (1 + sqrt(1 + 4.36 h / A))`, iterated with S1 at d/3.
 
 ```
-kdat   14" pier: P = 23.585 + 16.661 x (14/12) x 3.0 = 23.585 + 58.31 = 81.90 lb
-       M at grade = 23.585 x 3.0 + 58.31 x 1.5 = 158.22 lb-ft    h = 1.932'     ->  d = 2.468'
+kdat   14" pier: P = 32.16 + 16.661 x (14/12) x 3.0 = 32.16 + 58.31 = 90.47 lb
+       M at grade = 32.16 x 3.0 + 58.31 x 1.5 = 183.95 lb-ft     h = 2.033'     ->  d = 2.59'
 steel  12" pier: P = 17.15 + 16.661 x 1.0 x 3.0 = 17.15 + 49.98 = 67.14 lb
        M at grade = 17.15 x 3.0 + 49.98 x 1.5 = 126.43 lb-ft     h = 1.883'     ->  d = 2.412'
 ```
@@ -488,7 +491,7 @@ presumed); a soils report that predicts more than 3/16" between the two planes r
 
 | trigger | where | today |
 |---|---|---|
-| landing tie or screen OVER at the envelope | §4, §4e | 0.907 / 0.786, both under |
+| landing tie or screen OVER at the envelope | §4, §4e | 0.496 (deck; 0.907 before §12) / 0.786, both under |
 | `W-G-S` surplus or overturning needs more than a hold-down | §3e, §3f | 0.212 and one HTT4 on an SSTB16 (0.107) |
 | garage-roof blocking unbuildable round the drift trusses | §3d | none required |
 
@@ -540,6 +543,96 @@ connector ratio (0.247) does not move in its third figure.
 
 Every other §3-§10 figure moves by the p ratio, x 1.00007, inside its printed precision. The receiving walls keep
 their carried 182.5 plf.
+
+## 12. 2026-11-23 amendment: tables read at the primary, the N-S chord force, the end-strap couple
+
+Review C-2, C-3, C-8; decisions 18 and 19. Plain arithmetic, no engine import. Reproduced by
+`tests/test_diaphragm_delivery_calcs.py`.
+
+**12a. The deck allowables, from AWC SDPWS-2015 with Commentary, Chapter 4 (read 2026-11-23, AWC's own PDF).**
+Column B (wind) of Table 4.2A, Blocked WSP, Structural I, 8d common, 2" nominal framing, 3/8" minimum nominal
+panel thickness (a 19/32" deck exceeds it), 6" at boundaries and continuous edges, 6" at other edges, Case 1:
+**v_w = 755 plf** (Column A seismic 540 x 1.4). Table 4.2C Unblocked, the same grade/nail/thickness, 6" nails,
+Case 1: **v_w = 670 plf**. Footnote 2 (G 0.42 SPF): [1 - (0.5 - 0.42)] = 0.92. §4.2.3: divide by 2.0.
+
+```
+canopy   755 x 0.92 / 2.0 = 347.3 plf  (the secondary IBC transcription's 372 x 0.92 = 342 differs: 744 there)
+garage   670 x 0.92 / 2.0 = 308.2 plf
+screen line   172.43 / 347.3 = 0.496        joint nailing 28.84 / 347.3 = 0.083     garage increment 22.51 / 308.2 = 0.073
+```
+
+G_a stays at the authored 12 (canopy; the row reads 14 OSB / 11 ply) and 7 (garage; row 8.5 OSB / 7.0 ply): they decide
+only the rigid/flexible call, which no ratio reads under the double envelope (C-8). Table 4.3A, same PDF, closes
+the reviewer's open question: 7/16" Sheathing, 8d, 6": 670; 4": **980** (the screen's 490 = 980 / 2 is exact); the
+garage walls' 182.5 plf carry is a deliberate conservative round-down of the table's 670 x 0.92 / 2 = 308.2 and
+is kept (every row on it is under 0.16).
+
+**12b. The N-S chord force.** The screen at 100% closes only as a simple span: the end straps return a couple, and
+the deck is a deep beam from the screen to the east end strap with the first and last truss as its chords. The
+strap line is x 6.3698..29.6302 = 23.2604'; the chords are the canopy's first and last trusses, y 37.3333' and
+41.3333' = **4.000'** apart (the drawing builds these; the garage gable truss at y 43.281 is NOT named as the north
+chord because it would carry a canopy force through a nailed deck edge, and the deck stays continuous over it):
+
+```
+T = V L / (8 d) = 1,051.72 x 23.2604 / (8 x 4.000) = 764.5 lb      (was 1,034.49 x 24 / (8 x 6) = 517.2: the deck's depth, not the chords')
+```
+
+Tension in one chord, compression in the other, on top of gravity; the peak splice carries it in tension; it goes on
+EVERY canopy truss (decision 19). The 0.03" splice slip is dropped from the order (C-8): both N-S paths are graded at
+100%, the split never enters a ratio; the field survives only for the `cast` variant's deflection.
+
+**12c. The end-strap couple** (re-worked 2026-11-23 on V = 1,051.72 lb, the jacketed posts). V acts at the deck resultant
+(x_V = 18.717'); the screen panel's line is x 6.1823'; the lever is 12.535', M = 1,051.72 x 12.535 = 13,184 lb-ft, closed by
+opposite N-S forces at the two end straps:
+
+```
+F = M / L_strap = 13,184 / 23.2604 = 566.8 lb     (the review's 517 used V/2)
+end strap, F + the E-W chord force 90.3 (added linearly)   657.1 / 823.33 = 0.798     (was 0.316)
+(a conservative bound: an elastic distribution over the six straps, M x 11.63 / 423.4 = 362 lb, reads 0.44, or 0.55 with the chord force)
+RF-GARAGE torque, M / 24.000' = 549.3 lb on each of W-G-W, W-G-E
+  W-G-W  549.3 / 18.675' = 29.4 plf vs 182.5   0.161       W-G-E  549.3 / 21.008' = 26.1 plf   0.143
+```
+
+**12d. Every delivery into a garage wall, summed (integrated review M9; re-worked 2026-11-23 on L5's exported tie deliveries).**
+One wind direction at a time, every delivery in it added (the garage-100% and screen-100% canopy cases never act together either,
+so this is a bound). The landing's ties come from `deck_tie/FS-BW-FLOOR`'s own export (`delivered_along_<wall>` /
+`delivered_across_<wall>`): along W-G-W 1,238.0 lb (the MSTA49Z collector strap 1,095.7 plus the canopy posts' band-push base share
+151.67 at PT-BW-CNW); into W-G-S along 580.3 (HL43) and ACROSS 512.5. An across force enters the garage roof at the joints (mean
+x 9.7') and leaves by the perpendicular N-S walls by the lever rule on x: W-G-W (30 - 9.7)/24 = 0.846, W-G-E 0.154. Surpluses
+(R301.1.3): W-G-W 18.674', W-G-E 21.008', W-G-S 17.299', carried at 182.5 plf:
+
+```
+W-G-W  N-S wind  494.4 (lever rule) + 549.3 (N-S couple) + 1,238.0 (strap) + 512.5 x 0.846 = 433.5     = 2,715 lb   2,715 / 18.674 = 145.4 plf   0.797
+       HTT4 CN-G-BWHD-SW  2,715 / 21.667' x 8.333' = 1,044 lb vs 2,580                                                       0.405
+W-G-E  N-S wind  557.3 (lever rule) + 549.3 (couple) + 512.5 x 0.154 = 78.9                              = 1,186 lb   1,186 / 21.008 = 56.5 plf    0.309
+W-G-S  E-W wind  688.0 (deck share) + 580.3 (HL43 along)                                                = 1,268 lb   1,268 / 17.299 = 73.3 plf    0.402
+       HTT4 CN-G-BWHD-S-DR  1,268 / 20.292' x 8.333' = 520.9 lb vs 2,580                                                    0.202
+```
+
+(The reviewer divides the same sums by the 24' wall; the repo grades on the surplus.) The 512.5 lb across W-G-S is also a
+N-S load on that wall's top, carried to W-G-W/E by the roof, which is what the lever split does.
+
+**12e. Service condition of the end straps.** The LSTA24 straps and their nailers sit on the nailer under the roof sheathing and roofing:
+the canopy's one exposure rule (`canopy_service.DRY_UNDER_ROOFING`) reads them DRY (C_M 1.0), stated on the joint, rotation and
+end-strap rows. At wet service (0.70) the end-strap row, 0.798, would read 1.14.
+
+**12x. The joint nailers and chord plates on V = 1,051.72 lb** (2026-11-23). §11's 261.18 / 216.45 / 87.96 stand on the 5.5" post face;
+the jacketed posts (§2) move both terms, the N-S share AND the E-W couple. p = 16.6622 psf (§11); post head half
+16.6622 x (7.5/12) x 6.1771 / 2 = 32.164 lb (was 23.585).
+
+```
+E-W   slope 26.667 x 16.6622 = 444.33 lb at y 40.21875;  headers 10.762 x 16.6622 = 179.32 lb at 39.98958;  posts 32.164 at y 37.500 and 42.479
+      V_x = 444.33 + 179.32 + 2 x 32.164 = 687.97 lb       y_V = (17,870.4 + 7,170.9 + 1,206.2 + 1,366.3) / 687.97 = 40.1376
+      e = 43.21875 - 40.1376 = 3.0812'     M = 687.97 x 3.0812 = 2,119.8 lb-ft     (was 670.77 x 3.0774 = 2,064.2)
+      chord force   M / W' = 2,119.8 / 23.46875 = 90.32 lb      (was 88.07)
+      linear couple M x 11.6302 / 423.52 = 58.21 lb;  chord bound  M / 23.2604 = 91.13 lb  (governs, as in §11)
+N-S   V_y = 1,051.72 lb (§12b) over the six LTP4Z on BM-BW-RW:  1,051.72 / 6 = 175.29 lb  (was 172.43)
+joint nailers   175.29 + 91.13 = 266.42 lb   vs 1,079.4 (canopy) / 959.5 (garage)   0.247 / 0.278     (was 261.18)
+west chord plate   90.32 / 2 + 175.29 = 45.16 + 175.29 = 220.45 lb vs LTP4Z 450      0.490           (was 216.41)
+east chord plate   90.32 lb vs 450                                                   0.201           (was 87.96)
+```
+
+The 264.0 of 1,051.72 / 6 + 88.75 keeps §11's couple; the couple term is 91.13, not 88.75.
 
 ## Sources
 

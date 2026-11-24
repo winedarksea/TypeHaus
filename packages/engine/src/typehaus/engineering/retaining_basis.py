@@ -39,9 +39,10 @@ Conventions, so that a reader comparing rows compares like with like:
 from __future__ import annotations
 
 import re
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
-from typehaus.engineering.item import LimitState
+from typehaus.engineering import retaining_working as W
+from typehaus.engineering.item import LimitState, Step, num
 from typehaus.engineering.registry import EngineeringContext
 from typehaus.engineering.soil import (
     CONCRETE_UNIT_WEIGHT_PCF,
@@ -174,6 +175,8 @@ class _Case:
     #: The column standing on this wall top, or None where nothing does — which is the
     #: ordinary case and catlin's, on every wall this module currently has in scope.
     surcharge: Surcharge | None = None
+    #: The pieces the totals above are sums of (thrust, weights, moments), for the sheet.
+    terms: dict = field(default_factory=dict, compare=False, repr=False)
 
     @property
     def fs_sliding(self) -> float:
@@ -256,9 +259,10 @@ def analyse(geometry: _Geometry, soil: PresumptiveSoil, *, at_rest: bool = False
     # overturning whichever way it points: wind reverses, so the sign that would help in
     # one direction hurts in the other, and a screening calculation takes the one that
     # hurts. It is not a thrust, so it does not enter the SLIDING demand.
-    overturning = (earth * height / 3.0
-                   + lateral * (surcharge.lateral_arm_ft if surcharge else 0.0)
-                   + abs(surcharge.moment_plf if surcharge else 0.0))
+    m_earth = earth * height / 3.0
+    m_lateral = lateral * (surcharge.lateral_arm_ft if surcharge else 0.0)
+    m_column = abs(surcharge.moment_plf if surcharge else 0.0)
+    overturning = m_earth + m_lateral + m_column
 
     # Dead load only. IBC Table 1806.2 footnote a applies the friction coefficient to the
     # dead load, and nothing here is anything else.
@@ -277,10 +281,11 @@ def analyse(geometry: _Geometry, soil: PresumptiveSoil, *, at_rest: bool = False
     passive = 0.5 * base.lateral_bearing_psf_per_ft * geometry.toe_embedment_ft ** 2
     resistance = base.friction_coefficient * weight + passive
 
-    resisting = (footing * geometry.footing_width_ft / 2.0
-                 + stem * (geometry.toe_ft + geometry.stem_thickness_ft / 2.0)
-                 + on_heel * (geometry.footing_width_ft - geometry.heel_ft / 2.0)
-                 + column * (surcharge.arm_ft if surcharge else 0.0))
+    r_footing = footing * geometry.footing_width_ft / 2.0
+    r_stem = stem * (geometry.toe_ft + geometry.stem_thickness_ft / 2.0)
+    r_heel = on_heel * (geometry.footing_width_ft - geometry.heel_ft / 2.0)
+    r_column = column * (surcharge.arm_ft if surcharge else 0.0)
+    resisting = r_footing + r_stem + r_heel + r_column
 
     # Resultant location, eccentricity from the footing's centre, and the trapezoidal
     # bearing pressure at the toe.
@@ -296,6 +301,10 @@ def analyse(geometry: _Geometry, soil: PresumptiveSoil, *, at_rest: bool = False
         resisting_moment=resisting, overturning_moment=overturning,
         bearing_psf=bearing, eccentricity_ft=eccentricity,
         surcharge=surcharge,
+        terms=dict(earth=earth, lateral=lateral, stem=stem, footing=footing, heel=on_heel,
+                   column=column, passive=passive, m_earth=m_earth, m_lateral=m_lateral,
+                   m_column=m_column, r_footing=r_footing, r_stem=r_stem, r_heel=r_heel,
+                   r_column=r_column),
     )
 
 
@@ -322,6 +331,15 @@ def parse_reinforcement(spec: str | None) -> tuple[int, float] | None:
 def stem_flexure(geometry: _Geometry, case: _Case,
                  fc_psi: float | None = None) -> tuple[float, float, str]:
     """``(Mu, phi_Mn, how)`` for the stem at the top of the footing, ft-lb per foot of wall.
+
+    See :func:`_stem_section`, which also returns the working the sheet prints.
+    """
+    return _stem_section(geometry, case, fc_psi)[:3]
+
+
+def _stem_section(geometry: _Geometry, case: _Case, fc_psi: float | None = None
+                  ) -> tuple[float, float, str, tuple[Step, ...]]:
+    """``(Mu, phi_Mn, how, steps)`` for the stem at the top of the footing.
 
     **This is a limit state this engine had not computed before, and on the
     catlin walls the plain section is 4.5x over.** A base restraint fixes sliding and does
@@ -365,6 +383,7 @@ def stem_flexure(geometry: _Geometry, case: _Case,
     service = (0.5 * case.efp_psf_per_ft * stem_ft ** 2 * stem_ft / 3.0
                + (case.surcharge.stem_moment_plf if case.surcharge else 0.0))
     demand = EARTH_PRESSURE_LOAD_FACTOR * service
+    moment_steps = W.stem_moment(case, stem_ft, service, demand, EARTH_PRESSURE_LOAD_FACTOR)
 
     b_in = 12.0
     h_in = geometry.stem_thickness_ft * 12.0
@@ -385,17 +404,31 @@ def stem_flexure(geometry: _Geometry, case: _Case,
         section = b_in * h_in ** 2 / 6.0
         capacity = 0.60 * 5.0 * fc_psi ** 0.5 * section / 12.0
         return demand, capacity, (f"PLAIN, {fc_note} — and ACI 318 R22.6.3 does "
-                                  f"not cover an unsupported wall as plain concrete at all")
+                                  f"not cover an unsupported wall as plain concrete at all"), (
+            *moment_steps, *W.plain_section(h_in, fc_psi, capacity,
+                                            "ACI 318-19 §14.5.2, phi 0.60 (Table 21.2.1)"))
 
     # Cover comes off ``d`` directly, so an authored 3" for durability costs real capacity
     # and must not be quietly credited with the table minimum's longer lever arm.
-    capacity, how = reinforced_flexure(h_in, fc_psi, parsed, geometry.specified_cover_in)
-    return demand, capacity, f"{how}, {fc_note}"
+    capacity, how, steps = _reinforced_section(h_in, fc_psi, parsed,
+                                               geometry.specified_cover_in)
+    by = {st.symbol: st.value for st in steps}
+    reported = W.stem_reported(case, stem_ft, h_in, fc_psi, parsed[0], by["A_s"], by["d"],
+                               EARTH_PRESSURE_LOAD_FACTOR)
+    return demand, capacity, f"{how}, {fc_note}", (*moment_steps, *steps, *reported)
 
 
 def reinforced_flexure(h_in: float, fc_psi: float, parsed: tuple[int, float],
                        cover_in: float | None,
                        *, default_cover_in: float | None = None) -> tuple[float, str]:
+    """``(phi*Mn, how)``; see :func:`_reinforced_section` for the working as well."""
+    return _reinforced_section(h_in, fc_psi, parsed, cover_in,
+                               default_cover_in=default_cover_in)[:2]
+
+
+def _reinforced_section(h_in: float, fc_psi: float, parsed: tuple[int, float],
+                        cover_in: float | None, *, default_cover_in: float | None = None
+                        ) -> tuple[float, str, tuple[Step, ...]]:
     """``(phi*Mn in ft-lb per foot of section, how)`` for a singly-reinforced 12" strip.
 
     ACI 318-19 §22.3: ``Mn = As fy (d - a/2)``, ``a = As fy / (0.85 f'c b)``, ``phi = 0.90``
@@ -419,7 +452,9 @@ def reinforced_flexure(h_in: float, fc_psi: float, parsed: tuple[int, float],
     a_in = as_per_ft * REINFORCEMENT_FY_PSI / (0.85 * fc_psi * b_in)
     capacity = 0.90 * as_per_ft * REINFORCEMENT_FY_PSI * (depth_in - a_in / 2.0) / 12.0
     return capacity, (f"#{bar} @ {spacing_in:.0f}\" o.c., As {as_per_ft:.3f} in2/ft, "
-                      f"cover {used_cover:.2f}\"{cover_note}, d {depth_in:.2f}\"")
+                      f"cover {used_cover:.2f}\"{cover_note}, d {depth_in:.2f}\""), \
+        W.reinforced_section(h_in, fc_psi, REINFORCEMENT_FY_PSI, bar, spacing_in, area_in2,
+                             diameter_in, used_cover, as_per_ft, depth_in, a_in, capacity)
 
 
 def bar_for_roles(spec: object, roles: tuple[str, ...]) -> tuple[int, float] | None:
@@ -527,8 +562,10 @@ def footing_states(geometry: _Geometry, case: _Case) -> tuple[LimitState, ...]:
     toe_bars = bar_for_roles(geometry.footing_reinforcement, ("bottom-x", "bottom-y"))
     heel_bars = bar_for_roles(geometry.footing_reinforcement, ("top-x", "top-y"))
 
-    toe_capacity, toe_how = _footing_flexural_capacity(h_in, fc_psi, toe_bars, cover_in)
-    heel_capacity, heel_how = _footing_flexural_capacity(h_in, fc_psi, heel_bars, cover_in)
+    toe_capacity, toe_how, toe_cap_steps = _footing_flexural_capacity(
+        h_in, fc_psi, toe_bars, cover_in)
+    heel_capacity, heel_how, heel_cap_steps = _footing_flexural_capacity(
+        h_in, fc_psi, heel_bars, cover_in)
 
     # --- one-way shear on the toe, the governing of the two cantilevers -----------------
     if toe_bars is not None:
@@ -538,6 +575,13 @@ def footing_states(geometry: _Geometry, case: _Case) -> tuple[LimitState, ...]:
         shear_capacity = 0.75 * 2.0 * fc_psi ** 0.5 * 12.0 * depth_in
         shear_how = (f"ACI 318-19 §22.5.5.1 Vc = 2 lambda sqrt(f'c) b d, phi 0.75, at d "
                      f"{depth_in:.2f}\" from the stem face — {fc_note}")
+        shear_cap_steps = (
+            Step("d", "effective depth of the footing", depth_in, "in",
+                 "h - cover - d_b / 2",
+                 f"{num(h_in)} - {num(cover_in)} - {num(_BAR[toe_bars[0]].diameter_in)} / 2"),
+            Step("phi Vc", "design one-way shear strength per foot", shear_capacity, "lb/ft",
+                 "0.75 x 2 sqrt(f'c) x 12 d", f"0.75 x 2 x sqrt({num(fc_psi)}) x 12 x "
+                 f"{num(depth_in)}", "ACI 318-19 §22.5.5.1, phi from Table 21.2.1"))
     else:
         plain_h_in = max(h_in - _PLAIN_SOIL_CAST_DEDUCTION_IN, 0.0)
         offset_ft = min(plain_h_in / 12.0, toe_ft)
@@ -546,20 +590,73 @@ def footing_states(geometry: _Geometry, case: _Case) -> tuple[LimitState, ...]:
         shear_how = (f"ACI 318-19 §14.5.5.1(a) PLAIN, Vn = (4/3) lambda sqrt(f'c) b h, phi "
                      f"0.60, at h {plain_h_in:.1f}\" from the stem face — §14.5.1.7 takes 2\" "
                      f"off a footing cast against soil — {fc_note}")
+        shear_cap_steps = (
+            Step("phi Vn", "design one-way shear strength per foot, plain footing",
+                 shear_capacity, "lb/ft", "0.60 x (4/3) sqrt(f'c) x 12 h",
+                 f"0.60 x (4/3) x sqrt({num(fc_psi)}) x 12 x {num(plain_h_in)}",
+                 "ACI 318-19 §14.5.5.1(a); thickness less 2 in per §14.5.1.7"),)
     cut_ft = toe_ft - offset_ft
     q_cut = q_toe - slope * cut_ft
     shear_demand = EARTH_PRESSURE_LOAD_FACTOR * 0.5 * (q_toe + q_cut) * cut_ft
+    pressure_steps = (
+        Step("q_toe", "soil pressure at the toe", q_toe, "psf", source="the bearing row"),
+        Step("q_heel", "soil pressure at the heel end", q_heel, "psf",
+             "W / B (1 - 6 e / B)", f"{num(case.weight_plf)} / {num(width_ft)} x (1 - 6 x "
+             f"{num(case.eccentricity_ft)} / {num(width_ft)})"),
+        Step("slope", "fall of pressure toward the heel", slope, "psf/ft",
+             "(q_toe - q_heel) / B", f"({num(q_toe)} - {num(q_heel)}) / {num(width_ft)}"))
+    toe_steps = (
+        *pressure_steps,
+        Step("q_face", "pressure at the stem face", q_face, "psf", "q_toe - slope b_toe",
+             f"{num(q_toe)} - {num(slope)} x {num(toe_ft)}"),
+        Step("M_toe", "service moment of the upward pressure on the toe", toe_service,
+             "ft-lb/ft", "q_face b^2 / 2 + (q_toe - q_face) b^2 / 3",
+             f"{num(q_face)} x {num(toe_ft)}^2 / 2 + ({num(q_toe)} - {num(q_face)}) x "
+             f"{num(toe_ft)}^2 / 3", "the footing's own weight is dropped (conservative)"),
+        Step("M_u", "factored toe moment, 1.6 on the earth side", toe_demand, "ft-lb/ft",
+             "1.6 M_toe", f"{EARTH_PRESSURE_LOAD_FACTOR:g} x {num(toe_service)}",
+             "IBC 2018 §1605.2 / ASCE 7-16 §2.3.1 on H"),
+        *toe_cap_steps)
+    heel_steps = (
+        Step("W_soil", "soil column on the heel, per foot of wall", soil_on_heel, "plf",
+             "b_heel h_s gamma", f"{num(heel_ft)} x {num(stem_height_ft)} x {num(case.soil_pcf)}"),
+        Step("W_conc", "footing concrete over the heel", concrete_on_heel, "plf",
+             "b_heel d 150", f"{num(heel_ft)} x {num(depth_ft)} x 150"),
+        Step("M_heel", "service moment of the heel's own load about the stem face",
+             heel_service, "ft-lb/ft", "(W_soil + W_conc) b_heel / 2",
+             f"({num(soil_on_heel)} + {num(concrete_on_heel)}) x {num(heel_ft)} / 2",
+             "the upward soil pressure under the heel is dropped (conservative)"),
+        Step("M_u", "factored heel moment", heel_demand, "ft-lb/ft", "1.6 M_heel",
+             f"{EARTH_PRESSURE_LOAD_FACTOR:g} x {num(heel_service)}",
+             "IBC 2018 §1605.2 / ASCE 7-16 §2.3.1 on H"),
+        *heel_cap_steps)
+    shear_steps = (
+        *pressure_steps,
+        Step("x_cut", "distance of the critical section from the stem face", offset_ft * 12.0,
+             "in", source="d (reinforced) or h less 2 in (plain), ACI 318-19 §22.5.5.1 / "
+                          "§14.5.5.2(a)"),
+        Step("q_cut", "pressure at the critical section", q_cut, "psf",
+             "q_toe - slope (b_toe - x_cut)", f"{num(q_toe)} - {num(slope)} x {num(cut_ft)}"),
+        Step("V_u", "factored shear per foot at the critical section", shear_demand, "lb/ft",
+             "1.6 (q_toe + q_cut) (b_toe - x_cut) / 2",
+             f"1.6 x ({num(q_toe)} + {num(q_cut)}) x {num(cut_ft)} / 2"),
+        *shear_cap_steps)
 
     return (
         LimitState("toe flexure", toe_demand, toe_capacity, "ft-lb/ft",
                    f"ACI 318-19 §13.2.7.1 at the stem face, strength design at 1.6H over a "
-                   f"{toe_ft:.2f}' toe — {toe_how}, {fc_note}"),
+                   f"{toe_ft:.2f}' toe — {toe_how}, {fc_note}",
+                   combination=W.STRENGTH[0], combination_factors=W.STRENGTH[1],
+                   working=toe_steps),
         LimitState("heel flexure", heel_demand, heel_capacity, "ft-lb/ft",
                    f"ACI 318-19 §13.2.7.1 at the stem face, strength design at 1.6H on a "
                    f"{heel_ft:.2f}' heel carrying {stem_height_ft:.2f}' of soil at "
-                   f"{case.soil_pcf:.0f} pcf — {heel_how}, {fc_note}"),
+                   f"{case.soil_pcf:.0f} pcf — {heel_how}, {fc_note}",
+                   combination=W.STRENGTH[0], combination_factors=W.STRENGTH[1],
+                   working=heel_steps),
         LimitState("footing one-way shear", shear_demand, shear_capacity, "lb/ft",
-                   shear_how),
+                   shear_how, combination=W.STRENGTH[0], combination_factors=W.STRENGTH[1],
+                   working=shear_steps),
     )
 
 
@@ -620,7 +717,7 @@ def material_inputs(geometry: _Geometry) -> tuple[tuple[str, float, str, float |
 
 
 def _footing_flexural_capacity(h_in: float, fc_psi: float, parsed: tuple[int, float] | None,
-                               cover_in: float) -> tuple[float, str]:
+                               cover_in: float) -> tuple[float, str, tuple[Step, ...]]:
     """``(phi*Mn ft-lb/ft, how)`` — reinforced where a mat is authored, PLAIN where none is.
 
     **Plain is what the model actually says, and it is not a formality.** ACI 318-19 §14.1.4
@@ -636,33 +733,42 @@ def _footing_flexural_capacity(h_in: float, fc_psi: float, parsed: tuple[int, fl
         capacity = 0.60 * 5.0 * fc_psi ** 0.5 * section / 12.0
         return capacity, (f"PLAIN — no mat authored on this Footing, so §14.5.2.1(a) "
                           f"Mn = 5 lambda sqrt(f'c) Sm on a 12\" x {plain_h_in:.1f}\" gross "
-                          f"section (§14.5.1.7 takes 2\" off a pour cast against soil)")
-    return reinforced_flexure(h_in, fc_psi, parsed, cover_in,
-                              default_cover_in=_FOOTING_COVER_IN)
+                          f"section (§14.5.1.7 takes 2\" off a pour cast against soil)"), \
+            W.plain_section(plain_h_in, fc_psi, capacity,
+                            "ACI 318-19 §14.5.2.1(a), thickness less 2 in per §14.5.1.7")
+    return _reinforced_section(h_in, fc_psi, parsed, cover_in,
+                               default_cover_in=_FOOTING_COVER_IN)
 
 
 def _limit_states(case: _Case, geometry: _Geometry, soil: PresumptiveSoil,
                   base: PresumptiveSoil | None = None) -> tuple[LimitState, ...]:
     """The five comparisons, all in the demand/capacity convention (> 1 is over)."""
     base = base or soil
-    flexure_demand, flexure_capacity, flexure_how = stem_flexure(geometry, case)
+    flexure_demand, flexure_capacity, flexure_how, flexure_steps = _stem_section(
+        geometry, case)
+    service = dict(combination=W.SERVICE[0], combination_factors=W.SERVICE[1])
     return (
         LimitState("sliding", REQUIRED_FS, case.fs_sliding, "", "IRC R404.4",
-                   is_safety_factor=True),
+                   is_safety_factor=True, working=W.sliding(case, geometry, base), **service),
         LimitState("overturning", REQUIRED_FS, case.fs_overturning, "", "IRC R404.4",
-                   is_safety_factor=True),
+                   is_safety_factor=True, working=W.overturning(case, geometry), **service),
         LimitState("bearing", case.bearing_psf, base.allowable_bearing_psf, "psf",
-                   f"IBC Table 1806.2 class {base.ibc_class}"),
+                   f"IBC Table 1806.2 class {base.ibc_class}",
+                   working=W.bearing(case, geometry, base.allowable_bearing_psf,
+                                     base.ibc_class), **service),
         # Outside the middle third the heel lifts and the trapezoid above stops describing
         # the real pressure distribution, so this is a validity check on the row above it as
         # much as a limit state of its own.
         LimitState("eccentricity", abs(case.eccentricity_ft),
-                   geometry.footing_width_ft / 6.0, "ft", "kern of the base (B/6)"),
+                   geometry.footing_width_ft / 6.0, "ft", "kern of the base (B/6)",
+                   working=W.eccentricity(case, geometry), **service),
         # The SECTION, not the base. Everything above it is a stability question about a
         # rigid body; this is the only row that asks whether the concrete can carry the
         # moment the soil puts in it, and it is the row a base restraint does not help.
         LimitState("stem flexure", flexure_demand, flexure_capacity, "ft-lb/ft",
-                   f"ACI 318 strength design at 1.6H — {flexure_how}"),
+                   f"ACI 318 strength design at 1.6H — {flexure_how}",
+                   combination=W.STRENGTH[0], combination_factors=W.STRENGTH[1],
+                   working=flexure_steps),
         # The FOOTING as a section, which is the other half of the same omission the row
         # above closed for the stem: a 4'-0" toe under a thousand-odd psf is a cantilever,
         # and nothing here had ever asked whether it carries.

@@ -263,6 +263,7 @@ from typehaus.model.site import (
     MonthlyNormal,
     SetbackSpec,
     SoilBasis,
+    SoilParameters,
     SpotElevation,
     StreetFrontage,
     SubgradeModulus,
@@ -284,6 +285,7 @@ from typehaus.model.spatial import (
     Stair,
     WallLiningException,
 )
+from typehaus.model.srw_chart import SrwChartSection, SrwDrain
 from typehaus.model.stair_winders import WinderFramingSpec, WinderTurnSpec
 from typehaus.model.stormwater import AreaDrain
 from typehaus.model.structure import (
@@ -327,6 +329,7 @@ from typehaus.model.trim import (
     MovementJoint,
 )
 from typehaus.model.trim_fastening import TrimFastening
+from typehaus.model.truss_order import SpecifiedReaction, TrussAppliedLoad, TrussOrder
 from typehaus.model.tub_enclosure import TubEnclosureSpec
 from typehaus.model.types import (
     ApplianceType,
@@ -412,10 +415,13 @@ for _name, _obj in (
     ("JoistFlangeAllowance", JoistFlangeAllowance), ("EquipmentHangers", EquipmentHangers),
     ("AirHandlerInstallation", AirHandlerInstallation), ("DrainFittings", DrainFittings),
     ("SegmentalWallSpec", SegmentalWallSpec), ("SrwDrainageZone", SrwDrainageZone),
+    ("SrwChartSection", SrwChartSection), ("SrwDrain", SrwDrain),
     ("EndRestraint", EndRestraint),
     ("ShearPanelSpec", ShearPanelSpec), ("DiaphragmSpec", DiaphragmSpec),
     ("DiaphragmDelivery", DiaphragmDelivery), ("ReceivingLine", ReceivingLine),
     ("CollectorBlocking", CollectorBlocking), ("JointNailing", JointNailing),
+    ("SpecifiedReaction", SpecifiedReaction), ("TrussAppliedLoad", TrussAppliedLoad),
+    ("TrussOrder", TrussOrder),
     ("PanelEdgeBlocking", PanelEdgeBlocking),
     ("HeadConnector", HeadConnector), ("InServiceMoisture", InServiceMoisture),
     ("Library", Library), ("PlanModel", PlanModel),
@@ -446,7 +452,7 @@ __all__ = [
     "Element", "HausModel",
     "Node", "Wall", "Door", "Window", "RoughOpening",
     "FoundationWall", "Footing", "CrushedStoneSpec", "Pad", "FootingBedding", "DrainTile",
-    "SegmentalWallSpec", "SrwDrainageZone", "EndRestraint",
+    "SegmentalWallSpec", "SrwDrainageZone", "SrwChartSection", "SrwDrain", "EndRestraint",
     "Post", "Beam", "SlatScreen",
     "FrenchDrain", "Drywell", "AreaDrain", "DrainColumn", "Excavation", "SideSlope", "SoilFactor",
     "Dowel", "IsolationBoard", "Connector", "PlateTie", "KneeBrace", "SlatBrace", "StrapBrace",
@@ -501,6 +507,7 @@ __all__ = [
     "SheathingNailing", "TrimFastening", "WindowInstallFastening",
     "ShearPanelSpec", "DiaphragmSpec", "DiaphragmDelivery", "ReceivingLine", "HeadConnector",
     "CollectorBlocking", "JointNailing", "PanelEdgeBlocking",
+    "SpecifiedReaction", "TrussAppliedLoad", "TrussOrder",
     "InServiceMoisture",
     "Embed", "outside_of", "inside_of", "layers", "from_node", "centered",
     "in_slab", "under_subfloor",
@@ -518,7 +525,7 @@ __all__ = [
     "DuctStandard", "RoundGaugeRow", "DuctElbowRow", "DuctPartRow", "DuctSupportRow", "PortKit",
     "RectElbowRow", "DuctInsulationRow",
     "Sump", "SumpPump", "VentRun", "VentIncreaser",
-    "MonthlyNormal", "SubgradeModulus", "SoilBasis", "ConcreteServiceTemperature",
+    "MonthlyNormal", "SubgradeModulus", "SoilBasis", "SoilParameters", "ConcreteServiceTemperature",
     "SetbackSpec",
     "SpotElevation", "ImperviousSurface",
     "WindowWell",

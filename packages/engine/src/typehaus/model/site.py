@@ -77,6 +77,28 @@ class SoilBasis(HausModel):
     investigated_by: str | None = None
 
 
+class SoilParameters(HausModel):
+    """Design soil parameters for a retaining structure's sliding planes.
+
+    ``Site.specified_soil`` is what the design is closed on and a site report must confirm;
+    ``Site.confirmed_soil`` is what the report says. Absent, the records grade on the IBC
+    Table 1806.2 presumptions. The truss pattern: closed on specified values, then confirmed.
+    """
+
+    #: Design friction, concrete on the compacted washed-stone footing bed.
+    bed_friction: float
+    #: Specified only: the highest bed friction the design takes. Restraint rows (a court
+    #: contracting against its base) grade at it until a report value is entered; a report
+    #: value above it needs those rows re-checked.
+    bed_friction_max: float | None = None
+    #: Drained friction angle (and interface angle) on the native at the beds' bottom, deg.
+    native_phi_deg: float
+    #: Where the values are stated: the drawing note (specified) or the report (confirmed).
+    source: str | None = None
+    #: What the report must deliver (specified only): borings, groundwater, lab tests.
+    report_scope: str | None = None
+
+
 class ConcreteServiceTemperature(HausModel):
     """The temperature range a site's exposed concrete moves through, and its set floor.
 
@@ -307,6 +329,7 @@ for _name, _obj in (
     ("MonthlyNormal", MonthlyNormal),
     ("SubgradeModulus", SubgradeModulus),
     ("SoilBasis", SoilBasis),
+    ("SoilParameters", SoilParameters),
     ("ConcreteServiceTemperature", ConcreteServiceTemperature),
     ("SetbackSpec", SetbackSpec),
     ("SpotElevation", SpotElevation),

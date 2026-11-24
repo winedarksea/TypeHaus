@@ -33,7 +33,7 @@ from typehaus.engineering.registry import oracles_for
 from typehaus.findings import Result
 from typehaus.takeoff.calc_family import CONVENTIONS_FILE, appendix_filename, family_filename
 from typehaus.takeoff.calc_package import PackageInputs, calc_package
-from typehaus.takeoff.calc_sheet import is_member_sheet, sheet_filename
+from typehaus.takeoff.calc_sheet import UNPINNED_TEXT, is_member_sheet, sheet_filename
 
 #: Every section a finished sheet carries, in order. A sheet missing one of these is not a
 #: calculation sheet — it is a table with a title.
@@ -59,11 +59,11 @@ FAMILY_SECTIONS = (
     "## 3. Member schedule",
     "## 4. The calculation, worked at the governing member",
     "## 5. Result",
-    "## 6. Assumptions and exclusions",
-    "## 7. Open inputs",
-    "## 8. Independent check",
-    "## 9. What this calculation does not cover",
-    "## 10. Per-member fingerprints",
+    "## 6. Stated bases and owner acceptances",
+    "## 7. Assumptions",
+    "## 8. Open inputs",
+    "## 9. Independent check",
+    "## 10. What this calculation does not cover",
 )
 
 
@@ -92,7 +92,8 @@ def package(catlin_engineering):
         house="catlin", model=ctx.model, item_ids=item_ids, results=ctx.engineering,
         register=ctx.engineering_register, generated=date(2026, 1, 1).isoformat(),
         engine_version="test", content_hash="deadbeefdeadbeef",
-        profile_name=ctx.profile.name, checklist=checklist))
+        profile_name=ctx.profile.name, checklist=checklist,
+        profile=ctx.profile, preferences=ctx.preferences))
 
 
 # --- the oracle lint (Phase 1d) ----------------------------------------------------------
@@ -266,8 +267,8 @@ def test_every_item_gets_exactly_one_sheet_and_the_index_lists_it(package, catli
 
 def test_the_front_matter_is_complete(package):
     assert set(package) >= {
-        "README.md", "00-cover.md", "01-design-criteria.md", "02-item-register.md",
-        "03-open-items.md", "04-assumptions.md"}
+        "README.md", "00-cover.md", "00-summary.md", "01-design-criteria.md",
+        "02-item-register.md", "03-open-items.md", "04-assumptions.md"}
     assert "NOT FOR CONSTRUCTION" in package["00-cover.md"]
     assert "deadbeefdeadbeef" in package["00-cover.md"], "the model content hash is the "\
         "only thing on the cover that says which model this is a calculation for"
@@ -320,7 +321,7 @@ def test_the_fingerprint_on_a_sheet_is_the_one_the_cli_prints(package, catlin_en
         if record.status is Status.NO_CALC:
             # Nothing to hash, and the sheet has to say so rather than print a digest of
             # an empty input set that a seal could then be pinned against.
-            assert "no inputs to fingerprint" in text, item
+            assert UNPINNED_TEXT in text, item
         else:
             assert f"`{fingerprint(record)}`" in text, item
 
@@ -438,6 +439,61 @@ def test_draft_gate_opens_but_sealed_gate_still_requires_the_register(catlin_eng
     assert len(checklist.unsealed) > 1
 
 
+#: The kinds that show their working (review E-02); the LA-fill lanes add theirs here.
+WORKED_KINDS = (
+    "roof_beam",
+    "glulam_beam",
+    "column_head_joint",
+    "lateral_system",
+    "wood_roof_post",
+    "deck_tie",
+    "deck_post",
+    "column_support",
+    "retaining_system",
+    "retaining_wall",
+    "thermal_break_transfer",
+    "base_rotation",
+)
+
+
+def test_a_worked_kind_shows_the_working_of_every_state_it_grades(catlin_engineering):
+    """Every load-carrying state of a converted kind lists its steps, and the steps arrive at
+    the state's own demand and capacity — so the working cannot drift from the ratio."""
+    import math
+
+    from typehaus.engineering.item import FIGURE_WIDTH, sheet_spec
+
+    ctx, item_ids, _ = catlin_engineering
+    for item in item_ids:
+        record = ctx.engineering[item]
+        if record.kind not in WORKED_KINDS:
+            continue
+        for state in record.limit_states:
+            if state.is_detailing:
+                continue
+            assert state.working, f"{item}: {state.name} has no working"
+            assert state.combination, f"{item}: {state.name} names no combination"
+            values = [step.value for step in state.working]
+            for target in (state.demand, state.capacity):
+                assert any(math.isclose(v, target, rel_tol=1e-9, abs_tol=1e-9)
+                           for v in values), f"{item}: {state.name} never reaches {target}"
+        draw = sheet_spec(record.kind).figure
+        figure = draw(record) if draw else None
+        assert figure is None or all(len(line) <= FIGURE_WIDTH for line in figure.lines)
+
+
+def test_a_family_sheet_lists_what_it_does_not_cover_and_who_owns_it(package):
+    """Review E-01: a declared family prints its own rows with an owner; a deferred one names
+    its designer."""
+    roof = package["calcs/roof_beam.md"].split("## 10.")[1]
+    assert "| Not graded here | Why | Owner | Closes by |" in roof
+    assert "the truss fabricator" in roof
+    rafter = package["calcs/rafter.md"].split("## 10.")[1]
+    assert "the whole design of `rafter`" in rafter
+    glulam = package["calcs/glulam_beam.md"].split("## 6.")[1].split("## 7.")[0]
+    assert "owner's stated basis" in glulam and "owner decision 5" in glulam
+
+
 # --- collapsing near-identical record text (2026-09-22) -----------------------------------
 
 def test_collapsing_an_assumption_drops_nothing(package, catlin_engineering):
@@ -482,10 +538,41 @@ def test_a_family_calculation_points_at_the_pages_that_carry_the_rest(package):
     for name, text in package.items():
         if not name.startswith("calcs/"):
             continue
-        assumptions = text.split("## 6.")[1].split("## 7.")[0]
+        assumptions = text.split("## 7.")[1].split("## 8.")[0]
         assert ("04-assumptions.md" in assumptions
                 or "None beyond the citations" in assumptions), name
-        assert CONVENTIONS_FILE in text.split("## 9.")[1], name
+        assert CONVENTIONS_FILE in text.split("## 10.")[1], name
     assert CONVENTIONS_FILE in package
     assert "draft" in package[CONVENTIONS_FILE]
 pytestmark = pytest.mark.slow
+
+
+def test_every_citation_has_a_collapsed_family_reference(catlin_engineering):
+    """Review E-11: near-duplicate citations collapse to one R-number, and none is lost."""
+    from typehaus.takeoff.calc_family import families, ref_index
+
+    ctx, item_ids, _ = catlin_engineering
+    for kind, records in families([ctx.engineering[i] for i in item_ids]).items():
+        number = ref_index(records).number
+        for record in records:
+            for state in record.limit_states:
+                assert state.citation in number, f"{kind}: {state.citation[:60]!r}"
+
+
+def test_the_shared_sketches_fit_the_page():
+    """The ASCII shapes the LA-fill kinds will reuse stay inside the PDF measure."""
+    from typehaus.engineering import sketch
+    from typehaus.engineering.item import FIGURE_WIDTH
+
+    figures = [
+        sketch.beam_on_two_posts(title="b", a_ft=1.667, s_ft=24.75, b_ft=0.0,
+                                 load="w = 1,246 plf (D + S)", reactions=("3,393 lb",) * 2),
+        sketch.cantilever_wall(title="w", height_ft=10.12, stem_in=12.0, toe_ft=4.333,
+                               heel_ft=3.0, footing_ft=8.333, thrust="P = 3,072 plf",
+                               thrust_arm_ft=3.373, weight="W = 8,123 plf",
+                               base="F = mu W = 2,843 plf"),
+        sketch.pinned_post(title="p", length_ft=7.693, axial="P = 3,409 lb (D + S)",
+                           lateral="w = 23.5 plf (0.6W)", head="ACE6Z", base="CBSTQ66Z"),
+    ]
+    for figure in figures:
+        assert all(len(line) <= FIGURE_WIDTH for line in figure.lines), figure.title

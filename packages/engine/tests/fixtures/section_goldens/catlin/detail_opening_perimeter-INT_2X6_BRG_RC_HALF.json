@@ -1071,7 +1071,7 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "CMFS01AAAA",
-      "tag": "bearing-block-1-006"
+      "tag": "bearing-block-1-005"
     },
     {
       "space": "model",
@@ -1119,7 +1119,7 @@
       "linetype": "CONTINUOUS",
       "closed": false,
       "uid": "CMFS01AAAA",
-      "tag": "bearing-block-1-006/flange"
+      "tag": "bearing-block-1-005/flange"
     },
     {
       "space": "model",
@@ -1139,7 +1139,7 @@
       "linetype": "CONTINUOUS",
       "closed": false,
       "uid": "CMFS01AAAA",
-      "tag": "bearing-block-1-006/flange"
+      "tag": "bearing-block-1-005/flange"
     },
     {
       "space": "model",
@@ -1167,7 +1167,7 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "CMFS02AAAA",
-      "tag": "bearing-block-0-008"
+      "tag": "bearing-block-0-007"
     },
     {
       "space": "model",
@@ -1215,7 +1215,7 @@
       "linetype": "CONTINUOUS",
       "closed": false,
       "uid": "CMFS02AAAA",
-      "tag": "bearing-block-0-008/flange"
+      "tag": "bearing-block-0-007/flange"
     },
     {
       "space": "model",
@@ -1235,7 +1235,7 @@
       "linetype": "CONTINUOUS",
       "closed": false,
       "uid": "CMFS02AAAA",
-      "tag": "bearing-block-0-008/flange"
+      "tag": "bearing-block-0-007/flange"
     },
     {
       "space": "model",
@@ -2146,7 +2146,7 @@
         0.5,
         7.444444444444445
       ],
-      "content": "SHEET A-560.11",
+      "content": "SHEET A-560.12",
       "height": 3.0,
       "height_pt": 7.0,
       "rotation": 0.0,

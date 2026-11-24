@@ -297,8 +297,11 @@ def test_raised_garden_wash_faces_the_yard_on_the_perimeter_legs_only(catlin_pla
             f"{tag}: the wash must sit on the YARD side of the block along {axis} "
             f"(expected sign {sign:+d}), got wash={wash:.5f} block={block:.5f}")
         # Banded to the exposed 3'-4" off WALL_BASE, NOT to the global site grade (-2'-10").
-        assert wall.z0_m == pytest.approx(ft(-4).meters, abs=1e-6)
-        assert depth["wash"].z0_m == pytest.approx(ft(-4).meters + inch(8).meters, abs=1e-6)
+        # All legs sit 4" lower for the AB capstone (2026-11-22): the wash starts WALL_BASE +
+        # 12", on the -3'-4" yard.
+        base = ft(-4).meters - inch(4).meters
+        assert wall.z0_m == pytest.approx(base, abs=1e-6)
+        assert depth["wash"].z0_m == pytest.approx(base + inch(12).meters, abs=1e-6)
     for tag in ("W-RG-WEST-BALCONY", "W-RG-EAST-BALCONY"):
         wall = model.wall(tag)
         assert wall is not None

@@ -1,15 +1,15 @@
 # HL angle site bolts and lags — hand-worked lengths
 
 **House:** catlin
-**Structure:** the landing's four HL angles, `params/landing_tie.py`: CN-BW-GSTIE-LO/-HI
-(HL43HDG, BM-BW-FE into W-G-S) and CN-BW-GWTIE-LO/-HI (HL33HDG, W-BW-SCREEN into W-G-W).
+**Structure:** the landing's site bolts, `params/landing_tie.py` (G5 layout, 2026-11-23):
+CN-BW-GSTIE-LO/-HI (HL43HDG, one per face of BM-BW-FE, into W-G-S) and the DTT2Z pair's rod
+(CN-BW-GSDTT-S/-N). Line 2's HL33HDG pair (CN-BW-GWTIE-LO/-HI) is retired — §5.
 **Written:** 2026-11-21, by hand from the drawings' dimensions and the catalog page, before
 `takeoff/site_bolts.py` was run against it.
-**Oracle for:** `takeoff/site_bolts.py` (decision #147); reproduced by
-`tests/test_fastening_schedules.py::test_hl_site_bolt_lengths_match_the_hand_note`.
+**Oracle for:** `takeoff/site_bolts.py` (decision #147: `site_bolt_rows`, `tension_rod_rows`);
+reproduced by `tests/test_fastening_schedules.py`.
 **Companions:** `notes/north_entry_piers.md` §10 — what the ties carry and why they are there.
-**What is asked of the reviewer:** §2's grips, and whether §4's far-face condition on line 2
-is acceptable.
+**What is asked of the reviewer:** §2's grips and §6's rod length.
 
 ---
 
@@ -33,25 +33,43 @@ Steel (C-C-2024 p. 303): HL33 7 ga = 0.1793"; HL43 3 ga = 0.2391".
 
 | angle | leg on | wood crossed | grip |
 |---|---|---|---|
-| HL43 (line 1) | BM-BW-FE east face, x = 115" | FE 3-ply 4 1/2" (x 115 to 110 1/2), then the deck's last joist line, 1 1/2" (x 110 1/2 to 109), at the hole 2 3/4" (D3) off the heel | 6.000 |
-| HL33 (line 2) | W-BW-SCREEN end pack east face, x = 75 15/16" | the 2x4 KDAT pack, 3 1/2", then the 7/16" ZIP behind it; stops at the corrugated | 3.9375 |
+| HL43, east (CN-BW-GSTIE-LO) | BM-BW-FE east face, x = 115" | FE 3-ply 4 1/2" (x 115 to 110 1/2), then the deck's last joist line, 1 1/2" (x 110 1/2 to 109), at the hole 2 3/4" (D3) off the heel | 6.000 |
+| HL43, west (CN-BW-GSTIE-HI) | the east rim joist's west face, x = 109" | the rim 1 1/2" (x 109 to 110 1/2), then FE 4 1/2" (to 115) | 6.000 |
+
+Both clear HL fn 5's 5 1/8" for the 4-series. The west angle sits on the rim, not on FE: on
+FE's own west face its bolt would grip FE alone, 4 1/2", under fn 5 (2026-11-23).
 
 ## 3. Lengths
 
 | angle | working | need | stocked |
 |---|---|---|---|
 | HL43 bolt | 6.000 + 0.2391 + 1.068 | 7.307 | **8"** 3/4" bolt, 2 ea |
-| HL33 bolt | 3.9375 + 0.1793 + 0.735 | 4.852 | **5"** 1/2" bolt, 2 ea |
 | HL43 lag | fn 7 | 5.000 | **5"** 3/4" lag, 2 ea |
-| HL33 lag | fn 7 | 5.000 | **5"** 1/2" lag, 2 ea |
 
 ## 4. Not graded here
 
 - The bolt's capacity, edge and end distances: `deck_tie/FS-BW-FLOOR` and
   `north_entry_piers.md` §10 (line 1's 3.7D end distance stays an EOR item).
-- Line 2's far face is corrugated over the ZIP: the nut and washer bear on the ZIP through a
-  cut-out in the corrugated flute, sealed. The bolt is not run through the cladding.
 - The lags' thread penetration past each filler is the EOR's (fn 7 states only the 5").
+
+## 5. Retired 2026-11-23 (G5)
+
+Line 2's two HL33HDG and their 5" 1/2" bolts and lags went with the screen's MSTA49Z collector
+(`north_entry_piers.md` §10p). The 11-21 working was HL33 bolt 3.9375 + 0.1793 + 0.735 = 4.852
+-> 5"; it bills nothing now.
+
+## 6. The DTT2Z pair's rod
+
+One 1/2" HDG threaded rod joins CN-BW-GSDTT-S (on FE, 4" south of the garage cladding) and
+CN-BW-GSDTT-N (inside the garage, 8" north of it), on one N-S line (C-C-2026 p. 326, the
+deck-to-house lateral detail: "1/2" diameter HDG threaded rod with nuts and washers").
+
+| term | in |
+|---|---|
+| seat to seat | 4 + 8 = 12.000 |
+| each end: 14 ga seat 0.0747 + USS washer 0.097 + heavy-hex nut 0.484 + two threads 0.154 | 0.810 |
+| need | 12.000 + 2 x 0.810 = 13.620 |
+| stock cut | **18"** (12 / 18 / 24 / 36), 1 ea |
 
 ## Sources
 
