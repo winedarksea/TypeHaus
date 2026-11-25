@@ -26,17 +26,16 @@ def test_trim_inventory_by_profile(catlin_model_ro):
         "DOOR_HEAD_CUSTOM": 7,  # D-B-SUNKEN's head-only kit since 2026-11-24 (no jambs)
         "WIDE_OUTSIDE_CORNER": 8, "CORRUGATED_OUTSIDE_CORNER": 4,
         "BBD_C_CLOSURE": 12,  # three sticks under each mixed corner's BBD75 leg
-        # The court's LP walls: W-B-S3-FR's base splits at D-B-SUNKEN (two Z, two strips).
-        "RAINSCREEN_BASE_Z": 20, "EPDM_BASE_ISOLATION": 15,
+        # Main's 21/14 plus the court's LP walls: W-B-S2-FR one, W-B-S3-FR split at D-B-SUNKEN.
+        "RAINSCREEN_BASE_Z": 24, "EPDM_BASE_ISOLATION": 17,
         "OPENING_HEAD_DRIP_FLASHING": 1,  # WIN-B-SAUNA
         "OPENING_HEAD_CAP": 37,
         # 6411499: the four gable corner stubs inside the eave skins are gone.
         # Sill to Soffit: 6 until the garage rakes took it too (decision #143).
         "6460800": 9, "6411499": 6, "CORRUGATED_SILL_TO_SOFFIT": 10,
         "corrugated-outside-closure": 6,
-        # The court face's vertical panel joints (decision #146). 4, not the note's 5: the
-        # battens stop at the hosted head/sill trims, which leaves 2" over the door head at
-        # s 144 and no piece there.
+        # The court face's vertical panel joints (decision #146): the battens stop at the
+        # hosted head/sill trims, so none over the door head at s 144.
         "LP_440_BATTEN_3_5": 4,
     }
 
