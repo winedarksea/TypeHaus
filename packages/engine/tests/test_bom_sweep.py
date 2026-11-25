@@ -445,8 +445,8 @@ def test_footing_bedding_bills_stone_fabric_and_tile(catlin_model, bom):
     court = [r for r in rows if any(tag.startswith("FB-SG-") for tag in r["tags"])]
     assert court and all(not r["drain_tile"] and float(r["drain_tile_ft"]) == 0 for r in court)
     assert {tag for r in court for tag in r["tags"] if tag.startswith("FB-SG-")} == {
-        "FB-SG-W1", "FB-SG-E1", "FB-SG-W2", "FB-SG-E2", "FB-SG-S", "FB-SG-ARCH",
-        "FB-SG-BRKBM"}
+        # FB-SG-BRKBM, the veneer beam's bed, is brick-only since 2026-11-24.
+        "FB-SG-W1", "FB-SG-E1", "FB-SG-W2", "FB-SG-E2", "FB-SG-S", "FB-SG-ARCH"}
 
 
 def test_drainage_bills_the_whole_storm_run_by_the_foot(catlin_model, bom):

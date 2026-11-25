@@ -200,10 +200,13 @@ def test_catlin_permit_checklist_opens_with_the_completed_canopy_attachments(cat
     checklist = evaluate_permit_checklist(catlin_check_report(), "mn-2020")
     gating = [item for item in checklist.items if item.blocking]
     resolved = {Result.PASS, Result.NOT_APPLICABLE}
-    # The one open line (2026-11-20 review): the garage STHD14s are jogged 2 9/16" over the
-    # ICF pour to their studs, an installation ESR-2920 prints no row for. Owner decision.
+    # The one open line (2026-11-24): the court's LP panel on girts at 24", off ESR-1301's
+    # 16" table (owner accepted off-label; `cladding_wind` stays UNKNOWN with its estimate).
     open_items = [item.label for item in gating if item.result not in resolved]
-    assert open_items in ([], ["Cast-in strap hold-downs (ESR-2920)"]), open_items
+    assert open_items in ([], ["Exterior wall covering — wind pressure"]), open_items
+    integrity = next(item for item in gating
+                     if item.label == "Resolved-model and transition integrity")
+    assert integrity.result is Result.PASS
     diaphragm = next(item for item in gating
                      if item.label == "Roof diaphragm and shear panel load path")
     assert diaphragm.result is Result.PASS
@@ -1350,6 +1353,9 @@ _BURIED_ASSEMBLIES = ("BASEMENT_10", "BASEMENT_8")
 _COURT_ASSEMBLIES = ("GARDEN_CURB_6", "SAUNA_LINER_ON_GARDEN_CURB",
                      "GARDEN_FRAMED_2X6", "SAUNA_LINER_ON_GARDEN_FRAMED")
 _PERIMETER_ASSEMBLIES = _BURIED_ASSEMBLIES + _COURT_ASSEMBLIES
+# The framed walkout's default face since 2026-11-24 (GARDEN_FRAMED_* is brick's): EXT_2X6's
+# stack with LP panel, 4" ccSPF in place of the XPS tail.
+_COURT_LP_ASSEMBLIES = ("EXT_2X6_LP_PANEL", "SAUNA_LINER_ON_EXT_2X6_LP")
 
 
 def test_basement_walls_carry_two_exterior_xps_layers(catlin_model):
@@ -1370,12 +1376,15 @@ def test_basement_walls_carry_two_exterior_xps_layers(catlin_model):
     # rotated sauna's south face ran onto W-B-S1B; the shrink that afternoon put the room
     # wholly on the curb and W-B-S1 back together. The foam is identical on every one and
     # still 4.06" outboard of whatever is behind it, which is what this test is about.
-    assert len(perimeter) == 14  # same wall line, split at grid/tee/curb/room nodes
-    # Six south segments: two buried 8" pours (W-B-S1 west of the excavation, W-B-S4 east of
-    # it), the two 7 1/4" curbs inside it, and the two framed walls standing on those curbs.
-    # Three of the six carry the sauna's liner inboard.
+    # 12 since 2026-11-24: the two framed walls on the curbs are LP panel on EXT_2X6's stack
+    # (4" ccSPF, no XPS) and leave this sweep; the brick variant keeps them in it.
+    assert len(perimeter) == 12  # same wall line, split at grid/tee/curb/room nodes
+    # Four south segments: two buried 8" pours (W-B-S1 west of the excavation, W-B-S4 east of
+    # it) and the two 7 1/4" curbs inside it.
     south = [w for w in perimeter if w.tag.startswith("W-B-S")]
-    assert len(south) == 6, sorted(w.tag for w in south)
+    assert len(south) == 4, sorted(w.tag for w in south)
+    assert {w.assembly for w in catlin_model.walls
+            if w.tag in ("W-B-S2-FR", "W-B-S3-FR")} == set(_COURT_LP_ASSEMBLIES)
     # The buried pours carry BASEMENT_8 — the same assembly the N/E/W walls carry,
     # because the same thing is true of them: their exposure is a grade band. No liner
     # variant of it has an instance now, and neither does BASEMENT_8_GARDEN.
@@ -1404,8 +1413,8 @@ def test_only_the_fireplace_perimeter_is_ten_inches(catlin_model):
     reading that leaves every interior cross wall bare."""
     from typehaus.model.structure import FoundationWall
 
-    perimeter = {w.tag: w for w in catlin_model.walls
-                 if w.storey == "basement" and w.assembly in _PERIMETER_ASSEMBLIES}
+    perimeter = {w.tag: w for w in catlin_model.walls if w.storey == "basement"
+                 and w.assembly in _PERIMETER_ASSEMBLIES + _COURT_LP_ASSEMBLIES}
     pours = {tag: w for tag, w in perimeter.items()
              if any(l.name == "concrete" for l in w.layers)}
     assert set(perimeter) - set(pours) == {"W-B-S2-FR", "W-B-S3-FR"}
@@ -1436,18 +1445,17 @@ def test_the_brick_standoff_is_independent_of_the_pour(catlin_model):
 
     What sits outboard of THAT is a house skin: a 1/8" acrylic coating over mesh, banded off
     GRADE, on the walls whose exposure is a grade line (a 1/2" protection board until
-    2026-09-04, kept as the named alternate). The court walls carry nothing — their XPS is
-    inside W-B-BRICK's ventilated cavity, and it is over THOSE that N-B-BRICK-W/-E's
-    stand-off is struck, which is why retyping the band did not touch the cavity. (That
-    cavity is 6" since 2026-09-05 — set by where W-SG-BRKBM's concrete can put its north
-    face, not by R703.8.4 — and the nodes still have not moved: the `air-gap` LAYER grew.)
+    2026-09-04, kept as the named alternate). Since 2026-11-24 the walkout curbs take the same
+    coating full height — their foam faces the court under the LP panel (or the brick
+    variant's cavity). The framed walls' XPS behind brick still carries nothing: it is inside
+    W-B-BRICK's ventilated cavity, over which N-B-BRICK-W/-E's stand-off is struck.
     """
     for tag in _PERIMETER_ASSEMBLIES:
         asm = catlin_model.plan.library.resolve_assembly(tag)
         core = [l for l in asm.layers if l.name in ("waterproofing", "xps-a", "xps-b")]
         assert sum(l.thickness.inches for l in core) == pytest.approx(4.06), tag
         skin = [l for l in asm.layers if l.name in ("parge", "foundation-coating")]
-        if tag in _BURIED_ASSEMBLIES:
+        if tag in _BURIED_ASSEMBLIES or tag in ("GARDEN_CURB_6", "SAUNA_LINER_ON_GARDEN_CURB"):
             assert [l.name for l in skin] == ["foundation-coating"], tag
             assert skin[0].thickness.inches == pytest.approx(0.125), tag
         else:
@@ -1866,8 +1874,9 @@ def test_sunken_garden_structure_matches_redesign_spec(catlin_model):
     # W-SG-E2 cancel each other's thrust instead of standing as two free cantilevers at
     # FS 0.73. It reuses the retired uid deliberately. See `engineering/retaining_system.py`
     # and `notes/sunken_garden_court_free_body.md` §8b.
-    assert {w.tag for w in walls} == {"W-SG-W1", "W-SG-E1", "W-SG-W2", "W-SG-E2", "W-SG-S",
-                                      "W-SG-BRKBM"}
+    # ** FIVE SINCE 2026-11-24 **: the court face is LP panel on the framed walkout, which
+    # stands on its own curbs, so W-SG-BRKBM exists only in variant `court-face-brick`.
+    assert {w.tag for w in walls} == {"W-SG-W1", "W-SG-E1", "W-SG-W2", "W-SG-E2", "W-SG-S"}
     # Since 2026-10-10 its top IS the court floor, between the toes it is the walking surface
     # (FO-SG-STRUT voids the rim over it). What must stay true is that it is nowhere near
     # underfoot on the PORCH: its top is below the porch deck by the whole basement depth.
@@ -1896,12 +1905,11 @@ def test_sunken_garden_structure_matches_redesign_spec(catlin_model):
     # W-SG-W2/E2/S are buried their whole height and take it full height; W-SG-W1/E1 are
     # exposed above the yard, carry ED-M-HP2-DISC and ED-M-STAIR-LT there, and take it below
     # grade only. `integrity.wall_mount_on_face` holds the devices.
-    assert {w.tag: w.assembly for w in walls if w.tag != "W-SG-BRKBM"} == {
+    assert {w.tag: w.assembly for w in walls} == {
         "W-SG-W1": "SUNKEN_GARDEN_WALL", "W-SG-E1": "SUNKEN_GARDEN_WALL",
         "W-SG-W2": "SUNKEN_GARDEN_WALL_DRAINED",
         "W-SG-E2": "SUNKEN_GARDEN_WALL_DRAINED",
         "W-SG-S": "SUNKEN_GARDEN_WALL_DRAINED"}
-    assert next(w for w in walls if w.tag == "W-SG-BRKBM").assembly == "SG_VENEER_BEAM_14"
     assert beam.assembly == "SUNKEN_GARDEN_GRADE_BEAM_12"
     assert not any(w.tag.startswith("W-SG-RAIL-") for w in walls)
 
@@ -1939,7 +1947,9 @@ def test_sunken_garden_structure_matches_redesign_spec(catlin_model):
     # 28'-0" until 2026-09-10: the court was shortened to the smallest length that still
     # holds the porch, the balcony and a yoga-sized field. See the free-body note's §4 for
     # what the 2'-0" costs in sliding, and for the 23'-11" structural floor below it.
-    assert max(ys) - min(ys) == pytest.approx(ft(26).meters)
+    # 26'-5 1/4" since 2026-11-24: with no veneer beam in the way the rim slab runs on north
+    # to 1/2" off the walkout curb's coated foam (y -4 3/4"; -10" under brick).
+    assert max(ys) - min(ys) == pytest.approx(ft(26).meters + inch(5.25).meters)
 
     # The porch/balcony framing members are authored (their 3D resolution is Phase 2).
     # Every storey of those three LEVELS: the court is its own building now, so its posts and
@@ -1973,7 +1983,7 @@ def test_sunken_garden_structure_matches_redesign_spec(catlin_model):
                 if in_slab_family(s.category) and s.tag.startswith("SL-SG-DECK")]
 
 
-def test_the_thermal_break_is_one_product_everywhere_it_is_stated(catlin_model):
+def test_the_thermal_break_is_one_product_everywhere_it_is_stated(catlin_model, catlin_brick_model):
     """The court's break is one board, and **it cannot go on one purchase order today.**
 
     That is a takeoff fact rather than an opinion. The two closure blocks resolve as foam
@@ -2038,8 +2048,10 @@ def test_the_thermal_break_is_one_product_everywhere_it_is_stated(catlin_model):
     for field, value in foundations.GARAGE_SLAB_EDGE_BREAK.items():
         assert getattr(garage, field) == value, field
 
-    # And the veneer beam's board, which is the one that bills through a different trade.
-    beam = next(w for w in catlin_model.walls if w.tag == "W-SG-BRKBM")
+    # And the veneer beam's board, which is the one that bills through a different trade —
+    # brick-only since 2026-11-24 (variant `court-face-brick`).
+    assert not any(w.tag == "W-SG-BRKBM" for w in catlin_model.walls)
+    beam = catlin_brick_model.wall("W-SG-BRKBM")
     board = next(ly for ly in beam.layers if ly.name == "xps-break")
     ys = [y for _x, y in board.polygon]
     assert (max(ys) - min(ys)) / 0.0254 == pytest.approx(
@@ -2687,8 +2699,11 @@ def test_each_facade_block_grid_is_one_grid_on_every_storey(catlin_model, wall_t
     # which is what keeps this test honest — it would otherwise be asserting nothing.
     expected = ({"main", "second"} if wall_tag in ("W-M-E1", "W-M-W1")
                 else {"main", "second", "attic"})
+    # Since 2026-11-24 the court's LP walkout (W-B-S2-FR/S3-FR, on W-M-S1's line) hangs its
+    # panel on girts too: a PARTIAL basement storey, whose blocks must sit on the same grid.
+    partial = {"basement"} if wall_tag == "W-M-S1" else set()
     by_storey = _facade_stations(catlin_model, wall_tag, "truss_block", "block-2-")
-    assert set(by_storey) == expected, by_storey.keys()
+    assert set(by_storey) == expected | partial, by_storey.keys()
     # Also not the 32" grid: a rake-cut free course end lands on the nearest 16" stud
     # (`land_free_ends`, decision #109), an attic-only block at odd studs (48, 144, 240, 336).
     on_module = {storey: [s for s in stations
@@ -2702,6 +2717,8 @@ def test_each_facade_block_grid_is_one_grid_on_every_storey(catlin_model, wall_t
     grid = grids[0]
     gaps = {round(b - a, 3) for a, b in zip(grid, grid[1:], strict=False)}
     assert gaps <= {32.0}, f"{wall_tag}: the module breaks at {sorted(gaps)}"
+    for storey in partial:
+        assert on_module[storey] and set(on_module[storey]) <= set(grid), (storey, on_module[storey])
 
 
 #: Facade stations, in inches from the wall line's origin, where a framed run legitimately

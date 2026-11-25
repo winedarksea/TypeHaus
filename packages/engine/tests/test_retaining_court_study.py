@@ -330,8 +330,11 @@ def test_the_study_reads_the_authored_court_and_not_a_literal() -> None:
     # Every coupled-model role is read off the model's relations, not a tag literal.
     walls = geometry.walls
     assert (walls.left_upper, walls.left, walls.right_upper, walls.right, walls.end,
-            walls.cross, walls.tie) == ("W-SG-W1", "W-SG-W2", "W-SG-E1", "W-SG-E2",
-                                        "W-SG-S", "W-SG-ARCH", "W-SG-BRKBM")
+            walls.cross) == ("W-SG-W1", "W-SG-W2", "W-SG-E1", "W-SG-E2", "W-SG-S", "W-SG-ARCH")
+    # No veneer beam on the LP court face (2026-11-24): the tie keeps the study's placeholder.
+    from typehaus.engineering.retaining_court.inputs import CourtWallTags
+
+    assert walls.tie == CourtWallTags().tie
 
 
 def test_the_literal_basis_agrees_with_the_model_it_stands_in_for() -> None:
