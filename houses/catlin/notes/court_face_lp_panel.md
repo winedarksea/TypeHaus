@@ -1,6 +1,45 @@
 # Court face: LP SmartSide 38 Series smooth panel (W-B-S2-FR, W-B-S3-FR)
 
-## Wind read (ESR-1301 Table 3A)
+**Decided 2026-11-24 (owner).** The sunken court's house face (behind D-B-SUNKEN and WIN-B-SAUNA)
+is LP SmartSide 38 Series 3/8" smooth panel, 4x8 vertical, field-painted Benjamin Moore Potters
+Clay (1221 / CC-360), on the house's own EXT_2X6 girt stack (`plan/assemblies/lp_panel.py`,
+`materials_lp.py`). It replaces the brick wythe W-B-BRICK on the grade beam W-SG-BRKBM, which
+stays one switch away (variant `court-face-brick`, section 6). The study that chose it is
+`court_face_cladding_study.md` (option B, re-skinned in LP).
+
+What it removes: the masonry-anchor register item (32 -> 31), the 6 1/2" cavity against the
+2024 table's 6 5/8", the ties' unverified friction bound, the beam, its board, bed, slab void and
+tread-bed recess, two soft joints, two lintels and six stainless flashings.
+
+**What is off-label, accepted by the owner** (sheltered under the porch roof, small, cheap to
+replace; "as long as it should generally work"):
+
+1. The girts stay at 24" o.c.; LP's 38 Series is rated and tabled at 16" (section 1).
+2. LP does not recommend panel siding over furring or strapping and will not warrant buckling
+   there (AI 2024 p.2). The engine has nothing else to hang it on: the girts are the house's
+   rainscreen.
+3. The panel's foot overhangs the lifted starter girt by 1.22" over the base Z (section 2).
+
+Each shows as an UNKNOWN, never a PASS: `structural.cladding_wind` (both directions) and
+`structural.sheathing_edge_support`. They put two lines on the permit checklist ("Exterior wall
+covering — wind pressure", "Wall sheathing joints on framing") in place of the two masonry-veneer
+lines brick carried; the checklist had 8 open lines before and after.
+
+**Opening trim.** D-B-SUNKEN is trimmed as D-M-PORCH is: Captivate jamb extension and casing,
+the `metal-dark-exterior` wrap, and the dark custom door head (`DOOR_HEAD_CUSTOM`); the panel
+butts the casing with LP's 3/16" gap and sealant, so there is no jamb trim. WIN-B-SAUNA takes
+the house's generic Z drip head (`OPENING_HEAD_DRIP_FLASHING`), membrane and sill pan. **A
+Potters Clay picture-frame of LP trim at the window was not simple:** the engine's window casing
+is a palette part with no material, no bill and no casing-material setting, so it would need a
+new engine path. The window keeps the dark head, by the owner's rule (only if simple and cheap).
+
+**The tread.** D-B-SUNKEN's foam-bed Trex tread drains off its nose onto the rim slab
+(`drain_slab_ref="SL-SG-FLOOR"`): the nose clears the slab's north edge by 0.77" and drops
+5.24" to it. The slab now runs north to the curb's coated foam, a 0.69" joint (the coating takes
+no depth in the model, so 1/2" off its 1/8" face). The model carries no sealant for that joint;
+it is priced below by hand.
+
+## 1. Wind read (ESR-1301 Table 3A)
 
 `structural.cladding_wind` on `W-B-S2-FR` and `W-B-S3-FR` (material `lp-smartside-smooth-panel`,
 `published_cladding`, `basis="ultimate"`). Reproduced by `tests/test_cladding_ultimate_row.py`.
@@ -53,7 +92,7 @@ southern pine) is the check before anyone leans on the 0.70.
 assembly's capacity, so the nail is a condition of the row (graded here), and no concealed-leg
 screw or metal flange exists for the NDS screw / AISI pull-through arithmetic.
 
-## Sheet layout and joint battens
+## 2. Sheet layout and joint battens
 
 Worked by hand from the model's walls, girts and openings (not from the engine's layout), and
 pinned by `test_sheet_layout.py::test_catlin_court_face_matches_the_lp_panel_oracle`. Stations
@@ -112,11 +151,102 @@ stopped at an opening (and at any trim hosted on it):
 
 | Joint | Pieces (z, in) | Length |
 |---|---|---|
-| s 48 | -101.1555 to -65 7/16 (window sill); -41 7/16 (head) to -13 7/16 | 35.718 + 28.000 |
+| s 48 | -101.1555 to -69 7/16 (window sill trim); -33.862 (head drip) to -13 7/16 | 31.718 + 20.425 |
 | s 96 | -101.1555 to -13 7/16 | 87.718 |
-| s 144 | door head -21 1/16 to -13 7/16 | 7.625 |
+| s 144 | none: the door's custom head reaches the top of the panel | 0 |
 | s 184 | -101.1555 to -13 7/16 | 87.718 |
 
-**5 pieces, 246.8" = 20.56 LF**, cut from **2 sticks** (87.718 x 2 in one; 35.718 + 28 +
-7.625 in the other). No head trim is hosted on either opening yet; when one is, the batten
-stops at it instead of at the RO.
+**4 pieces, 227.58" = 18.96 LF**, cut from **2 sticks** (87.718 x 2 in one; 31.718 + 20.425 in
+the other). The battens stop at the trim hosted on each opening, not at the RO;
+`test_sheet_layout.py` pins it.
+
+## 3. Base and clearances (AI 2024, confirmed for panel)
+
+LP's panel instructions keep the lap siding's clearances: 6" to grade, 1" over a walking surface
+(3/8" under its stated conditions), 1" to roofing; every cut edge sealed.
+
+    panel foot           -101.1555"  (wall base -102 3/16 + 1" base trim rise + 0.032" strip)
+    court rim / field    -109 7/16"  (SL-SG-FLOOR top, the court's walking surface and grade)
+    clearance            8.28"       >= 6" to grade and >= 1" to a walking surface
+    curb top             -102 3/16"  the panel laps the 7 1/4" curb's coated foam by 1.03"
+
+The base closes as every house rainscreen base does: the Una-Clad Z, its EPDM strip and the bug
+screen. At D-B-SUNKEN, whose opening reaches the curb, all three stop short of the door
+(`resolve/rainscreen_closures.base_run_spans`): 4.7" and 22.7" stretches either side, each cut
+back 3 5/8" past the RO so no aluminium touches the KDAT jamb strapping. The door's pan laps
+over their ends.
+
+## 4. Winter tension (thermal_break_transfer, the side run)
+
+The house side's sliding load at mu_max 1.00 is the free body's 129,306 lb (house body, section
+11l), less the brick's beam that is no longer there (3,994 lb, counted before), shared by two
+side lines:
+
+    T = (129,306 - 3,994) / 2 = 62,656 lb per side run        (engine: 62,656.1)
+
+Against the study's 6 #4 (64,800 lb) that read 0.967. Since the structure lane gave W1/E1 W2's
+stem steel (free body §15n), each side run carries 4.4 in2 of steel, 0.9 x 4.4 x 60,000 =
+237,600 lb: **0.264**. The record is now governed by the court-to-house joint closure, **0.665**
+(brick: 0.676, governed by the house slab edge, the beam's board still on it).
+
+## 5. Cost (takeoff, net installed, ESTIMATE rows as priced in prices.toml)
+
+LP default against the `court-face-brick` house, both with the structure lane's steel and heel:
+**-$2,777 to -$4,870.** The study read -$2.2k to -$4.3k with its additions.
+
+| Change | Low | High |
+|---|---|---|
+| brick 88.5 SF out | -1,682 | -2,655 |
+| beam SG_VENEER_BEAM_14, 1.0 cy out | -429 | -718 |
+| reveal openings 19 -> 16 | -315 | -795 |
+| lintels L3x3x1/4, 7.8 LF out | -249 | -513 |
+| framed-wall membrane and 2" XPS (GARDEN_FRAMED_2X6's) out | -515 | -1,001 |
+| Trex box sides, soft joints, brick flashings, bed stone, the beam's bars | -766 | -1,419 |
+| LP panel 84.2 SF in (ESTIMATE) | +286 | +602 |
+| panel paint 84.2 SF in (ESTIMATE) | +125 | +372 |
+| LP 440 battens, 2 sticks (ESTIMATE) | +92 | +260 |
+| ccSPF 4" +84 SF, girts, nailers, TimberLOKs, fibreglass for mineral wool, buck rip | +718 | +1,146 |
+| rainscreen base Z, bug screens, strips, heads, closures, net | -144 | -348 |
+| rim slab to the curb, capillary stone, allowances, sealants | +100 | +199 |
+| **total** | **-2,777** | **-4,870** |
+
+Not in the takeoff, added by hand: the 0.69" rim-slab-to-curb joint, ~17 LF of sealant at the
+movement-joint rate, **ESTIMATE +$200-425**. The W-M-S1/S2 BBD75 panels above now bill their
+base C-closure (+37 LF, +$138-205: their panel end no longer stops on a perforated strip,
+because the LP cavity runs on below), included above. Prices are retail and published labour
+bands (2026-11-24); no Twin Cities yard quote yet (4x10 smooth panel, KDAT 2x4).
+
+## 6. Switching back to brick
+
+Brick is variant `court-face-brick` (houses/catlin/variants.toml): `sunken_garden.cladding =
+"brick"` plus two assembly swaps, `EXT_2X6_LP_PANEL -> GARDEN_FRAMED_2X6` and
+`SAUNA_LINER_ON_EXT_2X6_LP -> SAUNA_LINER_ON_GARDEN_FRAMED`. `params/court_face.py` builds the
+wythe set (W-B-BRICK, its nodes, reveals, lintels, flashings, soft joints, the veneer slices and
+three transitions); `OPTION.has_brick_face` gates the beam side in params/sunken_garden.py
+(W-SG-BRKBM, FB-SG-BRKBM, FO-SG-BRKBM, AO-SG-BRKBM-TREAD-BED, N-SG-BMW/BME, the slab's north
+edge, `_STONE_FROM`, AN-SG-PLACEMENTS/BLOCKOUTS) and D-B-SUNKEN's trim and tread drain. The
+curb coating stays in both. `tests/test_court_face_variants.py` pins that the variant reproduces
+main's pre-switch fingerprints, except the 7 court records the structure lane re-derived (free
+body §15n).
+
+To make brick the house again:
+
+1. `params/sunken_garden_options.py`: `cladding` default `"brick"`.
+2. `plan/storeys/basement.py`: W-B-S2-FR `assembly="SAUNA_LINER_ON_GARDEN_FRAMED"`, W-B-S3-FR
+   `assembly="GARDEN_FRAMED_2X6"`.
+3. `tasks.toml` (TOML cannot branch): the masonry visit takes back
+   `"wall_structure:BASEMENT_BRICK_VENEER:brown-brick"` in `rows`, `"W-B-BRICK"` in
+   `element_tags`, the `court` checkpoint ("Court veneer — W-B-BRICK on W-SG-BRKBM"), the
+   weeps/soft-joints/anchor and scaffold constraints, and the 132.2 SF (112.5 court + 19.6
+   firebox) blend line; the walls visit says "stem and beam blockouts" and "five" boards; the
+   mineral-wash visit drops `envelope_layers:lp-panel-paint-exterior` and W-B-S2-FR/S3-FR and
+   takes back "W-B-BRICK stays BARE brown". `git show 8609bd036:houses/catlin/tasks.toml` has
+   every line.
+4. `inspections.toml` `break_blockouts_stripped`: "all five blockouts ... and W-SG-BRKBM's" and
+   the beam board's lock-in line (same commit).
+5. Swap the variant: rename this one `court-face-lp` with the inverse parameter and swaps, and
+   re-point the fixtures in `tests/conftest.py`.
+
+The brick notes are dormant, not retired: `sunken_garden_veneer_beam.md`,
+`veneer_opening_detail.md` and `engineering_review_2026-11-22/F_junction_veneer.md` stay the
+oracles for the veneer tests, which run on the brick fixture.

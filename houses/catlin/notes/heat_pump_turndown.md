@@ -163,6 +163,10 @@ the weather, so at 47 °F the load is still 5,769 Btu/h while the compressor's f
 A published cap and a physical description are not the same statement, and the check prints
 both — on a PASS as well as on a FAIL — precisely so nobody reads 0.60 as "this one is fine".
 
+> **2026-11-24.** The LP court face (`court_face_lp_panel.md`) moves HP2's design load to
+> **14,403 Btu/h** and its crossover to **26.1 °F** (14,424 under variant `court-face-brick`);
+> the tables above predate it, and the reading does not change.
+
 **HP3's difference is positive at every published temperature**: its minimum never reaches
 its load, and the check says so rather than extrapolating a crossover out of the table.
 

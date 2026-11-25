@@ -939,3 +939,7 @@ The rows: footing #5 **215 → 226 pieces, 1,731.2 → 1,871.1 lb**; foundation 
 **294 → 358, 1,644.8 → 1,974.9**; foundation wall #5 **110 → 136, 1,045.8 → 1,322.5**; and the
 foundation wall #6 row leaves (10 pieces, 129.5 lb). The total is **6,156.9 lb / 970 pieces**
 over 116.20 cy, **52.99 lb/cy**. FT-SG-S's 0.46 cy is the only concrete that moved.
+
+**2026-11-24, LP court face (`court_face_lp_panel.md`).** W-SG-BRKBM leaves the default with its
+12 #3 ties, 2 #4 hangers and 2 #5 bars plus 4 dowels: **6,078.5 lb / 950 pieces**. The figures
+above are variant `court-face-brick`'s (6,156.9 lb / 970).
