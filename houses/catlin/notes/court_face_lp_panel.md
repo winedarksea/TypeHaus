@@ -53,14 +53,15 @@ q_h = 21.0282 psf. Zone 5 (area 2 ft x 2/3 ft = 1.333 ft^2, under 10 ft^2 so GC_
 
 **The row (ESR-1301, reissued Feb 2026, p.6; APA PR-N124 rev. 2026-07-02 Table 3a).**
 "PANEL SIDING INSTALLED VERTICALLY WITH 0.113-INCH NAILS", category 3/8, 7/16 and 19/32:
-max wall stud spacing 16 in, fasteners 6 in edges / 12 in field, **71 psf** maximum ultimate wind
-pressure, V_ult B 170 / C 140 / D 130. Same category at 6 in field: 133 psf. The only 24 in rows
+max wall stud spacing 16 in, fasteners 6 in edges / 12 in field, 71 psf maximum ultimate wind
+pressure, V_ult B 170 / C 140 / D 130; **at 6 in field, 133 psf, V_ult B 200 / C 180 / D 180**,
+the row the court face uses (owner, 2026-11-25: the field is nailed at 6 in). The only 24 in rows
 are 19/32 (190 Series); the 38 Series (3/8) has none. fn 1: HDG plain-shank nail, 0.113 in
 minimum shank, "a minimum of 2 inches" into framing; fn 2: studs SG >= 0.42; fn 3: three-second
 gust at 30 ft, Zone 5, smallest area. The pressures are ULTIMATE, so the demand is compared at
 33.2 psf, not 19.93.
 
-**On-label check (16 in studs).** 33.2 <= 71 psf, d/c 0.47; V_ult 115 <= 170 (B).
+**On-label check (16 in studs).** 33.2 <= 133 psf, d/c 0.25; V_ult 115 <= 200 (B).
 
 **Why this wall is not on-label.** Three departures, none of which the table covers:
 
@@ -73,20 +74,24 @@ gust at 30 ft, Zone 5, smallest area. The pressures are ULTIMATE, so the demand 
 
 **Off-label estimate (not a code read).**
 
-    nail-governed:  133 / 71 = 1.87 ~ 12/6 field spacing, so 71 psf is fastener-governed.
-    PR-N124 fn 2 per-fastener floor, ASD: 71 x 0.6 x (16 x 12 / 144 ft^2) = 56.8 ~ 57 lbf. Matches.
-    At 24 in girts, one field nail takes 19.9348 x (24 x 12 / 144 = 2 ft^2) = 39.9 lbf
-        -> d/c 39.9 / 56.8 = 0.70  (= 33.2 / (71 x 16/24 = 47.3 psf))
-    panel bending, 133 x (16/24)^2 = 59.1 psf ultimate vs 33.2 -> d/c 0.56 (not governing)
-    inward 24.8 psf is below both.
+    12 in field: 71 x 0.6 x (16 x 12 / 144 ft^2) = 56.8 lbf ASD per nail (PR-N124 fn 2's floor)
+    6 in field: 133 x 0.6 x (16 x 6 / 144 ft^2)  = 53.2 lbf ASD per nail, below 56.8, so the
+        6/6 row is not purely nail-governed; 53.2 is the conservative per-nail capacity.
+    At 24 in girts, one field nail takes 19.9348 x (24 x 6 / 144 = 1 ft^2) = 19.9 lbf
+        -> d/c 19.9 / 53.2 = 0.375  (= 33.2 / (133 x 16/24 = 88.7 psf); the engine prints 0.37)
+    withdrawal at 1-1/2 in embedment, at most 3/4 of the row's 2 in -> 0.375 / 0.75 = 0.50
+    panel bending, 133 x (16/24)^2 = 59.1 psf ultimate vs 33.2 -> d/c 0.56, governs
+    inward 24.8 psf is below all three.
+
+At the 12 in field the nail read 0.70, and 0.94 once embedment was capped at 3/4: too close to
+lean on an unread withdrawal value. The 6 in field halves the nail's share, so the estimate is
+governed by the panel's bending (0.56), which embedment does not touch. The extra nails ride in
+the panel's installed $/SF.
 
 **Verdict.** UNKNOWN, by design, on both directions: the row's 16 in spacing and 2 in
 penetration drift, and LP's strapping position is off-label. The estimate says it should
-generally work (d/c ~0.70 on the nail). The owner accepted it 2026-11-24: the wall is sheltered
-under the porch roof and the panel is small and cheap to replace. Caveat the estimate does not
-cover: withdrawal goes with embedment, so the 1-1/2 in girt gives at most 3/4 of what a 2 in
-embedment gives; the 57 lbf floor assumed 2 in. An NDS 12.2 nail read at the girt's SG (KDAT
-southern pine) is the check before anyone leans on the 0.70.
+generally work (d/c ~0.56, bending). The owner accepted it 2026-11-24: the wall is sheltered
+under the porch roof and the panel is small and cheap to replace.
 
 `structural.cladding_fastener` is N/A for this panel: the row's pressure is the nailed
 assembly's capacity, so the nail is a condition of the row (graded here), and no concealed-leg
@@ -214,7 +219,7 @@ Not in the takeoff, added by hand: the 0.69" rim-slab-to-curb joint, ~17 LF of s
 movement-joint rate, **ESTIMATE +$200-425**. The W-M-S1/S2 BBD75 panels above now bill their
 base C-closure (+37 LF, +$138-205: their panel end no longer stops on a perforated strip,
 because the LP cavity runs on below), included above. Prices are retail and published labour
-bands (2026-11-24); no Twin Cities yard quote yet (4x10 smooth panel, KDAT 2x4).
+bands (2026-11-24); no Twin Cities yard quote yet (4x8 smooth panel, KDAT 2x4).
 
 ## 6. Switching back to brick
 

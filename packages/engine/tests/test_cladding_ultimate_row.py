@@ -52,7 +52,7 @@ def test_catlin_lp_court_face_is_read_unknown_and_metal_is_untouched(catlin_ctx)
     assert [f.result for f in lp] == [Result.UNKNOWN, Result.UNKNOWN]
     outward = next(f for f in lp if " outward" in f.message)
     for fragment in ("33.2 psf ultimate", 'indexed at 16" fastener spacing and the girts here '
-                     'are 24" apart', "47.3 psf ultimate", "d/c 0.70", "Owner accepted"):
+                     'are 24" apart', "88.7 psf ultimate", "d/c 0.37", "Owner accepted"):
         assert fragment in outward.message, fragment
     assert all(f.result is Result.PASS for f in wind if f.element_tags != _LP_TAGS)
     fastener = {f.element_tags: f.result for f in cladding_fastener(catlin_ctx)}
