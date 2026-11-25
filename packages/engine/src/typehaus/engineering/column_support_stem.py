@@ -153,6 +153,21 @@ def _unbalanced_fill_m(ctx: EngineeringContext, wall) -> float | None:  # type: 
     return max(0.0, min(grade.meters, top.meters) - bottom.meters)
 
 
+def joint_vertical(reinforcement):  # type: ignore[no-untyped-def]
+    """The bar crossing a wall's stem-to-footing joint, as its base moment needs: a spaced
+    vertical run from the footing (``hooks`` "start", ``resolve/rebar/walls``), else a
+    ``dowels`` row laid one per vertical (``build._wall_dowels``). A straight vertical starts
+    at cover above the base and crosses nothing."""
+    bars = getattr(reinforcement, "bars", ()) or ()
+    vertical = next((e for e in bars if e.role == "vertical" and e.spacing is not None), None)
+    if vertical is None:
+        return None
+    if vertical.hooks and "start" in vertical.hooks:
+        return vertical
+    dowel = next((e for e in bars if e.role == "dowels"), None)
+    return None if dowel is None else dowel.model_copy(update={"spacing": vertical.spacing})
+
+
 def cantilever_row(ctx: EngineeringContext, wall_tag: str, piers: list[_Pier], flexible,  # type: ignore[no-untyped-def]
                     wall_fc: float, thickness_in: float, extents: dict[str, tuple[float, float]],
                     inputs: list[Quantity], missing: list[str]) -> list[LimitState]:
@@ -165,12 +180,12 @@ def cantilever_row(ctx: EngineeringContext, wall_tag: str, piers: list[_Pier], f
     wall = ctx.plan.by_tag(wall_tag)
     fill = _unbalanced_fill_m(ctx, wall)
     reinforcement = getattr(wall, "reinforcement", None)
-    vertical = next((e for e in getattr(reinforcement, "bars", ()) or ()
-                     if e.role == "vertical" and e.spacing is not None), None)
+    vertical = joint_vertical(reinforcement)
     soil = presumptive(getattr(ctx, "soil_class", None), basis=getattr(ctx, "soil_basis", None))
     if fill is None or vertical is None or soil is None or not extents:
-        missing.append(f"{wall_tag}: its authored unbalanced_fill, its vertical bars "
-                       f"(a spacing) and the site soil class, for the stem as a cantilever")
+        missing.append(f"{wall_tag}: its authored unbalanced_fill, vertical bars that cross "
+                       f"the stem-to-footing joint (a spacing, hooked from the footing or "
+                       f"dowelled) and the site soil class, for the stem as a cantilever")
         return []
     height = piers[0].base_thickness_in
     total_moment = 0.0

@@ -22,15 +22,21 @@ def test_trim_inventory_by_profile(catlin_model_ro):
         "OPENING_HEAD": 41,  # 42 until WIN-S-BED3-N went (2026-11-16)
         "PBR_BASE": 11, "BBD_BASE": 10, "CORRUGATED_BASE": 12,
         "BBD_TRANSITION": 8,  # 10 until TR-SG-BAND took the balcony (2026-11-19)
-        "BBD_PANEL_STARTER": 6, "CORRUGATED_JAMB": 8, "DOOR_HEAD_CUSTOM": 6,
+        "BBD_PANEL_STARTER": 6, "CORRUGATED_JAMB": 8,
+        "DOOR_HEAD_CUSTOM": 7,  # D-B-SUNKEN's head-only kit since 2026-11-24 (no jambs)
         "WIDE_OUTSIDE_CORNER": 8, "CORRUGATED_OUTSIDE_CORNER": 4,
         "BBD_C_CLOSURE": 12,  # three sticks under each mixed corner's BBD75 leg
-        "RAINSCREEN_BASE_Z": 21, "EPDM_BASE_ISOLATION": 14,
+        # Main's 21/14 plus the court's LP walls: W-B-S2-FR one, W-B-S3-FR split at D-B-SUNKEN.
+        "RAINSCREEN_BASE_Z": 24, "EPDM_BASE_ISOLATION": 17,
+        "OPENING_HEAD_DRIP_FLASHING": 1,  # WIN-B-SAUNA
         "OPENING_HEAD_CAP": 37,
         # 6411499: the four gable corner stubs inside the eave skins are gone.
         # Sill to Soffit: 6 until the garage rakes took it too (decision #143).
         "6460800": 9, "6411499": 6, "CORRUGATED_SILL_TO_SOFFIT": 10,
         "corrugated-outside-closure": 6,
+        # The court face's vertical panel joints (decision #146): the battens stop at the
+        # hosted head/sill trims, so none over the door head at s 144.
+        "LP_440_BATTEN_3_5": 2,  # centred: s 26 and 74 (court_face_lp_panel.md §2)
     }
 
 
@@ -54,6 +60,14 @@ def test_catalog_door_takes_the_kit_jambs_and_head(catlin_model_ro):
         "BBD_PANEL_STARTER", "BBD_PANEL_STARTER", "DOOR_HEAD_CUSTOM"]
     bands = [s for s in pieces if s.product == "BBD_TRANSITION"]
     assert bands and all(s.z0_m / M_PER_IN < 125.5 < s.z1_m / M_PER_IN for s in bands)
+
+
+def test_a_head_only_kit_trims_the_court_door_head_alone(catlin_model_ro):
+    # The LP court face butts the casing with a sealed gap: its kit names a door head and no
+    # door jamb, so D-B-SUNKEN takes the custom head and nothing on its jambs.
+    court = [s for s in _pieces(catlin_model_ro) if s.host_ref == "D-B-SUNKEN"]
+    assert [s.product for s in court] == ["DOOR_HEAD_CUSTOM"]
+    assert not any("-TRIM-JAMB-" in s.tag for s in court)
 
 
 def test_penetrations_under_six_inches_take_no_trim(catlin_model_ro):

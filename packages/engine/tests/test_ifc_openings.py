@@ -161,9 +161,9 @@ def test_arched_voids_use_vertical_curved_profiles():
     assert solid.Depth == pytest.approx(wythe)
 
 
-def test_the_brick_reveals_void_as_plain_prisms(catlin_model):
-    """Flat heads: no rise, so the IFC void is the ordinary footprint prism."""
-    reveals = [o for o in catlin_model.openings if o.tag.startswith("AO-B-BRICK-")]
+def test_the_brick_reveals_void_as_plain_prisms(catlin_brick_model_ro):
+    """Flat heads: no rise, so the IFC void is the ordinary footprint prism (court-face-brick)."""
+    reveals = [o for o in catlin_brick_model_ro.openings if o.tag.startswith("AO-B-BRICK-")]
     assert len(reveals) == 2 and all(o.arch_rise_m == 0 for o in reveals)
 
 

@@ -22,6 +22,7 @@ def retaining_court_study(
     from typehaus.cli.retaining_court_costs import price_variants
     from typehaus.engineering.registry import EngineeringContext
     from typehaus.engineering.retaining_court.comparison import REFERENCE_LAYOUT
+    from typehaus.engineering.retaining_court.inputs import CourtWallTags
     from typehaus.engineering.retaining_court.model_inputs import design_input_from_model
     from typehaus.engineering.retaining_court.report import write_study
     from typehaus.resolve import resolve
@@ -65,7 +66,10 @@ def retaining_court_study(
     # wants. Both are reviewable; neither was reachable from any command, so the study
     # said nothing at all about the walls acting together. It is printed, never written:
     # a refusal is the honest answer here and it is not a deliverable.
-    coupled = analyse_coupled(design, REFERENCE_LAYOUT)
+    # A veneer beam ties the side walls only where the model has one (the brick face):
+    # without it the walls' tags keep the placeholder.
+    tie = design.geometry.walls.tie != CourtWallTags().tie
+    coupled = analyse_coupled(design, REFERENCE_LAYOUT, include_veneer_tie=tie)
     if coupled.successful:
         console.print(
             f"coupled five-wall solve: vertical equilibrium error "

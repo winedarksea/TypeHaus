@@ -72,7 +72,7 @@ depends_on = ["task/concrete/building/footings", "insp/footing"]
 # params/sunken_garden.py; AN-SG-BLOCKOUTS). The rim-slab placement closes over the footing
 # slots, which is why `task/concrete/building/slabs` depends on the owner's walk.
 checkpoints = [
-  { id = "forms", label = "Forms, steel, sleeves, and the stem and beam blockouts set" },
+  { id = "forms", label = "Forms, steel, sleeves, and the stem blockouts set" },
   { id = "pour", label = "Pour" },
   { id = "strip", label = "Strip and cure", cure_days = 3 },
   # The joint's closure counts from the concrete's temperature when each board is fitted:
@@ -80,7 +80,7 @@ checkpoints = [
   # 35 F fit, from the recorded 5.5e-6 /F x (80 - 35) F x 323" run = 0.080" thermal + 0.032"
   # sliding = 0.112" against the compliant layer's 0.125".
   { id = "fit_temp", label = "Concrete measured at or above 50 F before any board is fitted (a 35 F fit still closes 0.112 in against the layer's 0.125 in)" },
-  { id = "boards", label = "Blockouts pulled, slots walked, the five thermal-break boards set", after = ["insp/break_blockouts_stripped"] },
+  { id = "boards", label = "Blockouts pulled, slots walked, the four thermal-break boards set", after = ["insp/break_blockouts_stripped"] },
 ]
 constraints = [
   { label = "every thermal-break board on site and cut to its slot before the blockouts come out" },
@@ -169,8 +169,14 @@ constraints = [
   { label = "confirmed with the sub 48 hours ahead" },
 ]
 
-# The mason is a different sub on a different trip, and both wythes are built against
-# cured concrete: the veneer stands on W-SG-BRKBM and the firebox on the main deck.
+# ** THE COURT FACE IS LP PANEL SINCE 2026-11-24 ** (notes/court_face_lp_panel.md), so the mason
+# lays the firebox only. Switching the court back to brick (variant `court-face-brick`) restores
+# here: the `wall_structure:BASEMENT_BRICK_VENEER:brown-brick` row, `W-B-BRICK` in element_tags,
+# the `court` checkpoint ("Court veneer — W-B-BRICK on W-SG-BRKBM"), the weeps/soft-joints/anchor
+# constraint, the 132.2 SF (112.5 court + 19.6 firebox) blend line, and the beam blockout and fifth
+# board on the walls visit. The note's switch-back recipe lists the exact lines.
+#
+# The mason is a different sub on a different trip; the firebox stands on the main deck.
 #
 # ** ONE BLEND HOUSE-WIDE SINCE 2026-09-13, AND THAT CHANGED WHAT THIS VISIT'S FIRST CONSTRAINT
 # MEANS. ** It used to read "one blend, enough for the whole 129 SF field" — a constraint written
@@ -192,17 +198,14 @@ constraints = [
 # The wash's own BOM row is deliberately NOT listed here: `schedule/rules.py::shared_rows` errors
 # when two visits claim one row, and the coating visit owns it and `depends_on` this one.
 [visits."task/masonry/building/masonry"]
-label = "Brick — the court veneer and the living-room firebox"
-rows = ["wall_structure:BASEMENT_BRICK_VENEER:brown-brick",
-        "wall_structure:FIREPLACE_BRICK_WYTHE:brown-brick"]
-element_tags = ["W-B-BRICK", "W-M-FIRE-*"]
+label = "Brick — the living-room firebox"
+rows = ["wall_structure:FIREPLACE_BRICK_WYTHE:brown-brick"]
+element_tags = ["W-M-FIRE-*"]
 depends_on = ["task/concrete/basement/walls", "task/concrete/building/slabs"]
 blocks_successors = false
 constraints = [
-  { label = "brick and mortar delivered — ONE blend for the whole job, 132.2 SF (112.5 court + 19.6 firebox), no second colour on the order", owner = "owner" },
+  { label = "brick and mortar delivered — ONE blend, 19.6 SF of firebox, no second colour on the order", owner = "owner" },
   { label = "the firebox panel is laid BARE in the court blend and washed white later — do NOT substitute a white brick", owner = "owner", next_action = "the white reads from the mineral silicate wash, applied by the painter on a later arrival; a white body would order a third cube against ~21 SF of need" },
-  { label = "weeps, soft joints at both ends and the anchor schedule agreed", owner = "owner", next_action = "unreinforced brick cannot span 18'-8\" horizontally — do not anchor the wythe to W-SG-W1/E1" },
-  { label = "scaffold access for the full 8'-5\" field priced in", severity = "attention" },
   { label = "firebox head is a CUT COURSE on a steel angle lintel, not a rowlock", owner = "owner" },
   { label = "pier layout struck off the FRAMER'S as-built joist lines, not off the drawing", owner = "owner", next_action = "the three piers sit in 4\" pockets between joists 006 and 007; a joist 1/2\" off the module moves the pocket, not the joist", severity = "blocking" },
   { label = "the piers stand loose until the plinth ties them — protect them while the deck is framed and sheeted", severity = "attention" },
@@ -216,7 +219,6 @@ constraints = [
 # and cuts the subfloor around them. All three piers land inside a joist bay and each is
 # reachable from above through a 13 1/2" clear bay while the deck is open.
 checkpoints = [
-  { id = "court", label = "Court veneer — W-B-BRICK on W-SG-BRKBM" },
   { id = "piers", label = "Fireplace piers — three 12\" piers in FS-M-EAST's joist pockets, deck open", after = ["task/framing/building/frame#joists"] },
   { id = "panel", label = "Fireplace panel — plinth, jambs, lintel and spandrel", after = ["task/framing/building/frame#sheathing"] },
 ]
@@ -273,11 +275,15 @@ constraints = [
 # white from this coat. The wash's BOM rows are owned HERE and are deliberately not also listed on
 # the masonry visit — `schedule/rules.py::shared_rows` errors when two visits claim one row.
 [visits."task/paint/building/mineral-wash"]
-label = "Mineral silicate wash — the court, the columns, the garden blocks and the firebox"
+label = "Mineral silicate wash — the court, the columns, the garden blocks and the firebox; the court face's panel paint"
+# The court face's LP panel and battens are field-painted on this arrival (2026-11-24): the same
+# exterior crew, already in the court, so no new mobilisation.
 rows = ["envelope_layers:silicate-wash-white", "envelope_layers:silicate-wash-white-block",
         "envelope_layers:silicate-wash-white-brick",
+        "envelope_layers:lp-panel-paint-exterior",
         "allowances:paint-court-mineral-wash-columns"]
-element_tags = ["W-SG-*", "PT-SG-*", "W-RG-BLOCK", "W-RG-WEST", "W-RG-EAST", "W-M-FIRE-*"]
+element_tags = ["W-SG-*", "PT-SG-*", "W-RG-BLOCK", "W-RG-WEST", "W-RG-EAST", "W-M-FIRE-*",
+                "W-B-S2-FR", "W-B-S3-FR"]
 depends_on = ["task/masonry/building/masonry", "insp/foundation_backfill"]
 blocks_successors = false
 constraints = [
@@ -287,7 +293,7 @@ constraints = [
   { label = "court backfilled, forms gone, and >=40 F with no blazing sun for the run of the work" },
   { label = "firebox: the Amantii BI-30-XTRASLIM is TRIMLESS, so wash before the appliance is set or mask it, and stop at the reveal returns", owner = "owner" },
   { label = "walnut mantel goes on AFTER the wash cures — its hold-down blocking is still pre-brick" },
-  { label = "W-B-BRICK stays BARE brown — it is the deliberate accent wall and is NOT in this scope", owner = "owner" },
+  { label = "the court face's LP panel and battens: 100% acrylic, Benjamin Moore Potters Clay 1221, two coats, within 180 days of the siding going up (LP's instructions); every field-cut edge sealed by the siding crew first", owner = "owner" },
   { label = "wall TOPS and SL-SG-FLOOR stay uncoated — a walked mineral coating wears and is a slip question" },
 ]
 

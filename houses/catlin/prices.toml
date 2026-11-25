@@ -4848,6 +4848,16 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 # material band moves.
 # 2026-10-29: labour -20% now trim bills by the stick ([cladding_trim]); material left (24 ga PVDF bare is $2.50-3.00 published).
 "board-batten-24" = { material = { low = 2.0, high = 3.55 }, labour = { low = 3.36, high = 5.36 } }
+# ESTIMATE 2026-11-24 — the court face's LP SmartSide 38 Series smooth panel (W-B-S2-FR/S3-FR,
+# notes/court_face_lp_panel.md). Material: 4x8 primed smooth $59.99-66.49/sheet (Pine Island,
+# Schmeling; Menards 46008) = $1.87-2.08/SF, plus HDG 8d nails (~$0.05/SF). Labour: panel
+# siding labour-only $1.50-5.00/SF (Fixr 2026-03, Angi). No Twin Cities yard quote yet; 4x10 has
+# no retailer price.
+"lp-smartside-smooth-panel" = { material = { low = 1.9, high = 2.15 }, labour = { low = 1.5, high = 5.0 } }
+# ESTIMATE 2026-11-24 — its field paint, 2 coats 100% acrylic (BM Aura exterior $85-114/gal at
+# 250-350 SF/gal per coat, BM data sheets N631/N634) = $0.48-0.92/SF; painting labour $1.00-3.50/SF
+# (HomeAdvisor, Angi, This Old House). The court wash crew paints it; no new mobilisation.
+"lp-panel-paint-exterior" = { material = { low = 0.48, high = 0.92 }, labour = { low = 1.0, high = 3.5 } }
 # Retired RF-GARAGE nail-strip rate; Image II now uses standing-seam-image-ii-garage.
 # Formerly 749.6 SF. Installed $7.00-13.00/SF against Sheffield's $5-11 for nail strip,
 # lifted for the Twin Cities and for a 749 SF roof being a minimum-mobilisation job for any
@@ -7052,6 +7062,10 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 "WINDOW_JAMB_CUSTOM" = { material = { low = 2.5, high = 4.5 }, labour = { low = 3, high = 5 }, unit = "LF" }
 "WINDOW_SILL_CUSTOM" = { material = { low = 3, high = 5 }, labour = { low = 3, high = 5 }, unit = "LF" }
 "DOOR_HEAD_CUSTOM" = { material = { low = 3, high = 5 }, labour = { low = 3, high = 5.5 }, unit = "LF" }
+# ESTIMATE 2026-11-24 — the court face's LP 440 Series smooth 3.50" x 16' batten over each vertical
+# panel joint (notes/court_face_lp_panel.md), per stick: $13.99-33.61 retail (Stine; Menards 46000);
+# labour $2-6/LF x 16 ft, low confidence (no primary labour-only source). Painted with the panel.
+"LP_440_BATTEN_3_5" = { material = { low = 14, high = 34 }, labour = { low = 32, high = 96 } }  # 16' stick, 2 ea
 "OPENING_HEAD_CAP" = { material = { low = 3, high = 5 }, labour = { low = 3, high = 5 }, unit = "LF" }  # K6 window head cap, 6.6-7" girth, 2 bends and end dams; the door head's shop rate less a hem (2026-10-29)
 "RAINSCREEN_BASE_Z" = { material = { low = 3, high = 6 }, labour = { low = 3, high = 5 }, unit = "LF" }
 "CORRUGATED_SILL_TO_SOFFIT" = { material = { low = 32, high = 44 }, labour = { low = 18, high = 30 } }

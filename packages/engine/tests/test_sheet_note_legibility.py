@@ -27,10 +27,11 @@ def test_catlin_passes_on_every_bound_note(catlin_model_ro):
     assert findings
     bad = [f for f in findings if f.result is not Result.PASS]
     assert not bad, [f.message for f in bad]
-    # Thirteen files (veneer_opening_detail.md joined 2026-11-23): bound transition notes plus the
-    # rake and new MDO tie-relief note; the
+    # Twelve files: bound transition notes plus the rake and new MDO tie-relief note; the
     # B&B door and garage window halves of their opening keys took a file each (O4-103).
-    assert len(findings) == 13
+    # (veneer_opening_detail.md joined 2026-11-23 and left with TR-CATLIN-VENEER-OPENING, which
+    # is court-face-brick's since 2026-11-24.)
+    assert len(findings) == 12
 
 
 def test_a_note_file_nothing_binds_is_out_of_subject(catlin_model_ro):

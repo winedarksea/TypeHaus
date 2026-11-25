@@ -41,11 +41,6 @@ TRANSITIONS = (
                notes="notes/court_opening_detail.md", star=False,
                suppress=True,
                suppress_reason="formed concrete door-seat recess, not a framed opening; coordinated in the sunken-garden door installation review"),
-    Transition(uid="109WBK5F0T", tag="TR-CATLIN-SUNKEN-TREAD-BED", title="Sunken-garden tread bed in the veneer beam's board",
-               condition_pattern="opening_perimeter:SG_VENEER_BEAM_14",
-               notes="notes/court_opening_detail.md", star=False,
-               suppress=True,
-               suppress_reason="the beam's XPS board cut down under the sunken-garden tread, not a framed opening; coordinated in the sunken-garden door installation review"),
     # Two eaves in this project and they are genuinely two drawings: the house's
     # zero-overhang eave over EXT_2X6, and the garage's over a trussed roof on a wall whose
     # taped ZIP is the WRB. The four interior-partition-to-roof keys are unstarred —
@@ -222,27 +217,8 @@ TRANSITIONS = (
     # Starred: the garage/breezeway threshold condition — the overhead door opens onto the
     # slab at grade, with the ICF stem gapped under it, so the perimeter
     # flashing here is nothing like a standard framed opening.
-    # The reveals through W-B-BRICK are flat-headed on a steel lintel each since 2026-11-23, with
-    # flashed heads, a flashed base bond break and weeps (IRC R703.8.3, R703.8.5, R703.8.6), so
-    # their perimeter has work and draws its own sheet. The flashed, bucked, sealed opening in
-    # the framed wall behind is TR-CATLIN-GARDEN-FRAMED-OPENING's.
-    Transition(uid="CATR015AAAA", tag="TR-CATLIN-VENEER-OPENING", title="Veneer opening",
-               condition_pattern="opening_perimeter:BASEMENT_BRICK_VENEER",
-               notes="notes/veneer_opening_detail.md"),
-    # The sunken garden's framed walkout. D-B-SUNKEN is an ordinary innie opening in a 2x6
-    # wall — buck, pan, jamb flashing — standing on the 7 1/4" concrete curb.
-    # `window-head-jamb-sill` rather than the `outie-window-truss` the above-grade
-    # EXT_* walls take: there is no truss plane down here, the unit sits in the stud
-    # plane, and the wall's water plane is the waterproofing over the sheathing.
-    # Starred (2026-10-21): the model derives no flashing at either court opening, so
-    # this sheet carries the hand spec (opening_flashing_spec.md §8). WIN-B-SAUNA gets no
-    # sheet of its own; its water side is K1-K3 of the same note, and its vapour return
-    # stays TR-CATLIN-SAUNA-OPENING's (`SAUNA_*` reaches the framed variant).
-    Transition(uid="6997Z5EY26", tag="TR-CATLIN-GARDEN-FRAMED-OPENING", title="Garden framed opening",
-               condition_pattern="opening_perimeter:GARDEN_FRAMED_2X6",
-               notes="notes/court_opening_detail.md",
-               overlay="window-head-jamb-sill", continuity=AIR_WATER_THERMAL,
-               star=True),
+    # TR-CATLIN-VENEER-OPENING, -SUNKEN-TREAD-BED and -GARDEN-FRAMED-OPENING belong to the
+    # court face's brick option and are built with it (params/court_face.py).
     # ** IT DECLARES ITS OWN CONTINUITY, and it is not AIR_WATER_THERMAL. ** GARAGE_WALL_2X6
     # has no `spray-foam-ext` band: its air and water plane is the taped 7/16" ZIP
     # (`sheathing-ext`, Minn. R. 1309.0703 has no accessory exception), while vapour and

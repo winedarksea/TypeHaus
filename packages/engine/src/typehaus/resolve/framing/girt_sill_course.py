@@ -9,7 +9,11 @@ in ``connection``, which the takeoff and the approach grade read.
 from __future__ import annotations
 
 from typehaus.resolve.framing.profiles import cross_section
-from typehaus.resolve.framing.truss_common import BLOCK_CATEGORY, LADDER_CATEGORY
+from typehaus.resolve.framing.truss_common import (  # noqa: F401 - sill_on_base re-exported
+    BLOCK_CATEGORY,
+    LADDER_CATEGORY,
+    sill_on_base,
+)
 from typehaus.resolve.model import FramedMember
 
 _FT = 0.3048

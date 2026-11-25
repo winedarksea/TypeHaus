@@ -7,7 +7,15 @@ import uuid
 from pathlib import Path
 
 import pytest
-from _helpers import CATLIN, HOUSE_IGNORE, HOUSES, REPO_ROOT, STARTER, copy_house
+from _helpers import (
+    CATLIN,
+    HOUSE_IGNORE,
+    HOUSES,
+    REPO_ROOT,
+    STARTER,
+    copy_house,
+    court_face_brick_plan,
+)
 from _resolved_copy import ResolvedCopies
 
 __all__ = ["CATLIN", "HOUSE_IGNORE", "HOUSES", "REPO_ROOT", "STARTER", "copy_house"]
@@ -101,6 +109,47 @@ def catlin_hung_model(tmp_path_factory):
     assert loaded.plan is not None, [f.message for f in loaded.findings]
     model, _findings = resolve(loaded.plan)
     return model
+
+
+@pytest.fixture(scope="session")
+def catlin_brick_plan():
+    """The ``court-face-brick`` variant's plan: the court's house face as the brick wythe.
+
+    The default court face is LP panel; brick is a declared switch (``variants.toml``). Tests
+    of the veneer, its grade beam and its anchors take this and its siblings below.
+    """
+    return court_face_brick_plan()
+
+
+@pytest.fixture(scope="session")
+def _catlin_brick_resolved(catlin_brick_plan) -> ResolvedCopies:
+    from typehaus.resolve import resolve
+
+    model, findings = resolve(catlin_brick_plan)
+    errors = [f for f in findings if f.severity.value == "error"]
+    assert not errors, errors
+    return ResolvedCopies(catlin_brick_plan, model, findings)
+
+
+@pytest.fixture(scope="session")
+def catlin_brick_model_ro(_catlin_brick_resolved):
+    """The brick variant's resolved model, once per worker, **read-only**."""
+    return _catlin_brick_resolved.copy()
+
+
+@pytest.fixture(scope="module")
+def catlin_brick_model(_catlin_brick_resolved):
+    """The brick variant's resolved model, a mutable per-module copy (→ ``catlin_model``)."""
+    return _catlin_brick_resolved.copy()
+
+
+@pytest.fixture(scope="session")
+def catlin_brick_ctx(_catlin_brick_resolved):
+    """``build_context`` on the brick variant, once per worker, **read-only**."""
+    from typehaus.checks.run import build_context_from_model
+
+    return build_context_from_model(
+        _catlin_brick_resolved.copy(), _catlin_brick_resolved.findings, CATLIN)
 
 
 @pytest.fixture(scope="session")

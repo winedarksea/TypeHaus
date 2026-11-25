@@ -445,8 +445,8 @@ def test_footing_bedding_bills_stone_fabric_and_tile(catlin_model, bom):
     court = [r for r in rows if any(tag.startswith("FB-SG-") for tag in r["tags"])]
     assert court and all(not r["drain_tile"] and float(r["drain_tile_ft"]) == 0 for r in court)
     assert {tag for r in court for tag in r["tags"] if tag.startswith("FB-SG-")} == {
-        "FB-SG-W1", "FB-SG-E1", "FB-SG-W2", "FB-SG-E2", "FB-SG-S", "FB-SG-ARCH",
-        "FB-SG-BRKBM"}
+        # FB-SG-BRKBM, the veneer beam's bed, is brick-only since 2026-11-24.
+        "FB-SG-W1", "FB-SG-E1", "FB-SG-W2", "FB-SG-E2", "FB-SG-S", "FB-SG-ARCH"}
 
 
 def test_drainage_bills_the_whole_storm_run_by_the_foot(catlin_model, bom):
@@ -671,6 +671,7 @@ def test_bug_screens_bill_the_exterior_perimeter_once_not_once_per_storey(catlin
     """
     from typehaus.resolve.rainscreen_closures import (
         BUG_SCREEN_LAP_IN,
+        base_run_spans,
         cavity_base_run,
         screens_rainscreen_base,
     )
@@ -680,12 +681,15 @@ def test_bug_screens_bill_the_exterior_perimeter_once_not_once_per_storey(catlin
     screened = [wall for wall in catlin_model.walls
                 if screens_rainscreen_base(catlin_model, wall)]
     runs = [run for wall in screened if (run := cavity_base_run(catlin_model, wall))]
-    laps = (int(base["count"]) - len(runs)) * BUG_SCREEN_LAP_IN * 0.0254
-    expected = (sum(run.end - run.start for run in runs) + laps) * 3.280839895
+    # Each run stops at a door reaching the base, so it is laid per stretch.
+    spans = [span for run in runs for span in base_run_spans(catlin_model, run.wall, run)]
+    laps = (int(base["count"]) - len(spans)) * BUG_SCREEN_LAP_IN * 0.0254
+    expected = (sum(b - a for a, b in spans) + laps) * 3.280839895
     assert float(base["length_ft"]) == pytest.approx(expected, abs=0.2)
     assert base["tags"] == sorted(wall.tag for wall in screened)
-    # Every screened wall is a ground-tier one; nothing stacked on a rainscreen qualifies.
-    assert {wall.storey for wall in screened} == {"main"}
+    # Every screened wall is a ground-tier one (the main perimeter and the court's LP face);
+    # nothing stacked on a rainscreen qualifies.
+    assert {wall.storey for wall in screened} == {"main", "basement"}
 
 
 def test_bug_screen_rows_are_one_per_kind(bom):

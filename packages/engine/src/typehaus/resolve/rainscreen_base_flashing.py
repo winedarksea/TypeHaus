@@ -10,7 +10,12 @@ from typehaus.quantities import M_PER_IN
 from typehaus.resolve.cladding_trim.members import split_stock_run
 from typehaus.resolve.cladding_trim.section import folded_section_mesh
 from typehaus.resolve.model import ResolvedSolid
-from typehaus.resolve.rainscreen_closures import BUG_SCREEN_HEIGHT_IN, cavity_base_run
+from typehaus.resolve.rainscreen_closures import (
+    BUG_SCREEN_HEIGHT_IN,
+    base_run_spans,
+    cavity_base_run,
+    span_tag,
+)
 
 
 def _end_stations(run, offset):
@@ -62,45 +67,57 @@ def resolve_rainscreen_base_flashing(model) -> None:
                    (depth, -depth * spec.slope - spec.drip.meters),
                    (depth + spec.hem.meters, -depth * spec.slope - spec.drip.meters))
         total = run.end - run.start
-        for index, (start, end, stock) in enumerate(split_stock_run(
-                total, (spec.stock_length.meters,), spec.lap.meters)):
-            station = run.start + start
-            x = station * run.direction[0] + run.inner_offset * run.outward[0]
-            y = station * run.direction[1] + run.inner_offset * run.outward[1]
-            mesh = folded_section_mesh(section, (x, y, top), (*run.outward, 0.0),
-                                       (0.0, 0.0, 1.0),
-                                       (run.direction[0] * (end-start),
-                                        run.direction[1] * (end-start), 0.0), thickness)
-            mesh = _mitre_mesh(mesh, run, start, end, total)
-            xs, ys, zs = zip(*mesh.positions, strict=True)
-            model.solids.append(ResolvedSolid(
-                uid=f"{wall.uid}-basez-{index}", tag=f"{wall.tag}-BASEZ-{index+1}",
-                storey=wall.storey, category="cladding_trim", material=spec.material,
-                product="RAINSCREEN_BASE_Z", host_ref=wall.tag, body_mesh=mesh, derived=True,
-                outline=((min(xs), min(ys)), (max(xs), min(ys)),
-                         (max(xs), max(ys)), (min(xs), max(ys))),
-                z0_m=min(zs), z1_m=max(zs), trim_length_m=end-start,
-                trim_stock_length_in=round(stock / M_PER_IN, 6)))
-        # The strip isolates the steel trim's back leg from the screen's outer leg where the
-        # one laps the other; the drip below it stays bare so the pan edge drains.
-        station = run.start
-        isolation_thickness = spec.isolation_thickness.meters
-        offset = run.outer_offset
-        bottom = wall.z0_m + spec.trim_rise.meters
-        lap_top = top + BUG_SCREEN_HEIGHT_IN * M_PER_IN
-        x = station * run.direction[0] + offset * run.outward[0]
-        y = station * run.direction[1] + offset * run.outward[1]
-        strip_mesh = folded_section_mesh(
-            ((0.0, 0.0), (0.0, lap_top - bottom)),
-            (x, y, bottom), (*run.outward, 0.0), (0.0, 0.0, 1.0),
-            (run.direction[0] * total, run.direction[1] * total, 0.0),
-            isolation_thickness)
-        strip_mesh = _mitre_mesh(strip_mesh, run, 0, total, total)
-        xs, ys, zs = zip(*strip_mesh.positions, strict=True)
+        spans = base_run_spans(model, wall, run)
+        for span, (lo, hi) in enumerate(spans):
+            _base_z_span(model, wall, run, spec, section, top, span, len(spans), lo, hi, total)
+            _isolation_strip(model, wall, run, spec, top, span, len(spans), lo, hi, total)
+
+
+def _base_z_span(model, wall, run, spec, section, top, span, spans, lo, hi, total):
+    thickness = spec.sheet_thickness.meters
+    for index, (start, end, stock) in enumerate(split_stock_run(
+            hi - lo, (spec.stock_length.meters,), spec.lap.meters)):
+        start, end = start + lo - run.start, end + lo - run.start
+        station = run.start + start
+        x = station * run.direction[0] + run.inner_offset * run.outward[0]
+        y = station * run.direction[1] + run.inner_offset * run.outward[1]
+        mesh = folded_section_mesh(section, (x, y, top), (*run.outward, 0.0),
+                                   (0.0, 0.0, 1.0),
+                                   (run.direction[0] * (end-start),
+                                    run.direction[1] * (end-start), 0.0), thickness)
+        mesh = _mitre_mesh(mesh, run, start, end, total)
+        xs, ys, zs = zip(*mesh.positions, strict=True)
         model.solids.append(ResolvedSolid(
-            uid=f"{wall.uid}-basez-isolation", tag=f"{wall.tag}-BASEZ-ISOLATION",
-            storey=wall.storey, category="cladding_trim", material="rubber",
-            product="EPDM_BASE_ISOLATION", host_ref=wall.tag, body_mesh=strip_mesh,
-            derived=True, outline=((min(xs), min(ys)), (max(xs), min(ys)),
-                                   (max(xs), max(ys)), (min(xs), max(ys))),
-            z0_m=min(zs), z1_m=max(zs), trim_length_m=total))
+            uid=span_tag(f"{wall.uid}-basez", span, spans, index, 0),
+            tag=span_tag(f"{wall.tag}-BASEZ", span, spans, index),
+            storey=wall.storey, category="cladding_trim", material=spec.material,
+            product="RAINSCREEN_BASE_Z", host_ref=wall.tag, body_mesh=mesh, derived=True,
+            outline=((min(xs), min(ys)), (max(xs), min(ys)),
+                     (max(xs), max(ys)), (min(xs), max(ys))),
+            z0_m=min(zs), z1_m=max(zs), trim_length_m=end-start,
+            trim_stock_length_in=round(stock / M_PER_IN, 6)))
+
+
+def _isolation_strip(model, wall, run, spec, top, span, spans, lo, hi, total):
+    """The strip isolates the steel trim's back leg from the screen's outer leg where the
+    one laps the other; the drip below it stays bare so the pan edge drains."""
+    isolation_thickness = spec.isolation_thickness.meters
+    bottom = wall.z0_m + spec.trim_rise.meters
+    lap_top = top + BUG_SCREEN_HEIGHT_IN * M_PER_IN
+    x = lo * run.direction[0] + run.outer_offset * run.outward[0]
+    y = lo * run.direction[1] + run.outer_offset * run.outward[1]
+    strip_mesh = folded_section_mesh(
+        ((0.0, 0.0), (0.0, lap_top - bottom)),
+        (x, y, bottom), (*run.outward, 0.0), (0.0, 0.0, 1.0),
+        (run.direction[0] * (hi - lo), run.direction[1] * (hi - lo), 0.0),
+        isolation_thickness)
+    strip_mesh = _mitre_mesh(strip_mesh, run, lo - run.start, hi - run.start, total)
+    xs, ys, zs = zip(*strip_mesh.positions, strict=True)
+    model.solids.append(ResolvedSolid(
+        uid=span_tag(f"{wall.uid}-basez-isolation", span, spans),
+        tag=span_tag(f"{wall.tag}-BASEZ-ISOLATION", span, spans),
+        storey=wall.storey, category="cladding_trim", material="rubber",
+        product="EPDM_BASE_ISOLATION", host_ref=wall.tag, body_mesh=strip_mesh,
+        derived=True, outline=((min(xs), min(ys)), (max(xs), min(ys)),
+                               (max(xs), max(ys)), (min(xs), max(ys))),
+        z0_m=min(zs), z1_m=max(zs), trim_length_m=hi - lo))

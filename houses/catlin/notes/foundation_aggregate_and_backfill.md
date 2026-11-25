@@ -267,6 +267,25 @@ All five raised-garden legs now read off AB Table 1.3 (`notes/raised_garden_srw.
 Against the model (cut 1,070.9, backfill 373.8, cap 73.3, haul 786.0): cut +0.9%, backfill
 +0.1%, cap +9.0%, haul +0.4%. The cap gap is still the per-bed-cone gap of 7c.
 
+### 7f. Amended 2026-11-24: FT-SG-S's heel grows 6"
+
+`sunken_garden_court_free_body.md` §15n lengthens the south court footing's heel 6" outward, so
+the court S strip's working face and its two corners move out 0.5'; its depth and grade hold.
+
+- Ring: the S side 0.5 x H x L = 0.5 x 11.286 x 19.052 = 107.5 cf; each corner widens by half
+  its neighbour's ∫d dh, 0.5 x (108.429 + 107.291) = 107.9 cf. **+215.4 cf.**
+- Cut 28,641 + 215.4 = **28,856.4 cf = 1,068.8 cy**.
+- Fill: the heel and its bed stand 0.5' x 26.4375' x 5.5' = 72.7 cf more in the ring, so
+  10,526.1 + 215.4 - 72.7 = 10,668.8 cf (395.1 cy).
+- Cap: the S band 0.5 x 19.052 x 1' plus its corners 0.5 x (13.689 + 13.626) x 1' = +23.2 cf,
+  so **1,839.3 cf = 68.1 cy**.
+- Native 10,668.8 - 1,839.3 = 8,829.5 cf = 327.0 cy; **backfill 327.0 + 50.7 = 377.7 cy**.
+- Haul (28,856.4 - 10,668.8 / 0.85) x 1.30 = **21,196.3 cf = 785.0 cy**.
+
+Against the model (cut 1,078.8, backfill 378.2, cap 74.2, haul 788.3): cut +0.9%, backfill
++0.1%, cap +8.9%, haul +0.4%. The model's own step is +7.96 cy of cut, against 7.98 here.
+Brick and LP court faces dig the same hole.
+
 ## 8. What is NOT graded here
 
 The slope's stability and the soil's OSHA class (no soils report; Type A is presumed, §7a);

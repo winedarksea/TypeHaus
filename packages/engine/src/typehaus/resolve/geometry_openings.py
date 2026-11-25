@@ -80,7 +80,8 @@ def _exterior_face(wall: ResolvedWall) -> tuple[float, float] | None:
     cladding plane to sit a casing on. Offsets are along the wall's right-hand normal
     measured from the axis line, the same frame ``opening_parts`` lays its boxes out in.
     """
-    layers = wall.depth_layers()
+    # A paint coat over the cladding takes no depth and is not the plane a casing sits on.
+    layers = [layer for layer in wall.depth_layers() if not layer.coating]
     if len(layers) < 2 or layers[-1].function.strip().lower() != "cladding":
         return None
     (x0, y0), _tangent, (nx, ny), axis_length = wall_frame(wall)
@@ -382,7 +383,7 @@ def _opening_parts(wall: ResolvedWall, opening, operation: DoorOperation | None,
                                       (-_WINDOW_GLAZING_THICKNESS_M / 2.0,
                                        _WINDOW_GLAZING_THICKNESS_M / 2.0), z0 + sill)
     if (opening.kind == "window" and exterior is not None
-            and (seat is None or seat.outer_m is None)):
+            and (seat is None or seat.mount in (None, "casing"))):
         # Picture-frame casing on the cladding plane: two jambs beside the RO, a head
         # band over it, an apron under the sill, each a flat board sitting proud of the
         # exterior face. Appended last so every pre-existing part keeps its box order.

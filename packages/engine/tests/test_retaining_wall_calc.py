@@ -170,7 +170,8 @@ def test_catlin_grades_the_three_court_walls_through_their_base_restraint(
         by_name = {state.name: state for state in record.limit_states}
         # 1.573 since §15 (2026-11-22): one body off the solids, corner squares and spliced
         # walls in, and the soil pushing on its 25'-0" south face, not the 18'-0" axis.
-        assert by_name["base restraint"].ratio == pytest.approx(1.5 / 1.930, abs=0.005)
+        # 2.026 since §15n (2026-11-24): FT-SG-S's heel +6".
+        assert by_name["base restraint"].ratio == pytest.approx(1.5 / 2.026, abs=0.005)
         # Per-wall sliding is not a meaningful number once the free body is wrong, so it is
         # gone rather than reported alongside a contradicting one.
         assert "sliding" not in by_name

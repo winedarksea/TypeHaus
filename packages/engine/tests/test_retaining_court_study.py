@@ -299,7 +299,7 @@ def test_the_study_reads_the_authored_court_and_not_a_literal() -> None:
 
     Each expectation below is the authored model measured independently: the stem is
     ``W-SG-S``'s own top-to-bottom dimension, the footing is ``FT-SG-W2``'s (``FT-SG-S``
-    adds 16" of toe), the clear width is the E/W wall axes 18 ft apart less one 12-inch
+    adds 16" of toe and 6" of heel), the clear width is the E/W wall axes 18 ft apart less one 12-inch
     stem (20 ft until the court narrowed to 17'-0" on 2026-09-22), and the ordinary height
     is the authored -3'-4" south yard above the -9'-1 7/16" footing top.
     """
@@ -314,8 +314,10 @@ def test_the_study_reads_the_authored_court_and_not_a_literal() -> None:
     assert geometry.footing_depth_ft == pytest.approx(1.0, abs=1e-6)
     assert geometry.toe_ft == pytest.approx(3.0, abs=1e-6)
     assert geometry.heel_ft == pytest.approx(3.0, abs=1e-6)
-    # FT-SG-S alone carries 16" more toe; the legs set the common section.
+    # FT-SG-S alone carries 16" more toe and 6" more heel (free body §15n); the legs set
+    # the common section.
     assert geometry.end_toe_extension_ft == pytest.approx(16.0 / 12.0, abs=1e-6)
+    assert geometry.end_heel_extension_ft == pytest.approx(0.5, abs=1e-6)
     assert geometry.clear_width_ft == pytest.approx(17.0, abs=1e-6)
     assert geometry.retained_side_length_ft == pytest.approx(16.0 + 4.0 / 12.0, abs=1e-6)
     height = design.soil.ordinary_retained_height_ft
@@ -328,8 +330,11 @@ def test_the_study_reads_the_authored_court_and_not_a_literal() -> None:
     # Every coupled-model role is read off the model's relations, not a tag literal.
     walls = geometry.walls
     assert (walls.left_upper, walls.left, walls.right_upper, walls.right, walls.end,
-            walls.cross, walls.tie) == ("W-SG-W1", "W-SG-W2", "W-SG-E1", "W-SG-E2",
-                                        "W-SG-S", "W-SG-ARCH", "W-SG-BRKBM")
+            walls.cross) == ("W-SG-W1", "W-SG-W2", "W-SG-E1", "W-SG-E2", "W-SG-S", "W-SG-ARCH")
+    # No veneer beam on the LP court face (2026-11-24): the tie keeps the study's placeholder.
+    from typehaus.engineering.retaining_court.inputs import CourtWallTags
+
+    assert walls.tie == CourtWallTags().tie
 
 
 def test_the_literal_basis_agrees_with_the_model_it_stands_in_for() -> None:
@@ -345,7 +350,7 @@ def test_the_literal_basis_agrees_with_the_model_it_stands_in_for() -> None:
     derived, _ = design_input_from_model(_catlin_context())
     for field in ("clear_width_ft", "retained_side_length_ft", "footing_depth_ft",
                   "stem_thickness_in", "footing_width_ft", "toe_ft",
-                  "end_toe_extension_ft"):
+                  "end_toe_extension_ft", "end_heel_extension_ft"):
         assert getattr(literal.geometry, field) == pytest.approx(
             getattr(derived.geometry, field), abs=1e-3), field
     assert literal.geometry.concrete_stem_height_ft == pytest.approx(

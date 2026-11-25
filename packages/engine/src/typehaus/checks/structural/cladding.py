@@ -1,10 +1,11 @@
 """A concealed-fastener metal wall panel over open girts, read off its maker's load table.
 
 Two checks, one scope. A wall is in scope when its outermost skin declares ``skin_family``
-(one of the building's metal skins), does NOT declare ``exposed_fastener`` (so no
-face-fastened span table reaches it — PBR and the garage corrugated stay out), and stands
-on a block-standoff girt band with a spacing (``truss_girt_bands``, the one reading
-``structural.girt_fastening`` shares).
+(one of the building's metal skins) or authors a ``published_cladding`` row (LP's ultimate
+row, ESR-1301 Table 3B; ``cladding_fastener`` is N/A for that one), does NOT declare
+``exposed_fastener`` (so no face-fastened span table reaches it — PBR and the garage
+corrugated stay out), and stands on a block-standoff girt band with a spacing
+(``truss_girt_bands``, the one reading ``structural.girt_fastening`` shares).
 
 * ``structural.cladding_wind`` — **the prescriptive read.** ASCE 7-16 C&C wall pressure
   (``typehaus.wind``), zone 5, at 0.6W, graded in BOTH directions against the
@@ -39,7 +40,7 @@ from typehaus.checks.structural.cladding_fastener import (
     pull_through_allowable_lb,
     withdrawal_allowable_lb,
 )
-from typehaus.checks.structural.published import graded_against_published_cladding
+from typehaus.checks.structural.published_cladding import graded_against_published_cladding
 from typehaus.findings import Finding, Result, not_applicable
 from typehaus.resolve.framing.truss_girts import truss_girt_bands
 
@@ -65,8 +66,14 @@ def _panels(ctx: CheckContext) -> list[_Panel]:
         body = wall.body_layers()
         if len(body) < 2:
             continue
-        material = catalog.get(body[-1].material_ref or "")
-        if material is None or getattr(material, "skin_family", None) is None:
+        # The outermost PANEL: a field-applied coating (LP's acrylic) is not the skin.
+        skin = next((layer for layer in reversed(body)
+                     if not getattr(catalog.get(layer.material_ref or ""), "coating", False)),
+                    body[-1])
+        material = catalog.get(skin.material_ref or "")
+        # A metal skin, or any panel whose Material authors a published load row.
+        if material is None or (getattr(material, "skin_family", None) is None
+                                and getattr(material, "published_cladding", None) is None):
             continue
         if getattr(material, "exposed_fastener", False):
             continue
@@ -164,9 +171,13 @@ def cladding_wind(ctx: CheckContext) -> list[Finding]:
                        f"literature puts on girts is the wrong product, not a table to read",
                 tags, Result.UNKNOWN, code=_CODE))
             continue
-        for direction, asd in (("outward", demand.outward_asd), ("inward", demand.inward_asd)):
+        row = getattr(material, "published_cladding", None)
+        ultimate = row is not None and row.basis == "ultimate"
+        for direction, asd, strength in (
+                ("outward", demand.outward_asd, demand.outward_strength),
+                ("inward", demand.inward_asd, demand.inward_strength)):
             out.append(graded_against_published_cladding(
-                _WIND, f"{subject}, zone 5", tags, asd, direction,
+                _WIND, f"{subject}, zone 5", tags, strength if ultimate else asd, direction,
                 getattr(material, "published_cladding", None),
                 material_name=material.name, fastener_spacing_in=panel.spacing_in,
                 coverage_in=getattr(material, "fastener_coverage_in", None),
@@ -191,6 +202,16 @@ def _fastener(ctx: CheckContext, key: str, members: list[_Panel]) -> Finding:
     panel, tags, subject = members[0], tuple(p.wall_tag for p in members), _subject(
         key, members)
     material = panel.material
+    row = getattr(material, "published_cladding", None)
+    if row is not None and row.basis == "ultimate":
+        # Earned: the row's pressure IS the nailed assembly's capacity at its named nail,
+        # spacing and penetration (graded as conditions in cladding_wind). There is no
+        # concealed-leg screw, metal flange or separate withdrawal read to arithmetic here.
+        return not_applicable(
+            _FASTENER, f"{subject}: the published row is a fastened-assembly pressure "
+                       f"({row.source}), so the nail is a condition of that row, graded in "
+                       f"structural.cladding_wind, and no concealed-leg screw withdrawal or "
+                       f"sheet pull-through exists to grade", tags, code=_CODE)
     demand = _demand(ctx, panel.spacing_in)
     if isinstance(demand, str):
         return structural_advisory(_FASTENER, f"{subject}: {demand}", tags, Result.UNKNOWN,

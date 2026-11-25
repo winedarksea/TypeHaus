@@ -227,8 +227,9 @@ def test_the_four_deferred_items_name_a_designer_of_record(catlin_engineering):
     assert {r.item_id for r in deferred} == {
         # `base_rotation/*`, `column_head_joint/*` and `column_support/*` left on 2026-09-20:
         # each is a registered calculation now.
-        "rafter/RF-BW-CANOPY", "rafter/RF-GARAGE",
-        "veneer_anchor/W-B-BRICK"}
+        # `veneer_anchor/W-B-BRICK` left 2026-11-24 with the brick court face (variant
+        # `court-face-brick` still defers it).
+        "rafter/RF-BW-CANOPY", "rafter/RF-GARAGE"}
     for record in deferred:
         assert record.kind in DEFERRALS, record.item_id
         assert "no calculation is registered for this kind" not in record.summary
@@ -419,7 +420,7 @@ def test_print_sealed_exits_one_while_nothing_is_sealed(catlin_engineering):
     runner = CliRunner()
     sealed = runner.invoke(app, ["print", str(CATLIN), "--sealed", "--fmt", "dxf"])
     assert sealed.exit_code == 1, sealed.output
-    # Shut since 2026-11-20 on the garage STHD jog alone, so the draft gate refuses first;
+    # Shut since 2026-11-24 on the LP panel's off-label wind read, so the draft gate refuses first;
     # once it opens, the absent seals must be what refuses.
     assert ("sealed print blocked" if checklist.ok else "permit print blocked") in sealed.output
     assert not checklist.sealed, "no engineering.toml exists, so nothing is sealed"
@@ -432,8 +433,8 @@ def test_draft_gate_opens_but_sealed_gate_still_requires_the_register(catlin_eng
     blocked = [item.label for item in checklist.items
                if item.blocking and item.result not in (Result.PASS,
                                                         Result.NOT_APPLICABLE)]
-    # The one open line: the garage STHD14s' jog over the ICF pour (2026-11-20 review).
-    assert blocked in ([], ["Cast-in strap hold-downs (ESR-2920)"]), blocked
+    # The one open line (2026-11-24): the court's LP panel read off-label against ESR-1301.
+    assert blocked in ([], ["Exterior wall covering — wind pressure"]), blocked
     assert checklist.ok == (blocked == [])
     assert not checklist.sealed
     assert len(checklist.unsealed) > 1

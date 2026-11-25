@@ -27,7 +27,7 @@ _CATLIN = Path(__file__).resolve().parents[3] / "houses" / "catlin"
 #: hosts in these rows are laid out bar for bar in notes/rebar_layout_basis.md and pinned by
 #: test_rebar_layout_oracle.py; this pins the house-wide sum they sit inside.
 #:
-#: Eight rows: §4's gaps are authored (basement horizontals, the garage ICF stems,
+#: Seven rows (eight under court-face-brick): §4's gaps are authored (basement horizontals, the garage ICF stems,
 #: W-SG-BRKBM's cage, dowels). The three BLACK ``slab`` rows were SL-M-DECK's BuildDeck
 #: schedule and left with the deck (#112, 2026-11-01) — every billed bar is A767 now. The
 #: note's §1 table still lists them and needs re-working.
@@ -38,11 +38,18 @@ _SCHEDULE = {
     ("footing", "#4", "hdg-a767"): (51, 261.5),  # +3: the Ufer bar (#123)
     # +36 / +265.3 lb on 2026-11-23 (G3): 2 footings x (6 edge #5 x 11.0' + 12 splices x
     # (27.6 + 6 + 27.6)") = 254.4 ft x 1.043.
-    ("footing", "#5", "hdg-a767"): (215, 1731.2),
-    ("foundation wall", "#3", "hdg-a767"): (12, 16.2),
-    ("foundation wall", "#4", "hdg-a767"): (294, 1644.8),  # STHD bars; garage's 5 -> 2 SSTB
-    ("foundation wall", "#5", "hdg-a767"): (110, 1045.8),
-    ("foundation wall", "#6", "hdg-a767"): (10, 129.5),
+    # +11 / +139.9 lb on 2026-11-24 (free body §15n): FT-SG-S's heel +6", top-x #5 @ 9".
+    ("footing", "#5", "hdg-a767"): (226, 1871.1),
+    # W-SG-BRKBM's 12 #3 ties (16.2 lb) left with the brick court face on 2026-11-24, and with
+    # them the "foundation wall" #3 row; they return under court-face-brick.
+    # STHD bars; garage's 5 -> 2 SSTB. +64 / +330.1 lb on 2026-11-24: W-SG-W1/E1's #4 @ 16"
+    # each face, 16 lines + 16 splice bars across N-SG-MW/-ME per wall (note addendum).
+    # -2 / -24.7 lb on 2026-11-24: W-SG-BRKBM's two #4 hangers (brick-only).
+    ("foundation wall", "#4", "hdg-a767"): (356, 1950.2),
+    # +26 / +276.7 lb the same day: W1/E1's 13 #5 @ 10" verticals each, hooked.
+    # -6 / -37.5 lb on 2026-11-24: W-SG-BRKBM's two bottom #5 and four toe dowels (brick-only).
+    ("foundation wall", "#5", "hdg-a767"): (130, 1285.0),
+    # The #6 row left the same day: W1/E1's 5 #6 @ 38" each (-129.5 lb).
 }
 # +3,215.6 lb on 2026-09-17 over the area/spacing era's 3,514.7 (newly authored steel, laps and
 # hooks out of [waste], the fencepost), then −122.3 the same day after the detailing review:
@@ -102,8 +109,12 @@ _SCHEDULE = {
 # (ESR-2920 §4.2, notes/sthd_esr2920.md), 807.6" in all.
 # -9.9 lb, -3 pieces on 2026-11-20b (note addendum): the garage's five STHD bars out, the two
 # SSTB16 bars (C-C-2026 p. 43) in.
-_TOTAL_LB = 5539.7
-_TOTAL_PIECES = 879
+# +617.2 lb, +91 pieces on 2026-11-24 (note addendum): W1/E1 take W2's stem steel (+477.3)
+# and FT-SG-S's heel grows 6" (+139.9).
+# -78.4 lb, -20 pieces the same day: the court face is LP panel and W-SG-BRKBM is variant
+# court-face-brick only (which still bills 6,156.9 lb / 970). Note §1 not yet re-worked.
+_TOTAL_LB = 6078.5
+_TOTAL_PIECES = 950
 
 @pytest.fixture(scope="module")
 def rows(catlin_model):
@@ -250,4 +261,5 @@ def test_the_concrete_the_steel_sits_in_is_the_note_s_volume(catlin_model) -> No
     # 44.97 the same day: the garage's STHD bars out, two SSTB bars in (-9.9 lb).
     # 47.58 on 2026-11-23: FT-SG-W2/E2's G3 edge ties, +265.3 lb.
     # 47.87 with L2's deeper column dowels (+33.4 lb).
-    assert total_lb / total_cy == pytest.approx(47.87, rel=0.02)
+    # 52.99 on 2026-11-24: W1/E1's stem steel and FT-SG-S's heel, +617.2 lb over 116.20 cy.
+    assert total_lb / total_cy == pytest.approx(52.99, rel=0.02)

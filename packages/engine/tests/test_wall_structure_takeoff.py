@@ -135,7 +135,10 @@ def test_monolithic_walls_reach_the_bom(catlin_model) -> None:
     #
     # **40 SINCE 2026-11-20**: the three stair-well walls left. Their sticks are the stairs'
     # `partition` members in [framing] (`stair_framed_walls`); W-B-WELL-HEAD frames itself.
-    assert len({tag for row in rows for tag in row["tags"]}) == 40
+    #
+    # **38 SINCE 2026-11-24**: the court face is LP panel on framing; W-B-BRICK and its grade
+    # beam W-SG-BRKBM live only in variant `court-face-brick` (40 there).
+    assert len({tag for row in rows for tag in row["tags"]}) == 38
     # **`metal-flat-sheet` LEFT THIS TABLE ON 2026-09-03, and it did not leave the house.**
     # The garage's base skin is now the 24" `coil-ext` band on the ICF stem, which is a
     # banded LAYER inside GARAGE_ICF_6 and bills through `[envelope_layers]` — 156.2 SF,
@@ -168,6 +171,7 @@ def test_monolithic_walls_reach_the_bom(catlin_model) -> None:
     # assembly's STRUCTURE layer prices on the assembly tag, not through `[envelope_layers]`.
     # The same panel on the wall ABOVE the skirt is a CLADDING layer and still bills there, so
     # one material is legitimately split across the two tables. Do not "tidy" that into one.
+    # Since 2026-11-24 `brown-brick` is the fireplace surround's alone (the court is LP).
     assert {row["material"] for row in rows} == {
         "concrete", "retaining-block", "brown-brick", "corrugated-panel-24"}
     # Bigger than the entire priced concrete order (footings + slab) the estimate used to
@@ -179,6 +183,7 @@ def test_monolithic_walls_reach_the_bom(catlin_model) -> None:
     # walkout out, ~0.2 cy of curb back. Still bigger than the entire priced concrete order
     # the estimate used to know about, which is what this floor is for.
     # 81.9 -> 75.3 cy on 2026-11-01: the three FOUNDATION_WALL_12_INT pours (6.57 cy) framed.
+    # 72.5 -> 70.5 cy on 2026-11-24: W-SG-BRKBM's pour left with the brick court face.
     assert sum(float(row["volume_cubic_yards"]) for row in rows) > 70
     assert all(float(row["net_area_sqft"]) > 0 for row in rows)
 
@@ -212,7 +217,7 @@ def test_every_wall_bills_its_structure_exactly_once(catlin_model) -> None:
         catlin_model.stairs[index] = stair
 
 
-def test_the_sunken_garden_brick_wythe_is_billed(catlin_model) -> None:
+def test_the_sunken_garden_brick_wythe_is_billed(catlin_brick_model_ro) -> None:
     """W-B-BRICK — the brick veneer over the exposed basement wall at the sunken garden,
     added in 76c1871 — is the wall whose absence from the BOM surfaced this hole.
 
@@ -225,7 +230,7 @@ def test_the_sunken_garden_brick_wythe_is_billed(catlin_model) -> None:
     face: a single-region wythe that under-billed would look exactly like this test's PASS if
     the area bound were dropped with the colours.
     """
-    rows = [row for row in wall_structure_takeoff(catlin_model)
+    rows = [row for row in wall_structure_takeoff(catlin_brick_model_ro)
             if "W-B-BRICK" in row["tags"]]
     assert len(rows) == 1, "one flat unglazed field, one row"
     (row,) = rows
@@ -258,10 +263,10 @@ def test_the_sunken_garden_brick_wythe_is_billed(catlin_model) -> None:
     assert 88 < float(row["net_area_sqft"]) < 89
 
 
-def test_the_garden_walls_are_distinguishable_from_house_concrete(catlin_model) -> None:
+def test_the_garden_walls_are_distinguishable_from_house_concrete(catlin_brick_model_ro) -> None:
     """Grouped by assembly, so garden work never merges into the foundation pour — they
     are both `concrete` and they are not the same order or the same price."""
-    by_assembly = {row["assembly"]: row for row in wall_structure_takeoff(catlin_model)}
+    by_assembly = {row["assembly"]: row for row in wall_structure_takeoff(catlin_brick_model_ro)}
     for assembly in ("SUNKEN_GARDEN_WALL", "RETAINING_BLOCK_12",
                      "BASEMENT_BRICK_VENEER", "BASEMENT_10",
                      "BASEMENT_8"):

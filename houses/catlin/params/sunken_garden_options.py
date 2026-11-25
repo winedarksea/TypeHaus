@@ -17,6 +17,13 @@ class SunkenGardenOption:
     stem_thickness_in: float
     footing_width_in: float
     footing_toe_in: float
+    # Heel growth outboard, toe and the others' outboard reach unchanged (court sliding study,
+    # notes/court_sliding_levers_study.md). Drawn: FT-SG-S +6" with a #5 @ 9" heel top bar
+    # (free body §15n); a grown heel's top-x takes heel_top_bar @ heel_top_spacing_in.
+    south_heel_extension_in: float = 6.0
+    side_heel_extension_in: float = 0.0
+    heel_top_bar: int = 5
+    heel_top_spacing_in: float = 9.0
 
     @property
     def is_reference(self) -> bool:
@@ -30,6 +37,12 @@ class SunkenGardenOption:
     def needs_court_guard(self) -> bool:
         return self.planting_layout == "against-wall"
 
+    @property
+    def has_brick_face(self) -> bool:
+        """The court's house face is a masonry wythe on W-SG-BRKBM (params/court_face.py);
+        else LP panel on the framed walkout (notes/court_face_lp_panel.md)."""
+        return self.cladding in ("brick", "fiber-cement")
+
 
 def _option() -> SunkenGardenOption:
     option = SunkenGardenOption(
@@ -37,16 +50,20 @@ def _option() -> SunkenGardenOption:
         raised_soil_height_in=parameter("sunken_garden.raised_soil_height_in", 40.0),
         planting_width_in=parameter("sunken_garden.planting_width_in", 36.0),
         planter_setback_in=parameter("sunken_garden.planter_setback_in", 36.0),
-        cladding=parameter("sunken_garden.cladding", "brick"),
+        cladding=parameter("sunken_garden.cladding", "lp-panel"),
         stem_thickness_in=parameter("sunken_garden.stem_thickness_in", 12.0),
         footing_width_in=parameter("sunken_garden.footing_width_in", 84.0),
         footing_toe_in=parameter("sunken_garden.footing_toe_in", 36.0),
+        south_heel_extension_in=parameter("sunken_garden.south_heel_extension_in", 6.0),
+        side_heel_extension_in=parameter("sunken_garden.side_heel_extension_in", 0.0),
+        heel_top_bar=parameter("sunken_garden.heel_top_bar", 5),
+        heel_top_spacing_in=parameter("sunken_garden.heel_top_spacing_in", 9.0),
     )
     if option.planting_layout not in {"reference", "yard-grade", "against-wall", "setback"}:
         raise ValueError("sunken_garden.planting_layout must be reference, yard-grade, "
                          "against-wall, or setback")
-    if option.cladding not in {"brick", "fiber-cement"}:
-        raise ValueError("sunken_garden.cladding must be brick or fiber-cement")
+    if option.cladding not in {"brick", "fiber-cement", "lp-panel"}:
+        raise ValueError("sunken_garden.cladding must be brick, fiber-cement or lp-panel")
     if option.has_raised_bed and option.raised_soil_height_in != 30.0:
         raise ValueError("proposed raised-bed variants require 30 inches of soil")
     if option.has_raised_bed and option.planting_width_in not in {24.0, 36.0}:
@@ -57,6 +74,8 @@ def _option() -> SunkenGardenOption:
         raise ValueError("sunken-garden stems must be 10 or 12 inches in the sizing study")
     if not 48.0 <= option.footing_width_in <= 84.0 or option.footing_width_in % 6:
         raise ValueError("sunken-garden footing width must be 48..84 inches in 6-inch steps")
+    if min(option.south_heel_extension_in, option.side_heel_extension_in) < 0.0:
+        raise ValueError("sunken-garden heel extensions grow the heel; they cannot cut it")
     heel = option.footing_width_in - option.stem_thickness_in - option.footing_toe_in
     if option.footing_toe_in < 12.0 or heel < 12.0:
         raise ValueError("sunken-garden footing toe and heel must each be at least 12 inches")

@@ -2704,7 +2704,17 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   face (`RailingType.fascia_post_offset`, ESR-3485 Fig. 10). `TR-SG-GUTTER` hangs 1" under
   the bracket bottoms (derived from them, 2026-10-31) and `TR-SG-APRON` laps from behind the
   drip's face into the trough; `test_catlin_balcony_guard_gutter.py` holds the clearance.
-- Veneer `W-B-BRICK` (both faces exposed; top at -13 1/3" since 2026-09-22 so
+- **The court's house face is LP SmartSide 38 Series smooth panel since 2026-11-24**, on
+  `W-B-S2-FR`/`W-B-S3-FR` (`EXT_2X6_LP_PANEL`, `SAUNA_LINER_ON_EXT_2X6_LP`: the house's girt
+  stack, field-painted Benjamin Moore Potters Clay; `notes/court_face_lp_panel.md`). The girts
+  stay at 24", off LP's 16" table, by the owner's call (sheltered, small, cheap to replace), so
+  `structural.cladding_wind` is an UNKNOWN carrying the scaled estimate, not a PASS. **Brick is one
+  switch away**: variant `court-face-brick` (`sunken_garden.cladding = "brick"` plus the two
+  assembly swaps back to `GARDEN_FRAMED_2X6`/`SAUNA_LINER_ON_GARDEN_FRAMED`). `params/court_face.py`
+  builds the wythe set and `OPTION.has_brick_face` gates the beam side in place. The brick
+  bullets below describe that variant. Its fingerprints are pinned to main's pre-switch house
+  except the 7 court records the structure lane re-derived (`test_court_face_variants.py`).
+- Veneer `W-B-BRICK` (variant `court-face-brick`; both faces exposed; top at -13 1/3" since 2026-09-22 so
   `FS-SG-PORCH`'s 2x12s pass over it with 2 1/12" of air — nothing grades that gap) stands on
   `W-SG-BRKBM`, a 12" x 17-3/4" grade beam **bedded on stone** (`FB-SG-BRKBM`, drained NFS
   on the wall-bed plane): a soil-supported veneer footing, not a span (owner, 2026-11-04;
@@ -2732,7 +2742,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   re-centring these footings must keep that face (`_HOUSE_STRIP_FACE_IN` transcribes it).
 - Brick's y is fixed at -6.0"..-9.625" by the beam; `N-B-BRICK-W`/`-E` sit at -4.06" with
   a 1.94" `air-gap`. x: **9'-6 1/2" / 26'-5 1/2"**, 1/2" off W-SG-W1/E1's clear faces — the
-  two soft joints, both 1/2" Class 50 neutral-cure silicone over 5/8" rod (`plan/masonry_joints.py`,
+  two soft joints, both 1/2" Class 50 neutral-cure silicone over 5/8" rod (`params/court_face.py`,
   d/c 0.365, 0.731 if one takes the whole run; a Class 25 sealant FAILs that case). The 4"
   Emseal is gone. The reveals are `from_node("N-B-BRICK-W", ...)`, so moving that node means
   moving both offsets with it; `integrity.reveal_concentric` is the guard.
@@ -2744,7 +2754,9 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   recesses (`AO-B-SUNKEN-TREAD-BED` in the curb's tail, `AO-SG-BRKBM-TREAD-BED` in the beam's
   board) make room; Trex fascia box sides close the cavity at the reveal. The tread's back
   sits at the sill nose (6.6" above the court), ~1/2" under the beam top: its slot's outlet
-  is an open UNKNOWN. `integrity.doorway_assembly` tests the sections against every nearby
+  is an open UNKNOWN. (LP court face, the default: no beam; the nose drips onto SL-SG-FLOOR
+  0.77" in from its edge, `drain_slab_ref`, graded in `resolve/exterior_door_foam_bed.py`; brick keeps
+  the joint drain.) `integrity.doorway_assembly` tests the sections against every nearby
   solid, so a tread that grows into the beam is a FAIL.
 - Do not anchor the wythe to `W-SG-W1`/`W-SG-E1` to cut anchor count:
   unreinforced brick can't span 18'-8" horizontally, and both ends want a soft
@@ -2863,8 +2875,8 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 - Ponding over the court is ~267 cf (7 1/4" over 442 sf) against ~158 cf of 100-yr/24-hr
   rain (~1.7x); the volumes scale with the court's area, **the 1.7x ratio does not**. Cite the
   ratio, not the volumes, unless the volumes are what is being asked for. The governing case
-  is **snowmelt over a frozen field**, and `drainage.soakaway_storage` grades it: 165 cf of
-  course voids (413 sf) + 99 cf of 48 h infiltration (presumed HSG D) = 264 cf against 222 cf of melt
+  is **snowmelt over a frozen field**, and `drainage.soakaway_storage` grades it: 170 cf of
+  course voids (425 sf) + 102 cf of 48 h infiltration (presumed HSG D) = 272 cf against 222 cf of melt
   off 278 sf (`notes/court_soakaway_storage.md`). Go to an 18" course only if the credit fails.
 - **`W-SG-ARCH` is a 12" x 12" plain strut in the FOOTING plane (2026-10-10, owner;
   free body §8b).** Its top is the court top and footing top (-109 7/16"), and its depth IS the
@@ -2880,16 +2892,24 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   §14.1.3(a) (continuously soil-supported), a crack closes under the loop's compression,
   and the winter E-W tension rides W-SG-S's horizontals (0.304) with nothing from the strut.
   It needs bar only if it becomes a tie, loses its bed, or is asked to bend.
-- **Backfill is a stage of the structure (`AN-SG-BACKFILL`, free body §13).** W2, S and E2 go
-  up together, no one more than half its height (5'-0") above another: worst FS **1.64**,
-  crediting W1/E1's concrete. W1/E1 stand empty until the porch braces them (IRC R404.1.7).
-  One side empty with two full is 1.37, and the three-wall loop alone at the half rule is
-  1.31. That is why W1/E1 are credited and why their empty state is part of the rule.
-  `test_staged_backfill_holds_at_half_a_wall_of_difference` holds the numbers.
+- **Backfill is a stage of the structure (`AN-SG-BACKFILL`, free body §13, §15e).** W2, S and
+  E2 go up together in 8" lifts in turn, no one more than four lifts (2'-8") above another; the
+  engine grades 3'-0" (`retaining_system_staged.RULE_FT`, 2026-11-24): worst FS **1.787**,
+  crediting W1/E1's concrete (H/2 read 1.584; one lift past the rule 1.683). W1/E1 stand empty
+  until the porch braces them (IRC R404.1.7). One side empty with two full is 1.32, the loop
+  alone at the rule 1.53. `test_retaining_court` holds the numbers.
+- **FT-SG-S's heel is 6" longer, with a `#5 @ 9"` top-x (2026-11-24, free body §15n,
+  `sunken_garden.south_heel_extension_in`):** it is what keeps the backfill rule comfortable when
+  the crew slips, and lifts every sliding row (dry 2.026, perched 1.644 governs, flooded 1.791).
+  At `#5 @ 12"` the 130 pcf heel goes OVER (1.10). The heel runs under the apron pad's inner
+  half, which halves the pad's surcharge on W-SG-S (27.52 plf).
 - **`W-SG-W1`+`W2` are ONE pour, and so are `E1`+`E2`** — one 12" section, one form height,
   placement 2. They are two elements because the restraint condition changes at `N-SG-MW` /
-  `N-SG-ME`: braced top-and-bottom north, R404.4 base-restrained south. So does the steel —
-  **#6 @ 38" north of y = -11'-0" and #5 @ 10" (retained face) south of it, in one form.**
+  `N-SG-ME`: braced top-and-bottom north, R404.4 base-restrained south. **The steel does not
+  change (2026-11-24, free body §15n):** W1/E1 take `_RET_STEM_STEEL`, #5 @ 10" hooked into the
+  footing mat and #4 @ 16" each face. The old `#6 @ 38"` started 3" above the base, so nothing
+  crossed the joint `column_support`'s cantilever row credited (now 0.218); the stem
+  horizontals also took the winter side-run row 0.998 → 0.272.
 - **One footing type in the court, `COURT_FOOTING_12`** (was `RETAINING_FOOTING_96` +
   `PORCH_FOOTING_84`). Identical stacks — 12" of EXPOSED_MIX — split on a width an Assembly
   does not carry, and the porch card declared **13"** where every strip is built at 12". The
@@ -3010,10 +3030,10 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   **It is `#5`, not `#6 @ 10"` (2026-09-17)**:
   the vertical runs continuous on a 90° foot on the footing mat, 7.875" is available, and
   ACI 318-19 §25.4.3.1(a) ldh is 9.35" for a #6, 7.11" for a #5 (free body §6b).
-- **FT-SG-S is 8'-4" with a 4'-4" toe and a `#5 @ 9"` bottom-x mat (2026-09-22,
-  `SPEC.south_toe_extension_in`, free body §12a)**: it squares the planted field to 11'-0"
-  (121 sf) and paves the strip W-SG-S shades; outboard edge and heel unmoved; at `#5 @ 12"`
-  the toe read 0.98. Its closure board needs none of this: `TB-SG-*` sit on W1/E1 only.
+- **FT-SG-S is 8'-10": a 4'-4" toe with a `#5 @ 9"` bottom-x mat (2026-09-22,
+  `SPEC.south_toe_extension_in`, free body §12a) and a 3'-6" heel with a `#5 @ 9"` top-x
+  (2026-11-24, §15n)**: the toe squares the planted field to 11'-0" (121 sf) and paves the
+  strip W-SG-S shades; at `#5 @ 12"` the toe read 0.98. Its closure board needs none of this: `TB-SG-*` sit on W1/E1 only.
 - **FT-SG-S owns the two south corners (2026-10-10, free body §12b).** It runs out to out of
   the side strips, 25'-0", and `FT-SG-W2`/`E2` stop on its toe line (`_EXTENSIONS`, derived
   from the strips' reach). Before that, each corner square had no footing, and the toe overlap
@@ -3114,10 +3134,12 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   the boards: the butt joint lands on the court floor plane (lap the upper board); no board
   has a positive tie any more (adhere/pin and brace every one); and the beam's board depends
   on the FT-B-S2/S3 toe trim, which is a HOLD POINT before the house footing pour.
-- **The brick stays, and it is load-bearing for five other things.** If `W-B-BRICK` ever
-  goes it takes `W-SG-BRKBM`, that beam's isolation board, an engineered masonry-anchor
-  item no prescriptive table reaches, the weeps, two soft joints and a slab void with it.
-  Retiring it is a design pass, not a deletion.
+- **The brick is a switch, and five other things ride on it** (variant `court-face-brick`). With
+  `W-B-BRICK` come `W-SG-BRKBM`, that beam's isolation board, an engineered masonry-anchor item
+  no prescriptive table reaches, the weeps, two soft joints and a slab void; on the LP default
+  none of them exists. Keep both sides live: anything edited on one side of
+  `OPTION.has_brick_face` gets a look on the other, and `tasks.toml` cannot branch, so the
+  note's switch-back recipe lists its lines.
   - Stem blocks and footing blocks are sized by different rules and must stay that way: a
     stem block derives as `max(row_span + 8*dia, 12")` off the bar row (right for a 12" wall
     end); a footing block is `Dowel.foam_length` (default derives the old way) because it
@@ -3142,7 +3164,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     argument that carries the ENTIRE sliding margin (`notes/sunken_garden_court_free_body.md`
     §5 — at μ = 0.25 the court is at FS 1.16 against 1.50). Do not take it on a takeoff
     reading.
-- **`W-B-BRICK` is one flat field of unglazed `brown-brick` (`#a07c5c`)**, ASTM C216 Grade SW,
+- **`W-B-BRICK` (variant `court-face-brick`) is one flat field of unglazed `brown-brick` (`#a07c5c`)**, ASTM C216 Grade SW,
   full height (plinth to top), **112.5 SF** (18'-8" x 94 7/16" = 146.9 SF gross, less
   `AO-B-BRICK-WIN` 1.94 and `AO-B-BRICK-DOOR` 32.5), one BOM row
   `BASEMENT_BRICK_VENEER:brown-brick`. The 129.2 SF this line and `prices.toml` used to claim was
@@ -3582,8 +3604,9 @@ haus analysis . --solve                     # the engineered frame, solved in Py
   behind at 0.68 on barely half the axial. And the dowels' ANCHORAGE into the pad is graded
   beside the lap that already was: the lap alone was half the joint, and the half it left
   out is the one the fixed base depends on.
-- **Three items are deferred to a designer of record** (2026-09-20): the TWO trussed roofs'
-  component designs (`rafter/*`) and the brick veneer's anchors (`veneer_anchor/W-B-BRICK`).
+- **Two items are deferred to a designer of record** (2026-09-20): the TWO trussed roofs'
+  component designs (`rafter/*`); variant `court-face-brick` adds a third, the brick veneer's
+  anchors (`veneer_anchor/W-B-BRICK`).
   The wall tops, veneer beam, thermal breaks and SRW apron are computed now; the uplift
   chain below a truss heel is graded on `Roof.published_reactions` once the fabricator's
   sealed schedule is quoted in (`structural.truss_reactions`). `out/calcs/03-open-items.md`

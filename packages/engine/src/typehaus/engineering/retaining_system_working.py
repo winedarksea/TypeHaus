@@ -161,24 +161,30 @@ def _twelfths(f: float) -> str:
 
 
 def staged_steps(body, worst: float, empty: float, loop_only: float, rule: float,
-                 stage) -> tuple[Step, ...]:  # type: ignore[no-untyped-def]
+                 stage, rule_ft: float | None = None) -> tuple[Step, ...]:  # type: ignore[no-untyped-def]
     """The rule's grid, then the governing stage worked term by term from ``stage`` (the
-    :class:`retaining_system_staged.Stage` the search returned)."""
+    :class:`retaining_system_staged.Stage` the search returned). ``rule_ft``: the rule in
+    feet on a 2" grid (``retaining_system_staged.RULE_FT``), else ``rule`` of H in twelfths."""
     heights = [(p.tag, p.top_ft - body.plane_ft) for p in body.pushes]
     pcf = body.soil_pcf
     steps = [
         Step("H_i", "full height of each retained side", heights[0][1], "ft",
              numbers="; ".join(f"{t} {num(h)}" for t, h in heights),
              source="top of the retained soil to the footing plane"),
-        Step("search", "fill stages searched: each side at a fill fraction f_i in twelfths "
-             f"of its H_i, no side more than {rule:.0%} of H above another", worst, "",
+        Step("search", ("fill stages searched: each side stepped 2 in down from its full "
+                        f"H_i, no side more than {num(rule_ft)} ft above another")
+             if rule_ft is not None else ("fill stages searched: each side at a fill "
+                                          "fraction f_i in twelfths of its H_i, no side more "
+                                          f"than {rule:.0%} of H above another"), worst, "",
              "min over the grid of FS_stage = mu N'_stage / H_stage",
              "earth only, spliced walls empty, apron not yet placed; the governing stage "
              "follows", "IRC R404.4; the backfill rule on the drawing")]
     for (tag, (dx, dy), fill_ft, thrust), f, p in zip(stage.thrusts, stage.fills,
                                                        body.pushes, strict=True):
         steps.append(Step(
-            f"T_{tag}", f"{tag} backfilled to {_twelfths(f)} of its height: its earth thrust, "
+            f"T_{tag}", f"{tag} backfilled to "
+            + (f"{num(fill_ft)} ft" if rule_ft is not None else f"{_twelfths(f)} of its height")
+            + ": its earth thrust, "
             f"pushing along ({num(dx, 3)}, {num(dy, 3)})", thrust, "lb",
             "K (f H)^2 w / 2", f"{num(p.efp)} x {num(fill_ft)}^2 x {num(p.width_ft)} / 2",
             "at-rest; w is the body's projected width the push acts over"))

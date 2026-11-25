@@ -109,6 +109,10 @@ _GARDEN_CURB_CORE = (
     Layer(name="xps-b", material_ref="xps", thickness=inch(2.0),
           function=LayerFunction.INSULATION, control={ControlLayer.THERMAL}),
     # No EPS since 2026-11-04: see `_GARDEN_FRAMED_OUTBOARD`.
+    # The curb's foam faces the court under the LP panel (and the brick's cavity behind brick):
+    # the house's tinted acrylic skin, BASEMENT_8's, full height (notes/court_face_lp_panel.md).
+    Layer(name="foundation-coating", material_ref="foundation-coating-acrylic-tinted",
+          thickness=inch(0.125), function=LayerFunction.CLADDING),
 )
 
 GARDEN_CURB_6 = Assembly(

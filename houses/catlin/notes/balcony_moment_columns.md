@@ -1875,6 +1875,23 @@ read; it would be needed only if a design reversed the thrust.
 
 ---
 
+## 31. The stem's bars cross the footing joint (2026-11-24)
+
+§27 and §29 graded the stem cantilever on `#6 @ 38"`. As laid, those bars started 3" above the
+stem's base, so none of them crossed the cold joint into FT-SG-W1/E1. W1/E1 now carry W2's stem
+steel: #5 @ 10" on the retained face, run from the footing mat on a 90° foot, and #4 @ 16" on
+each face (court free body §15n). `column_support` credits only a vertical that crosses the
+joint.
+
+```
+phi M_n = 0.9 x 0.372 x 60,000 x (8.6875 - 0.4376 / 2) / 12 = 14,177 lb-ft/ft
+M_u     = wind 1,495 + propped soil 1,590 = 3,085 lb-ft/ft     d/c 0.218  (was 0.58)
+```
+
+The record now governs on dowel tension, 0.551 / 0.548. Unpropped, if the porch prop were
+retired, the soil would be 1.6 x 60 x 6.287³ / 6 = 3,976, and the stem would read 0.39 with
+the wind.
+
 ## Sources
 
 Every standard and document this note rests on, collected from the citations above.

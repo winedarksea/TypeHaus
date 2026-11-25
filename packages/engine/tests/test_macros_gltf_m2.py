@@ -433,7 +433,7 @@ def test_roof_sticks_export_to_framing_and_skin_stays_with_the_shell(catlin_mode
         assert shell and shell[0][0] == "roofing", (roof.tag, by_uid[roof.uid])
 
 
-def test_arched_wall_layer_exports_its_authored_thickness(catlin_model):
+def test_arched_wall_layer_exports_its_authored_thickness(catlin_brick_model_ro):
     """End-to-end: an arched wall's layer reaches the .glb at its authored thickness, not the
     half-thickness the raw-ring edge pick produced.
 
@@ -455,6 +455,7 @@ def test_arched_wall_layer_exports_its_authored_thickness(catlin_model):
     test_emitter_band_parity.py. What is asserted HERE is the arch, which did not change."""
     from typehaus.emit.gltf import emit_gltf_dict
 
+    catlin_model = catlin_brick_model_ro  # brick is variant court-face-brick since 2026-11-24
     wall = next(w for w in catlin_model.walls if w.tag == "W-B-BRICK")
     brick = next(layer for layer in wall.layers if layer.name == "brick")
     assert [o.tag for o in catlin_model.openings if o.host_wall == wall.tag] == [

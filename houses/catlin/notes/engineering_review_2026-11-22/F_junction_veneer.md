@@ -1,5 +1,7 @@
 # F — House-to-court junction: thermal breaks, the D-B-SUNKEN band header, the brick veneer
 
+> **DORMANT alternate (2026-11-24)** — live on variant `court-face-brick`; still the oracle for the veneer_beam / veneer_anchor / veneer_cavity tests. The court face is LP SmartSide panel: `court_face_lp_panel.md`.
+
 Reviewer F, 2026-11-22. Report only. No `haus` or pytest run. I checked the numbers by hand in
 `out/review/scratch/F/hand.py` (plain Python, no model load), using the inputs the calc
 package prints and the authored plan.

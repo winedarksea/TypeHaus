@@ -30,7 +30,8 @@ def test_body_and_sway_clear_the_walls_the_door_and_the_court(catlin_model_ro):
     bed = _bed(catlin_model_ro)
     body, [sway] = Polygon(bed.footprint), bed.recommended_clearances
     sway = Polygon(sway)
-    for tag in ("W-SG-W1", "W-B-BRICK"):
+    # The court's house face: LP panel on the framed walkout since 2026-11-24 (was W-B-BRICK).
+    for tag in ("W-SG-W1", "W-B-S2-FR", "W-B-S3-FR"):
         assert all(face.distance(sway) > 0 for face in _wall_faces(catlin_model_ro, tag)), tag
     door = next(o for o in catlin_model_ro.openings if o.tag == "D-B-SUNKEN")
     assert Polygon(door.swing_clearance).distance(sway) >= inch(12).meters

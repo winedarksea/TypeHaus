@@ -89,7 +89,7 @@ from typehaus.resolve.framing.furring import (  # noqa: F401 - re-exported by tr
     course_elevations,
     opening_margin,
 )
-from typehaus.resolve.framing.girt_sill_course import end_seat_sill_course
+from typehaus.resolve.framing.girt_sill_course import end_seat_sill_course, sill_on_base
 from typehaus.resolve.framing.girt_support_spacing import (
     complete_support_stations,
     land_free_ends,
@@ -655,6 +655,8 @@ class GirtFrame(BandFrame):
         # RO, the head course over it, and — for the posts — every field course between.
         sill_z = z_sill - self.stock_face - door_sill_drop(opening, self.buck_thickness)
         head_z = z_head
+        on_base = sill_on_base(opening)  # no sill course; posts from the band's foot
+        foot = self.wall.base_ref_z_m if on_base else sill_z
         out: list[FramedMember] = []
         for tier in self.tiers:
             band = self.band_names[tier]
@@ -667,18 +669,21 @@ class GirtFrame(BandFrame):
                 out.append(FramedMember(
                     self.wall.uid, f"{JAMB_PREFIX}{band}-{index:03d}-{side}",
                     STRAPPING_CATEGORY, GIRT_MEMBER, point, point,
-                    sill_z, head_z + self.stock_face,
-                    head_z + self.stock_face - sill_z,
+                    foot, head_z + self.stock_face,
+                    head_z + self.stock_face - foot,
                     orient=self.across, material=self.band_materials[tier]))
                 crossed = {round(z, _KEY_TOL) for z in elevations
-                           if sill_z - _TOL <= z
+                           if foot - _TOL <= z
                            and z + self.stock_face <= head_z + self.stock_face + _TOL}
-                crossed |= {round(sill_z, _KEY_TOL), round(head_z, _KEY_TOL)}
+                crossed |= {round(head_z, _KEY_TOL)} | (
+                    set() if on_base else {round(sill_z, _KEY_TOL)})
                 for count, z in enumerate(sorted(crossed)):
                     out.append(self._block(
                         tier, station, z,
                         f"block-{tier}-jamb-{index:03d}-{side}-{count:02d}"))
             for name, z0 in (("head", head_z), ("sill", sill_z)):
+                if name == "sill" and on_base:
+                    continue
                 if name == "sill" and opening.kind == "door" and self.sill_course is not None:
                     out.extend(end_seat_sill_course(self, tier, index, band, jambs, z_sill,
                                                     z0 + self.stock_face))

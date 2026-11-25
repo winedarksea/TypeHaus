@@ -13,6 +13,7 @@ from dataclasses import dataclass
 from typehaus.hardware.catalog import hardware_by_model
 from typehaus.model.floors import FloorSystem
 from typehaus.resolve.model import ResolvedModel
+from typehaus.takeoff.trim_fasteners import trim_fastened_materials
 
 
 @dataclass(frozen=True)
@@ -79,6 +80,7 @@ def fastening_specs(model: ResolvedModel) -> list[FasteningSpec]:
                 if system.subfloor.nailing is not None:
                     add(_nailing(system.subfloor.nailing, ""),
                         f"{system.subfloor.material_ref} subfloor")
+    trimmed = trim_fastened_materials(model)
     for material in library.materials:
         if material.panel_fastener_part and material.tag in used_materials:
             pitch = (f'{material.panel_fastener_pitch_in:g}" along the fastened edge'
@@ -86,7 +88,7 @@ def fastening_specs(model: ResolvedModel) -> list[FasteningSpec]:
             add(FasteningSpec("", material.panel_fastener_part,
                               _finish(material.panel_fastener_part), pitch),
                 f"{material.tag} panel")
-        if material.trim_fastening is not None:
+        if material.trim_fastening is not None and material.tag in trimmed:
             trim = material.trim_fastening
             add(FasteningSpec("", trim.part, _finish(trim.part),
                               f'{trim.rows} per {trim.pitch_in:g}" and at each end',

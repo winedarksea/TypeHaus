@@ -41,6 +41,23 @@ def enriched(tmp_path_factory):
     return ifcopenshell.open(str(out)), model, ctx
 
 
+@pytest.fixture(scope="module")
+def brick_enriched(tmp_path_factory, catlin_brick_plan):
+    """Variant ``court-face-brick`` emitted the same way: its ``veneer_anchor/W-B-BRICK`` is a
+    deferred item on an emitted wall, which the LP default no longer has."""
+    from typehaus.checks import build_context, run_checks
+    from typehaus.emit.ifc.emitter import emit_ifc
+    from typehaus.resolve import resolve
+
+    model, _ = resolve(catlin_brick_plan)
+    ctx, _ = build_context(catlin_brick_plan, CATLIN)
+    run_checks(ctx)
+    out = tmp_path_factory.mktemp("brick-enriched") / "model.ifc"
+    emit_ifc(model, out, lod="framed", house_dir=CATLIN,
+             engineering=ctx.engineering, register=ctx.engineering_register)
+    return ifcopenshell.open(str(out)), model, ctx
+
+
 # --- section profiles --------------------------------------------------------------------
 
 def test_members_carry_a_material_profile_set_matching_their_own_section(enriched):
@@ -107,12 +124,13 @@ def test_a_graded_column_carries_its_record_and_the_live_fingerprint(enriched):
     assert pset["Seal"] == "unsealed"
 
 
-def test_a_deferred_item_says_it_has_nothing_to_fingerprint(enriched):
+def test_a_deferred_item_says_it_has_nothing_to_fingerprint(brick_enriched):
     """Any deferred item that lands on an emitted element — not a named one, because kinds
-    leave the deferred lane as they are computed (`column_support` did on 2026-09-20)."""
+    leave the deferred lane as they are computed (`column_support` did on 2026-09-20). The
+    LP default's only deferrals are the trussed roofs', so this reads the brick variant."""
     from typehaus.engineering.item import Status
 
-    f, _model, ctx = enriched
+    f, _model, ctx = brick_enriched
     by_name = {e.Name: e for e in f.by_type("IfcProduct") if e.Name}
     hits = [(ctx.engineering[i], tag) for i in sorted(ctx.engineering)
             if ctx.engineering[i].status is Status.NO_CALC

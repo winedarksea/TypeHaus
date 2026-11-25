@@ -6,6 +6,7 @@ sections remain UNKNOWN in the engine and in notes/french_door_catalog_installat
 import json
 from pathlib import Path
 
+from params.sunken_garden_options import OPTION
 from typehaus import (ApproachBearing, ExteriorDoorCatalogInstallation,
                       ExteriorDoorInstallation, Material, inch)
 
@@ -57,18 +58,30 @@ _SUNKEN_TREAD = dict(
     # 2" XPS break is cut across the reveal (AO-SG-BRKBM-TREAD-BED) and refilled with a
     # drainage board onto FB-SG-BRKBM's stone. The door is under the porch roof, so this is a
     # weep for incidental water, not a gutter.
-    joint_drain_wall_ref='W-SG-BRKBM', joint_drain_material_ref='xps-drainage-board',
-    joint_drain_bed_ref='FB-SG-BRKBM',
     box_side_sealant_ref='box-side-sealant', box_side_joint_width=inch(0.5))
+if OPTION.has_brick_face:
+    _SUNKEN_TREAD.update(joint_drain_wall_ref='W-SG-BRKBM',
+                         joint_drain_material_ref='xps-drainage-board',
+                         joint_drain_bed_ref='FB-SG-BRKBM')
+else:
+    # No beam: the nose overhangs the rim slab's north edge (1/2" off the curb's foam) and drips
+    # onto SL-SG-FLOOR under the porch roof; the tread covers the joint, so none drains into it.
+    _SUNKEN_TREAD.update(drain_slab_ref='SL-SG-FLOOR')
 
 
+# The box sides. Brick: Trex Tide Pool fascia ripped ~6" deep, frame to the brick's back, sealed
+# to it, closing the cavity at the reveal. LP panel: trimmed as D-M-PORCH is, a Captivate jamb
+# extension and casing under the house's dark metal wrap (notes/court_face_lp_panel.md).
+_SUNKEN_TRIM = (dict(exterior_material_ref='trex-tide-pool-fascia',
+                     exterior_return_to_reveal_back=True,
+                     exterior_return_thickness=inch(0.56),
+                     exterior_opening_ref='AO-B-BRICK-DOOR')
+                if OPTION.has_brick_face else
+                dict(exterior_material_ref='captivate-sheet',
+                     exterior_wrap_material_ref='metal-dark-exterior'))
 SUNKEN_DOOR_INSTALLATION = ExteriorDoorInstallation(
     factory_frame_depth=inch(4.5625), interior_material_ref='pine-fj-base',
-    # The box sides: Trex Tide Pool fascia ripped ~6" deep, frame to the brick's back,
-    # sealed to the brick, so they close the cavity at the reveal (replaced Captivate).
-    exterior_material_ref='trex-tide-pool-fascia', exterior_return_to_reveal_back=True,
-    exterior_return_thickness=inch(0.56),
-    exterior_opening_ref='AO-B-BRICK-DOOR',
+    **_SUNKEN_TRIM,
     seat_opening_ref='AO-B-SUNKEN-SEAT',
     landing_search=inch(12),
     catalog_installation=catalog_installation(**_SUNKEN_TREAD))

@@ -96,7 +96,8 @@ a release or for exhaustive local verification.
 - **Structural sheathing is laid sheet by sheet off one `SheetLayoutStandard`** (decision #146,
   `model/sheet_layout.py`): stage `sheet_layout` joins collinear faces into runs, reads backing
   off members, rims, deck edge and sill solids, and walks columns from the `sheathing_through`
-  end into `ResolvedModel.sheet_layouts` (`resolve/sheet_layout*.py`). Graded by
+  end into `ResolvedModel.sheet_layouts` (`resolve/sheet_layout*.py`); `centre_cladding` lays an
+  exposed panel (cladding) run from its centre instead, equal end columns. Graded by
   `structural.sheathing_edge_support` (vertical joints) and `bracing_eval` item 8 (horizontal);
   `takeoff/sheet_goods.py` counts sheets off the pieces (`takeoff/sheet_packing.py`). Every
   envelope layer bills off its own polygon (`resolve/face_extent.face_run_m`).

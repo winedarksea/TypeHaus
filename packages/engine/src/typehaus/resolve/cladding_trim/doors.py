@@ -16,15 +16,22 @@ from typehaus.resolve.opening_flashing import head_flashing_section
 
 # A rough opening this small is a penetration closed by its fixture's own flange and sealant.
 SMALL_PENETRATION_M = 6 * M_PER_IN
+GENERIC_DRIP_HEAD = "OPENING_HEAD_DRIP_FLASHING"
 
 
 def door_face(model, wall):
-    """(face, jamb key, head key) for a door's host wall, or None off a kit-trimmed wall."""
-    jambs = {face.wall.tag: (face, key) for face, key in kit_faces(model, TrimCondition.DOOR_JAMB)}
-    heads = {face.wall.tag: key for face, key in kit_faces(model, TrimCondition.DOOR_HEAD)}
-    if wall.tag not in jambs or wall.tag not in heads:
+    """(face, jamb key, head key) for a door's host wall, or None off a kit-trimmed wall.
+
+    A kit naming a door head but no door jamb (a panel siding butted and sealed to the casing)
+    takes the head alone: jamb key None, unless that head is the generic drip."""
+    jambs = {face.wall.tag: key for face, key in kit_faces(model, TrimCondition.DOOR_JAMB)}
+    heads = {face.wall.tag: (face, key) for face, key in kit_faces(model, TrimCondition.DOOR_HEAD)}
+    if wall.tag not in heads:
         return None
-    return (*jambs[wall.tag], heads[wall.tag])
+    face, head_key = heads[wall.tag]
+    if wall.tag not in jambs and head_key == GENERIC_DRIP_HEAD:
+        return None  # the generic drip takes the dammed opening-head path instead
+    return face, jambs.get(wall.tag), head_key
 
 
 def add_door_trim(model, wall, opening, frame, cfg, material) -> bool:
@@ -44,6 +51,8 @@ def add_door_trim(model, wall, opening, frame, cfg, material) -> bool:
     head = sill + opening.height_m
     _, lo, hi = next(item for item in face.openings(model) if item[0].uid == opening.uid)
     for side, station, inward in (("LEFT", lo - casing, -1.0), ("RIGHT", hi + casing, 1.0)):
+        if jamb_key is None:
+            break
         add_vertical_run(model, face, PROFILES[jamb_key], jamb_key,
                          f"{opening.tag}-TRIM-JAMB-{side}", station, max(sill, face.z0),
                          head + casing, inward, host_ref=opening.tag)

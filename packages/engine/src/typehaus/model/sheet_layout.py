@@ -25,6 +25,8 @@ class SheetLayoutStandard(Element):
     centre (a doubled stud's face is the pair's). ``source`` says where the house read it.
     ``max_course_shortfall`` lets a band exceed whole courses by that much, left to the
     layer above (a subfloor edge under the next wall's sheathing), not cut as a sliver.
+    ``centre_cladding`` lays an exposed panel run (a cladding layer) from its centre, equal
+    end columns, for the look; sheathing still walks from its through end, for the yield.
     """
 
     orientation: Literal["vertical", "horizontal"] = "vertical"
@@ -33,6 +35,7 @@ class SheetLayoutStandard(Element):
     stagger_min: Length = inch(16)
     kerf: Length = inch(0.125)
     start_at_through_end: bool = True
+    centre_cladding: bool = False
     max_course_shortfall: Length = inch(0.75)
     source: str = ""
 

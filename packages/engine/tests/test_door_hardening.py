@@ -113,7 +113,9 @@ def test_catlin_hardware_scope_takeoff_and_finish(catlin_model_ro):
     # D-B-SHOP's keyed and D-S-PLANT's sealed steel prehungs carry authored hardware.
     assert authored == expected | {"D-B-SHOP", "D-S-PLANT"}
     assert {fill.opening_tag for fill in model.jamb_fills} == expected
-    assert {fill.replaced_material_ref for fill in model.jamb_fills} == {"fiberglass", "mineral-wool"}
+    # Fiberglass only since 2026-11-24: D-B-SUNKEN's LP wall is EXT_2X6 (GARDEN_FRAMED's
+    # mineral wool is brick's).
+    assert {fill.replaced_material_ref for fill in model.jamb_fills} == {"fiberglass"}
     hardware_rows = authored_hardware_rows(model)
     from typehaus.takeoff.cost_codes import cost_code
 

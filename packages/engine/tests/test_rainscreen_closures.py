@@ -240,7 +240,7 @@ def test_panel_bottom_sits_on_the_base_strip(catlin_model_ro):
 def test_base_z_matches_screen_and_follows_stock_laps(catlin_model_ro):
     model = catlin_model_ro
     runs = [run for wall in model.walls if (run := cavity_base_run(model, wall)) is not None]
-    assert len(runs) == 14
+    assert len(runs) == 16  # main's 14 plus the court's two LP walls
     run = next(run for run in runs if run.wall.tag == "W-M-W4")
     assert (run.end - run.start) / _IN == pytest.approx(162)
     pieces = _of(model, "W-M-W4", "RAINSCREEN_BASE_Z")
@@ -248,7 +248,34 @@ def test_base_z_matches_screen_and_follows_stock_laps(catlin_model_ro):
     assert all(s.material == "metal-flat-sheet" for s in pieces)
     assert sorted(s.trim_length_m / _IN for s in _of(model, "W-M-W4", BASE_SCREEN_PRODUCT)) \
         == pytest.approx([44, 120])
-    assert len([s for s in model.solids if s.product == "EPDM_BASE_ISOLATION"]) == 14
+    # One strip per run, two on W-B-S3-FR (split at D-B-SUNKEN).
+    assert len([s for s in model.solids if s.product == "EPDM_BASE_ISOLATION"]) == 17
+
+
+def test_base_flashing_screen_and_epdm_stop_at_a_door_reaching_the_base(catlin_model_ro):
+    """D-B-SUNKEN's opening reaches the curb top, so the Z, its EPDM and the screen split into
+    a stretch each side, short of the jamb strapping; W-M-W4 has no such opening, so it stays
+    one run with the unsuffixed tags."""
+    model = catlin_model_ro
+    wall = model.wall("W-B-S3-FR")
+    run = cavity_base_run(model, wall)
+    door = next(o for o in model.openings if o.tag == "D-B-SUNKEN")
+    mid = wall.axis[0][0] * run.direction[0] + wall.axis[0][1] * run.direction[1] \
+        + door.center_along_m
+    gap = (mid - door.width_m / 2, mid + door.width_m / 2)
+    for product, stem in (("RAINSCREEN_BASE_Z", "BASEZ-"), (BASE_SCREEN_PRODUCT, "BUGSCREEN-"),
+                          ("EPDM_BASE_ISOLATION", "BASEZ-ISOLATION-")):
+        pieces = _of(model, wall.tag, product)
+        for span in ("S1", "S2"):
+            assert [s for s in pieces if s.tag.startswith(f"{wall.tag}-{stem}{span}")]
+        assert len({s.tag for s in pieces}) == len(pieces)
+        along = [[x * run.direction[0] + y * run.direction[1]
+                  for x, y, _ in piece.body_mesh.positions] for piece in pieces]
+        assert all(max(a) <= gap[0] or min(a) >= gap[1] for a in along)
+        assert min(min(a) for a in along) == pytest.approx(run.start, abs=1e-6)
+        assert max(max(a) for a in along) == pytest.approx(run.end, abs=1e-6)
+    assert {s.tag for s in _of(model, "W-M-W4", "EPDM_BASE_ISOLATION")} \
+        == {"W-M-W4-BASEZ-ISOLATION"}
 
 
 def test_base_run_is_independent_of_wall_axis_direction(catlin_model_ro):

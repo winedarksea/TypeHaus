@@ -62,9 +62,10 @@ class CourtGeometry:
     stem_thickness_in: float
     footing_width_ft: float
     toe_ft: float
-    #: The end wall's footing is the legs' section plus this much more TOE (court side);
-    #: heel, stem and depth are shared.
+    #: The end wall's footing is the legs' section plus this much more TOE (court side) and
+    #: HEEL (outboard, FT-SG-S +6" since free body §15n); stem and depth are shared.
     end_toe_extension_ft: float = 0.0
+    end_heel_extension_ft: float = 0.0
     walls: CourtWallTags = field(default_factory=CourtWallTags)
 
     @property
@@ -139,7 +140,8 @@ CATLIN_ORDINARY_RETAINED_HEIGHT_FT = 5.786458333333333
 def default_design_input(*, stem_thickness_in: float = 12.0,
                          footing_width_ft: float = 7.0,
                          toe_ft: float = 3.0,
-                         end_toe_extension_ft: float = 16.0 / 12.0) -> CourtDesignInput:
+                         end_toe_extension_ft: float = 16.0 / 12.0,
+                         end_heel_extension_ft: float = 0.5) -> CourtDesignInput:
     """Catlin study basis. Site-dependent values stay explicitly unresolved."""
 
     return CourtDesignInput(
@@ -149,6 +151,7 @@ def default_design_input(*, stem_thickness_in: float = 12.0,
             footing_depth_ft=1.0, stem_thickness_in=stem_thickness_in,
             footing_width_ft=footing_width_ft, toe_ft=toe_ft,
             end_toe_extension_ft=end_toe_extension_ft,
+            end_heel_extension_ft=end_heel_extension_ft,
         ),
         soil=SoilProfile(
             ordinary_retained_height_ft=BasedValue(

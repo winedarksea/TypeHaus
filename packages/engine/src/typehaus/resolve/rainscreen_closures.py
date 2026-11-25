@@ -19,7 +19,7 @@ from dataclasses import dataclass, replace
 from typehaus.model.enums import LayerFunction, TrimKind
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.framing.profiles import cross_section
-from typehaus.resolve.geometry import clip_half_plane, length, sub, wall_frame
+from typehaus.resolve.geometry import clip_half_plane, wall_frame
 from typehaus.resolve.model import (
     ResolvedLayer,
     ResolvedModel,
@@ -88,6 +88,51 @@ def cavity_base_run(model, wall) -> CavityBaseRun | None:
         return None
     return CavityBaseRun(wall, tuple(outline), depth, d, n, min(offsets), outer,
                          min(outside), max(outside))
+
+
+#: An opening whose bottom is within this of the base breaks it; a sill above it (a
+#: threshold over a skirt) leaves the base unbroken beneath.
+BASE_BREAK_REACH_M = 3 * M_PER_IN
+BASE_END_GAP_M = M_PER_IN / 8
+
+
+def jamb_strapping_m(model, wall) -> float:
+    """Wide face of the girt strapping standing beside a rough opening's jamb."""
+    from typehaus.resolve.framing.truss_girts import GIRT_MEMBER, truss_girt_bands
+
+    bands = truss_girt_bands(model.plan, wall.assembly)
+    if bands is None:
+        return 0.0
+    spec = bands[1].framing
+    return cross_section(spec.member if spec is not None else GIRT_MEMBER).depth_m
+
+
+def base_run_spans(model, wall, run: CavityBaseRun) -> list[tuple[float, float]]:
+    """``(lo, hi)`` stations of the base run less every opening reaching the base band.
+
+    The Z, its EPDM strip and the screen stop at a door's jambs (the door's pan laps over
+    them), one stretch of each per span, ending ``BASE_END_GAP_M`` short of the jamb
+    strapping beside the opening (aluminium may not bear on KDAT). Stations are along
+    ``run.direction``.
+    """
+    from typehaus.resolve.cladding_trim.runs import cladding_face, subtract_spans
+
+    cladding = next((layer for layer in reversed(wall.layers)
+                     if layer.function == LayerFunction.CLADDING.value), None)
+    face = cladding_face(wall, cladding) if cladding and cladding.polygon else None
+    margin = jamb_strapping_m(model, wall) + BASE_END_GAP_M
+    cuts = [] if face is None else [
+        (a - margin, b + margin) for opening, a, b in face.openings(model)
+        if wall.base_ref_z_m + opening.sill_m < wall.z0_m + BASE_BREAK_REACH_M]
+    return subtract_spans(run.start, run.end, cuts)
+
+
+def span_tag(base: str, span: int, spans: int, index: int | None = None,
+             first: int = 1) -> str:
+    """``base-<index>`` for an unbroken run, ``base-S<span+1>-<index>`` where it splits;
+    ``index`` counts from ``first`` (a tag's 1, a uid's 0)."""
+    mid = f"-S{span + 1}" if spans > 1 else ""
+    return f"{base}{mid}" + ("" if index is None else f"-{index + first}")
 
 
 def rainscreen_band(
@@ -167,16 +212,6 @@ def rainscreen_cavity_m(layers: Sequence[ResolvedLayer]) -> float | None:
     return found[1] if found is not None else None
 
 
-def _point_segment_distance(p: tuple[float, float], a: tuple[float, float],
-                            b: tuple[float, float]) -> float:
-    run = sub(b, a)
-    span = run[0] * run[0] + run[1] * run[1]
-    if span <= 0.0:
-        return length(sub(p, a))
-    t = min(1.0, max(0.0, ((p[0] - a[0]) * run[0] + (p[1] - a[1]) * run[1]) / span))
-    return length(sub(p, (a[0] + run[0] * t, a[1] + run[1] * t)))
-
-
 def _continues_cavity_below(model: ResolvedModel, wall) -> bool:
     """Is this wall's rainscreen cavity fed from a rainscreen wall directly beneath it?
 
@@ -185,20 +220,34 @@ def _continues_cavity_below(model: ResolvedModel, wall) -> bool:
     no screen. A wall only gets one where the cavity genuinely begins: at grade, or on top
     of something that is not itself a rainscreen (a concrete stem wall, a garage curb).
 
-    The test is that some rainscreen wall's top lands on this wall's base *and* shares its
-    plan line; matching elevation alone would suppress the screen on every wall in a storey
-    the moment one of them stacked.
+    The test is that rainscreen walls whose tops land on this wall's base, on its plan line,
+    cover its whole length; matching elevation alone would suppress the screen on every wall
+    in a storey the moment one of them stacked, and a wall only partly over a cavity (W-M-S1
+    over the court's panel walls and the concrete) still starts one along the rest.
     """
+    (ax, ay), (bx, by) = wall.axis
+    run = math.hypot(bx - ax, by - ay)
+    if run <= 0.0:
+        return False
+    ux, uy = (bx - ax) / run, (by - ay) / run
+    spans = []
     for other in model.walls:
         if other.tag == wall.tag or abs(other.z1_m - wall.z0_m) > _STACK_TOLERANCE_M:
             continue
         if rainscreen_cavity_m(other.layers) is None:
             continue
-        mid = ((wall.axis[0][0] + wall.axis[1][0]) / 2.0,
-               (wall.axis[0][1] + wall.axis[1][1]) / 2.0)
-        if _point_segment_distance(mid, other.axis[0], other.axis[1]) <= _STACK_PLAN_TOL_M:
-            return True
-    return False
+        if any(abs((p[0] - ax) * uy - (p[1] - ay) * ux) > _STACK_PLAN_TOL_M
+               for p in other.axis):
+            continue
+        s0, s1 = sorted((p[0] - ax) * ux + (p[1] - ay) * uy for p in other.axis)
+        spans.append((s0, s1))
+    slop = min(_STACK_PLAN_TOL_M, run / 4.0)  # corner slop, never the whole of a short wall
+    reach = slop
+    for s0, s1 in sorted(spans):
+        if s0 > reach:
+            break
+        reach = max(reach, s1)
+    return bool(spans) and reach >= run - slop
 
 
 def pan_top_z(wall, spec, run: CavityBaseRun, offset: float) -> float:
@@ -253,25 +302,33 @@ def resolve_bug_screens(model: ResolvedModel) -> None:
         inner_z = pan_top_z(wall, spec, run, run.inner_offset)
         section = ((0.0, 0.0), (0.0, height), (depth, height), (depth, -depth * spec.slope))
         total = run.end - run.start
-        for index, (start, end, stock) in enumerate(split_stock_run(
-                total, (BUG_SCREEN_STOCK_IN * M_PER_IN,), BUG_SCREEN_LAP_IN * M_PER_IN)):
-            station = run.start + start
-            origin = (station * run.direction[0] + run.inner_offset * run.outward[0],
-                      station * run.direction[1] + run.inner_offset * run.outward[1], inner_z)
-            mesh = folded_section_mesh(section, origin, (*run.outward, 0.0), (0.0, 0.0, 1.0),
-                                       (run.direction[0] * (end - start),
-                                        run.direction[1] * (end - start), 0.0), sheet)
-            mesh = _mitre_mesh(mesh, run, start, end, total)
-            xs, ys, zs = zip(*mesh.positions, strict=True)
-            model.solids.append(ResolvedSolid(
-                uid=f"{wall.uid}-bugscreen-{index}", tag=f"{wall.tag}-BUGSCREEN-{index + 1}",
-                storey=wall.storey, category=TrimKind.BUG_SCREEN.value,
-                material=BUG_SCREEN_MATERIAL, product=BASE_SCREEN_PRODUCT, host_ref=wall.tag,
-                outline=((min(xs), min(ys)), (max(xs), min(ys)),
-                         (max(xs), max(ys)), (min(xs), max(ys))),
-                z0_m=min(zs), z1_m=max(zs), assembly=wall.assembly, body_mesh=mesh,
-                trim_length_m=end - start,
-                trim_stock_length_in=round(stock / M_PER_IN, 6)))
+        spans = base_run_spans(model, wall, run)
+        for span, (lo, hi) in enumerate(spans):
+            for index, (start, end, stock) in enumerate(split_stock_run(
+                    hi - lo, (BUG_SCREEN_STOCK_IN * M_PER_IN,), BUG_SCREEN_LAP_IN * M_PER_IN)):
+                start, end = start + lo - run.start, end + lo - run.start
+                station = run.start + start
+                origin = (station * run.direction[0] + run.inner_offset * run.outward[0],
+                          station * run.direction[1] + run.inner_offset * run.outward[1],
+                          inner_z)
+                mesh = folded_section_mesh(section, origin, (*run.outward, 0.0),
+                                           (0.0, 0.0, 1.0),
+                                           (run.direction[0] * (end - start),
+                                            run.direction[1] * (end - start), 0.0), sheet)
+                mesh = _mitre_mesh(mesh, run, start, end, total)
+                xs, ys, zs = zip(*mesh.positions, strict=True)
+                tag = span_tag(f"{wall.tag}-BUGSCREEN", span, len(spans), index)
+                model.solids.append(ResolvedSolid(
+                    uid=span_tag(f"{wall.uid}-bugscreen", span, len(spans), index, 0),
+                    tag=tag,
+                    storey=wall.storey, category=TrimKind.BUG_SCREEN.value,
+                    material=BUG_SCREEN_MATERIAL, product=BASE_SCREEN_PRODUCT,
+                    host_ref=wall.tag,
+                    outline=((min(xs), min(ys)), (max(xs), min(ys)),
+                             (max(xs), max(ys)), (min(xs), max(ys))),
+                    z0_m=min(zs), z1_m=max(zs), assembly=wall.assembly, body_mesh=mesh,
+                    trim_length_m=end - start,
+                    trim_stock_length_in=round(stock / M_PER_IN, 6)))
 
 
 def _boxed_screen(model, wall, run, height) -> None:

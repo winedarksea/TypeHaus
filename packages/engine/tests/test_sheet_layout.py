@@ -144,3 +144,80 @@ def test_an_unstated_sheet_length_is_unknown(catlin_model_ro, monkeypatch):
         for name, length in real(plan, wall)])
     assert any(f.result is Result.UNKNOWN and "W-B-S2-FR" in f.element_tags
                and "sheet_length" in f.message for f in sheathing_edge_support(ctx))
+
+
+def _clad_wall(length_in, band_in, courses_in, nailers):
+    """A cladding over flat horizontal girts (y 0 to 1.5", courses ``courses_in`` up)."""
+    from typehaus.resolve.sheet_layout_nailers import NailerSpec
+
+    L = length_in * IN
+    girts = [SimpleNamespace(p0=(0.0, 0.75 * IN), p1=(L, 0.75 * IN), z0_m=z * IN,
+                             z1_m=(z + 3.5) * IN, profile="2x4", orient=None,
+                             child_key=f"strapping-girt-{i:03d}", category="strapping",
+                             plan_width_m=None, z0_end_m=None, z1_end_m=None)
+             for i, z in enumerate(courses_in)]
+    clad = SimpleNamespace(name="cladding", material_ref="panel", thickness_m=0.375 * IN,
+                           polygon=((0, -0.375 * IN), (L, -0.375 * IN), (L, 0), (0, 0)),
+                           run_span_m=None, function="cladding", is_cavity=False)
+    girt = SimpleNamespace(name="girt", polygon=((0, 0), (L, 0), (L, 1.5 * IN), (0, 1.5 * IN)),
+                           thickness_m=1.5 * IN, function="furring", is_cavity=False)
+    wall = SimpleNamespace(tag="W-T", uid="W-T-UID", axis=((0.0, 0.0), (L, 0.0)),
+                           members=girts, layers=(girt, clad), base_ref_z_m=0.0, z0_m=0.0,
+                           z1_m=band_in * IN, top_z0_m=None, top_z1_m=None, head_caps=())
+    model = SimpleNamespace(floors=[], solids=[], junctions=[], openings=[], walls=[wall],
+                            wall=lambda tag: wall)
+    spec = NailerSpec("girt", "2x4", "kdat", 3.5 * IN, 1.5 * IN) if nailers else None
+    return model, Face(wall, clad, girt, 96 * IN, 0.0, band_in * IN, nailer=spec)
+
+
+def test_panel_cladding_on_girts_takes_a_nailer_at_each_joint_or_fails():
+    model, face = _clad_wall(100, 90, (2.0, 26.0, 50.0, 74.0), nailers=True)
+    found: dict[str, list] = {}
+    layout = lay_run(model, build_runs([face])[0], layout_params(None), found)
+    # The bare module from the start, the 4" tail pulling the second joint back to 88.
+    assert [round(b.at / IN, 3) for b in layout.vertical_breaks] == [48.0, 88.0]
+    assert all(b.backed for b in layout.vertical_breaks)
+    # Five pieces a joint: under the first course, three bays, over the top one.
+    spans = [(round(m.z0_m / IN, 2), round(m.z1_m / IN, 2)) for m in found["W-T"][:5]]
+    assert spans == [(0.0, 2.0), (5.5, 26.0), (29.5, 50.0), (53.5, 74.0), (77.5, 90.0)]
+    assert _grade(model, layout, "").result is Result.PASS
+    model, face = _clad_wall(100, 90, (2.0, 26.0, 50.0, 74.0), nailers=False)
+    bare = _lay(model, face)
+    finding = _grade(model, bare, "")
+    assert finding.result is Result.FAIL and "R703" in str(finding.code_ref)
+
+
+def test_catlin_court_face_matches_the_lp_panel_oracle(catlin_model_ro):
+    """houses/catlin/notes/court_face_lp_panel.md, "Sheet layout and joint battens"."""
+    from typehaus.takeoff.cladding_trim import cladding_trim_takeoff
+    from typehaus.takeoff.sheet_goods import sheet_goods_takeoff
+
+    lay = next(lay for lay in catlin_model_ro.sheet_layouts if lay.function == "cladding")
+    assert lay.wall_tags == ("W-B-S2-FR", "W-B-S3-FR") and not lay.horizontal_breaks
+    # Centred (centre_cladding): 26" end columns, no joint through WIN-B-SAUNA.
+    assert lay.start_end == "centre"
+    assert [round(b.at / IN, 2) for b in lay.vertical_breaks] == [26.0, 74.0, 122.0, 170.0]
+    # Backed by girts and nailers, bar the 1.22" panel foot under the lifted starter course;
+    # s 170 sits on D-B-SUNKEN's jamb post from the wall base.
+    assert [round(b.unbacked_m / IN, 2) for b in lay.vertical_breaks] == [1.22, 1.22, 0.0, 0.0]
+    assert _grade(catlin_model_ro, lay, "").result is Result.UNKNOWN
+    assert len(lay.nailers) == 14  # girts at 16": six bays at s 26 and 74
+    assert sum(m.length_m for m in lay.nailers) / IN == pytest.approx(131.5, abs=0.01)
+    row = next(r for r in sheet_goods_takeoff(catlin_model_ro) if r["scope"] == "cladding panel")
+    assert (row["sheets"], row["net_area_sqft"]) == (5, 81.8)
+    battens = next(r for r in cladding_trim_takeoff(catlin_model_ro)
+                   if r["part"] == "LP_440_BATTEN_3_5")
+    # s 26 and 74 full height; the door's trim takes s 122 (head) and s 170 (casing).
+    assert len(battens["tags"]) == 2 and battens["count"] == 1
+    assert battens["length_ft"] == pytest.approx(2 * 87.718 / 12, abs=0.01)
+
+
+def test_centred_walk_keeps_equal_end_columns_over_the_rip():
+    from typehaus.resolve.sheet_layout_walk import walk_centred
+
+    def lay(length):
+        return walk_centred(0.0, length, 48.0, [], 0.4375, lambda _x: 0.0, 12.0, 0.125)
+
+    assert lay(196.0) == [26.0, 74.0, 122.0, 170.0]  # 2" ends under the rip: a module wider
+    assert lay(216.0) == [12.0, 60.0, 108.0, 156.0, 204.0]  # 12" ends are a rip
+    assert lay(192.0) == [48.0, 96.0, 144.0] and lay(40.0) == []

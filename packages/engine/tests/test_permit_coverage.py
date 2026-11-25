@@ -170,7 +170,12 @@ def test_every_code_finding_carries_a_citation(profile, starter_dir) -> None:
 # decision #146), staged while W-M-S1/S2's and W-M-N2/N3's floor-band joints have no rim
 # modelled behind them and seven sheathed walls state no `sheet_length`. Keeping the check
 # off the checklist instead would be gaming the ratchet.
-MAX_NON_BLOCKING_ITEMS = {"mn-2020": 30}
+#
+# RAISED 30 -> 32 on 2026-11-24, and no line was added: the two masonry veneer lines (tie reach
+# and airspace; ties beyond the IRC tie table) read N/A on the LP court face, so catlin no longer
+# answers them by engineering (`veneer_anchor/W-B-BRICK` is in variant `court-face-brick` only)
+# and they fall back into this lane as the profile's own non-blocking items.
+MAX_NON_BLOCKING_ITEMS = {"mn-2020": 32}
 
 # The engineered lines are counted separately, and the split is not bookkeeping — the two
 # lanes have different exit conditions. A staging item leaves its lane when *this engine*

@@ -208,7 +208,8 @@ def build_coupled_model(design: CourtDesignInput, planting: PlantingProfile, *,
                  x1_ft=width + stem_half + heel, y0_ft=north, y1_ft=south,
                  depth_ft=design.geometry.footing_depth_ft, mesh_ft=mesh_ft)
     mesh.footing(tag=f"{tags.end} footing", x0_ft=-stem_half - heel, x1_ft=width + stem_half + heel,
-                 y0_ft=south - stem_half - toe - end_ext, y1_ft=south + stem_half + heel,
+                 y0_ft=south - stem_half - toe - end_ext,
+                 y1_ft=south + stem_half + heel + design.geometry.end_heel_extension_ft,
                  depth_ft=design.geometry.footing_depth_ft, mesh_ft=mesh_ft)
 
     beam_section = CrossSection("rect", design.geometry.stem_thickness_in * IN_TO_M,

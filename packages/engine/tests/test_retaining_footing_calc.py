@@ -266,7 +266,8 @@ def test_every_retaining_wall_in_the_court_carries_the_mat(catlin_plan) -> None:
         bottom = 9.0 if wall == "W-SG-S" else 12.0
         assert roles["bottom-x"].spacing.inches == pytest.approx(bottom)
         assert roles["top-x"].bar == 5
-        assert roles["top-x"].spacing.inches == pytest.approx(12.0)
+        # FT-SG-S's heel +6" takes #5 @ 9" top-x (free body §15n; 1.10 OVER at 130 pcf at 12").
+        assert roles["top-x"].spacing.inches == pytest.approx(bottom)
         assert spec.cover.inches == pytest.approx(3.0)
         # 0.310 in2/ft against ACI 318-19 §7.6.1.1's 0.0018 Ag = 0.259. This is the guard on
         # `#4 @ 12"`, which is the tempting next step down and fails both tests.

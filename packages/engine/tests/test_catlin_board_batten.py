@@ -92,7 +92,9 @@ def test_catlin_profiled_export_is_valid_and_has_its_own_painted_material(catlin
         if material_ref is None:
             continue
         seen.add(material_ref)
-        expected = (.9, 0.) if material_ref == 'rubber' else (.45, .05)
+        # The LP court face's 440 battens are painted wood, not coil: generic too.
+        generic = material_ref in ('rubber', 'lp-smartside-trim-smooth')
+        expected = (.9, 0.) if generic else (.45, .05)
         for primitive in gltf['meshes'][node['mesh']]['primitives']:
             material = gltf['materials'][primitive['material']]['pbrMetallicRoughness']
             assert (material['roughnessFactor'], material['metallicFactor']) == expected

@@ -28,7 +28,7 @@ from library import (
 
 from params import (breezeway, driveway, entry_band_brace, foundations, hp1_north_pad, hp3_pad,
                     landscape_gardens, landscape_walk, main_deck, porch_guards, raised_garden,
-                    roof_trim, roof_wind_clamps, second_deck, solar,
+                    roof_trim, roof_wind_clamps, second_deck, solar, court_face,
                     sunken_garden, sunken_garden_drainage)
 from plan import (air_terminal_types, appliance_types, assemblies, bath_finish, lav_types, products_bath_lavs, backing, backing_wet, bath1_storage,
                   decking_selection, flooring_selection, plant_liner_selection, handrail_types, mirrors, mirror_types,
@@ -45,7 +45,7 @@ from plan import (air_terminal_types, appliance_types, assemblies, bath_finish, 
                   landscape, lighting_basement, lighting_entry, lighting_garage,
                   lighting_living, lighting_main, lighting_second, living_east_run, living_east_run_types,
                   living_puzzle_table_types, media_types,
-                  lighting_attic, lighting_types, masonry_joints, mep, mep_lavatories, mep_supply_branches, millwork,
+                  lighting_attic, lighting_types, mep, mep_lavatories, mep_supply_branches, millwork,
                   millwork_vanities, placeables,
                   plant_reservoir, plant_reservoir_types, plant_room, plant_room_types, plant_types, plate_ties, porch_lighting,
                   opening_products, paint, products, products_paint, smart_home, smart_home_types,
@@ -159,7 +159,7 @@ _library = Library(
     circuits=circuits.CIRCUITS,
     # No ``load_managements``: retired 2026-09-12 with the Class 320 service. See the
     # block at the foot of plan/circuits.py.
-    transitions=transitions.TRANSITIONS,
+    transitions=(*transitions.TRANSITIONS, *court_face.TRANSITIONS),
     construction_rules=tuple(assemblies.CONSTRUCTION_RULES),
     # Illustrative planting — counted in the takeoff's `planting` table, never priced.
     plant_types=plant_types.PLANT_TYPES,
@@ -400,7 +400,7 @@ PLAN = (
         [*french_door_installations.with_catalog_installations(basement.ELEMENTS), *dry_fire_lane.DRY_FIRE_LANE, *panel_working_space.PANEL_WORKING_SPACE, *fixtures.BASEMENT_FIXTURES,
          *foundations.HOUSE_FOOTINGS, *foundations.HOUSE_FOOTING_BEDDING, *earthwork.EXCAVATION,
          *foundations.VENEER_PLINTH, *foundations.VENEER_PLINTH_BEDDING,
-         *masonry_joints.JOINTS,
+         *court_face.BASEMENT_ELEMENTS,
          *mep.BASEMENT_ELEMENTS, *mep_lavatories.BASEMENT_LAV_CONNECTIONS, *mep_supply_branches.BASEMENT_SUPPLY_BRANCHES, *electrical.BASEMENT_ELEMENTS, *device_boxes.BOX_STANDARD, *ducts.DUCT_STANDARD, *drywall.DRYWALL_STANDARD, *led_construction.LED_CONSTRUCTION, *mep_linesets.LINESET_STANDARD, *penetrations.PENETRATION_STANDARD, *paint.PAINT_STANDARD, *framing_standards.HEADER_STANDARD,
          *electrical_branches.BRANCH_PULL_BOXES, *electrical_branches.BRANCH_RACEWAYS,
          *electrical_branches.BRANCH_SLEEVES,
@@ -433,7 +433,7 @@ PLAN = (
          *closet.MAIN_CLOSET,
          *bed_reading_corner.BED_READING_CORNER, *bed_desk.BED_DESK, *lamps.MAIN_LAMPS,
          *window_coverings.MAIN_WINDOW_COVERINGS,
-         *placeables.MAIN_PLACEABLES, *kitchen_casework.MAIN_KITCHEN_CASEWORK, *views.DETAIL_SLICES,
+         *placeables.MAIN_PLACEABLES, *kitchen_casework.MAIN_KITCHEN_CASEWORK, *views.DETAIL_SLICES, *court_face.MAIN_ELEMENTS,
          *millwork.MILLWORK, *millwork.MAIN_SHELVES,
          *millwork_vanities.MAIN_VANITY_SHELVES,
          *countertops.MAIN_COUNTERTOPS,

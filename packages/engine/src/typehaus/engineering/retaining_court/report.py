@@ -58,8 +58,9 @@ def _basis_lines(design: CourtDesignInput,
         f"| stem thickness | {geometry.stem_thickness_in:.1f} in | assembly STRUCTURE layer |",
         f"| footing | {geometry.footing_width_ft:.2f} ft wide x "
         f"{geometry.footing_depth_ft:.2f} ft, toe {geometry.toe_ft:.2f} ft | authored Footing |",
-        f"| end wall toe extension | {geometry.end_toe_extension_ft:.2f} ft | authored "
-        "Footing; the per-foot screening below is the legs' section |",
+        f"| end wall toe / heel extension | {geometry.end_toe_extension_ft:.2f} / "
+        f"{geometry.end_heel_extension_ft:.2f} ft | authored Footing; the per-foot screening "
+        "below is the legs' section |",
         f"| ordinary retained height | {height.value:.4f} ft | {height.basis} |",
         "",
     ]

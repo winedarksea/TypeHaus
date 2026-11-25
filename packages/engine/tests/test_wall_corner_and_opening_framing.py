@@ -585,8 +585,8 @@ def test_catlin_small_windows_have_no_header_and_keep_their_flanking_studs(catli
     # putting it there is what moved it 9" onto its bay centre (2'-6" -> 3'-3" off the
     # corner). A 14" RO chosen for size and a 14" RO chosen for the module are the same
     # window; only now the module has an opinion about where it sits.
-    assert [o.tag for o in concrete] == ["AO-B-BRICK-WIN"], \
-        [o.tag for o in concrete]
+    # None since 2026-11-24: the brick wythe (and AO-B-BRICK-WIN) is variant court-face-brick.
+    assert [o.tag for o in concrete] == [], [o.tag for o in concrete]
     # The original 5 became 15 as the 14" family took over the places where a bigger unit
     # never fit, then 13 when the 2026-08-01 gable pass retired the south gable's corner
     # pair (WIN-A-S1/S4), then 12 when the 2026-08-15 west facade pass retyped WIN-M-BATH2

@@ -98,10 +98,12 @@ def test_schedule_labels_both_sizes_and_identifies_the_manual_detail(catlin_mode
     by_tag = {row[1]: row for row in table.rows}
     assert by_tag["WIN-S-BED1"][5:7] == ("2'-3 1/2\" × 4'-0\"", "2'-2 3/16\" × 3'-10 13/16\"")
     assert by_tag["WIN-S-PLANT3"][5:7] == ("2'-3 1/2\" × 4'-6\"", "2'-2 3/16\" × 4'-4 13/16\"")
-    # Bucked through the foam behind its brick reveal (resolve/veneer_window_frame.py).
-    assert by_tag["WIN-B-SAUNA"][6] == "1'-0 11/16\" × 1'-10 7/8\""
-    # Its 93 mm unit is deeper than the 4.06" foam buck less the dam: it stands proud.
-    assert by_tag["WIN-B-SAUNA"][7] == "0'-3 11/16\" (3/16\" proud, confirm)"
+    # The house's own frame on the LP court face (2026-11-24); behind brick it was bucked
+    # through the foam at 1'-10 7/8" (resolve/veneer_window_frame.py).
+    assert by_tag["WIN-B-SAUNA"][6] == "1'-0 11/16\" × 1'-10 13/16\""
+    # Its 93 mm unit stood 3/16" proud of the brick court's 4.06" foam buck; the LP walkout's
+    # deeper EXT_2X6 seat takes it whole (2026-11-24).
+    assert by_tag["WIN-B-SAUNA"][7] == "0'-3 11/16\""
 
 
 def test_orderable_size_rounds_down_and_never_past_the_envelope():

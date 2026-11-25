@@ -9,6 +9,8 @@ class TrimCondition(str, Enum):
     #: The panel's end under a wide outside corner, where the leg rides the closure's face.
     CORNER_CLOSURE = "corner_closure"
     HORIZONTAL_JOINT = "horizontal_joint"
+    #: A batten over each vertical joint of a sheet-laid panel (``resolve/sheet_layout.py``).
+    VERTICAL_JOINT = "vertical_joint"
     EAVE_TOP = "eave_top"
     RAKE_TOP = "rake_top"
     SCREEN_END = "screen_end"

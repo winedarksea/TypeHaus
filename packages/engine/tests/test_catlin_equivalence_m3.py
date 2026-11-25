@@ -142,6 +142,16 @@ DECLARED_DIVERGENCES = {
     # house (params/sunken_garden._y_wall_end), which moved the two candidates that had been
     # taking the greedy match. A declared divergence that has quietly acquired a counterpart
     # is exactly what the stale-entry assertion below is for.
+    # ** DECLARED AGAIN 2026-11-24 **, with W-SG-S's row beside it: the court face is LP panel
+    # on the framed walkout, W-B-BRICK is variant `court-face-brick` only, and without it the
+    # matcher's global assignment no longer lands either reference wall within its threshold.
+    # W-SG-S has not moved; both pair again under the brick variant.
+    "Sunken Garden Porch North Arch Wall (Lower)": (
+        "paired W-B-BRICK until the court face became LP panel (2026-11-24); brick is "
+        "variant court-face-brick"),
+    "Sunken Garden South Wall (Retaining)": (
+        "W-SG-S is unmoved; W-B-BRICK's removal (2026-11-24) shifts the matcher's global "
+        "assignment past its threshold, and it pairs again under court-face-brick"),
     "Sunken Garden Porch South Arch Wall (Upper)": (
         "the two-tier arch stack became a single 16\" arched front wall with two 8' arches, "
         "and that wall became PT-SG-FCOL + BM-SG-FRW/FRE on 2026-08-18 — the porch's front "
@@ -232,12 +242,7 @@ MAX_PAIRED_PLAN_EXTENT_DELTA_M = 0.75   # ~2'-6"
 #
 # Keyed on the *reference* name — the current tag is the thing that may be renamed.
 DECLARED_WALL_EXTENT_CHANGES: dict[str, tuple[float, str]] = {
-    # Paired with W-B-BRICK at -0.416 m of x extent until 2026-09-22; the wythe then lost
-    # 1'-0" at each end with the court walls (x 106"..329.625" -> 118"..317.625"), which is
-    # -0.610 m more: -1.026 m.
-    "Sunken Garden Porch North Arch Wall (Lower)": (
-        1.05, "the 17'-0\" court (2026-09-22) shortened W-B-BRICK 2'-0\" between the side "
-              "walls"),
+    # (The north arch wall's W-B-BRICK entry left with the brick court face, 2026-11-24.)
 }
 
 HOUSE_SIZE_FT = 36.0
@@ -380,7 +385,8 @@ def test_paired_walls_stay_on_their_reference_wall_lines(equivalence):
     # when it stopped being a pour at all (all recorded in DECLARED_DIVERGENCES).
     # Every wall that still pairs must still be within a construction-scale move of its
     # reference line, which the loop below asserts.
-    assert len(pairs) >= 19, equivalence.status_counts()
+    # 18 since 2026-11-24: W-B-BRICK's pair and W-SG-S's (see DECLARED_DIVERGENCES).
+    assert len(pairs) >= 18, equivalence.status_counts()
     for item in pairs:
         assert item.placement_delta_m <= MAX_PAIRED_PLACEMENT_DELTA_M, item.as_dict()
         plan_delta = max(abs(item.size_delta_m[0]), abs(item.size_delta_m[1]))

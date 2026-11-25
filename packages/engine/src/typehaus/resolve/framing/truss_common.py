@@ -59,6 +59,7 @@ FLANGE_BEARING = inch(1.0)
 JAMB_PREFIX = "strapping-jamb-"
 
 _TOL = 1e-9
+_SILL_TOL = 1e-6
 
 
 class BandFrame:
@@ -142,14 +143,18 @@ class BandFrame:
         if inner is not None and mount - inner > self.buck_depth + _TOL:
             sill_profile = panel_profile(round((mount - inner) / 0.0254, 4), BUCK_THICKNESS_IN)
             sill_centre = (mount + inner) / 2.0
+        # A door seated on the wall's base (a curb notch) has its sill package there: no sill leg.
+        on_base = sill_on_base(opening)
         for name, z0, prof, at in (
                 ("head", z_head - thickness, profile, centre),
                 ("sill", z_sill - door_sill_drop(opening, thickness), sill_profile, sill_centre)):
+            if name == "sill" and on_base:
+                continue
             out.append(FramedMember(
                 self.wall.uid, f"buck-{name}-{index:03d}", BUCK_CATEGORY, prof,
                 self.point(lo, at), self.point(hi, at), z0, z0 + thickness, hi - lo,
                 material="struct-1-plywood"))
-        z0, z1 = z_sill + thickness, z_head - thickness
+        z0, z1 = z_sill + (0.0 if on_base else thickness), z_head - thickness
         if z1 - z0 > _TOL:
             for side, jamb in enumerate((lo, hi)):
                 inward = 1.0 if side == 0 else -1.0
@@ -167,6 +172,14 @@ class BandFrame:
                   if layer.function == "structure" and not layer.is_cavity
                   for x, y in layer.polygon]
         return min(depths) if depths else None
+
+
+def sill_on_base(opening: ResolvedOpening) -> bool:
+    """A door whose rough sill is at or below its wall's datum bears on what the wall stands
+    on (a curb's seat notch, a slab), not on the girt band: its frame takes no sill course,
+    seats or sill buck, and its posts start at the band's foot. A framed-floor door's sill is
+    the subfloor, above the datum, with the rim under it for the seats' screws."""
+    return opening.kind == "door" and opening.sill_m <= _SILL_TOL
 
 
 def door_sill_drop(opening: ResolvedOpening, thickness: float) -> float:

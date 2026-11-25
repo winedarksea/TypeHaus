@@ -1,5 +1,7 @@
 # Sunken-garden veneer grade beam — hand-worked basis
 
+> **DORMANT alternate (2026-11-24)** — live on variant `court-face-brick`; still the oracle for the veneer_beam / veneer_anchor / veneer_cavity tests. The court face is LP SmartSide panel: `court_face_lp_panel.md`.
+
 **House:** catlin
 **Structure:** `W-SG-BRKBM` (the beam), `W-B-BRICK` (the wythe it carries), `FT-B-S2` /
 `FT-B-S3` (the footings it is isolated from), `SG_VENEER_BEAM_14` (the assembly).
@@ -607,8 +609,10 @@ M_end,u  = α wu L²/12 = 0.25 × 709.56 × 19.5²/12        =  5,621 ft-lb   d/
 ```
 
 **The end moment into `W-SG-W1` / `W-SG-E1`, graded PLAIN.** The wall carries no steel that
-crosses this joint in the right direction (`_BRACED_STEM_STEEL` is `#6 @ 38"` VERTICAL), so
-the honest reading is structural plain concrete. **ACI 318-19 Table 14.5.2.1 in US customary
+crosses this joint in the right direction (it was `#6 @ 38"` VERTICAL when this was written;
+since 2026-11-24 W1/E1 carry `_RET_STEM_STEEL`, #5 @ 10" vertical plus #4 @ 16" horizontals each
+face, free body §15n, which only adds capacity), so the plain-concrete reading below stays a
+conservative bound. **ACI 318-19 Table 14.5.2.1 in US customary
 units is `Mn = 5λ√f'c · Sm`** with f'c in psi and Sm = b h²/6 — confirmed 2026-09-22 against
 published summaries of the table (the 0.42λ√f'c form quoted elsewhere is the SI expression,
 f'c in MPa; the 5λ√f'c modulus of rupture and φ = 0.60 for plain concrete flexure are the
@@ -623,7 +627,7 @@ demand 5,621 (α 0.25)                                                   d/c 0.3
 ```
 
 **The wall receives even the full elastic end moment**: at α = 0.514 the demand is 11,557
-ft-lb, d/c **0.757**, still a pass on the plain section. **`#6 @ 38"` does not change**, and
+ft-lb, d/c **0.757**, still a pass on the plain section. **The vertical steel does not change it**, and
 that invariance is the check on the derate — the claim is conservative in deflection and the
 wall is not asked to be stiffer than the claim while being graded for the moment a stiffer
 wall would send it.

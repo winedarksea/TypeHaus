@@ -285,10 +285,12 @@ def test_openings_serialize_swing_and_framing_overlays(catlin_payload):
     assert len(door["framing_bumper"]) == 4
 
 
-def test_the_brick_reveals_are_flat_headed(catlin_payload):
+def test_the_brick_reveals_are_flat_headed(catlin_brick_model_ro):
     """The veneer's two reveals carry a steel lintel each since 2026-11-23 (decision 11), so
-    neither serializes a rise; the field itself is exercised by the synthetic-arch tests."""
-    reveals = {opening["tag"]: opening for opening in catlin_payload["openings"]
+    neither serializes a rise; the field itself is exercised by the synthetic-arch tests.
+    Brick is variant ``court-face-brick`` since 2026-11-24."""
+    payload = model_to_dict(catlin_brick_model_ro)
+    reveals = {opening["tag"]: opening for opening in payload["openings"]
                if opening["tag"].startswith("AO-B-BRICK-")}
     assert set(reveals) == {"AO-B-BRICK-WIN", "AO-B-BRICK-DOOR"}
     assert all(r["arch_rise_m"] == 0 for r in reveals.values())

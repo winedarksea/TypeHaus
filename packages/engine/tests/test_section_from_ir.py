@@ -26,7 +26,7 @@ def test_layer_thickness_label_is_not_the_length_of_a_longitudinal_cut(catlin_mo
     assert set(labels) == {'foil-polyiso 2"'}
 
 
-def test_the_brick_veneers_wythe_draws_in_the_wall_type_section(catlin_model):
+def test_the_brick_veneers_wythe_draws_in_the_wall_type_section(catlin_brick_model_ro):
     """MOVED, not weakened. This asserted that all five ``Layer.slot`` regions of
     ``W-B-BRICK``'s Ishtar wythe drew — a real regression, where building section bodies
     from ``depth_layers()`` left the plinth standing with nothing above it. That wall went to
@@ -37,6 +37,7 @@ def test_the_brick_veneers_wythe_draws_in_the_wall_type_section(catlin_model):
     What stays here is the ordinary half — the veneer is still cut by this slice and still
     draws — so the move cannot quietly take the wall out of the drawing altogether.
     """
+    catlin_model = catlin_brick_model_ro  # brick is variant court-face-brick since 2026-11-24
     scene = build_section(catlin_model, _slice(catlin_model, "SL-D-WALLTYP"))
     drawn = {tag.split("/")[-1] for tag in _tags(scene, "A-WALL")
              if tag.startswith("W-B-BRICK/")}

@@ -1112,11 +1112,11 @@
         ],
         [
           384.00000000000006,
-          -45.43751968503937
+          -43.00000000000001
         ],
         [
           48.00000000000001,
-          -45.43751968503937
+          -43.00000000000001
         ]
       ],
       "layer": "S-FNDN",
@@ -1132,19 +1132,19 @@
       "points": [
         [
           48.00000000000001,
-          -45.43751968503937
-        ],
-        [
-          384.00000000000006,
-          -45.43751968503937
-        ],
-        [
-          384.00000000000006,
           -43.00000000000001
+        ],
+        [
+          187.50000000000003,
+          -43.00000000000001
+        ],
+        [
+          187.50000000000003,
+          -41.00000000000001
         ],
         [
           48.00000000000001,
-          -43.00000000000001
+          -41.00000000000001
         ]
       ],
       "layer": "S-FNDN",
@@ -1160,62 +1160,6 @@
       "points": [
         [
           48.00000000000001,
-          -43.00000000000001
-        ],
-        [
-          187.50000000000003,
-          -43.00000000000001
-        ],
-        [
-          187.50000000000003,
-          -42.43751968503937
-        ],
-        [
-          48.00000000000001,
-          -42.43751968503937
-        ]
-      ],
-      "layer": "S-FNDN",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "51B78YHGNF-BF-056",
-      "tag": "EX-HOUSE-BF-57"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          48.00000000000001,
-          -42.43751968503937
-        ],
-        [
-          187.50000000000003,
-          -42.43751968503937
-        ],
-        [
-          187.50000000000003,
-          -41.00000000000001
-        ],
-        [
-          48.00000000000001,
-          -41.00000000000001
-        ]
-      ],
-      "layer": "S-FNDN",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "51B78YHGNF-BF-060",
-      "tag": "EX-HOUSE-BF-61"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          48.00000000000001,
           -41.00000000000001
         ],
         [
@@ -1235,8 +1179,8 @@
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "51B78YHGNF-BF-064",
-      "tag": "EX-HOUSE-BF-65"
+      "uid": "51B78YHGNF-BF-058",
+      "tag": "EX-HOUSE-BF-59"
     },
     {
       "space": "model",
@@ -1263,8 +1207,8 @@
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "51B78YHGNF-BF-068",
-      "tag": "EX-HOUSE-BF-69"
+      "uid": "51B78YHGNF-BF-062",
+      "tag": "EX-HOUSE-BF-63"
     },
     {
       "space": "model",
@@ -1291,6 +1235,118 @@
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
       "closed": true,
+      "uid": "51B78YHGNF-BF-062",
+      "tag": "EX-HOUSE-BF-63"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          48.00000000000001,
+          -38.51
+        ],
+        [
+          54.76437007874016,
+          -38.51
+        ],
+        [
+          54.76437007874016,
+          -37.5
+        ],
+        [
+          48.00000000000001,
+          -37.5
+        ]
+      ],
+      "layer": "S-FNDN",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "51B78YHGNF-BF-065",
+      "tag": "EX-HOUSE-BF-66"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          157.17562992125985,
+          -38.51
+        ],
+        [
+          187.50000000000003,
+          -38.51
+        ],
+        [
+          187.50000000000003,
+          -37.5
+        ],
+        [
+          157.17562992125985,
+          -37.5
+        ]
+      ],
+      "layer": "S-FNDN",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "51B78YHGNF-BF-065",
+      "tag": "EX-HOUSE-BF-66"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          48.00000000000001,
+          -37.5
+        ],
+        [
+          55.33062992125984,
+          -37.5
+        ],
+        [
+          55.33062992125984,
+          -37.0
+        ],
+        [
+          48.00000000000001,
+          -37.0
+        ]
+      ],
+      "layer": "S-FNDN",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "51B78YHGNF-BF-068",
+      "tag": "EX-HOUSE-BF-69"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          156.60937007874017,
+          -37.5
+        ],
+        [
+          187.50000000000003,
+          -37.5
+        ],
+        [
+          187.50000000000003,
+          -37.0
+        ],
+        [
+          156.60937007874017,
+          -37.0
+        ]
+      ],
+      "layer": "S-FNDN",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
       "uid": "51B78YHGNF-BF-068",
       "tag": "EX-HOUSE-BF-69"
     },
@@ -1300,118 +1356,6 @@
       "points": [
         [
           48.00000000000001,
-          -38.51
-        ],
-        [
-          54.76437007874016,
-          -38.51
-        ],
-        [
-          54.76437007874016,
-          -37.5
-        ],
-        [
-          48.00000000000001,
-          -37.5
-        ]
-      ],
-      "layer": "S-FNDN",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "51B78YHGNF-BF-071",
-      "tag": "EX-HOUSE-BF-72"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          157.17562992125985,
-          -38.51
-        ],
-        [
-          187.50000000000003,
-          -38.51
-        ],
-        [
-          187.50000000000003,
-          -37.5
-        ],
-        [
-          157.17562992125985,
-          -37.5
-        ]
-      ],
-      "layer": "S-FNDN",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "51B78YHGNF-BF-071",
-      "tag": "EX-HOUSE-BF-72"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          48.00000000000001,
-          -37.5
-        ],
-        [
-          55.33062992125984,
-          -37.5
-        ],
-        [
-          55.33062992125984,
-          -37.0
-        ],
-        [
-          48.00000000000001,
-          -37.0
-        ]
-      ],
-      "layer": "S-FNDN",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "51B78YHGNF-BF-074",
-      "tag": "EX-HOUSE-BF-75"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          156.60937007874017,
-          -37.5
-        ],
-        [
-          187.50000000000003,
-          -37.5
-        ],
-        [
-          187.50000000000003,
-          -37.0
-        ],
-        [
-          156.60937007874017,
-          -37.0
-        ]
-      ],
-      "layer": "S-FNDN",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "51B78YHGNF-BF-074",
-      "tag": "EX-HOUSE-BF-75"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          48.00000000000001,
           -37.0
         ],
         [
@@ -1431,8 +1375,8 @@
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "51B78YHGNF-BF-077",
-      "tag": "EX-HOUSE-BF-78"
+      "uid": "51B78YHGNF-BF-071",
+      "tag": "EX-HOUSE-BF-72"
     },
     {
       "space": "model",
@@ -1459,8 +1403,8 @@
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "51B78YHGNF-BF-078",
-      "tag": "EX-HOUSE-BF-79"
+      "uid": "51B78YHGNF-BF-072",
+      "tag": "EX-HOUSE-BF-73"
     },
     {
       "space": "model",

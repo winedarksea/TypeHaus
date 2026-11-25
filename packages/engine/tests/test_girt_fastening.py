@@ -46,9 +46,10 @@ _ORACLE = {
 }
 
 _CATLIN = Path(__file__).resolve().parents[3] / "houses" / "catlin"
-#: Every wall whose outer band is a block-standoff girt: 22 on SPF studs (second storey, attic)
-#: and 14 on the main storey's LSL, which ESR-1078 §3.2 leaves out.
-_SPF_WALLS, _LSL_WALLS = 22, 14
+#: Every wall whose outer band is a block-standoff girt: 24 on SPF studs (second storey, attic,
+#: and since 2026-11-24 the court's LP walkout W-B-S2-FR/S3-FR) and 14 on the main storey's
+#: LSL, which ESR-1078 §3.2 leaves out.
+_SPF_WALLS, _LSL_WALLS = 22, 14  # the court's two LP walls read at 16" (own group)
 
 
 def _girt(ctx):
@@ -97,8 +98,12 @@ def _spf(findings):
 
 def test_the_spf_and_lsl_walls_are_two_reads(findings):
     """SPF studs read ESR-1078 Table 2; the main storey's LSL, outside §3.2, reads NDS 12.2.2.1
-    at ESR-1387's equivalent SG (below). Neither is UNKNOWN, neither is an engineering item."""
-    assert len(findings) == 2
+    at ESR-1387's equivalent SG (below). Neither is UNKNOWN, neither is an engineering item.
+    The court's LP walls are SPF at 16" girts, a third group (court_face_lp_panel.md §1)."""
+    assert len(findings) == 3
+    lp = _group(findings, "W-B-S2-FR")
+    assert lp.result is Result.PASS and '32" x 16" crossing' in lp.message
+    assert "128.8 lb of screw tension" in lp.message and "(d/c 0.575)" in lp.message
     spf, lsl = _spf(findings), _group(findings, "W-M-S1")
     assert spf.result is Result.PASS and lsl.result is Result.PASS
     assert spf.engineering_item is None and lsl.engineering_item is None

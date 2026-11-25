@@ -565,12 +565,10 @@ def test_opening_and_ridge_conditions_scaffold_detail_slices(catlin_model):
     """
     keys = {d.key for d in derive_detail_slices(catlin_model)}
     assert "opening_perimeter:EXT_2X6" in keys
-    # The south wall's openings (D-B-SUNKEN, WIN-B-SAUNA) are all in the sunken-garden face,
-    # a FRAMED assembly, so the key follows it. The door's perimeter is bound by
-    # TR-CATLIN-GARDEN-FRAMED-OPENING (an innie opening in a
-    # 2x6 wall, `window-head-jamb-sill`); the sauna window's is still
-    # TR-CATLIN-SAUNA-OPENING, whose `SAUNA_*` pattern reaches the framed variant unchanged.
-    assert "opening_perimeter:GARDEN_FRAMED_2X6" in keys
+    # The south wall's openings (D-B-SUNKEN, WIN-B-SAUNA) are in the sunken-garden face, a
+    # FRAMED assembly, so the key follows it: LP panel since 2026-11-24 (GARDEN_FRAMED_2X6 and
+    # TR-CATLIN-GARDEN-FRAMED-OPENING are brick's, params/court_face.py).
+    assert "opening_perimeter:EXT_2X6_LP_PANEL" in keys
     assert "roof_ridge:RF-HOUSE" in keys
 
 

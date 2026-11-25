@@ -359,18 +359,22 @@ def _one(ctx: EngineeringContext, ref: str, members: list) -> EngineeringRecord:
     geometry, _ = _geometry(ctx, members[0])
     worst, empty, loop_only, stage = staged.staged(
         body, members_low, floor, geometry.stem_thickness_ft if geometry else 1.0)
+    by_ft = staged.RULE_FT is not None
     states.append(LimitState(
-        f"staged backfill, no side more than {staged.RULE:.0%} of H above another",
+        (f"staged backfill, no side more than {staged.RULE_FT:.1f}' above another" if by_ft
+         else f"staged backfill, no side more than {staged.RULE:.0%} of H above another"),
         REQUIRED_FS, worst, "", (
             f"IRC R404.4 — the completed body at every stage the rule allows (grid of "
-            f"twelfths of H per side, earth only, {low:.0f} pcf, spliced walls empty): worst "
+            f"{'2-inch steps' if by_ft else 'twelfths of H'} per side, earth only, "
+            f"{low:.0f} pcf, spliced walls empty): worst "
             f"FS {worst:.2f} with " + ", ".join(
-                f"{t[0]} at {round(f * 12)}/12" for t, f in zip(stage.thrusts, stage.fills,
-                                                                 strict=True))
+                (f"{t[0]} at {t[2]:.2f}'" if by_ft else f"{t[0]} at {round(f * 12)}/12")
+                for t, f in zip(stage.thrusts, stage.fills, strict=True))
             + f"; one side empty and two full {empty:.2f}; the loop alone without "
             f"the spliced walls' concrete {loop_only:.2f}"), is_safety_factor=True,
         combination=W.SERVICE_BACKFILL[0], combination_factors=W.SERVICE_BACKFILL[1],
-        working=W.staged_steps(body, worst, empty, loop_only, staged.RULE, stage)))
+        working=W.staged_steps(body, worst, empty, loop_only, staged.RULE, stage,
+                               staged.RULE_FT)))
 
     soil_state, soil_how = cases.design_friction(ctx, soil)[2:]
     if soil_state == "specified":

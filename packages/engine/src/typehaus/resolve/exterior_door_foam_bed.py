@@ -44,6 +44,8 @@ def foam_bed_water_path(model, wall, opening, placement, layout):
 
     if spec.joint_drain_wall_ref:
         _joint_drain(model, wall, opening, spec, layout, builder, conflicts, report)
+    elif spec.drain_slab_ref:
+        _slab_drain(model, wall, opening, spec, layout, builder, conflicts, report)
     else:
         unknown.append("foam-bed tread: the drain slot names no outlet")
 
@@ -57,8 +59,9 @@ def foam_bed_water_path(model, wall, opening, placement, layout):
             conflicts.append(
                 f"box-side sealant joint {spec.box_side_joint_width.meters / _IN:.3f}\" cannot "
                 f"take the reserved movement: needs {needed / _IN:.3f}\" at its class")
+    face = "brick" if installation.exterior_return_to_reveal_back else "the wall face"
     unknown.append("foam-bed tread: the PVC sheet, drainage board and sealant are specified "
-                   "by performance; product compatibility with the pan, Trex and brick is a "
+                   f"by performance; product compatibility with the pan, Trex and {face} is a "
                    "supplier hold")
     return tuple(builder.sections), conflicts, unknown, report
 
@@ -103,6 +106,40 @@ def _joint_drain(model, wall, opening, spec, layout, builder, conflicts, report)
                   joint_drain_depth_in=(top - joint_wall.z0_m) / _IN)
     if reach > _BED_REACH or abs(drop) > _BED_REACH:
         conflicts.append(f"joint drain does not reach {bed.tag}'s stone")
+
+
+def _slab_drain(model, wall, opening, spec, layout, builder, conflicts, report):
+    """The nose drips onto the named slab, clear of that slab's edge (its joint to the host)."""
+    from shapely.geometry import LineString
+
+    slab = next((s for s in model.solids if s.tag == spec.drain_slab_ref
+                 and s.category == "slab"), None)
+    if slab is None:
+        conflicts.append(f"tread drain slab {spec.drain_slab_ref} does not resolve")
+        return
+    _, to_plan = _frame(wall, opening)
+    half = layout.width / 2
+    # Layout depth is outward-positive: local = sign * layout.
+    nose = LineString([to_plan(builder.outward_sign * layout.outlet, a) for a in (-half, half)])
+    _grade_slab_drain(slab, nose, spec, layout, conflicts, report)
+
+
+def _grade_slab_drain(slab, nose, spec, layout, conflicts, report):
+    # The outline, not its voids: a court rim's voids are the flush footings it stops at.
+    net = Polygon(slab.outline)
+    clear = nose.distance(net.boundary)
+    mid = nose.interpolate(0.5, normalized=True)
+    drop = (layout.approach_front - layout.thickness - spec.bearing_plate_thickness.meters
+            - slab.top_at(mid.x, mid.y))
+    report.update(drain_slab=slab.tag, drain_slab_nose_clear_in=clear / _IN,
+                  drain_slab_drop_in=drop / _IN)
+    if not net.contains(nose):
+        conflicts.append(f"the tread's nose does not drip onto {slab.tag}")
+    elif clear < spec.drain_slab_clearance.meters - _TOL:
+        conflicts.append(f"the tread's nose drips {clear / _IN:.3f}\" from {slab.tag}'s edge, "
+                         f"under the {spec.drain_slab_clearance.meters / _IN:.2f}\" clearance")
+    if drop <= 0:
+        conflicts.append(f"{slab.tag} is not below the tread's nose")
 
 
 def _clear_span(model, to_local, sign, depths, heights, half):

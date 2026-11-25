@@ -17,6 +17,9 @@ from typehaus.engineering.item import Status
 _CAPPED_FT = 52.0 / 12.0
 _COURT_RETAINED_FT = 10.1198       # the court's retained height, 6.1198' + the old 4'-0" drop
 _NOTE_APRON_SOURCE = {"W-SG-S": "W-RG-BLOCK", "W-SG-W2": "W-RG-WEST", "W-SG-E2": "W-RG-EAST"}
+#: Pad width pushing on each wall's virtual back. FT-SG-S's heel +6" (free body §15n) puts its
+#: virtual back mid-pad, so only the outer 6" pushes on S (27.52 plf, was 54.63).
+_BACK_STRIP_FT = {"W-SG-S": 0.5, "W-SG-W2": 1.0, "W-SG-E2": 1.0}
 #: Gross strip thrust on the same plane, the sensitivity the record prints (520 psf: 328 plf
 #: on the old 4'-0" apron; 563.3 psf here).
 
@@ -96,7 +99,8 @@ def test_each_court_wall_carries_its_own_apron(catlin_plan, pcf) -> None:
         assert q_key == pytest.approx(q_net, abs=0.01)
         if q_net > 0.0:
             drop = _CAPPED_FT
-            lateral, arm = _rigid_strip(q_net, 0.0, 1.0, _COURT_RETAINED_FT - drop)
+            lateral, arm = _rigid_strip(q_net, 0.0, _BACK_STRIP_FT[wall],
+                                        _COURT_RETAINED_FT - drop)
             sp, sarm = _rigid_strip(q_net, 3.0, 1.0, _COURT_RETAINED_FT - 1.0 - drop)
             assert load.surcharge.lateral_plf == pytest.approx(lateral, abs=0.02)
             assert load.surcharge.lateral_arm_ft == pytest.approx(arm, abs=1e-3)
@@ -109,17 +113,19 @@ def test_each_court_wall_carries_its_own_apron(catlin_plan, pcf) -> None:
 def test_the_wall_records_carry_the_apron_surcharge(catlin_plan) -> None:
     """Each court wall's record quotes its apron by name, with the gross sensitivity and the
     capped section's moved rows (re-pinned 2026-11-23 from the engine: overturning, e, q,
-    stem and toe Mu on the three identical 52" aprons; W-SG-S has its own 4'-4" toe)."""
+    stem and toe Mu on the three identical 52" aprons; W-SG-S has its own 4'-4" toe, and since
+    §15n its heel +6": overturning 3.55, e 0.093', q 746.9, toe 11,002)."""
     from typehaus.engineering import EngineeringResults
 
     rows = {
         "W-SG-E2": {"overturning": 2.3504, "e": 0.8519, "q": 1_341.5, "toe": 8_494.3},
         "W-SG-W2": {"overturning": 2.3504, "e": 0.8519, "q": 1_341.5, "toe": 8_494.3},
-        "W-SG-S": {"overturning": 3.0429, "e": 0.3030, "q": 822.65, "toe": 11_590.6},
+        "W-SG-S": {"overturning": 3.5513, "e": 0.0935, "q": 746.94, "toe": 11_001.7},
     }
     results = EngineeringResults(_ctx(catlin_plan))
-    gross = _rigid_strip(130.0 * _CAPPED_FT, 0.0, 1.0, _COURT_RETAINED_FT - _CAPPED_FT)[0]
     for wall, apron in _NOTE_APRON_SOURCE.items():
+        gross = _rigid_strip(130.0 * _CAPPED_FT, 0.0, _BACK_STRIP_FT[wall],
+                             _COURT_RETAINED_FT - _CAPPED_FT)[0]
         record = results[f"retaining_wall/{wall}"]
         assert record.status is Status.OK, record.summary
         states = {s.name: s for s in record.limit_states}

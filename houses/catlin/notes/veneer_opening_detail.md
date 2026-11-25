@@ -12,6 +12,8 @@ source:
   - sunken_garden_veneer_beam.md
 ---
 
+> **DORMANT alternate (2026-11-24)** — live on variant `court-face-brick`; still the oracle for the veneer_beam / veneer_anchor / veneer_cavity tests. The court face is LP SmartSide panel: `court_face_lp_panel.md`.
+
 ## Sheet notes
 
 ### General

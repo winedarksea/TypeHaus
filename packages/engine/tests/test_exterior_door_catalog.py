@@ -98,11 +98,13 @@ def test_catalog_installation_keeps_evidence_separate(catlin_model_ro, tag):
     else:
         assert assembly.fit_status == "UNKNOWN"
         assert not assembly.conflicts
-    assert placement.specification.exterior_wrap_material_ref is None
+    # The LP court door is trimmed like D-M-PORCH since 2026-11-24: Captivate wrapped in dark metal.
+    wrap = "metal-dark-exterior" if tag == "D-B-SUNKEN" else None
+    assert placement.specification.exterior_wrap_material_ref == wrap
     assert all(
         b.material_ref == placement.specification.exterior_material_ref
         for b in placement.boards
-        if b.name.startswith("exterior")
+        if b.name.startswith("exterior") and "door_trim_" not in b.name
     )
     names = {s.name for s in placement.sections}
     assert "catalog-sill-outline" in names
@@ -166,7 +168,11 @@ def test_sunken_door_reveal_reference_and_concrete_seat_are_real(catlin_model_ro
     wall = model.wall(door.host_wall)
     face, sign = exterior_door_boundary(model, wall, door)
     assert sign == door.doorway.exterior_placement.outward_sign
-    assert abs(face) > wall.thickness_m / 2
+    # The LP panel's face, under its zero-depth coat (brick's was the wythe's, past the wall).
+    origin, _, normal, _ = wall_frame(wall)
+    panel = next(ly for ly in wall.depth_layers() if ly.name == "cladding")
+    outer = max(sign * sum((p[i] - origin[i]) * normal[i] for i in (0, 1)) for p in panel.polygon)
+    assert sign * face == pytest.approx(outer, abs=1e-6)
     assert all(f is not None for f in door.doorway.adjacent_floors)
     notch = next(o for o in model.openings if o.tag == "AO-B-SUNKEN-SEAT")
     curb = model.wall(notch.host_wall)
@@ -265,17 +271,18 @@ def test_receiver_and_movement_conflicts_are_measured(catlin_model_ro):
 # only the walls the installation names — how the old AridDek approach was found inside the
 # beam. A neighbour's STRUCTURE (or a named wall) is a conflict; a neighbour's foam skin is a
 # field cut, reported as coordination.
-@pytest.mark.parametrize(("recess", "board_in", "clash", "hard"), [
-    ("AO-B-SUNKEN-TREAD-BED", 5.5, "W-B-S3/xps-a", True),
-    ("AO-SG-BRKBM-TREAD-BED", 5.5, "W-SG-BRKBM/xps-break", False),
-    (None, 8.0, "W-SG-BRKBM/concrete", True),
+# The veneer beam's two cases read variant `court-face-brick`; the LP default has no beam.
+@pytest.mark.parametrize(("variant", "recess", "board_in", "clash", "hard"), [
+    ("catlin_model_ro", "AO-B-SUNKEN-TREAD-BED", 5.5, "W-B-S3/xps-a", True),
+    ("catlin_brick_model_ro", "AO-SG-BRKBM-TREAD-BED", 5.5, "W-SG-BRKBM/xps-break", False),
+    ("catlin_brick_model_ro", None, 8.0, "W-SG-BRKBM/concrete", True),
 ])
-def test_sunken_door_clearance_requires_the_recess(catlin_model_ro, recess, board_in, clash, hard):
+def test_sunken_door_clearance_requires_the_recess(request, variant, recess, board_in, clash, hard):
     from typehaus.resolve.exterior_door_catalog_fit import catalog_section_clashes
     from typehaus.resolve.exterior_door_catalog_layout import catalog_installation_layout
     from typehaus.resolve.exterior_door_catalog_parts import catalog_sill_sections
 
-    model = catlin_model_ro
+    model = request.getfixturevalue(variant)
     opening = next(o for o in model.openings if o.tag == "D-B-SUNKEN")
     wall = model.wall(opening.host_wall)
     placement = opening.doorway.exterior_placement
@@ -341,25 +348,38 @@ def test_schematic_and_catalog_must_be_selected_exclusively():
                                  catalog_installation=_catalog())
 
 
-def test_catalog_trim_layout_is_derived_across_doors(catlin_model_ro):
+def test_catalog_trim_layout_is_derived_across_doors(catlin_model_ro, catlin_brick_model_ro):
     from typehaus.takeoff.door_trim_layout import TrimSheetStock, door_trim_sheet_layouts
 
     sheet = TrimSheetStock("selected sheet", "finish", .75, 48, 96, .125)
     fascia = TrimSheetStock("Trex fascia", "finish", .56, 7.25, 144, .125)
-    layouts = door_trim_sheet_layouts(catlin_model_ro, {"captivate-sheet": sheet,
-                                                        "trex-tide-pool-fascia": fascia})
+    stock = {"captivate-sheet": sheet, "trex-tide-pool-fascia": fascia}
+    # The LP court door is cased in Captivate like the balcony's (2026-11-24).
+    layouts = door_trim_sheet_layouts(catlin_model_ro, stock)
     doors = {s["material"]: {p["door"] for p in s["pieces"]} for s in layouts}
-    assert doors == {"captivate-sheet": {"D-S-BALCONY"}, "trex-tide-pool-fascia": {"D-B-SUNKEN"}}
-    # The sunken-garden door's two 81.9" jambs and 63.3" head share no 12' fascia board: three boards.
-    assert sum(1 for s in layouts if s["material"] == "trex-tide-pool-fascia") == 3
+    assert doors == {"captivate-sheet": {"D-B-SUNKEN", "D-S-BALCONY"}}
+    # Under brick its two 81.9" jambs and 63.3" head share no 12' fascia board: three boards.
+    brick = door_trim_sheet_layouts(catlin_brick_model_ro, stock)
+    assert {s["material"]: {p["door"] for p in s["pieces"]} for s in brick} == {
+        "captivate-sheet": {"D-S-BALCONY"}, "trex-tide-pool-fascia": {"D-B-SUNKEN"}}
+    assert sum(1 for s in brick if s["material"] == "trex-tide-pool-fascia") == 3
     assert all(s["used_width_in"] <= s["sheet_width_in"]
-               and s["maximum_length_in"] <= s["sheet_length_in"] for s in layouts)
+               and s["maximum_length_in"] <= s["sheet_length_in"] for s in (*layouts, *brick))
 
 
-def test_sunken_door_brick_trim_and_crown_clearance(catlin_model_ro):
+def test_sunken_door_lp_trim_is_captivate_cased_and_metal_wrapped(catlin_model_ro):
+    door = next(o for o in catlin_model_ro.openings if o.tag == "D-B-SUNKEN")
+    boards = {b.name: b.material_ref for b in door.doorway.exterior_placement.boards}
+    for part in ("exterior-casing-jamb--1", "exterior-casing-jamb-1", "exterior-casing-head",
+                 "exterior-return-head"):
+        assert boards[part] == "captivate-sheet", part
+        assert boards[f"{part}-door_trim_wrap"] == "metal-dark-exterior", part
+
+
+def test_sunken_door_brick_trim_and_crown_clearance(catlin_brick_model_ro):
     from typehaus.resolve.geometry_door_products import finish_faces
 
-    model = catlin_model_ro
+    model = catlin_brick_model_ro
     door = next(o for o in model.openings if o.tag == "D-B-SUNKEN")
     reveal = next(o for o in model.openings if o.tag == "AO-B-BRICK-DOOR")
     wall = model.wall(door.host_wall)

@@ -70,7 +70,7 @@ SECOND_WINDOW_STOOLS = [
                 overhang=inch(0.75), horn=inch(1), profile="eased"),
 ]
 
-# WIN-B-SAUNA sits on SAUNA_LINER_ON_GARDEN_FRAMED, outside MW-STANDARD's scope, so it is
+# WIN-B-SAUNA sits on SAUNA_LINER_ON_EXT_2X6_LP, outside MW-STANDARD's scope, so it is
 # authored. Clear cedar heartwood, unfinished, 1/8" off the glass so condensate drains:
 # low density reads cool at 190 F where locust, oak and cherry read hot.
 BASEMENT_WINDOW_STOOLS = [
