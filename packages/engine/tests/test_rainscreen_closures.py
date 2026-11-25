@@ -240,7 +240,7 @@ def test_panel_bottom_sits_on_the_base_strip(catlin_model_ro):
 def test_base_z_matches_screen_and_follows_stock_laps(catlin_model_ro):
     model = catlin_model_ro
     runs = [run for wall in model.walls if (run := cavity_base_run(model, wall)) is not None]
-    assert len(runs) == 14
+    assert len(runs) == 16  # main's 14 plus the court's two LP walls
     run = next(run for run in runs if run.wall.tag == "W-M-W4")
     assert (run.end - run.start) / _IN == pytest.approx(162)
     pieces = _of(model, "W-M-W4", "RAINSCREEN_BASE_Z")
@@ -249,7 +249,7 @@ def test_base_z_matches_screen_and_follows_stock_laps(catlin_model_ro):
     assert sorted(s.trim_length_m / _IN for s in _of(model, "W-M-W4", BASE_SCREEN_PRODUCT)) \
         == pytest.approx([44, 120])
     # One strip per run, two on W-B-S3-FR (split at D-B-SUNKEN).
-    assert len([s for s in model.solids if s.product == "EPDM_BASE_ISOLATION"]) == 15
+    assert len([s for s in model.solids if s.product == "EPDM_BASE_ISOLATION"]) == 17
 
 
 def test_base_flashing_screen_and_epdm_stop_at_a_door_reaching_the_base(catlin_model_ro):
