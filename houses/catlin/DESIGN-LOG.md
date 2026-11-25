@@ -1,3 +1,16 @@
+## Basement stair: the railing tape goes, two landing cans come in (2026-11-25, owner)
+
+`LR-B-STAIR-RAIL` lay level at 34" off the slab, which put it in the under-stair closet and
+under the landings, so it lit nothing on the flights. Raking it (one run per flight, as
+`LightRun.rise` allows) was offered and declined. The owner chose two recessed cans over the
+half-landings, `ED-B-STAIR-LAND-CAN1`/`2`, on `CKT-LT-BSMT` and the existing 3-way. They sit in
+ST-M2S's landing underside (+51.89" abs), in the bay between its joists at 399.1"/415.1".
+`ED-B-STAIR-LT-PSU` is retired and mark E (24 V tape, DI-CHB-S2) is catalog-only.
+`ED-M-STAIR-NIGHT-LT` stays the outage light. Engine: a ceiling mount over an open well now
+hangs from the stair board above it, skipping the lid of the stair it serves, and
+`ceiling_can_framing` grades it against that stair's framing (it was storey-default height
+and UNKNOWN). `ED-G-LT3` now names `serves_stair="ST-G-SERVICE"`.
+
 ## Screen ends capped, sheet lengths stated, framing stops at boxes (2026-11-21, owner)
 
 - **Screen.** TR-BW-SCREEN-TOP runs over both posts to their outer faces; TR-BW-SCREEN-END-S/-N

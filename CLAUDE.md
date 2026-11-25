@@ -188,6 +188,9 @@ a release or for exhaustive local verification.
   `stair_soffit` boards under each flight's rake and landing, plumb returns and free-side faces,
   clipped at a ceiling over them, coated with the room's ceiling coat; `ResolvedStair.undersides`
   bills in `[sheet_goods]` "stair soffit", beads in `[drywall_trims]`, and is overhead for R311.7.2.
+  A ceiling mount over an open well with no room ceiling hangs from the stair board above it
+  (`resolve/placeables.py`), past the lid of the stair it names in `serves_stair`; a recessed can
+  there clears that stair's framing (`electrical.ceiling_can_framing`).
 - **A pour slab stops at what it is cast against; a rim band has one wall** (decision #107):
   `resolve/slab_clip.py` cuts flush footings and through-walls out of the slab; read the slab
   as a floor through `floor_plan`. A wall dropping to a foundation owns its band outright.

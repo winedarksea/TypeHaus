@@ -29,3 +29,15 @@ def test_ceiling_can_in_a_bay_passes_and_on_a_joist_fails(catlin_model_ro):
     assert _result(catlin_model_ro, 0.0)[0] == "pass"
     result, message = _result(catlin_model_ro, inch(8).meters)
     assert result == "fail" and "joist" in message
+
+
+def test_can_over_a_well_hangs_from_the_stair_above_and_clears_its_landing(catlin_model_ro):
+    """ED-B-STAIR-LAND-CAN1 serves ST-B2M: past that stair's own landing lid it recesses into
+    ST-M2S's landing underside, and is graded against that landing's joists."""
+    stair = next(s for s in catlin_model_ro.stairs if s.tag == "ST-M2S")
+    board = next(b for b in stair.undersides if b.role == "landing")
+    can = next(o for o in catlin_model_ro.canvas_objects if o.tag == "ED-B-STAIR-LAND-CAN1")
+    assert abs(can.z_m - board.z_start_m) < 1e-6
+    finding = next(f for f in run_from_model(catlin_model_ro, [], only=CHECK).findings
+                   if can.tag in f.element_tags)
+    assert finding.result.value == "pass" and "ST-M2S" in finding.message
