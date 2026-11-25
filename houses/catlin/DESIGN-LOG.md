@@ -9385,3 +9385,40 @@ The owner kept the review and changed seven rooms. Rules updated in
   landings, switched only at the stair top (`ED-M-STAIR-SW3`). Duty 0.49 of 75 VA; always-on
   216.7 W, autonomy 45.1 h, bridge spare 1.67 kWh, peak 5,629 VA. The study's desk paddle
   went too (the Sprig's toggle serves).
+
+## Court face: LP SmartSide panel; brick one switch away; the court's structure fixes (2026-11-24, owner)
+
+- **Why.** The brick court face (W-B-BRICK on W-SG-BRKBM) was the court's only approval (the
+  2024-IRC tie row or an R104.11 request), its ties graded 0.91 on an unverified friction bound,
+  and its cavity sat 1/8" inside the 2024 table. The cladding study
+  (`notes/court_face_cladding_study.md`) found a light rainscreen on the house's own girts
+  removes all of it for less money. The owner took that option in LP SmartSide 38 Series 3/8"
+  smooth panel, 4x8 vertical, painted Benjamin Moore Potters Clay, with colour-matched 440 battens
+  on the vertical joints.
+- **Taken** (`notes/court_face_lp_panel.md`). W-B-S2-FR/S3-FR are `SAUNA_LINER_ON_EXT_2X6_LP` /
+  `EXT_2X6_LP_PANEL`: EXT_2X6's girt stack with the panel and its coat; the curb's foam takes the
+  tinted acrylic skin. The panel is laid sheet by sheet (5 sheets, joints at 48/96/144/184 from
+  W-B-S2-FR's start, a KDAT nailer between girts at each), battened, and its base Z, EPDM strip
+  and bug screen stop at D-B-SUNKEN. D-B-SUNKEN takes D-M-PORCH's Captivate casing, dark wrap and
+  custom head; its tread drains off the nose onto the rim slab, which now runs to the curb.
+  WIN-B-SAUNA takes the generic Z drip head: a Potters Clay picture-frame was not simple (the
+  window casing has no material path), so the window stays dark by the owner's rule.
+- **Off-label, accepted.** LP tables the 38 Series at 16" and does not recommend panels over
+  strapping; the girts stay at 24" (sheltered, small, cheap to replace). `structural.cladding_wind`
+  is UNKNOWN with the scaled estimate (d/c ~0.70 on the nail); the panel foot's 1.22" overhang
+  below the starter is an UNKNOWN on `sheathing_edge_support`. The permit checklist swaps the two
+  masonry-veneer lines for these two; it had 8 open lines before and after.
+- **Brick stays live.** Variant `court-face-brick` (one parameter, two swaps) rebuilds the wythe
+  set from `params/court_face.py` and the beam side gated in `params/sunken_garden.py`; it reads
+  0 FAIL and main's fingerprints except the 7 court records re-derived below. The brick notes are
+  dormant oracles; the brick tests run on the brick fixture. tasks.toml's switch-back lines are in
+  the note's §6.
+- **Court structure** (free body §15n). W1/E1 carry W2's stem steel (#5 @ 10" hooked, #4 @ 16"
+  each face): `column_support` now credits only bars that cross the stem-to-footing joint (an
+  engine fix), stem row 0.578 -> 0.218. The staged backfill rule is 3'-0" and FT-SG-S's heel grows
+  6" with a #5 @ 9" top bar: `retaining_system` 0.981 -> 0.912 (perched governs; staged 1.787).
+  The new horizontals take winter tension to 0.264 (LP) / 0.272 (brick); `thermal_break_transfer`
+  is governed by joint closure, 0.665. Retiring the porch prop was graded, not taken: +2 items,
+  all four `base_rotation` go INCOMPLETE, so it waits on engine work or a seal.
+- **Register** 32 -> 31. **Cost** LP against brick -$2,777 to -$4,870 (takeoff), plus ~$200-425
+  of slab-to-curb sealant by hand; the structure fixes add $1,225-2,096.

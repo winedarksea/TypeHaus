@@ -2712,8 +2712,8 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   switch away**: variant `court-face-brick` (`sunken_garden.cladding = "brick"` plus the two
   assembly swaps back to `GARDEN_FRAMED_2X6`/`SAUNA_LINER_ON_GARDEN_FRAMED`). `params/court_face.py`
   builds the wythe set and `OPTION.has_brick_face` gates the beam side in place. The brick
-  bullets below describe that variant, and its fingerprints are pinned to equal the pre-switch
-  house.
+  bullets below describe that variant. Its fingerprints are pinned to main's pre-switch house
+  except the 7 court records the structure lane re-derived (`test_court_face_variants.py`).
 - Veneer `W-B-BRICK` (variant `court-face-brick`; both faces exposed; top at -13 1/3" since 2026-09-22 so
   `FS-SG-PORCH`'s 2x12s pass over it with 2 1/12" of air — nothing grades that gap) stands on
   `W-SG-BRKBM`, a 12" x 17-3/4" grade beam **bedded on stone** (`FB-SG-BRKBM`, drained NFS

@@ -3454,6 +3454,11 @@ At μ the per-line tension is μ x 129,306 / 2 on the existing 6 #4 (64,800 lb):
 | 0.70 | 0.70 |
 | 1.00 | **0.998** (0.272 since W1/E1 carry stem horizontals, §15n) |
 
+**The LP court face (2026-11-24, `court_face_lp_panel.md` §4).** With no veneer beam the house
+side carries 129,306 − 3,994 = 125,312 lb, so T = 62,656 lb per line: 0.967 on the 6 #4 the
+study read, **0.264** on §15n's 4.40 in² (237,600 lb). The brick figures above stay the oracle
+for variant `court-face-brick`.
+
 The row passes at any plausible stone friction, so **no side-run steel is added** (owner rule:
 material only where a graded row clearly needs it). `bed_friction_max` = **1.00**, where the
 row reaches 1.0 (1.002, rounded down); AN-SG-SOIL prints it.
@@ -3594,6 +3599,7 @@ through the side lines cuts 6 #4 in the footing plus 16 #4 in the stem:
 ```
 T per line = 1.00 x 129,306 / 2                        = 64,653 lb   (unchanged)
 side run   As = 22 x 0.20 = 4.40 in²;  0.9 x 4.40 x 60,000 = 237,600  -> 0.272   (was 0.998)
+LP face    T = (129,306 - 3,994) / 2 = 62,656 lb               -> 0.264   (court_face_lp_panel.md §4)
 joint      As = 3.06 + 16 x 0.20 = 6.26 in²;  338,040                -> 0.191   (was 0.391)
 ```
 
