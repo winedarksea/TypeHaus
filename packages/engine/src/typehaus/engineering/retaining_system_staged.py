@@ -4,8 +4,8 @@ The completed body's sliding row assumes every retained side full. While they ar
 side may stand higher than another. Each retained side is taken at a fill fraction f of its
 H on a grid (2" steps under RULE_FT, else twelfths): earth thrust ½ K0 γ (H f)² over that
 side's projected width (the apron comes later), the soil on its heel to its fill line, the
-corner squares at the lower of their two sides. The spliced braced walls stand EMPTY until their tops are braced and
-add their concrete only, as in the completed body.
+corner squares at the lower of their two sides. The spliced braced walls stand EMPTY until
+their tops are braced and add their concrete only, as in the completed body.
 
 **The permitted sequence is part of the design**: the row grades the worst stage the rule
 allows — no retained side more than :data:`RULE_FT` above another (else :data:`RULE` of its

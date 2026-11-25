@@ -63,7 +63,8 @@ def graded_against_published_cladding(
     ``demand_psf`` is at the row's own level (``published.basis``: ASD or ultimate);
     ``governing_demand_psf`` stays ASD, for the increase-only guard. The four outcomes of
     :func:`published.graded_against_published_capacity`. ``direction`` is ``"outward"``
-    (suction) or ``"inward"``; the two allowables differ and either may govern. The PASS ends with the row's ``condition`` and then, always, its ``excludes``:
+    (suction) or ``"inward"``; the two allowables differ and either may govern. The PASS ends
+    with the row's ``condition`` and then, always, its ``excludes``:
     the row covers the PANEL. The fastener is the maker's named screw at the maker's
     spacing — a CONDITION this read checks, not a capacity it computes;
     ``structural.cladding_fastener`` carries that arithmetic as an advisory.

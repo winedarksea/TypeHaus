@@ -2,10 +2,10 @@
 
 Two checks, one scope. A wall is in scope when its outermost skin declares ``skin_family``
 (one of the building's metal skins) or authors a ``published_cladding`` row (LP's ultimate
-row, ESR-1301 Table 3A; ``cladding_fastener`` is N/A for that one), does NOT declare
-``exposed_fastener`` (so no face-fastened span table reaches it — PBR and the garage corrugated stay out), and stands
-on a block-standoff girt band with a spacing (``truss_girt_bands``, the one reading
-``structural.girt_fastening`` shares).
+row, ESR-1301 Table 3B; ``cladding_fastener`` is N/A for that one), does NOT declare
+``exposed_fastener`` (so no face-fastened span table reaches it — PBR and the garage
+corrugated stay out), and stands on a block-standoff girt band with a spacing
+(``truss_girt_bands``, the one reading ``structural.girt_fastening`` shares).
 
 * ``structural.cladding_wind`` — **the prescriptive read.** ASCE 7-16 C&C wall pressure
   (``typehaus.wind``), zone 5, at 0.6W, graded in BOTH directions against the
