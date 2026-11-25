@@ -336,7 +336,8 @@ def test_catlin_bills_no_through_foam_screw_on_wall_or_roof(catlin_model) -> Non
     # 1159 on 2026-11-16: WIN-S-BED3's move and WIN-S-BED3-N's removal repack the girt blocks.
     # 1158 on 2026-11-19: the band drops to +10'-5 1/2", its course cut at D-S-BALCONY.
     # 1204 on 2026-11-24: the court's LP walkout is a girt wall, +46 blocks on W-B-S2-FR/S3-FR.
-    assert row["count"] == 1204 and furring[0]["count"] == 198
+    # 1202: D-B-SUNKEN sits on its curb (sill_on_base), so its posts take no foot block.
+    assert row["count"] == 1202 and furring[0]["count"] == 198
 
 
 # --- hangers -------------------------------------------------------------------------

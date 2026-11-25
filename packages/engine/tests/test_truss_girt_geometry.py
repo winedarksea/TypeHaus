@@ -663,6 +663,11 @@ def test_head_and_sill_courses_span_the_rough_opening(catlin_model):
                 for name, z0 in (("head", z_head), ("sill", z_sill - _STOCK_FACE - drop)):
                     key = f"ladder-{name}-{band}-{index:03d}"
                     piece = next((m for m in wall.members if m.child_key == key), None)
+                    if name == "sill" and opening.kind == "door" and opening.sill_m <= 0:
+                        # Seated on what the wall stands on (D-B-SUNKEN's curb): no course.
+                        assert piece is None and not any(
+                            f"-sill-{index:03d}-" in m.child_key for m in wall.members), key
+                        continue
                     assert piece is not None, f"{wall.tag}: no {key}"
                     if name == "sill" and opening.kind == "door":
                         # The end-seated 2x6 sill beam tops out at the rough sill (2026-11-17).
