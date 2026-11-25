@@ -79,7 +79,7 @@ _PATH = {
     "house slab strut compression": (14.6528, 2_040.0, 0.00718),
     "house global sliding": (1.5, 3.7480, 0.4002),
     "house far-wall soil bearing": (61_342.1, 153_355.2, 0.4000),
-    "court sliding under break thrust": (0.0, 108_183.3, 0.0),
+    "court sliding under break thrust": (0.0, 112_969.1, 0.0),
 }
 # §11m: the exact beam-on-bed solution (transfer matrices, not FE) and the winter bound.
 # The W1|W2 / E1|E2 joints were graded plain (44.07 psi vs 212.13, 0.2077) until 2026-10-11,
@@ -90,8 +90,12 @@ _PATH = {
 # W2/E2 past the strut axis) + heel soil to the stem tops at 130 pcf 74,691 + W-SG-BRKBM 3,994
 # = 129,306 lb; 1.00 x 129,306 / 2 lines = 64,653 against the existing 6 #4 (64,800). The
 # E2|E1 joint: 6 #4 + 6 #5 splices (3.06 in², 165,240). Court sliding reads 0.43: 108,183.
-_WINTER = {"court winter tension, side run": (64_653.0, 64_800.0, 0.99773),
-           "court winter tension, spliced joint": (64_653.0, 165_240.0, 0.39127)}
+# 2026-11-24 (free body §15n): W1/E1 carry W2's stem steel, so each run adds 16 #4 stem
+# horizontals: 22 #4 = 4.40 in² (237,600) and the joint 3.06 + 3.20 = 6.26 in² (338,040).
+# FT-SG-S's heel +6" adds 1,875 + 12.5 sf x 9.1198 x 130 = 14,820 to the 130 pcf body:
+# court sliding 0.43 x (377,384 + 16,695) / 1.5 = 112,969.
+_WINTER = {"court winter tension, side run": (64_653.0, 237_600.0, 0.27211),
+           "court winter tension, spliced joint": (64_653.0, 338_040.0, 0.19126)}
 _LINE = {"house near-line plan flexure": (72_809.2, 287_262.1, 0.25346),
          "house near-line plan shear": (1_694.09, 18_384.78, 0.09215),
          "house slab-edge peak sustained load": (22.5404, 33.33, 0.67628), **_WINTER}
@@ -121,18 +125,19 @@ _CAPPED_TOTAL_LB = 27_315.75
 # 603.764) = 182.29" and T = 239.484 x 182.293 = 43,656.2 lb. Global: 94,479.0 / 43,656.2 =
 # 2.1642. The three near-line rows are the line solver's at these loads (the foot boards now
 # take a larger share of T, so they do not scale with the line), not re-derived by hand.
+# Since §15n (FT-SG-S +6") T is 46,348.0 (below): every T-led row x 46,348.0 / 46,737.2.
 _PATH_8 = {
-    "house slab-edge bearing": (45_070.6, 151_200.0, 0.29809),
-    "house slab-edge sustained load": (45_070.6, 50_394.96, 0.89435),
-    "house slab strut compression": (29.8086, 2_040.0, 0.01461),
-    "house global sliding": (1.5, 2.191299, 0.68453),
+    "house slab-edge bearing": (44_695.2, 151_200.0, 0.29560),
+    "house slab-edge sustained load": (44_695.2, 50_394.96, 0.88690),
+    "house slab strut compression": (29.5603, 2_040.0, 0.01449),
+    "house global sliding": (1.5, 2.209703, 0.67882),
     "house far-wall soil bearing": (61_342.1, 153_355.2, 0.4000),
     # Net thrust less the retained soil is NEGATIVE, so the row is a force, not an FS.
-    "court sliding under break thrust": (0.0, 108_183.3, 0.0),
+    "court sliding under break thrust": (0.0, 112_969.1, 0.0),
     # §11m.1 uncapped: the peak stress is OVER the 1/3 rule — the cap carries this row too.
-    "house near-line plan flexure": (124_482.0, 287_262.1, 0.43334),
-    "house near-line plan shear": (2_336.11, 18_384.78, 0.12707),
-    "house slab-edge peak sustained load": (49.8716, 33.33, 1.49630),
+    "house near-line plan flexure": (123_445.4, 287_262.1, 0.42973),
+    "house near-line plan shear": (2_316.65, 18_384.78, 0.12601),
+    "house slab-edge peak sustained load": (49.4562, 33.33, 1.48384),
     **_WINTER,
 }
 # (demand, capacity, ratio) per row, hand-worked in §11j. No fresh-concrete pressure row on
@@ -142,35 +147,37 @@ _NOTE_8 = {
     # psi); the stem's 2.758e-5 x 182.293 = 0.0050277", σ 525 x 0.0050277 / 2.5 = 1.0558 psi,
     # w 12.670 lb/in: M = w x 96² / 8 = 14,595, R 608.1, floor line 608.1 + 12.670 x 13.4375
     # = 778.4 lb; line 43,656.2 − 2 x 778.4 = 42,099.5.
+    # §15n: closure 5.5e-6 x 30 x 193.533 = 0.031933" on the 2" boards.
     "foot": {
-        "board strain, pour + closing": (0.0322011, 0.057143, 0.56352),
+        "board strain, pour + closing": (0.0319329, 0.057143, 0.55883),
         **_PATH_8,
     },
     "stem": {
-        "board strain, pour + closing": (0.00538223, 0.071429, 0.07535),
-        "house insulation bearing": (1.13027, 15.0, 0.07535),
-        "house wall flexure": (15_624.8, 307_578.0, 0.05080),
-        "house wall shear": (651.034, 80_570.4, 0.00808),
-        "house floor-line reaction": (833.29, 5_475.0, 0.15220),
+        "board strain, pour + closing": (0.00533740, 0.071429, 0.07472),
+        "house insulation bearing": (1.12085, 15.0, 0.07472),
+        "house wall flexure": (15_494.7, 307_578.0, 0.05038),
+        "house wall shear": (645.612, 80_570.4, 0.00801),
+        "house floor-line reaction": (826.350, 5_475.0, 0.15093),
         **_PATH_8,
     },
     "beam": {
-        "board strain, pour + closing": (0.0322011, 0.057143, 0.56352),
+        "board strain, pour + closing": (0.0319329, 0.057143, 0.55883),
         **_PATH_8,
     },
 }
 # §15h body (bed friction 0.43): x = (78,174 + 150,839) / (239.484 + 2 x 467.0) = 195.16",
-# T = 239.484 x 195.16 = 46,737 lb.
-_NOTE_X_IN = 195.16
-_NOTE_SIGMA_PSI = {"TB-SG-W1": 8.4528, "TB-SG-W1-STEM": 1.1303, _BEAM: 8.4528}
+# T = 46,737 lb. §15n (FT-SG-S +6"): x = (77,496 + 157,037) / (239.484 + 2 x 157,037 / 323)
+# = 234,533 / 1,211.85 = 193.53", T = 239.484 x 193.53 = 46,348.0 lb.
+_NOTE_X_IN = 193.53
+_NOTE_SIGMA_PSI = {"TB-SG-W1": 8.3824, "TB-SG-W1-STEM": 1.1209, _BEAM: 8.3824}
 # Every board is formed and stripped, so nothing is locked in. The second column is what
 # each board WOULD carry as a form face (§11i) — `test_a_formed_and_stripped_board_carries_
 # no_pour` reads it back, because a flag with no measured effect is not a lever.
 _NOTE_LOCK_LB = {"TB-SG-W1": 0.0, "TB-SG-W1-STEM": 0.0, _BEAM: 0.0}
 # The beam's lock-in follows its board: 41,162 x 216/240 = 37,046 lb at the 17'-0" court.
 _FORM_FACE_LOCK_LB = {"TB-SG-W1": 233.3, "TB-SG-W1-STEM": 6_238.0, _BEAM: 37_046.0}
-_NOTE_TOTAL_LB = 46_737.2
-_FORM_FACE_TOTAL_LB = 96_725.6             # 46,737.2 + 2 x 233.3 + 2 x 6,237.8 + 37,046.2
+_NOTE_TOTAL_LB = 46_348.0
+_FORM_FACE_TOTAL_LB = 96_336.4             # 46,348.0 + 2 x 233.3 + 2 x 6,237.8 + 37,046.2
 _NOTE_RUN_IN = 323.0
 
 
@@ -243,10 +250,10 @@ def test_every_row_reproduces_section_11l(records, tag) -> None:
 
 
 def test_the_joint_takes_only_post_backfill_movement(records) -> None:
-    """§11r/§15g: boards set after backfill — thermal 0.0533" + (96,201 − 76,808) / 150,839
-    x 1/4" = 0.0321" of sliding = 0.0854" against 25% of the 1/2" EPDM, 0.125"."""
+    """§11r/§15g/§15n: boards set after backfill — thermal 0.0533" + (95,523 − 76,808) /
+    157,037 x 1/4" = 0.0298" of sliding = 0.0831" against 25% of the 1/2" EPDM, 0.125"."""
     joint = _state(records["W-SG-ARCH"], "court-to-house joint closure")
-    assert joint.demand == pytest.approx(0.0854, abs=0.0005)
+    assert joint.demand == pytest.approx(0.0831, abs=0.0005)
     assert joint.capacity == pytest.approx(0.125)
     assert "boards set after backfill" in joint.citation
 
@@ -270,10 +277,10 @@ def test_without_the_cap_basis_8_comes_back(ctx, monkeypatch) -> None:
     note = " ".join(n for n in out["TB-SG-W1-STEM"].notes if n.startswith("SENSITIVITY"))
     # x1.5 by hand: S 359.23, x = 153,718 / 962.99 = 159.63", T 57,342; the stem's floor
     # line 1.3870 psi x 12 x 61.4375" = 1,022.6 (0.187); line 55,297 (0.366, 1.097).
-    assert "house floor-line reaction 0.152 -> 0.109 / 0.207 / 0.253" in note
-    assert "house slab-edge bearing 0.298 -> 0.213 / 0.406 / 0.495" in note
+    assert "house floor-line reaction 0.151 -> 0.108 / 0.206 / 0.252" in note
+    assert "house slab-edge bearing 0.296 -> 0.211 / 0.404 / 0.494" in note
     # §11k: the graded 1/3 rule goes over inside the band (x1.5) — why basis 9 exists.
-    assert "house slab-edge sustained load 0.894 -> 0.640 / 1.217 / 1.486" in note
+    assert "house slab-edge sustained load 0.887 -> 0.633 / 1.211 / 1.481" in note
 
 
 @pytest.mark.parametrize("tag", _ALL)
@@ -371,7 +378,7 @@ def test_a_formed_and_stripped_board_carries_no_pour(ctx, monkeypatch) -> None:
     # sustained rule reads 1.733 (93,644.6 − 2 x 3,144.3; 1.864 at 19'-0") and the beam's
     # board is over again.
     assert _state(out["TB-SG-W1"], "house slab-edge sustained load").ratio == pytest.approx(
-        90_327.2 / 50_395.0, rel=1e-3)
+        89_951.9 / 50_395.0, rel=1e-3)   # 96,336.4 − 2 x 3,192.3 since §15n (was 90,327.2)
     assert _state(out[_BEAM], "board strain, pour + closing").ratio > 1.0
     assert out[_BEAM].status is Status.OVER
     # The cap does not replace the stripping: a board cast against adds its pour in full.
@@ -442,7 +449,7 @@ def test_the_slab_edge_reads_the_authored_grade(ctx, monkeypatch) -> None:
     # Uncapped, the same fallback reads OVER — the row is graded, not silently dropped.
     uncapped = _compute_with(ctx, monkeypatch, compliant=None)["TB-SG-W1"]
     edge = _state(uncapped, "house slab-edge bearing")
-    assert edge.ratio == pytest.approx(45_070.6 / 22_680.0, rel=1e-3)
+    assert edge.ratio == pytest.approx(44_695.2 / 22_680.0, rel=1e-3)
     assert uncapped.status is Status.OVER
 
 
@@ -539,10 +546,11 @@ def test_the_line_solver_is_hetenyi_far_from_its_ends() -> None:
 
 def test_the_court_side_joint_is_spliced(records) -> None:
     """§11m.2 / §15j: 6 #4 in each braced run, and 6 #4 + 6 #5 splice bars across W1|W2 /
-    E1|E2 (``BarSpec.continues_into``), so the joint is graded cracked."""
+    E1|E2 (``BarSpec.continues_into``), so the joint is graded cracked. §15n: W1/E1's 16 #4
+    stem horizontals (8 rows each face) run along the run and lap across the joint too."""
     record = records["TB-SG-W1"]
-    assert _input(record, "winter_tension_steel") == pytest.approx(1.20)
-    assert _input(record, "winter_joint_steel") == pytest.approx(3.06)
+    assert _input(record, "winter_tension_steel") == pytest.approx(4.40)
+    assert _input(record, "winter_joint_steel") == pytest.approx(6.26)
     assert not any(n.startswith("WINTER JOINT") for n in record.notes)
     assert not [s for s in record.limit_states if "unreinforced joint" in s.name]
 

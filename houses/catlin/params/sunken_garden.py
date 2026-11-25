@@ -697,15 +697,11 @@ _MOMENT_COLUMN_CAGE = ReinforcementSpec(
     source='the _CAST_COLUMN_CAGE section plus its base dowels; notes/balcony_moment_columns.md §7',
 )
 
-# The two BRACED porch walls' vertical steel, structured. `#6 @ 38"` is IRC Table
-# R404.1.2(8) for a 12" wall braced top and bottom — a different row and a much lighter
-# schedule than the three retaining runs' `#5 @ 7"`, because these two have a floor
-# diaphragm at the head and no cantilever to carry.
-_BRACED_STEM_STEEL = ReinforcementSpec(
-    bars=(BarSpec(role="vertical", bar=6, spacing=inch(38.0)),),
-    cover=inch(3.0),
-    source="IRC Table R404.1.2(8), braced top and bottom; 3\" cover with the rest of the court (see _RET_STEM_STEEL)",
-)
+# ** W-SG-W1/E1 TAKE W2'S STEM STEEL (2026-11-24, free body §15n). ** They carried `#6 @ 38"`
+# (IRC Table R404.1.2(8), braced), laid from 3" above the base: no bar crossed the cold joint
+# into FT-SG-W1/E1, yet `column_support`'s E-W cantilever row credited one there. Now
+# `_RET_STEM_STEEL` (#5 @ 10" hooked into the footing mat, #4 @ 16" each face), one schedule
+# for the whole side pour; the braced R404.1.2(8) read and the porch prop stand unchanged.
 
 # W-SG-BRKBM's steel (2026-10-10, notes/sunken_garden_veneer_beam.md §6j), KEPT AS NOMINAL
 # since the beam was bedded on stone (2026-11-04, §6k): a continuously supported veneer footing
@@ -862,28 +858,22 @@ WALLS = [
     # under-porch excavation — wall foot, footing, and a 42" bed — sat 9" deeper than the
     # identical stack ten feet south. It does not any more.
     #
-    # `#6 @ 38" o.c.` is kept, and it is now MORE than the table asks: at 10' x 8' backfill
-    # a 12" wall of 4,000 psi concrete needs no vertical reinforcement at all under footnote
-    # l, and the check says so in its PASS. The schedule stays because it was carried up from
-    # the same row, because these two walls also carry the porch's four beam pockets, and
-    # because taking steel out of a retaining wall to match a table minimum is the engineer's
-    # call, not this file's.
-    # ** ONE POUR, TWO SCHEDULES. ** The four side-wall segments are TWO continuous pours
+    # The table row still PASSES (at 10' x 8' a 12" wall of 4,000 psi needs no vertical
+    # steel under footnote l); the steel is W2's since 2026-11-24 (see `_RET_STEM_STEEL`'s
+    # note above), so the bars cross the footing joint the E-W cantilever row grades.
+    # ** ONE POUR, ONE SCHEDULE. ** The four side-wall segments are TWO continuous pours
     # on two axes, x = 8.0 (W1+W2) and x = 28.0 (E1+E2): same 12" SUNKEN_GARDEN_WALL
     # section, same top (the porch datum) and same bottom, cast at one form height in
     # placement 2 (`AN-SG-PLACEMENTS`). Each is split into two elements at `N-SG-MW` /
     # `N-SG-ME` only because the restraint condition changes there — braced top-and-bottom
-    # north of it, base-restrained and R404.4 engineered south of it.
-    #
-    # The buildability consequence, and the thing a crew gets wrong: **the vertical bar
-    # spacing changes mid-pour at y = -11'-0" (`_y_ax_mid`) — #6 @ 38" north of it,
-    # #5 @ 10" on the retained face south of it, in one form.**
+    # north of it, base-restrained and R404.4 engineered south of it. The steel no longer
+    # changes there: #5 @ 10" hooked verticals and #4 @ 16" each face, end to end.
     FoundationWall(uid="SGW103AAAA", tag="W-SG-W1", start_node="N-SG-NW",
                    end_node="N-SG-MW", assembly="SUNKEN_GARDEN_WALL", alignment=_COURT_AXIS_SHIFT,
                    top_elevation=_porch_top, bottom_elevation=_wall_bottom,
                    lateral_support="top_and_bottom",
-                   vertical_reinforcement='#6 @ 38" o.c.',
-                   reinforcement=_BRACED_STEM_STEEL),
+                   vertical_reinforcement=_RET_REBAR,
+                   reinforcement=_RET_STEM_STEEL),
     # East wall runs ME→NE (south→north), opposite the west wall, so both side walls wind
     # the same way around the garden.
     #
@@ -900,8 +890,8 @@ WALLS = [
                    end_node="N-SG-NE", assembly="SUNKEN_GARDEN_WALL", alignment=_COURT_AXIS_SHIFT,
                    top_elevation=_porch_top, bottom_elevation=_wall_bottom,
                    lateral_support="top_and_bottom",
-                   vertical_reinforcement='#6 @ 38" o.c.',
-                   reinforcement=_BRACED_STEM_STEEL),
+                   vertical_reinforcement=_RET_REBAR,
+                   reinforcement=_RET_STEM_STEEL),
     # ============================================================================
     # W-SG-BRKBM — the SECOND buried grade beam, and the whole answer to the veneer's
     # thermal bridge.
@@ -1266,11 +1256,13 @@ _PLAN_TIES = BarSpec(role="bottom-y", bar=5, count=3,
 
 
 def _heel_bar(mat: ReinforcementSpec, grows: float) -> ReinforcementSpec:
-    """Study lever: a grown heel may take a heavier top-x bar (bar size, spacing)."""
+    """A grown heel takes a heavier top-x bar (FT-SG-S +6": #5 @ 9", free body §15n)."""
     if not grows:
         return mat
     bars = tuple(b.model_copy(update={"bar": OPTION.heel_top_bar,
-                                      "spacing": inch(OPTION.heel_top_spacing_in)})
+                                      "spacing": inch(OPTION.heel_top_spacing_in),
+                                      "note": f"transverse, resists the heel grown {grows:g}\" "
+                                              "outboard, carrying 9.12' of soil"})
                  if b.role == "top-x" else b for b in mat.bars)
     return mat.model_copy(update={"bars": bars})
 
@@ -1282,7 +1274,8 @@ def _spliced_mat(*into: str) -> ReinforcementSpec:
     return _RETAINING_FOOTING_MAT.model_copy(update={"bars": bars})
 
 
-# Study levers: a heel extension grows the strip outboard only (offset is + into the court).
+# A heel extension grows the strip outboard only (offset is + into the court): FT-SG-S +6"
+# since 2026-11-24 (free body §15n, the sliding margin when the backfill rule slips).
 _S_HEEL_IN = OPTION.south_heel_extension_in
 _SIDE_HEEL_IN = OPTION.side_heel_extension_in
 _SIDE_STRIP = (_RETAINING_FOOTING_WIDTH_IN + _SIDE_HEEL_IN,
@@ -3226,10 +3219,10 @@ SEQUENCE_NOTES = [
     Annotation(
         uid="WATAHVD68H", tag="AN-SG-SOIL", position=pt(ft(_cx), ft(-38)),
         text="SOIL REPORT REQUIRED BEFORE PLACEMENT 1 — THE COURT IS DESIGNED ON SPECIFIED SOIL PARAMETERS (free body 15h). The report must CONFIRM: design friction for concrete on the compacted washed #57 bed >= 0.43 (a report bed friction above 1.00 requires the court's winter-tension rows to be re-checked), and drained phi' (and interface angle) of the native at the bed bottom, -14ft 7-7/16in, >= 25 deg. Scope: 1-2 borings at the court to about 20ft below the terrace, groundwater observation, ASTM D2487 lab classification of the native at the bed bottom, drained phi' and the design friction above. ACCEPTANCE AT EXCAVATION (owner-checked, ASTM D2488 visual-manual): the bed bottom is granular (GW, GP, SW, SP, GM or SM), firm under the plate, with no standing water or seepage 48 h after rain. FALLBACK, built only if the report is short of either value or the bed bottom is clay or silt (CL, ML, CH, MH): a 12in x 4ft 6in x 25ft plain lean-concrete wall (f'c 2,500 psi, 4.2 cy) under FT-SG-S, standing on the native at the bed bottom and rising to the footing underside, formed with removable forms in the open dig BEFORE any stone, stripped, stone placed and plated both sides in lifts, #5 dowels at 24in, 30in straight into the lean wall (ld at 2,500 psi) with a standard 90-degree hook into FT-SG-S's bottom mat (placement 1). The wall reaches no deeper than the bed, so it does not answer the deep plane. If the native phi' is short, the deep plane returns to the owner with the measured value"),
-    # Minted 2026-10-11 with typehaus.model.ids.new_uid(). Free body §13.
+    # Minted 2026-10-11 with typehaus.model.ids.new_uid(). Free body §13; rule 3'-0" since §15e.
     Annotation(
         uid="90QCKCV758", tag="AN-SG-BACKFILL", position=pt(ft(_cx), ft(-32)),
-        text="BACKFILL IS A STAGE OF THE STRUCTURE (free body 13). The court resists sliding as one U, W1+W2 / S / E1+E2 with the strut, and only reaches its design FS when ALL THREE retained sides are full (graded on retaining_system/W-SG-ARCH, free body 15). (a) W-SG-W2, W-SG-S and W-SG-E2 are backfilled TOGETHER in lifts: no one of the three may stand more than HALF ITS HEIGHT (5ft 0in) above any other at any time. One side left empty while the rest is full is NOT permitted. (b) W-SG-W1/E1 are NOT backfilled until the porch beams brace their tops (IRC R404.1.7); their concrete is part of the sliding resistance in (a) and must stand empty until then. The porch joists are the soil's strut between them: every joist end bears TIGHT on its ledger face (shim any gap in the hanger seat), and W1 and E1 are then backfilled TOGETHER, neither more than 2ft 0in above the other. (c) No backfill before placement 1 has cured and the strut is in. (d) COMPACTION: lifts of 8in or less, and within 3ft of any stem only light hand-guided plate compactors (no ride-on or heavy roller), the house's backfill rule; the court rows carry no compaction surcharge, and this rule is what keeps one out. The break boards and veneer ties go in AFTER this backfill (AN-SG-BLOCKOUTS)"),
+        text="BACKFILL IS A STAGE OF THE STRUCTURE (free body 13). The court resists sliding as one U, W1+W2 / S / E1+E2 with the strut, and only reaches its design FS when ALL THREE retained sides are full (graded on retaining_system/W-SG-ARCH, free body 15). (a) W-SG-W2, W-SG-S and W-SG-E2 are backfilled TOGETHER, one 8in lift at a time round the court in turn (W2, then S, then E2): no one of the three may stand more than FOUR LIFTS (2ft 8in) above any other at any time (graded at 3ft 0in, free body 15e). Lift lines are marked at 8in on the three wall faces or on stakes, and the owner checks and logs each round. One side left empty while the rest is full is NOT permitted. (b) W-SG-W1/E1 are NOT backfilled until the porch beams brace their tops (IRC R404.1.7); their concrete is part of the sliding resistance in (a) and must stand empty until then. The porch joists are the soil's strut between them: every joist end bears TIGHT on its ledger face (shim any gap in the hanger seat), and W1 and E1 are then backfilled TOGETHER, neither more than 2ft 0in above the other. (c) No backfill before placement 1 has cured and the strut is in. (d) COMPACTION: lifts of 8in or less, and within 3ft of any stem only light hand-guided plate compactors (no ride-on or heavy roller), the house's backfill rule; the court rows carry no compaction surcharge, and this rule is what keeps one out. The break boards and veneer ties go in AFTER this backfill (AN-SG-BLOCKOUTS)"),
 ]
 
 # ** SPENT UIDS, 2026-09-22 — the centre line retired with the 17'-0" court. ** Not reused:

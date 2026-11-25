@@ -2863,8 +2863,8 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 - Ponding over the court is ~267 cf (7 1/4" over 442 sf) against ~158 cf of 100-yr/24-hr
   rain (~1.7x); the volumes scale with the court's area, **the 1.7x ratio does not**. Cite the
   ratio, not the volumes, unless the volumes are what is being asked for. The governing case
-  is **snowmelt over a frozen field**, and `drainage.soakaway_storage` grades it: 165 cf of
-  course voids (413 sf) + 99 cf of 48 h infiltration (presumed HSG D) = 264 cf against 222 cf of melt
+  is **snowmelt over a frozen field**, and `drainage.soakaway_storage` grades it: 170 cf of
+  course voids (425 sf) + 102 cf of 48 h infiltration (presumed HSG D) = 272 cf against 222 cf of melt
   off 278 sf (`notes/court_soakaway_storage.md`). Go to an 18" course only if the credit fails.
 - **`W-SG-ARCH` is a 12" x 12" plain strut in the FOOTING plane (2026-10-10, owner;
   free body §8b).** Its top is the court top and footing top (-109 7/16"), and its depth IS the
@@ -2880,16 +2880,24 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   §14.1.3(a) (continuously soil-supported), a crack closes under the loop's compression,
   and the winter E-W tension rides W-SG-S's horizontals (0.304) with nothing from the strut.
   It needs bar only if it becomes a tie, loses its bed, or is asked to bend.
-- **Backfill is a stage of the structure (`AN-SG-BACKFILL`, free body §13).** W2, S and E2 go
-  up together, no one more than half its height (5'-0") above another: worst FS **1.64**,
-  crediting W1/E1's concrete. W1/E1 stand empty until the porch braces them (IRC R404.1.7).
-  One side empty with two full is 1.37, and the three-wall loop alone at the half rule is
-  1.31. That is why W1/E1 are credited and why their empty state is part of the rule.
-  `test_staged_backfill_holds_at_half_a_wall_of_difference` holds the numbers.
+- **Backfill is a stage of the structure (`AN-SG-BACKFILL`, free body §13, §15e).** W2, S and
+  E2 go up together in 8" lifts in turn, no one more than four lifts (2'-8") above another; the
+  engine grades 3'-0" (`retaining_system_staged.RULE_FT`, 2026-11-24): worst FS **1.787**,
+  crediting W1/E1's concrete (H/2 read 1.584; one lift past the rule 1.683). W1/E1 stand empty
+  until the porch braces them (IRC R404.1.7). One side empty with two full is 1.32, the loop
+  alone at the rule 1.53. `test_retaining_court` holds the numbers.
+- **FT-SG-S's heel is 6" longer, with a `#5 @ 9"` top-x (2026-11-24, free body §15n,
+  `sunken_garden.south_heel_extension_in`):** it is what keeps the backfill rule comfortable when
+  the crew slips, and lifts every sliding row (dry 2.026, perched 1.644 governs, flooded 1.791).
+  At `#5 @ 12"` the 130 pcf heel goes OVER (1.10). The heel runs under the apron pad's inner
+  half, which halves the pad's surcharge on W-SG-S (27.52 plf).
 - **`W-SG-W1`+`W2` are ONE pour, and so are `E1`+`E2`** — one 12" section, one form height,
   placement 2. They are two elements because the restraint condition changes at `N-SG-MW` /
-  `N-SG-ME`: braced top-and-bottom north, R404.4 base-restrained south. So does the steel —
-  **#6 @ 38" north of y = -11'-0" and #5 @ 10" (retained face) south of it, in one form.**
+  `N-SG-ME`: braced top-and-bottom north, R404.4 base-restrained south. **The steel does not
+  change (2026-11-24, free body §15n):** W1/E1 take `_RET_STEM_STEEL`, #5 @ 10" hooked into the
+  footing mat and #4 @ 16" each face. The old `#6 @ 38"` started 3" above the base, so nothing
+  crossed the joint `column_support`'s cantilever row credited (now 0.218); the stem
+  horizontals also took the winter side-run row 0.998 → 0.272.
 - **One footing type in the court, `COURT_FOOTING_12`** (was `RETAINING_FOOTING_96` +
   `PORCH_FOOTING_84`). Identical stacks — 12" of EXPOSED_MIX — split on a width an Assembly
   does not carry, and the porch card declared **13"** where every strip is built at 12". The
@@ -3010,10 +3018,10 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   **It is `#5`, not `#6 @ 10"` (2026-09-17)**:
   the vertical runs continuous on a 90° foot on the footing mat, 7.875" is available, and
   ACI 318-19 §25.4.3.1(a) ldh is 9.35" for a #6, 7.11" for a #5 (free body §6b).
-- **FT-SG-S is 8'-4" with a 4'-4" toe and a `#5 @ 9"` bottom-x mat (2026-09-22,
-  `SPEC.south_toe_extension_in`, free body §12a)**: it squares the planted field to 11'-0"
-  (121 sf) and paves the strip W-SG-S shades; outboard edge and heel unmoved; at `#5 @ 12"`
-  the toe read 0.98. Its closure board needs none of this: `TB-SG-*` sit on W1/E1 only.
+- **FT-SG-S is 8'-10": a 4'-4" toe with a `#5 @ 9"` bottom-x mat (2026-09-22,
+  `SPEC.south_toe_extension_in`, free body §12a) and a 3'-6" heel with a `#5 @ 9"` top-x
+  (2026-11-24, §15n)**: the toe squares the planted field to 11'-0" (121 sf) and paves the
+  strip W-SG-S shades; at `#5 @ 12"` the toe read 0.98. Its closure board needs none of this: `TB-SG-*` sit on W1/E1 only.
 - **FT-SG-S owns the two south corners (2026-10-10, free body §12b).** It runs out to out of
   the side strips, 25'-0", and `FT-SG-W2`/`E2` stop on its toe line (`_EXTENSIONS`, derived
   from the strips' reach). Before that, each corner square had no footing, and the toe overlap

@@ -35,18 +35,18 @@ def _lb(bars) -> float:
 
 
 def test_ft_sg_s_mat(catlin_model_ro) -> None:
-    """§2 at 300" x 100" — out to out of the side strips since 2026-10-10, free body §12b:
-    bar region 94" x 294". bottom-x @ 9": ceil((294 - 0.625)/9) + 1 = 34 #5 at 94"
-    (3,196" = 266.33' = 277.79 lb); top-x @ 12": ceil(293.375/12) + 1 = 26 #5 at 94"
-    (2,444" = 203.67' = 212.42 lb); bottom-y @ 12": ceil((94 - 0.625)/12) + 1 = 9 #5 at 294"
-    (2,646" = 220.5' = 229.98 lb); top-y the same 9 lines, ``zone`` 78" at each end only:
-    18 #5 at 78" (1,404" = 117.0' = 122.03 lb). No laps (24.5' < 40' stock), no hooks.
+    """§2 at 300" x 106" — out to out of the side strips since 2026-10-10 (free body §12b),
+    the heel 6" longer since 2026-11-24 (§15n): bar region 100" x 294". bottom-x @ 9":
+    ceil((294 - 0.625)/9) + 1 = 34 #5 at 100" (3,400" = 283.33' = 295.52 lb); top-x @ 9" the
+    same 34 (295.52 lb); bottom-y @ 12": ceil((100 - 0.625)/12) + 1 = 10 #5 at 294" (2,940" =
+    245.0' = 255.54 lb); top-y the same 10 lines, ``zone`` 78" at each end only: 20 #5 at 78"
+    (1,560" = 130.0' = 135.59 lb). No laps (24.5' < 40' stock), no hooks.
     Layers stack 3" + db/2 up and down: bottom-y on bottom-x, top-y under top-x."""
     m = catlin_model_ro
-    for role, count, length_in, lb in (("bottom-x", 34, 94.0, 277.79),
-                                       ("top-x", 26, 94.0, 212.42),
-                                       ("bottom-y", 9, 294.0, 229.98),
-                                       ("top-y", 18, 78.0, 122.03)):
+    for role, count, length_in, lb in (("bottom-x", 34, 100.0, 295.52),
+                                       ("top-x", 34, 100.0, 295.52),
+                                       ("bottom-y", 10, 294.0, 255.54),
+                                       ("top-y", 20, 78.0, 135.59)):
         bars = _role(m, "FT-SG-S", role)
         assert len(bars) == count, role
         for b in bars:

@@ -36,25 +36,30 @@ _M_PER_FT = 0.3048
 #   Thrust 1/2 x 60 x 10.1198^2 + apron 54.63 (L6's capped AB legs) = 3,126.94 plf over the
 #   25.00' south face (W2/E2's 19.83' cancel but for W-RG-EAST's old 50.48) = 78,174 lb
 #   -> dry FS 1.571.
-_NOTE_BODY_LB = 350_788.0
-_NOTE_RESULTANT_LB = 78_174.0
+# §15n (2026-11-24): FT-SG-S's heel +6" adds footing 1,875 and heel soil 12.5 sf x 9.1198 x
+# 110 = 12,540 -> W 365,203; the heel's virtual back now stands mid-pad, so the apron's
+# surcharge on S is the outer half of the strip, 27.52 plf: (3,072.31 + 27.52) x 25 = 77,496.
+# The side faces grow 6" with the corner squares (20.33').
+_NOTE_BODY_LB = 365_203.0
+_NOTE_RESULTANT_LB = 77_496.0
 _NOTE_SOUTH_FACE_FT = 25.0
-_NOTE_SIDE_FACE_FT = 19.8333
+_NOTE_SIDE_FACE_FT = 20.3333
 # §15h: graded on the SPECIFIED bed friction 0.43 and native phi' 25 deg (tan 0.4663);
-# presumptive (0.35) dry is 1.571, scaled x 0.43/0.35.
-_NOTE_FRICTION_LB = 150_839.0   # 0.43 x 350,788
-_NOTE_DRY_FS = 1.930
-# Perched at H/2 (water 5.06' over the footing top, bed draining): 3,843.9 plf -> 96,097 lb.
-_NOTE_PERCHED_FS = 1.568
-# Flooded to the court floor, both sides, uplift 527.33 sf x 62.4 = 32,905: 317,883 / 77,781.
-_NOTE_FLOODED_FS = 1.702   # to D-B-SUNKEN's threshold crest, -102.14" (§15j)
-# Retained water to the terrace, court empty (reported): 128,344 lb.
-_NOTE_RETAINED_FULL_FS = 1.17
+# presumptive (0.35) dry is 0.35 x 365,203 / 77,496 = 1.649.
+_NOTE_FRICTION_LB = 157_037.0   # 0.43 x 365,203
+_NOTE_DRY_FS = 2.026
+# Perched at H/2 (§15n): S (2,647.7 + 1,145.7 + 27.52) x 25 = 95,523 lb. Governs.
+_NOTE_PERCHED_FS = 1.644
+# Flooded to D-B-SUNKEN's threshold crest, -102.14" (§15j, §15n): 319,614 / 76,748.
+_NOTE_FLOODED_FS = 1.791
+# Retained water to the terrace, court empty (reported): 127,770 lb.
+_NOTE_RETAINED_FULL_FS = 1.23
 # Deep plane at -175.4375", mu 0.25: + bed stone 2,364.65 cf x 100 = 236,465, native under
 # the W1/E1/BRKBM beds 158 cf = 17,380, native core 121,644 -> 726,276 lb; dry thrust
 # 1/2 x 60 x 14.6198^2 + 50.48 = 6,462.7 x 25 = 161,567. Soakaway full to -127.4375":
 # uplift 4.0' x 758.33 sf x 62.4 = 189,280, thrust 6,277.5 x 25 = 156,937.
-_NOTE_DEEP_FS = {"dry": 2.09, "lip": 1.594, "flooded": 1.37}
+# §15n: + footing 1,875, heel soil 12,540, bed stone 2,505 -> 553,916; 6,255 x 25 = 156,366.
+_NOTE_DEEP_FS = {"dry": 2.16, "lip": 1.652, "flooded": 1.43}
 # Strut: two-span continuous reaction, E2 3,122.79 plf over 16.333' and E1's footing 1,593.9
 # plf (1/2 x 60 x 7.289^2) over 10.5'. M_B = 71,965; R 45,126 -> Pu 72,201; phi Pn at the
 # strut's 5,000 psi: 0.60 x 0.45 x 5,000 x 144 x 0.6836 = 132,890.
@@ -64,12 +69,12 @@ _NOTE_STRUT_PHI_PN_LB = 132_890.0
 # 3.94") + the outermost #4 (3.25"): As 1.13, centroid 3.82", z = 42 - 3.82 = 38.18";
 # 1.6 x 3,122.79 x 11.5^2 / 8 = 82,598 ft-lb -> Tu 25,960 vs 0.75 x 1.13 x 60,000 = 50,850.
 _NOTE_PLAN_DC = 0.51
-# Staged backfill at the drawn H/2 rule (§15h): E2 at 6/12, S and W2 full; H and N' of
-# that stage, worked by hand term by term.
+# Staged backfill at the drawn 3'-0" rule (§15e, §15n): E2 and S full, W2 at 7.12'; H and N'
+# of that stage, worked by hand term by term.
 _NOTE_EXPOSURE_IN = 40.0
 _NOTE_EXPOSURE_BAND_IN = (36.0, 48.0)
-_NOTE_STAGED_FS = {"rule": 1.529, "empty": 1.28}
-_NOTE_STAGE = {"H_stage": 89_375.4, "W_soil": 140_873.5, "N'_stage": 317_855.5}
+_NOTE_STAGED_FS = {"rule": 1.787, "empty": 1.32}
+_NOTE_STAGE = {"H_stage": 83_034.0, "W_soil": 166_214.2, "N'_stage": 345_071.2}
 
 
 def _results(plan):
@@ -106,7 +111,7 @@ def test_the_court_reproduces_the_hand_worked_free_body(catlin_plan) -> None:
     for symbol, value in _NOTE_STAGE.items():
         assert worked[symbol] == pytest.approx(value, rel=1e-4), symbol
     basis = next(b.statement for b in record.bases if "snow and perched water" in b.subject)
-    assert "NOT concurrent" in basis and "FS 1.46" in basis   # §15k, printed once
+    assert "NOT concurrent" in basis and "FS 1.53" in basis   # §15k/§15n, printed once
     assert "under snowmelt" not in states
     reported = " ".join(n for n in record.notes if n.startswith("REPORTED"))
     assert f"court empty: FS {_NOTE_RETAINED_FULL_FS:.2f}" in reported
@@ -121,19 +126,20 @@ def test_the_court_reproduces_the_hand_worked_free_body(catlin_plan) -> None:
     # Closed on the specified soil parameters; the fallback rows pre-check the lean wall.
     assert record.status is Status.OK, record.summary
     fallback = {n: s.capacity for n, s in states.items() if n.startswith("fallback")}
+    # (0.35 x 365,203 + 32,500) / 95,523 and (0.35 x 319,614 + 32,500) / 76,748 (§15n).
     assert fallback["fallback lean wall under FT-SG-S: sliding, perched at H/2"] == \
-        pytest.approx(1.614, abs=0.002)
+        pytest.approx(1.678, abs=0.002)
     assert fallback["fallback lean wall under FT-SG-S: sliding, flooded court"] == \
-        pytest.approx(1.805, abs=0.002)
+        pytest.approx(1.881, abs=0.002)
     # The wall resists north-south only: |FS T - K y| = mu N (verifier, 2026-11-23).
     assert fallback["fallback lean wall under FT-SG-S: staged backfill"] == pytest.approx(
-        1.543, abs=0.002)
+        1.809, abs=0.002)
     assert states["sliding, ground snow on the terrace"].capacity == pytest.approx(
-        1.773, abs=0.002)
+        1.861, abs=0.002)
     # §15l: the balcony columns' ASD base shears read from pier_basis — E-W 4 x 337 = 1,348
-    # in quadrature, the governing-axis 1,348 along the resultant: 79,533 lb, FS 1.897.
+    # in quadrature, the governing-axis 1,348 along the resultant: 78,855 lb, FS 1.991.
     wind = states["sliding, dry with the structure's wind on the court (D + H + 0.6W)"]
-    assert wind.capacity == pytest.approx(1.897, abs=0.003)
+    assert wind.capacity == pytest.approx(1.991, abs=0.003)
     assert "ASD base shears" in wind.citation
     inputs = {q.name: q.value for q in record.inputs}
     assert inputs["bed_friction"] == pytest.approx(0.43)
@@ -157,13 +163,13 @@ def test_the_east_west_thrusts_cancel_and_the_south_face_is_the_body_s(catlin_pl
 
 
 def test_the_no_stone_sensitivity_is_the_designs_real_dependency(catlin_plan) -> None:
-    """§15: at the site's own mu 0.25 the dry body reads 0.25 / 0.35 x 1.573 = 1.12 — the
+    """§15: at the site's own mu 0.25 the dry body reads 0.25 / 0.35 x 1.649 = 1.18 — the
     bed's 0.35 is still the margin, and the drawing's "no fabric under the footings" with
     it."""
     record = _results(catlin_plan)[f"{KIND}/W-SG-ARCH"]
     dry = next(s for s in record.limit_states if s.name == "sliding, dry")
-    assert 0.35 / 0.43 * dry.capacity == pytest.approx(1.571, abs=0.005)
-    assert 0.25 / 0.43 * dry.capacity == pytest.approx(1.12, abs=0.01)
+    assert 0.35 / 0.43 * dry.capacity == pytest.approx(1.649, abs=0.005)
+    assert 0.25 / 0.43 * dry.capacity == pytest.approx(1.178, abs=0.01)
     assert 0.25 / 0.43 * dry.capacity < 1.5
 
 
@@ -187,7 +193,8 @@ def test_every_member_quotes_the_courts_answer_and_carries_it_in_its_fingerprint
 def test_the_native_under_the_stone_bears_the_footing_spread_at_two_to_one(catlin_plan) -> None:
     """§15m, hand-worked: q = W/B_z (1 + 6e/B_z) + 100 pcf x 3.5', B_z = B + 42" of stone."""
     results = _results(catlin_plan)
-    for tag, q_hand in (("W-SG-E2", 1118.5), ("W-SG-W2", 1118.5), ("W-SG-S", 898.6)):
+    # S since §15n: 6,842.5 / 12.333 x (1 + 6 x 0.1858 / 12.333) + 350 = 955.0 (130 pcf).
+    for tag, q_hand in (("W-SG-E2", 1118.5), ("W-SG-W2", 1118.5), ("W-SG-S", 955.0)):
         record = results[f"retaining_wall/{tag}"]
         state = next(s for s in record.limit_states
                      if s.name == "bearing on the native under the stone")
@@ -301,17 +308,18 @@ def test_the_footings_narrowed_inboard_only_and_the_outboard_reach_held(catlin_m
     # Outboard edges: 3.5' off each axis (5.5 / 30.5; 4.5 / 31.5 before the court narrowed).
     assert x_w - edges["FT-SG-W2"][0] == pytest.approx(3.5, abs=1e-6)
     assert edges["FT-SG-E2"][1] - x_e == pytest.approx(3.5, abs=1e-6)
-    # -32.8333 until the court shortened: wall axis -27.3333 less half the 7'-0" strip.
-    assert edges["FT-SG-S"][2] == pytest.approx(-30.8333, abs=1e-3)
+    # -30.8333 until FT-SG-S's heel grew 6" outboard (2026-11-24, free body §15n): the one
+    # outboard edge that moved, by owner decision; W2/E2's 3.5' reach still holds the apron.
+    assert edges["FT-SG-S"][2] == pytest.approx(-31.3333, abs=1e-3)
     # Inboard edges, 3.5' into the court.
     assert edges["FT-SG-W2"][1] - x_w == pytest.approx(3.5, abs=1e-6)
     assert x_e - edges["FT-SG-E2"][0] == pytest.approx(3.5, abs=1e-6)
     # FT-SG-S's toe is 16" longer (2026-09-22, free body §12a): 4.8333' into the court.
     assert edges["FT-SG-S"][3] == pytest.approx(-22.5, abs=1e-3)
-    # 7'-0" overall on W2/E2, 8'-4" on S; the heel still 3'-0" on all three.
+    # 7'-0" overall on W2/E2, 8'-10" on S; the heel 3'-0" on W2/E2, 3'-6" on S.
     for tag, (x0, x1, y0, y1) in edges.items():
         span = (x1 - x0) if tag != "FT-SG-S" else (y1 - y0)
-        assert span == pytest.approx(7.0 if tag != "FT-SG-S" else 100 / 12, abs=1e-6), tag
+        assert span == pytest.approx(7.0 if tag != "FT-SG-S" else 106 / 12, abs=1e-6), tag
 
     # The field is what the three toes leave: 11'-0" square.
     field = next(s for s in catlin_model.solids if s.tag == "SL-SG-FIELD")
@@ -582,7 +590,8 @@ def test_the_specified_soil_is_pending_until_the_report_and_fails_below_it(catli
         return soil_parameters_confirmed(SimpleNamespace(plan=plan))[0].result
 
     assert run(catlin_plan) is Result.UNKNOWN
-    short = SoilParameters(bed_friction=0.40, native_phi_deg=30.0, source="report")
+    # 0.38: perched reads 0.38 x 365,203 / 95,523 = 1.453 (0.40 now clears at 1.529, §15n).
+    short = SoilParameters(bed_friction=0.38, native_phi_deg=30.0, source="report")
     plan = catlin_plan.model_copy(update={"project": catlin_plan.project.model_copy(
         update={"site": site.model_copy(update={"confirmed_soil": short})})})
     assert run(plan) is Result.FAIL

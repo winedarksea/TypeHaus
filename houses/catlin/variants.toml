@@ -115,15 +115,10 @@ description = "Genta LX theme faucets in brushed nickel; utility Indy stays stai
 [variant.parameters]
 "finish.bath_theme" = "brushed-nickel"
 
-# ---- Court sliding study (notes/court_sliding_levers_study.md): each lever ALONE. ----
-# A grown heel grows outboard only; its top-x bar is re-sized where the 130 pcf end needs it.
-[[variant]]
-name = "sliding-s-heel-6"
-description = "FT-SG-S heel +6 in (top-x #5 @ 9 in)."
-[variant.parameters]
-"sunken_garden.south_heel_extension_in" = 6
-"sunken_garden.heel_top_spacing_in" = 9
-
+# ---- Court sliding study (notes/court_sliding_levers_study.md). ----
+# The drawn design is FT-SG-S +6 in with a #5 @ 9 in heel top bar (free body §15n); these
+# levers are measured on top of it. A grown heel grows outboard only, and every grown heel
+# takes the one heel_top_bar @ heel_top_spacing_in, sized at the 130 pcf end.
 [[variant]]
 name = "sliding-s-heel-12"
 description = "FT-SG-S heel +12 in (top-x #5 @ 7 in)."

@@ -17,12 +17,13 @@ class SunkenGardenOption:
     stem_thickness_in: float
     footing_width_in: float
     footing_toe_in: float
-    # Study levers (court sliding study, 2026-11-23): heel growth outboard, toe and outboard
-    # reach of the others unchanged. Zero is the drawn design.
-    south_heel_extension_in: float = 0.0
+    # Heel growth outboard, toe and the others' outboard reach unchanged (court sliding study,
+    # notes/court_sliding_levers_study.md). Drawn: FT-SG-S +6" with a #5 @ 9" heel top bar
+    # (free body §15n); a grown heel's top-x takes heel_top_bar @ heel_top_spacing_in.
+    south_heel_extension_in: float = 6.0
     side_heel_extension_in: float = 0.0
     heel_top_bar: int = 5
-    heel_top_spacing_in: float = 12.0
+    heel_top_spacing_in: float = 9.0
 
     @property
     def is_reference(self) -> bool:
@@ -47,10 +48,10 @@ def _option() -> SunkenGardenOption:
         stem_thickness_in=parameter("sunken_garden.stem_thickness_in", 12.0),
         footing_width_in=parameter("sunken_garden.footing_width_in", 84.0),
         footing_toe_in=parameter("sunken_garden.footing_toe_in", 36.0),
-        south_heel_extension_in=parameter("sunken_garden.south_heel_extension_in", 0.0),
+        south_heel_extension_in=parameter("sunken_garden.south_heel_extension_in", 6.0),
         side_heel_extension_in=parameter("sunken_garden.side_heel_extension_in", 0.0),
         heel_top_bar=parameter("sunken_garden.heel_top_bar", 5),
-        heel_top_spacing_in=parameter("sunken_garden.heel_top_spacing_in", 12.0),
+        heel_top_spacing_in=parameter("sunken_garden.heel_top_spacing_in", 9.0),
     )
     if option.planting_layout not in {"reference", "yard-grade", "against-wall", "setback"}:
         raise ValueError("sunken_garden.planting_layout must be reference, yard-grade, "
