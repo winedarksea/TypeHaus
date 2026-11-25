@@ -158,6 +158,10 @@ class FramingSpec(HausModel):
     standoff_fastener_source: str | None = None
     #: A door sill beam's seats, screws and backer (``standoff="block"`` only).
     sill_course: SillCourseFastening | None = None
+    #: FURRING, horizontal only: a nailer of this band's stock, laid flat and cut between
+    #: the courses, at every vertical joint of the sheet-laid cladding over it
+    #: (``resolve/sheet_layout_nailers.py``). Off, such a joint is backed at the courses only.
+    panel_joint_nailers: bool = False
     # "california" is the drywall-backer corner: the same stick count as "3-stud", but the
     # supplemental stud is laid FLAT, leaving the corner cavity open to insulation.
     corner_style: Literal["3-stud", "4-stud", "california"] = "3-stud"
@@ -376,7 +380,8 @@ class Layer(HausModel):
     function: LayerFunction
     # Absolute elevations of intentional horizontal panel terminations in this layer.
     panel_joint_elevations: tuple[Length, ...] = ()
-    # Material of the horizontal trim at those joints; None means this layer's own material.
+    # Material of the trim at this layer's panel joints (those, and a sheet-laid panel's
+    # vertical battens); None means this layer's own material.
     joint_trim_material_ref: str | None = None
     framing: FramingSpec | None = None
     masonry: MasonrySpec | None = None
@@ -426,7 +431,8 @@ class Layer(HausModel):
     # The NOMINAL long dimension of the panel this layer is bought in (4x9 -> ft(9)); the
     # width is 48". Read through ``resolve/sheet_stock.py`` by both the bracing check (does
     # a sheet reach the plate, Table R602.10.3(2) item 8) and the sheet order. Unstated, the
-    # check is UNKNOWN and the order bills 4x8.
+    # check is UNKNOWN and the order bills 4x8. On a CLADDING layer it says the cladding is a
+    # panel hung sheet by sheet (``resolve/sheet_layout.py``), its joints graded and battened.
     sheet_length: Length | None = None
     # The panel's nailing schedule, counted per piece (``takeoff/sheathing_nails.py``).
     nailing: SheathingNailing | None = None

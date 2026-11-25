@@ -1,4 +1,4 @@
-"""Collinear sheathing faces joined into one run before they are laid (decision #146).
+"""Collinear sheathing or panel-cladding faces joined into one run (decision #146).
 
 A wall split at a tee is two walls but one sheathed face: the crew hangs the sheets across
 the tee, so laying each piece apart would rip a sheet at every split. Faces join when they
@@ -22,8 +22,9 @@ _PARALLEL = 0.999
 
 @dataclass
 class Face:
-    """One wall's sheathing layer on a run: ``base`` is the run station of the wall's axis
-    start and ``sign`` +1 where the wall runs with the run, -1 against it."""
+    """One wall's laid layer on a run: ``base`` is the run station of the wall's axis
+    start and ``sign`` +1 where the wall runs with the run, -1 against it. ``structure``
+    is the framed layer behind it; ``nailer`` a cladding's joint-nailer stock, if any."""
 
     wall: object
     layer: object
@@ -35,6 +36,7 @@ class Face:
     sign: float = 1.0
     lo: float = 0.0
     hi: float = 0.0
+    nailer: object | None = None
 
     def run_station(self, local: float) -> float:
         return self.base + self.sign * local

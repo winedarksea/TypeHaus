@@ -1,4 +1,4 @@
-"""Records of the sheathing sheet layout (decision #146, ``resolve/sheet_layout.py``).
+"""Records of the sheathing and panel-cladding sheet layout (``resolve/sheet_layout.py``).
 
 Stations ``s`` are metres along the wall from its axis start; ``z`` is absolute.
 """
@@ -96,6 +96,9 @@ class ResolvedSheetLayout:
     vertical: bool = True  # sheets stand with their length up (the standard's orientation)
     # Every wall face the run crosses: ``(wall tag, layer name, lo, hi)`` in run stations.
     faces: tuple[tuple[str, str, float, float], ...] = ()
+    function: str = "sheathing"  # or "cladding": a panel siding laid on its furring
+    # The joint nailers derived behind a cladding run's vertical joints (also on the walls).
+    nailers: tuple = ()
 
     @property
     def wall_tags(self) -> tuple[str, ...]:

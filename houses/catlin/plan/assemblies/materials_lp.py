@@ -17,10 +17,11 @@ POTTERS_CLAY = "#b98766"
 #: The panel's own trim kit; the court's two walls have no outside corner, eave or rake.
 #: D-B-SUNKEN takes D-M-PORCH's dark custom door head; no door jamb trim, since the panel butts
 #: the Captivate casing with LP's 3/16" gap and sealant (AI 2024 p.11). WIN-B-SAUNA takes the
-#: generic Z drip flashing.
+#: generic Z drip flashing. Each vertical joint takes a 440 3.50" batten over its 2x4 nailer.
 LP_PANEL_KIT = {
     TrimCondition.DOOR_HEAD: "DOOR_HEAD_CUSTOM",
     TrimCondition.OPENING_HEAD: "OPENING_HEAD_DRIP_FLASHING",
+    TrimCondition.VERTICAL_JOINT: "LP_440_BATTEN_3_5",
 }
 
 #: ESR-1301 Table 3A row, read at the court face's own 24 in girts. The row is at 16 in studs,

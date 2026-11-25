@@ -8,6 +8,11 @@ coursed, columns alternating bottom/top anchored so neighbouring horizontal join
 (an all-backed anchoring wins). Openings cut pieces; a raked head trims them. The breaks
 carry their backing for ``structural.sheathing_edge_support`` and the pieces feed the sheet
 count in ``takeoff/sheet_goods.py``.
+
+A CLADDING layer stating ``sheet_length`` is a panel siding and is laid the same way on the
+framed layer it hangs on (its furring). Over horizontal furring with joint nailers a joint
+anywhere a nailer fits counts as backed, so the columns keep the bare module from the start
+end, and the nailers are derived at the joints (``resolve/sheet_layout_nailers.py``).
 """
 
 from __future__ import annotations
@@ -22,6 +27,7 @@ from typehaus.model.sheet_layout import SheetLayoutStandard
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.geometry_walls import body_top_at
 from typehaus.resolve.model_sheet_layout import ResolvedSheetLayout, SheetBreak, SheetPiece
+from typehaus.resolve.rainscreen_closures import panel_bottom_z
 from typehaus.resolve.sheet_layout_backing import (
     backing_rects,
     face_frame,
@@ -29,6 +35,13 @@ from typehaus.resolve.sheet_layout_backing import (
     opening_rects,
     unbacked_length,
     unbacked_spans,
+)
+from typehaus.resolve.sheet_layout_nailers import (
+    cladding_backing,
+    nailer_spans,
+    nailer_spec,
+    nailers_at,
+    with_nailers,
 )
 from typehaus.resolve.sheet_layout_runs import Face, Run, build_runs, direction
 from typehaus.resolve.sheet_layout_walk import pieces, walk
@@ -64,20 +77,29 @@ def layout_params(standard: SheetLayoutStandard | None) -> SimpleNamespace:
 def resolve_sheet_layouts(plan: Any, model: Any) -> list[Finding]:
     standard, findings = sheet_layout_standard(plan)
     params = layout_params(standard)
-    sheathing = [(w, layer) for w in model.walls for layer in w.layers
-                 if layer.function == "sheathing" and len(layer.polygon) >= 3]
-    shapes = {id(layer): Polygon(layer.polygon).buffer(0.002) for _w, layer in sheathing}
     faces = []
-    for wall, layer in sheathing:
-        length_in = layer_sheet_length_in(
-            wall_layer(plan, wall, layer.source_layer_name or layer.name))
-        if length_in is None:
-            continue
-        structure = next((ly for ly in wall.layers
-                          if ly.function == "structure" and not ly.is_cavity), None)
-        faces.append(Face(wall, layer, structure, length_in * M_PER_IN, layer.band(wall)[0],
-                          _clip_above(wall, layer, sheathing, shapes)))
-    model.sheet_layouts[:] = [lay_run(model, run, params) for run in build_runs(faces)]
+    for function in ("sheathing", "cladding"):
+        laid = [(w, layer) for w in model.walls for layer in w.layers
+                if layer.function == function and len(layer.polygon) >= 3]
+        shapes = {id(layer): Polygon(layer.polygon).buffer(0.002) for _w, layer in laid}
+        for wall, layer in laid:
+            length_in = layer_sheet_length_in(
+                wall_layer(plan, wall, layer.source_layer_name or layer.name))
+            if length_in is None:
+                continue
+            z0, nailer = layer.band(wall)[0], None
+            if function == "sheathing":
+                structure = next((ly for ly in wall.layers
+                                  if ly.function == "structure" and not ly.is_cavity), None)
+            else:  # a panel stands on its base strip, over a screened rainscreen foot
+                structure = cladding_backing(wall, layer)
+                nailer = nailer_spec(plan, wall, structure)
+                z0 = panel_bottom_z(model, wall, layer)
+            faces.append(Face(wall, layer, structure, length_in * M_PER_IN, z0,
+                              _clip_above(wall, layer, laid, shapes), nailer=nailer))
+    nailers: dict[str, list] = {}
+    model.sheet_layouts[:] = [lay_run(model, run, params, nailers) for run in build_runs(faces)]
+    with_nailers(model, nailers)
     return findings
 
 
@@ -116,16 +138,19 @@ def _start_end(model, run: Run, params) -> str:
     return "end" if ends == {"end"} else "start"
 
 
-def lay_run(model, run: Run, params) -> ResolvedSheetLayout:
-    """One run's layout: columns along it, courses up each column."""
+def lay_run(model, run: Run, params, nailers: dict[str, list] | None = None
+            ) -> ResolvedSheetLayout:
+    """One run's layout: columns along it, courses up each column. A cladding run's derived
+    joint nailers are added to ``nailers`` by wall tag."""
     first = run.faces[0]
     lo, hi, z0 = run.lo, run.hi, first.z0
     sheet_w, sheet_l = SHEET_WIDTH_IN * M_PER_IN, first.sheet_l
     size_s, size_z = (sheet_w, sheet_l) if params.vertical else (sheet_l, sheet_w)
-    rects, holes = [], []
+    rects, holes, frames = [], [], {}
     for face in run.faces:
         frame = (face_frame(face.layer, face.structure, run.origin, run.d)
                  if face.structure is not None else None)
+        frames[id(face)] = frame
         if frame is not None:
             rects.extend(backing_rects(model, face.wall, frame, z0, face.top, face.lo, face.hi))
         holes.extend(opening_rects(model, face))
@@ -136,12 +161,19 @@ def lay_run(model, run: Run, params) -> ResolvedSheetLayout:
         return min(face.top, body_top_at(face.wall, x, y))
 
     ctx = SimpleNamespace(rects=rects, holes=holes, top=top, z0=z0, params=params,
-                          size_s=size_s, size_z=size_z, framed=bool(rects))
+                          size_s=size_s, size_z=size_z, framed=bool(rects),
+                          nailer=first.nailer, run=run)
     start_end = _start_end(model, run, params)
     from_hi = start_end == "end"
     s_faces = [(r.s0, r.s1) for r in rects]
     s_breaks = walk(lo, hi, size_s, s_faces, params.bearing, lambda x: _vertical_cost(ctx, x),
                     params.min_rip, _GAP_TOL_M, from_hi=from_hi)
+    derived = (nailers_at(run, lambda f: frames[id(f)], first.nailer, ctx, s_breaks)
+               if first.nailer is not None and ctx.framed else [])
+    for tag, member, rect in derived:
+        rects.append(rect)
+        if nailers is not None:
+            nailers.setdefault(tag, []).append(member)
     columns = pieces(lo, hi, s_breaks, size_s)
     order = list(reversed(columns)) if from_hi else columns
     out_pieces, h_breaks, shortfall, previous = [], [], 0.0, []
@@ -162,7 +194,8 @@ def lay_run(model, run: Run, params) -> ResolvedSheetLayout:
         pieces=tuple(sorted(out_pieces, key=lambda p: (p.s0, p.z0))),
         vertical_breaks=tuple(v_breaks), horizontal_breaks=tuple(h_breaks),
         framed=ctx.framed, shortfall_m=shortfall, vertical=params.vertical,
-        faces=tuple((f.wall.tag, f.layer.name, f.lo, f.hi) for f in run.faces))
+        faces=tuple((f.wall.tag, f.layer.name, f.lo, f.hi) for f in run.faces),
+        function=first.layer.function, nailers=tuple(m for _t, m, _r in derived))
 
 
 def _joint_top(ctx, s: float) -> float:
@@ -180,9 +213,12 @@ def _peak(ctx, c0: float, c1: float) -> float:
 
 
 def _vertical_cost(ctx, x: float) -> float:
-    """Unbacked length of a vertical joint at ``x`` (the whole joint where unframed)."""
+    """Unbacked length of a vertical joint at ``x`` (the whole joint where unframed); none
+    where a joint nailer fits."""
     if not ctx.framed:
         return _joint_top(ctx, x) - ctx.z0
+    if ctx.nailer is not None and nailer_spans(ctx, ctx.nailer, x) is not None:
+        return 0.0
     holes = [(h[1], h[2], h[3], h[4]) for h in ctx.holes]
     return unbacked_length(ctx.rects, True, x, ctx.z0, _joint_top(ctx, x),
                            ctx.params.bearing, holes)
