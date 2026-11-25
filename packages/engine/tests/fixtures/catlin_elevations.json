@@ -84734,72 +84734,60 @@
 "a83ae28fb320"
 ],
 "geometry/Z4NRTGEDY5::framing/member:block-2-jamb-000-0-00": [
--2.738437,
--2.649537,
-8,
-"c5b847fd0ec8"
-],
-"geometry/Z4NRTGEDY5::framing/member:block-2-jamb-000-0-01": [
 -2.538412,
 -2.449512,
 8,
 "d911bcfa015e"
 ],
-"geometry/Z4NRTGEDY5::framing/member:block-2-jamb-000-0-02": [
+"geometry/Z4NRTGEDY5::framing/member:block-2-jamb-000-0-01": [
 -1.985962,
 -1.897062,
 8,
 "6368ca5416a7"
 ],
-"geometry/Z4NRTGEDY5::framing/member:block-2-jamb-000-0-03": [
+"geometry/Z4NRTGEDY5::framing/member:block-2-jamb-000-0-02": [
 -1.376362,
 -1.287462,
 8,
 "2f60257c388e"
 ],
-"geometry/Z4NRTGEDY5::framing/member:block-2-jamb-000-0-04": [
+"geometry/Z4NRTGEDY5::framing/member:block-2-jamb-000-0-03": [
 -0.766763,
 -0.677863,
 8,
 "e446debded4c"
 ],
-"geometry/Z4NRTGEDY5::framing/member:block-2-jamb-000-0-05": [
+"geometry/Z4NRTGEDY5::framing/member:block-2-jamb-000-0-04": [
 -0.534987,
 -0.446087,
 8,
 "a080e8bb0ec6"
 ],
 "geometry/Z4NRTGEDY5::framing/member:block-2-jamb-000-1-00": [
--2.738437,
--2.649537,
-8,
-"c5b847fd0ec8"
-],
-"geometry/Z4NRTGEDY5::framing/member:block-2-jamb-000-1-01": [
 -2.538412,
 -2.449512,
 8,
 "d911bcfa015e"
 ],
-"geometry/Z4NRTGEDY5::framing/member:block-2-jamb-000-1-02": [
+"geometry/Z4NRTGEDY5::framing/member:block-2-jamb-000-1-01": [
 -1.985962,
 -1.897062,
 8,
 "6368ca5416a7"
 ],
-"geometry/Z4NRTGEDY5::framing/member:block-2-jamb-000-1-03": [
+"geometry/Z4NRTGEDY5::framing/member:block-2-jamb-000-1-02": [
 -1.376362,
 -1.287462,
 8,
 "2f60257c388e"
 ],
-"geometry/Z4NRTGEDY5::framing/member:block-2-jamb-000-1-04": [
+"geometry/Z4NRTGEDY5::framing/member:block-2-jamb-000-1-03": [
 -0.766763,
 -0.677863,
 8,
 "e446debded4c"
 ],
-"geometry/Z4NRTGEDY5::framing/member:block-2-jamb-000-1-05": [
+"geometry/Z4NRTGEDY5::framing/member:block-2-jamb-000-1-04": [
 -0.534987,
 -0.446087,
 8,
@@ -84967,12 +84955,6 @@
 8,
 "a83ae28fb320"
 ],
-"geometry/Z4NRTGEDY5::framing/member:ladder-sill-outer-girt-000": [
--2.7797125,
--2.6400125,
-8,
-"cd74cd139262"
-],
 "geometry/Z4NRTGEDY5::framing/member:nailer-outer-girt-002-0": [
 -0.4460875,
 -0.390525,
@@ -85028,16 +85010,16 @@
 "1b920b6fd9d1"
 ],
 "geometry/Z4NRTGEDY5::framing/member:strapping-jamb-outer-girt-000-0": [
--2.7384375,
+-2.5955625,
 -0.4460875,
 8,
-"378a35eb4c18"
+"cd87deb7bfa2"
 ],
 "geometry/Z4NRTGEDY5::framing/member:strapping-jamb-outer-girt-000-1": [
--2.7384375,
+-2.5955625,
 -0.4460875,
 8,
-"378a35eb4c18"
+"cd87deb7bfa2"
 ],
 "geometry/Z4NRTGEDY5::framing/member:strapping-outer-girt-000": [
 -2.5384125,
@@ -124286,72 +124268,60 @@
 "516ccf9e81bc"
 ],
 "member/Z4NRTGEDY5/block-2-jamb-000-0-00": [
--2.738437,
--2.649537,
-2,
-"a8a01595a57e"
-],
-"member/Z4NRTGEDY5/block-2-jamb-000-0-01": [
 -2.538412,
 -2.449512,
 2,
 "d3b084321dcb"
 ],
-"member/Z4NRTGEDY5/block-2-jamb-000-0-02": [
+"member/Z4NRTGEDY5/block-2-jamb-000-0-01": [
 -1.985962,
 -1.897062,
 2,
 "0575c8def1a9"
 ],
-"member/Z4NRTGEDY5/block-2-jamb-000-0-03": [
+"member/Z4NRTGEDY5/block-2-jamb-000-0-02": [
 -1.376362,
 -1.287462,
 2,
 "b793909c52e4"
 ],
-"member/Z4NRTGEDY5/block-2-jamb-000-0-04": [
+"member/Z4NRTGEDY5/block-2-jamb-000-0-03": [
 -0.766763,
 -0.677863,
 2,
 "3713261e3ec0"
 ],
-"member/Z4NRTGEDY5/block-2-jamb-000-0-05": [
+"member/Z4NRTGEDY5/block-2-jamb-000-0-04": [
 -0.534987,
 -0.446087,
 2,
 "7b88158ddb3d"
 ],
 "member/Z4NRTGEDY5/block-2-jamb-000-1-00": [
--2.738437,
--2.649537,
-2,
-"a8a01595a57e"
-],
-"member/Z4NRTGEDY5/block-2-jamb-000-1-01": [
 -2.538412,
 -2.449512,
 2,
 "d3b084321dcb"
 ],
-"member/Z4NRTGEDY5/block-2-jamb-000-1-02": [
+"member/Z4NRTGEDY5/block-2-jamb-000-1-01": [
 -1.985962,
 -1.897062,
 2,
 "0575c8def1a9"
 ],
-"member/Z4NRTGEDY5/block-2-jamb-000-1-03": [
+"member/Z4NRTGEDY5/block-2-jamb-000-1-02": [
 -1.376362,
 -1.287462,
 2,
 "b793909c52e4"
 ],
-"member/Z4NRTGEDY5/block-2-jamb-000-1-04": [
+"member/Z4NRTGEDY5/block-2-jamb-000-1-03": [
 -0.766763,
 -0.677863,
 2,
 "3713261e3ec0"
 ],
-"member/Z4NRTGEDY5/block-2-jamb-000-1-05": [
+"member/Z4NRTGEDY5/block-2-jamb-000-1-04": [
 -0.534987,
 -0.446087,
 2,
@@ -124519,12 +124489,6 @@
 2,
 "516ccf9e81bc"
 ],
-"member/Z4NRTGEDY5/ladder-sill-outer-girt-000": [
--2.7797125,
--2.6400125,
-2,
-"8ad704cc1703"
-],
 "member/Z4NRTGEDY5/nailer-outer-girt-002-0": [
 -0.4460875,
 -0.390525,
@@ -124580,16 +124544,16 @@
 "4ba720a142ae"
 ],
 "member/Z4NRTGEDY5/strapping-jamb-outer-girt-000-0": [
--2.7384375,
+-2.5955625,
 -0.4460875,
 2,
-"7cf2839a1c30"
+"78102f0a7c8c"
 ],
 "member/Z4NRTGEDY5/strapping-jamb-outer-girt-000-1": [
--2.7384375,
+-2.5955625,
 -0.4460875,
 2,
-"7cf2839a1c30"
+"78102f0a7c8c"
 ],
 "member/Z4NRTGEDY5/strapping-outer-girt-000": [
 -2.5384125,
