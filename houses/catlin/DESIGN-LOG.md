@@ -9422,3 +9422,8 @@ The owner kept the review and changed seven rooms. Rules updated in
   all four `base_rotation` go INCOMPLETE, so it waits on engine work or a seal.
 - **Register** 32 -> 31. **Cost** LP against brick -$2,777 to -$4,870 (takeoff), plus ~$200-425
   of slab-to-curb sealant by hand; the structure fixes add $1,225-2,096.
+- **Engine fixes the face exposed.** A wall continues the rainscreen cavity below only where
+  rainscreen walls cover its whole length (W-M-S1/S2 had lost their base Z, EPDM and screen). An
+  outie window is mounted on its plane under any skin (WIN-B-SAUNA's frame drew 6.56" deep and
+  met its stool). A girt door seated on its wall's base takes no sill beam (D-B-SUNKEN's seats
+  reached into FT-B-S3). S-001 lists a trim fastener only where a counted run bills it.
