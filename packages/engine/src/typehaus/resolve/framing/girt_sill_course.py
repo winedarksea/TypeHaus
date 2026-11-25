@@ -9,11 +9,14 @@ in ``connection``, which the takeoff and the approach grade read.
 from __future__ import annotations
 
 from typehaus.resolve.framing.profiles import cross_section
-from typehaus.resolve.framing.truss_common import BLOCK_CATEGORY, LADDER_CATEGORY
+from typehaus.resolve.framing.truss_common import (  # noqa: F401 - sill_on_base re-exported
+    BLOCK_CATEGORY,
+    LADDER_CATEGORY,
+    sill_on_base,
+)
 from typehaus.resolve.model import FramedMember
 
 _FT = 0.3048
-_SILL_TOL = 1e-6
 #: ``connection`` prefix on a door sill beam's seat: ``girt-sill-screws:<n>``.
 SILL_SCREWS = "girt-sill-screws:"
 
@@ -38,14 +41,6 @@ def ripped_top_fall(member: FramedMember) -> float:
         return 0.0
     tops = [z for _, z in ring if z > 0]
     return max(tops) - min(tops)
-
-
-def sill_on_base(opening) -> bool:
-    """A door whose rough sill is at or below its wall's datum bears on what the wall stands
-    on (a curb's seat notch, a slab), not on the girt band: its frame takes no sill course or
-    seats, and its posts start at the band's foot. A framed-floor door's sill is the subfloor,
-    above the datum, with the rim under it for the seats' screws."""
-    return opening.kind == "door" and opening.sill_m <= _SILL_TOL
 
 
 def sill_block_prefix(tier: str, index: int) -> str:

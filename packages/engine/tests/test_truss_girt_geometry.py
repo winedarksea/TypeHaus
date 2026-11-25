@@ -664,9 +664,11 @@ def test_head_and_sill_courses_span_the_rough_opening(catlin_model):
                     key = f"ladder-{name}-{band}-{index:03d}"
                     piece = next((m for m in wall.members if m.child_key == key), None)
                     if name == "sill" and opening.kind == "door" and opening.sill_m <= 0:
-                        # Seated on what the wall stands on (D-B-SUNKEN's curb): no course.
+                        # Seated on what the wall stands on (D-B-SUNKEN's curb): no course,
+                        # and no buck sill inside the door's own sill package.
                         assert piece is None and not any(
-                            f"-sill-{index:03d}-" in m.child_key for m in wall.members), key
+                            f"-sill-{index:03d}-" in m.child_key
+                            or m.child_key == f"buck-sill-{index:03d}" for m in wall.members), key
                         continue
                     assert piece is not None, f"{wall.tag}: no {key}"
                     if name == "sill" and opening.kind == "door":
@@ -703,7 +705,8 @@ def test_the_opening_support_check_passes_on_every_girt_wall(catlin_model, catli
 
 
 def test_the_buck_lines_the_rough_opening_out_to_the_mount_plane(catlin_model):
-    """4 sides per opening, 3/8" plywood, sheathing face to the mount plane — 6" now, not 5".
+    """4 sides per opening (3 at a door seated on the curb), 3/8" plywood, sheathing face to
+    the mount plane — 6" now, not 5".
 
     The profile string is derived from the stack (`BandFrame.buck`), so this is the assertion
     that catches the mount plane moving without the buck following it. The 3/8" stud-zone
@@ -714,7 +717,8 @@ def test_the_buck_lines_the_rough_opening_out_to_the_mount_plane(catlin_model):
         openings = _openings(catlin_model, wall)
         bucks = [m for m in wall.members
                  if m.category == "buck" and not m.child_key.startswith("buck-fur-")]
-        assert len(bucks) == 4 * len(openings), wall.tag
+        seated = sum(op.kind == "door" and op.sill_m <= 0 for op in openings)  # no sill leg
+        assert len(bucks) == 4 * len(openings) - seated, wall.tag
         # A window's sill board runs on in over the rough sill: 1/2" gypsum to 12 1/2".
         sills = [m for m in bucks if m.child_key.startswith("buck-sill-")]
         windows = sum(op.kind == "window" for op in openings)
