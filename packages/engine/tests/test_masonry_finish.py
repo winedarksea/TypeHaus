@@ -115,7 +115,7 @@ def test_gltf_colors_glazed_green_brick_green() -> None:
     assert green != _material_finish_color("white-brick", "cladding", authored)
 
 
-def test_basement_veneer_brick_faces_the_garden(catlin_model_ro) -> None:
+def test_basement_veneer_brick_faces_the_garden(catlin_brick_model_ro) -> None:
     """W-B-BRICK is authored east->west on purpose — see the note in plan/storeys/basement.py.
 
     It is its own wall-graph component (two open ends, no loop), so it gets the fallback
@@ -123,7 +123,7 @@ def test_basement_veneer_brick_faces_the_garden(catlin_model_ro) -> None:
     built *north*, back through the XPS into the concrete. This pins the direction: the brick
     must end up south of the air gap, in the sunken garden.
     """
-    model = catlin_model_ro
+    model = catlin_brick_model_ro
     wall = model.wall("W-B-BRICK")
     assert wall is not None, "W-B-BRICK missing from the resolved model"
     # One flat wythe since 2026-09-04. It was five `Layer.slot` regions of the Ishtar scheme,

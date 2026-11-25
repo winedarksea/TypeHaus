@@ -1,6 +1,7 @@
 """``structural.masonry_movement_joint`` against notes/sunken_garden_veneer_beam.md §6g.
 
-The oracle is the note's hand pass: BIA TN 18A Eq. 1 at W-B-BRICK's two ends, both
+Graded on variant ``court-face-brick`` (the default court face is LP panel, no wythe). The
+oracle is the note's hand pass: BIA TN 18A Eq. 1 at W-B-BRICK's two ends, both
 jointed, each taking half the run. Since 2026-11-04 (§6k) both joints are 1/2" Class 50
 silicone and the wythe runs x 114.5"..317.5", a 203.0" run.
 """
@@ -14,7 +15,7 @@ import pytest
 from typehaus.findings import Result
 
 _CATLIN = Path(__file__).resolve().parents[3] / "houses" / "catlin"
-_JOINTS = "plan/masonry_joints.py"
+_JOINTS = "params/court_face.py"
 
 #: §6k, by hand.
 _ORACLE = {
@@ -35,22 +36,19 @@ def _run(ctx):
 
 
 @pytest.fixture(scope="module")
-def findings(catlin_ctx):
-    return _run(catlin_ctx)
+def findings(catlin_brick_ctx):
+    return _run(catlin_brick_ctx)
 
 
 def _variant(tmp_path, edit):
-    from _helpers import copy_house
+    from _helpers import copy_house, court_face_brick_plan
 
     from typehaus.checks.run import build_context
-    from typehaus.source import load_plan
 
     house = copy_house(_CATLIN, tmp_path / "house")
     source = house / _JOINTS
     source.write_text(edit(source.read_text()))
-    loaded = load_plan(house)
-    assert loaded.plan is not None, [f.message for f in loaded.findings]
-    return build_context(loaded.plan, house)[0]
+    return build_context(court_face_brick_plan(house), house)[0]
 
 
 def test_both_ends_pass_at_the_hand_ratios(findings) -> None:
@@ -107,10 +105,11 @@ def test_an_unstated_capability_is_unknown(tmp_path) -> None:
     assert east.result is Result.UNKNOWN and "compression_pct" in east.message
 
 
-def test_the_joints_bill_by_the_foot(catlin_model_ro) -> None:
+def test_the_joints_bill_by_the_foot(catlin_brick_model_ro) -> None:
     from typehaus.takeoff.edge_trim import edge_trim_takeoff
 
-    rows = [r for r in edge_trim_takeoff(catlin_model_ro) if r["category"] == "movement_joint"]
+    rows = [r for r in edge_trim_takeoff(catlin_brick_model_ro)
+            if r["category"] == "movement_joint"]
     assert sorted(t for r in rows for t in r["tags"]) == ["MJ-B-BRICK-E", "MJ-B-BRICK-W"]
     assert sum(r["length_ft"] for r in rows) == pytest.approx(2 * 89.104 / 12, abs=0.1)
     assert all("over 5/8\" closed-cell backer rod" in r["material"] for r in rows)

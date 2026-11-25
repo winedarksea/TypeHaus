@@ -238,7 +238,7 @@ def test_the_detached_garage_stem_is_not_the_houses_envelope(catlin_ctx) -> None
     assert "GARAGE_ICF_6" in conditioned_envelope_assemblies(catlin_ctx)
 
 
-def test_the_sunken_garden_walkout_walls_are_envelope(catlin_model_ro) -> None:
+def test_the_sunken_garden_walkout_walls_are_envelope(catlin_brick_model_ro) -> None:
     """The two walls the scope fix ADDS, and the veneer wythe it must still keep out.
 
     ``W-B-S2-FR`` / ``W-B-S3-FR`` are framed walls standing in the open air of the sunken
@@ -248,27 +248,27 @@ def test_the_sunken_garden_walkout_walls_are_envelope(catlin_model_ro) -> None:
     its two unglazed rough openings have no window type, so admitting it takes the whole
     block load to UNKNOWN over 0.34 sf of hole.
     """
-    geometry = envelope_geometry(catlin_model_ro)
+    geometry = envelope_geometry(catlin_brick_model_ro)
     for tag in ("W-B-S2-FR", "W-B-S3-FR"):
-        assert geometry.is_envelope_wall(catlin_model_ro.wall(tag)), tag
-    brick = catlin_model_ro.wall("W-B-BRICK")
+        assert geometry.is_envelope_wall(catlin_brick_model_ro.wall(tag)), tag
+    brick = catlin_brick_model_ro.wall("W-B-BRICK")
     assert not geometry.is_envelope_wall(brick)
     # Excluded on GEOMETRY — its body is 0.154 m off the nearest conditioned room's face —
     # not on the ``"W-B-BRICK"`` tag prefix this used to carry.
     assert not geometry.bounds_conditioned_space(brick)
 
-    report = _report(catlin_model_ro)
-    brick_openings = {opening.tag for opening in catlin_model_ro.openings
+    report = _report(catlin_brick_model_ro)
+    brick_openings = {opening.tag for opening in catlin_brick_model_ro.openings
                       if opening.host_wall == "W-B-BRICK"}
     assert brick_openings  # the wythe really does host two, so this is a real exclusion
     assert not any(tag in item for tag in brick_openings
                    for item in report.unknown_inputs)
     # And the real glazing in that elevation is the court wall's, on the south facade.
     for tag in ("D-B-SUNKEN", "WIN-B-SAUNA"):
-        opening = next(o for o in catlin_model_ro.openings if o.tag == tag)
-        host = catlin_model_ro.wall(opening.host_wall)
+        opening = next(o for o in catlin_brick_model_ro.openings if o.tag == tag)
+        host = catlin_brick_model_ro.wall(opening.host_wall)
         assert geometry.is_envelope_wall(host), tag
-        assert _facade_for_wall(host, catlin_model_ro) == "S", tag
+        assert _facade_for_wall(host, catlin_brick_model_ro) == "S", tag
 
 
 def test_a_chase_and_an_unmodelled_attic_void_are_interior(catlin_model_ro) -> None:

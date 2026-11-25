@@ -56,8 +56,8 @@ def _section_6j(ctx):
 
 
 @pytest.fixture(scope="module")
-def record(catlin_plan, catlin_model_ro):
-    ctx = EngineeringContext(plan=catlin_plan, model=_section_6j_model(catlin_model_ro))
+def record(catlin_brick_plan, catlin_brick_model_ro):
+    ctx = EngineeringContext(plan=catlin_brick_plan, model=_section_6j_model(catlin_brick_model_ro))
     beam, carried = _section_6j(ctx)
     return ctx, _one(ctx, beam, carried)
 
@@ -279,18 +279,18 @@ def test_pure_arithmetic_matches_the_note_without_the_model() -> None:
     assert elastic.effective_inertia_in4 == pytest.approx(5592.4, abs=0.1)
 
 
-def test_the_count_accessor_leaves_the_spacing_accessor_refusing_counts(catlin_plan) -> None:
-    beam = catlin_plan.by_tag("W-SG-BRKBM")
+def test_the_count_accessor_leaves_the_spacing_accessor_refusing_counts(catlin_brick_plan) -> None:
+    beam = catlin_brick_plan.by_tag("W-SG-BRKBM")
     assert bar_for_roles(beam.reinforcement, ("bottom-y",)) is None
     assert bar_count_for_roles(beam.reinforcement, ("bottom-y",)) == (5, 2, 1)
     assert bar_count_for_roles(beam.reinforcement, ("horizontal",)) is None
 
 
-def test_the_cage_is_laid_to_its_two_placements(catlin_model_ro) -> None:
+def test_the_cage_is_laid_to_its_two_placements(catlin_brick_model_ro) -> None:
     """§6j, as laid (2026-10-11): no tie enters the FT-SG-W1/E1 toes poured a placement
     earlier; each dowel laps BESIDE its bottom bar (contact, one db inboard), never on its
     centreline; and the authored 12" + 30" dowel is what is laid, not the 27.58" minimum."""
-    m = catlin_model_ro
+    m = catlin_brick_model_ro
     bars = next(s for s in m.rebar if s.host_tag == "W-SG-BRKBM").bars
     toes = [s for s in m.solids if s.tag in ("FT-SG-W1", "FT-SG-E1")]
     xs = sorted(x for s in toes for x in (min(p[0] for p in s.outline),

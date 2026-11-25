@@ -24,15 +24,15 @@ def _grade(ctx, irc_base):
     return veneer_cavity_width(replace(ctx, profile=replace(ctx.profile, irc_base=irc_base)))
 
 
-def test_the_brick_reads_six_and_a_half_inches_to_the_studs(catlin_model_ro) -> None:
-    reach = veneer_ties.measure(catlin_model_ro, catlin_model_ro.wall("W-B-BRICK"))
+def test_the_brick_reads_six_and_a_half_inches_to_the_studs(catlin_brick_model_ro) -> None:
+    reach = veneer_ties.measure(catlin_brick_model_ro, catlin_brick_model_ro.wall("W-B-BRICK"))
     assert reach.to_structure_in == pytest.approx(_TO_STUDS_IN, abs=1e-3)
     assert reach.airspace_in == pytest.approx(_AIRSPACE_IN, abs=1e-3)
     assert reach.backing in ("W-B-S2-FR", "W-B-S3-FR") and reach.unbacked_in == 0
 
 
-def test_the_2024_w2_8_row_covers_it_and_prints_the_spacing(catlin_ctx) -> None:
-    finding = _grade(catlin_ctx, "2024 IRC")[0]
+def test_the_2024_w2_8_row_covers_it_and_prints_the_spacing(catlin_brick_ctx) -> None:
+    finding = _grade(catlin_brick_ctx, "2024 IRC")[0]
     assert finding.result is Result.PASS
     assert "W2.8" in finding.message and "6.625\" to the backing" in finding.message
     # ASD Zone 5 suction 19.9 psf (L7's mean roof height from adjacent ground: q_h 21.03) is
@@ -41,12 +41,12 @@ def test_the_2024_w2_8_row_covers_it_and_prints_the_spacing(catlin_ctx) -> None:
     assert "19.9 psf" in finding.message
 
 
-def test_the_2021_row_is_the_same_table(catlin_ctx) -> None:
-    assert _grade(catlin_ctx, "2021 IRC")[0].result is Result.PASS
+def test_the_2021_row_is_the_same_table(catlin_brick_ctx) -> None:
+    assert _grade(catlin_brick_ctx, "2021 IRC")[0].result is Result.PASS
 
 
-def test_the_adopted_2018_table_hands_it_to_veneer_anchor(catlin_ctx) -> None:
-    finding = _grade(catlin_ctx, "2018 IRC + MN amendments")[0]
+def test_the_adopted_2018_table_hands_it_to_veneer_anchor(catlin_brick_ctx) -> None:
+    finding = _grade(catlin_brick_ctx, "2018 IRC + MN amendments")[0]
     assert finding.result is Result.UNKNOWN and finding.authority is Authority.ENGINEERED
     assert finding.engineering_item == "veneer_anchor/W-B-BRICK"
     assert "4.5\"" in finding.message
@@ -55,12 +55,12 @@ def test_the_adopted_2018_table_hands_it_to_veneer_anchor(catlin_ctx) -> None:
     assert "2 pintle legs" in finding.message
 
 
-def test_every_tie_lands_on_a_stud_and_none_into_the_concrete_ends(catlin_model_ro) -> None:
+def test_every_tie_lands_on_a_stud_and_none_into_the_concrete_ends(catlin_brick_model_ro) -> None:
     from typehaus import veneer_tie_layout
 
-    wythe = catlin_model_ro.wall("W-B-BRICK")
-    reach = veneer_ties.measure(catlin_model_ro, wythe)
-    lay = veneer_tie_layout.layout(catlin_model_ro, wythe, reach, veneer_ties.TIE_AREA_SF)
+    wythe = catlin_brick_model_ro.wall("W-B-BRICK")
+    reach = veneer_ties.measure(catlin_brick_model_ro, wythe)
+    lay = veneer_tie_layout.layout(catlin_brick_model_ro, wythe, reach, veneer_ties.TIE_AREA_SF)
     assert lay.length_in == pytest.approx(203.0, abs=1e-3)
     assert len(lay.stations_in) == 13
     # 2.67 sf over 24" rows carries 16.02": the 16" stud bays are exactly full.
@@ -74,18 +74,18 @@ def test_every_tie_lands_on_a_stud_and_none_into_the_concrete_ends(catlin_model_
     assert near["AO-B-BRICK-DOOR"] == pytest.approx((2.25, 0.75), abs=1e-3)
 
 
-def test_the_layout_finding_passes_and_names_the_concrete_ends(catlin_ctx) -> None:
-    layout = next(f for f in _grade(catlin_ctx, "2024 IRC")
+def test_the_layout_finding_passes_and_names_the_concrete_ends(catlin_brick_ctx) -> None:
+    layout = next(f for f in _grade(catlin_brick_ctx, "2024 IRC")
                   if "stud stations" in f.message)
     assert layout.result is Result.PASS
     assert "none into the pour" in layout.message and "R703.8.4.1.1" in layout.message
 
 
-def test_the_slotted_tie_takes_drag_and_wind_on_a_bond_break(catlin_ctx) -> None:
+def test_the_slotted_tie_takes_drag_and_wind_on_a_bond_break(catlin_brick_ctx) -> None:
     """Owner, G8: a bond break at the base and an adjustable slotted tie (TMS 402-22 Table 6:
     3,000 lb/in, 200 lb allowable, 330 lb design; TN 3C Table 7's 2.5 p At). Wind 133.1 lb plus
     drag at a stated friction upper bound of 1.0 (49.3 lb over 65 ties) = 182.4 of 200: PASS."""
-    force = next(f for f in _grade(catlin_ctx, "2024 IRC") if "bond break" in f.message)
+    force = next(f for f in _grade(catlin_brick_ctx, "2024 IRC") if "bond break" in f.message)
     assert force.result is Result.PASS
     msg = force.message
     assert "adjustable slotted tie, a READING of Hohmann & Barnard HB-213-2X" in msg
@@ -104,10 +104,10 @@ def test_table_6_rows_are_the_published_ones() -> None:
     assert veneer_ties.DETAIL_TIE_KIND == "adjustable_slotted"
 
 
-def test_a_wythe_with_no_flashing_runs_leaves_its_base_bare(catlin_model_ro) -> None:
+def test_a_wythe_with_no_flashing_runs_leaves_its_base_bare(catlin_brick_model_ro) -> None:
     """Without the runs the check FAILs: the brick follows the court and each tie takes
     2,500 lb/in x the closure (214 lb against 125)."""
-    plan = catlin_model_ro.plan
+    plan = catlin_brick_model_ro.plan
 
     class _Plan:
         def all_elements(self):
@@ -115,19 +115,19 @@ def test_a_wythe_with_no_flashing_runs_leaves_its_base_bare(catlin_model_ro) -> 
                     if not getattr(e, "tag", "").startswith("FL-B-BRICK")]
 
     class _Model:
-        openings = catlin_model_ro.openings
+        openings = catlin_brick_model_ro.openings
 
     _Model.plan = _Plan()
-    runs, bare = veneer_ties.base_flashing(_Model, catlin_model_ro.wall("W-B-BRICK"))
+    runs, bare = veneer_ties.base_flashing(_Model, catlin_brick_model_ro.wall("W-B-BRICK"))
     assert runs == [] and bare == pytest.approx(203.0 - 63.3125, abs=1e-3)
 
 
-def test_the_perimeter_and_rows_are_graded(catlin_model_ro) -> None:
+def test_the_perimeter_and_rows_are_graded(catlin_brick_model_ro) -> None:
     from typehaus import veneer_tie_layout
 
-    wythe = catlin_model_ro.wall("W-B-BRICK")
-    lay = veneer_tie_layout.layout(catlin_model_ro, wythe,
-                                   veneer_ties.measure(catlin_model_ro, wythe), 2.67)
+    wythe = catlin_brick_model_ro.wall("W-B-BRICK")
+    lay = veneer_tie_layout.layout(catlin_brick_model_ro, wythe,
+                                   veneer_ties.measure(catlin_brick_model_ro, wythe), 2.67)
     # Bed-joint rows at most 24" apart; each head and sill band holds one (R703.8.4.1.1).
     assert lay.rows_in == pytest.approx((16.0, 34.667, 48.0, 61.333, 85.333), abs=1e-3)
     assert lay.rows_met and lay.met

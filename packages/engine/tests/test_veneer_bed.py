@@ -9,8 +9,8 @@ from typehaus.checks.structural import veneer_bed
 from typehaus.findings import Result
 
 
-def test_the_resultant_sits_outside_the_kern_and_the_peak_is_graded(catlin_ctx) -> None:
-    (finding,) = veneer_bed.veneer_bed_bearing(catlin_ctx)
+def test_the_resultant_sits_outside_the_kern_and_the_peak_is_graded(catlin_brick_ctx) -> None:
+    (finding,) = veneer_bed.veneer_bed_bearing(catlin_brick_ctx)
     assert finding.result is Result.PASS
     msg = finding.message
     # 268.9 plf of brick + 221.6 plf of beam = 490.5 plf, 2.30" off the 12" centre (kern 2.00").

@@ -249,6 +249,21 @@ def test_every_row_reproduces_section_11l(records, tag) -> None:
     assert _input(records[tag], "house_thrust") == pytest.approx(_CAPPED_TOTAL_LB, rel=1e-6)
 
 
+def test_the_brick_variant_reproduces_section_11l(catlin_brick_plan, catlin_brick_model_ro) -> None:
+    """Variant ``court-face-brick`` keeps the veneer beam's board in the loop (``_BEAM``),
+    and every row of §11l, winter 0.998 included, is the pre-switch number."""
+    from typehaus.engineering import EngineeringContext
+    from typehaus.engineering.thermal_break import compute
+
+    brick_ctx = EngineeringContext(plan=catlin_brick_plan, model=catlin_brick_model_ro,
+                                   soil_class="GM")
+    records = _boards_of(compute(brick_ctx))
+    for tag in _ALL:
+        _rows_match(records[tag], _NOTE[_group(tag)], tag)
+    assert _state(records[_BEAM], "court winter tension, side run").ratio == pytest.approx(
+        0.99773, abs=6e-4)
+
+
 def test_the_joint_takes_only_post_backfill_movement(records) -> None:
     """§11r/§15g/§15n: boards set after backfill — thermal 0.0533" + (95,523 − 76,808) /
     157,037 x 1/4" = 0.0298" of sliding = 0.0831" against 25% of the 1/2" EPDM, 0.125"."""

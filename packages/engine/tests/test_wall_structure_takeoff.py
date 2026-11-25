@@ -212,7 +212,7 @@ def test_every_wall_bills_its_structure_exactly_once(catlin_model) -> None:
         catlin_model.stairs[index] = stair
 
 
-def test_the_sunken_garden_brick_wythe_is_billed(catlin_model) -> None:
+def test_the_sunken_garden_brick_wythe_is_billed(catlin_brick_model_ro) -> None:
     """W-B-BRICK — the brick veneer over the exposed basement wall at the sunken garden,
     added in 76c1871 — is the wall whose absence from the BOM surfaced this hole.
 
@@ -225,7 +225,7 @@ def test_the_sunken_garden_brick_wythe_is_billed(catlin_model) -> None:
     face: a single-region wythe that under-billed would look exactly like this test's PASS if
     the area bound were dropped with the colours.
     """
-    rows = [row for row in wall_structure_takeoff(catlin_model)
+    rows = [row for row in wall_structure_takeoff(catlin_brick_model_ro)
             if "W-B-BRICK" in row["tags"]]
     assert len(rows) == 1, "one flat unglazed field, one row"
     (row,) = rows
@@ -258,10 +258,10 @@ def test_the_sunken_garden_brick_wythe_is_billed(catlin_model) -> None:
     assert 88 < float(row["net_area_sqft"]) < 89
 
 
-def test_the_garden_walls_are_distinguishable_from_house_concrete(catlin_model) -> None:
+def test_the_garden_walls_are_distinguishable_from_house_concrete(catlin_brick_model_ro) -> None:
     """Grouped by assembly, so garden work never merges into the foundation pour — they
     are both `concrete` and they are not the same order or the same price."""
-    by_assembly = {row["assembly"]: row for row in wall_structure_takeoff(catlin_model)}
+    by_assembly = {row["assembly"]: row for row in wall_structure_takeoff(catlin_brick_model_ro)}
     for assembly in ("SUNKEN_GARDEN_WALL", "RETAINING_BLOCK_12",
                      "BASEMENT_BRICK_VENEER", "BASEMENT_10",
                      "BASEMENT_8"):
