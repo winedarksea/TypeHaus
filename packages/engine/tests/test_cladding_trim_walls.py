@@ -36,7 +36,7 @@ def test_trim_inventory_by_profile(catlin_model_ro):
         "corrugated-outside-closure": 6,
         # The court face's vertical panel joints (decision #146): the battens stop at the
         # hosted head/sill trims, so none over the door head at s 144.
-        "LP_440_BATTEN_3_5": 4,
+        "LP_440_BATTEN_3_5": 2,  # centred: s 26 and 74 (court_face_lp_panel.md §2)
     }
 
 
