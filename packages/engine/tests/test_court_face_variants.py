@@ -3,9 +3,10 @@
 The default court face is LP panel on ``W-B-S2-FR``/``W-B-S3-FR``; brick (``W-B-BRICK`` on
 ``W-SG-BRKBM``) is variant ``court-face-brick`` (``variants.toml``). ``FINGERPRINTS`` are
 ``main``'s fingerprints from before the switch, one per engineering item (``None``: a NO_CALC
-record, which has no fingerprint). The proof is that the variant reproduces them all, so
-brick is not a second design to re-engineer. The seven in ``_REDERIVED`` were later re-derived
-by the structure lane (free body §15n) on BOTH variants; their pins are re-set at the merge.
+record, which has no fingerprint). Brick reproduces them exactly, so it is not a second design
+to re-engineer, except the seven in ``_REDERIVED``: re-derived on BOTH variants by the court
+structure change (W1/E1 stem steel, the 3'-0" backfill rule, FT-SG-S's heel), worked in
+``notes/sunken_garden_court_free_body.md`` §15n, and pinned here at their new values.
 
 Slow: one full check run. ``scripts/verify.sh`` runs it; ``--fast`` skips it.
 """
@@ -16,8 +17,8 @@ import pytest
 
 pytestmark = pytest.mark.slow
 
-#: Items the structure lane re-derived on both variants (free body §15n); their pins below
-#: are main's pre-switch values and are re-pinned at the merge.
+#: Items the court structure change re-derived on both variants (free body §15n); their pins
+#: below are the re-derived values, every other pin is main's pre-switch value.
 _REDERIVED = {
     "retaining_system/W-SG-ARCH",
     "column_support/W-SG-W1",
@@ -38,9 +39,9 @@ FINGERPRINTS = {
     "column_head_joint/PT-SG-BR1": '95cb5fe026d2805f',
     "column_head_joint/PT-SG-BR3": 'f7ded399caeb3338',
     # re-derived by the structure lane (§15n)
-    "column_support/W-SG-E1": 'a96ffcb7892f51ff',
+    "column_support/W-SG-E1": 'a32add969c8b8d0f',
     # re-derived by the structure lane (§15n)
-    "column_support/W-SG-W1": 'abc8d1796a18c76e',
+    "column_support/W-SG-W1": '7a23d8233f213c1b',
     "deck_post/PT-SG-BF1": 'ceeb7ebb6c351b71',
     "deck_post/PT-SG-BF3": 'be66d44cf62c74e9',
     "deck_post/PT-SG-BR1": '37c3198868f3b275',
@@ -52,17 +53,17 @@ FINGERPRINTS = {
     "rafter/RF-BW-CANOPY": None,
     "rafter/RF-GARAGE": None,
     # re-derived by the structure lane (§15n)
-    "retaining_system/W-SG-ARCH": '4961a9629858950f',
+    "retaining_system/W-SG-ARCH": '984583ec50c3db47',
     # re-derived by the structure lane (§15n)
-    "retaining_wall/W-SG-E2": '0b4843f936bad035',
+    "retaining_wall/W-SG-E2": 'e60c4a1104818100',
     # re-derived by the structure lane (§15n)
-    "retaining_wall/W-SG-S": '4ded606ddd2ad393',
+    "retaining_wall/W-SG-S": 'c3b08ccf282470f4',
     # re-derived by the structure lane (§15n)
-    "retaining_wall/W-SG-W2": '04e8768786214dfc',
+    "retaining_wall/W-SG-W2": 'e24a67b7b2704f21',
     "roof_beam/BM-BW-RE": '78357259cc953d72',
     "roof_beam/BM-BW-RW": 'c3148e3d5ed7bf06',
     # re-derived by the structure lane (§15n)
-    "thermal_break_transfer/W-SG-ARCH": '5ee34ea6333fdbc8',
+    "thermal_break_transfer/W-SG-ARCH": '27fb313ee3a76025',
     "veneer_anchor/W-B-BRICK": None,
     "wood_roof_post/PT-BW-CNW": 'ae46fb9a6cd1311d',
     "wood_roof_post/PT-BW-CW": 'c4d9585b4f1fc6a1',
