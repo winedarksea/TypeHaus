@@ -128,3 +128,58 @@ name = "brushed-nickel"
 description = "Genta LX theme faucets in brushed nickel; utility Indy stays stainless."
 [variant.parameters]
 "finish.bath_theme" = "brushed-nickel"
+
+# ---- Court sliding study (notes/court_sliding_levers_study.md). ----
+# The drawn design is FT-SG-S +6 in with a #5 @ 9 in heel top bar (free body §15n); these
+# levers are measured on top of it. A grown heel grows outboard only, and every grown heel
+# takes the one heel_top_bar @ heel_top_spacing_in, sized at the 130 pcf end.
+[[variant]]
+name = "sliding-s-heel-12"
+description = "FT-SG-S heel +12 in (top-x #5 @ 7 in)."
+[variant.parameters]
+"sunken_garden.south_heel_extension_in" = 12
+"sunken_garden.heel_top_spacing_in" = 7
+
+[[variant]]
+name = "sliding-s-heel-18"
+description = "FT-SG-S heel +18 in (top-x #6 @ 8 in)."
+[variant.parameters]
+"sunken_garden.south_heel_extension_in" = 18
+"sunken_garden.heel_top_bar" = 6
+"sunken_garden.heel_top_spacing_in" = 8
+
+[[variant]]
+name = "sliding-side-heel-6"
+description = "FT-SG-W2/E2 heels +6 in (top-x #5 @ 9 in)."
+[variant.parameters]
+"sunken_garden.side_heel_extension_in" = 6
+"sunken_garden.heel_top_spacing_in" = 9
+
+[[variant]]
+name = "sliding-side-heel-12"
+description = "FT-SG-W2/E2 heels +12 in (top-x #5 @ 7 in)."
+[variant.parameters]
+"sunken_garden.side_heel_extension_in" = 12
+"sunken_garden.heel_top_spacing_in" = 7
+
+[[variant]]
+name = "sliding-side-heel-18"
+description = "FT-SG-W2/E2 heels +18 in (top-x #6 @ 8 in)."
+[variant.parameters]
+"sunken_garden.side_heel_extension_in" = 18
+"sunken_garden.heel_top_bar" = 6
+"sunken_garden.heel_top_spacing_in" = 8
+
+# Thicker pours about the same axes (toe and heel each lose 1"; the layout stays on 12").
+[[variant]]
+name = "sliding-stem-14-retaining"
+description = "W-SG-W2/E2/S cast 14 in."
+layer_thickness = [{ assembly = "SUNKEN_GARDEN_WALL_DRAINED", layer = "concrete", thickness_in = 14.0 }]
+
+[[variant]]
+name = "sliding-stem-14-all"
+description = "All five court walls cast 14 in."
+layer_thickness = [
+    { assembly = "SUNKEN_GARDEN_WALL_DRAINED", layer = "concrete", thickness_in = 14.0 },
+    { assembly = "SUNKEN_GARDEN_WALL", layer = "concrete", thickness_in = 14.0 },
+]

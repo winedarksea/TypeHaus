@@ -15,7 +15,7 @@ goes.
 credit is reasonable for a slow melt on presumed HSG D till.
 
 > ⚠ The infiltration rate is PRESUMED (MPCA HSG D, 0.06 in/hr), like the soil class. It is 38%
-> of the storage. Without it the course holds 165 cf against 222 cf and FAILS; the fallback
+> of the storage. Without it the course holds 170 cf against 222 cf and FAILS; the fallback
 > is an 18" course (248 cf of voids alone). A soils report closes this.
 
 > ⚠ The court's relief lip, -127 7/16", sits 36" INSIDE the 42" drained frost section: that
@@ -32,11 +32,11 @@ the drained bottom -163 7/16" to -175 7/16".
 |---|---|---|
 | FB-SG-W2 | x 5.500..12.500 = 7.000 × y -22.500..-11.000 = 11.500 | 80.50 |
 | FB-SG-E2 | x 23.500..30.500 = 7.000 × 11.500 | 80.50 |
-| FB-SG-S | x 5.500..30.500 = 25.000 × y -30.833..-22.500 = 8.333 | 208.33 |
+| FB-SG-S | x 5.500..30.500 = 25.000 × y -31.333..-22.500 = 8.833 | 220.83 |
 | FB-SG-ARCH | x 9.000..27.000 = 18.000 × y -12.500..-9.500 = 3.000 (36" bed) | 54.00 |
-| sum | | 423.33 |
+| sum | | 435.83 |
 | W2 ∩ ARCH, E2 ∩ ARCH | 2 × (3.5 × y -12.5..-11.0 = 1.5) = 2 × 5.25 | −10.50 |
-| **course bottom (union)** | | **412.83** |
+| **course bottom (union)** | | **425.33** |
 
 S and ARCH do not meet. Laps are counted once: the stone in a corner is one stone.
 
@@ -45,6 +45,9 @@ owns both south corners, and FT-SG-W2/E2 stop on its toe line at y -22.500, so t
 laps (2 × 16.917) are gone and the two outer corner squares (2 × 3.5 × 3.5 = 24.50) are new
 course. 388.33 → 412.83 sf. (W-SG-ARCH moved up into the footing plane the same day; its
 bed's plan outline did not change.)
+
+**Re-based 2026-11-24** (free body §15n): FT-SG-S's heel grew 6" outboard, and its bed
+followed, 25.000 × 0.500 = +12.50 sf. The course is now 412.83 → 425.33 sf.
 
 ## 2. The demand
 
@@ -62,20 +65,21 @@ rest. The field is inside the catchment: frozen, it sheds to the grate like the 
 
 | term | working | value |
 |---|---|---|
-| voids | 412.83 sf × 1.0 ft × 0.40 (#57 washed) | 165.1 cf |
-| infiltration | 0.06 in/hr × 48 h = 2.88 in = 0.240 ft; × 412.83 sf | 99.1 cf |
-| **held** | 165.1 + 99.1 | **264.2 cf** |
+| voids | 425.33 sf × 1.0 ft × 0.40 (#57 washed) | 170.1 cf |
+| infiltration | 0.06 in/hr × 48 h = 2.88 in = 0.240 ft; × 425.33 sf | 102.1 cf |
+| **held** | 170.1 + 102.1 | **272.2 cf** |
 
 48 h is the MN Stormwater Manual's drawdown window, used here as a slow-melt credit. A melt
 arrives over days, not in an hour. A storm gets no such credit and is not what this grades.
 
 ## 4. The comparison
 
-264.2 cf held ≥ 222.5 cf of melt: **PASS at 1.19** (1.12 before 2026-10-10). What governs
-is the infiltration credit: remove it and the course alone is 0.74 of the demand.
+272.2 cf held ≥ 222.5 cf of melt: **PASS at 1.22** (1.19 before 2026-11-24, 1.12 before
+2026-10-10). What governs is the infiltration credit: remove it and the course alone is 0.76
+of the demand.
 
-The check prints "165 cf of voids (413 sf) + 99 cf infiltrated over 48 h (presumed rate) =
-264 cf, against 222 cf of melt (50 psf over 278 sf of catchment via AD-SG-COURT)".
+The check prints "170 cf of voids (425 sf) + 102 cf infiltrated over 48 h (presumed rate) =
+272 cf, against 222 cf of melt (50 psf over 278 sf of catchment via AD-SG-COURT)".
 
 ## 5. The lip
 

@@ -28,13 +28,14 @@ def _findings(fn, ctx, tag):
     return [f for f in fn(ctx) if tag in f.element_tags]
 
 
-def test_the_course_is_413_sf_with_the_laps_counted_once(catlin_model_ro):
-    """§1 (re-based 2026-10-10): 423.33 sf of bed less 2 x 5.25 (the ARCH laps). FT-SG-S
-    owns the south corners now, so the S laps are gone and the corner squares are course."""
+def test_the_course_is_425_sf_with_the_laps_counted_once(catlin_model_ro):
+    """§1 (re-based 2026-10-10, 2026-11-24): 435.83 sf of bed less 2 x 5.25 (the ARCH laps).
+    FT-SG-S owns the south corners, so the S laps are gone and the corner squares are course;
+    its heel grew 6" (+12.50 sf)."""
     beds = [b for b in catlin_model_ro.footing_beddings if b.tag in _SOAKAWAY_BEDS]
-    assert sum(Polygon(b.outline).area for b in beds) / _SF == pytest.approx(423.33, abs=0.01)
+    assert sum(Polygon(b.outline).area for b in beds) / _SF == pytest.approx(435.83, abs=0.01)
     union = unary_union([Polygon(b.outline) for b in beds]).area / _SF
-    assert union == pytest.approx(412.83, abs=0.01)
+    assert union == pytest.approx(425.33, abs=0.01)
     for bed in beds:
         assert (bed.z0_m - bed.stone_z0_m) / _IN == pytest.approx(12.0)
 
@@ -48,14 +49,14 @@ def test_the_catchment_is_the_open_court_south_of_the_balcony(catlin_model_ro):
 
 
 def test_storage_holds_the_melt(ctx):
-    """§3-§4: 165.1 + 99.1 = 264.2 cf against 222.5 cf — PASS at 1.19, presumed rate."""
+    """§3-§4: 170.1 + 102.1 = 272.2 cf against 222.5 cf — PASS at 1.22, presumed rate."""
     from typehaus.checks.mep.soakaway_storage import soakaway_storage
 
     storage, lip = _findings(soakaway_storage, ctx, "FB-SG-ARCH")
     assert storage.result is Result.PASS, storage.message
     assert storage.message.startswith(
-        "4-bed soakaway course holds 165 cf of voids (413 sf) + 99 cf infiltrated over 48 h "
-        "(presumed rate) = 264 cf, against 222 cf of melt (50 psf over 278 sf of catchment "
+        "4-bed soakaway course holds 170 cf of voids (425 sf) + 102 cf infiltrated over 48 h "
+        "(presumed rate) = 272 cf, against 222 cf of melt (50 psf over 278 sf of catchment "
         "via AD-SG-COURT)"), storage.message
     # §5: the relief lip sits inside the drained frost section, stated rather than hidden.
     assert lip.result is Result.UNKNOWN

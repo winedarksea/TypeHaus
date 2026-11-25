@@ -172,19 +172,27 @@ def court_geometry(ctx: EngineeringContext) -> tuple[CourtGeometry | None, list[
         return None, ["two parallel retaining legs whose separation is the court's width"]
     (left, right) = pair
 
-    # The legs share one section exactly. The end wall may differ only by a longer TOE
-    # (its footing wider by the same amount); a different heel, stem or depth is a second
-    # section this single-section study cannot describe.
+    # The legs share one section exactly. The end wall may differ only by a longer TOE and a
+    # longer HEEL (its footing wider by both); a different stem or depth is a second section
+    # this single-section study cannot describe.
     first = sections[left]
     fields = ("stem_thickness_ft", "stem_height_ft", "footing_width_ft",
               "footing_depth_ft", "toe_ft")
     end_extensions = []
+    heel_extensions = []
     for tag, geometry in sections.items():
         extension = geometry.toe_ft - first.toe_ft if tag not in pair else 0.0
+        heel_ext = geometry.heel_ft - first.heel_ft if tag not in pair else 0.0
+        if heel_ext < -_SECTION_TOLERANCE_FT:
+            return None, [f"an end wall heel no shorter than the legs' — {tag} is "
+                          f"{-heel_ext:.2f}' shorter"]
+        heel_extensions.append(heel_ext)
         for field in fields:
             expected = getattr(first, field)
             if field in ("footing_width_ft", "toe_ft"):
                 expected += extension
+            if field == "footing_width_ft":
+                expected += heel_ext
             if abs(getattr(geometry, field) - expected) > _SECTION_TOLERANCE_FT:
                 return None, [f"one common court section — {tag} differs from "
                               f"{first.tag} in {field}"]
@@ -212,6 +220,7 @@ def court_geometry(ctx: EngineeringContext) -> tuple[CourtGeometry | None, list[
         footing_width_ft=first.footing_width_ft,
         toe_ft=first.toe_ft,
         end_toe_extension_ft=max(end_extensions, default=0.0),
+        end_heel_extension_ft=max(heel_extensions, default=0.0),
         walls=court_wall_tags(ctx, walls, pair, end_tags, axes),
     ), []
 

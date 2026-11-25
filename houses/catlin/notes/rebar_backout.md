@@ -911,3 +911,31 @@ Net -176.75 in = -14.73 LF x 0.668 plf = **-9.84 lb**, -3 pieces: foundation wal
 **297 → 294 pieces, 1,654.7 → 1,644.8 lb** (engine -9.9). Total **5,241.0 lb / 843 pieces**
 over the same 116.54 cy, **45.0 lb/cy**.
 
+
+## Addendum 2026-11-24 — W-SG-W1/E1 take W2's stem steel; FT-SG-S's heel +6"
+
+Court free body §15n. W1/E1's `#6 @ 38"` started 3" above the base, and is now
+`_RET_STEM_STEEL`. FT-SG-S grows 6" outboard, and its heel bar goes from #5 @ 12" to @ 9".
+Each row below is laid by hand and read against the takeoff.
+
+```
+W1 (and E1 the same)
+  out  5 #6 @ 38"  43.10 ft x 1.502                                        −64.73 lb
+  in   13 #5 @ 10" verticals, 114.0" placed + 8.44" foot = 122.44" each:
+       13 x 122.44 = 1,591.7" = 132.64 ft x 1.043                        +138.34 lb
+  in   #4 @ 16" each face, 8 rows x 2 = 16 lines at 119.32", plus 16 splice bars
+       of 66" across N-SG-MW (a class B lap each side):
+       16 x 119.32 + 16 x 66 = 2,965.1" = 247.09 ft x 0.668              +165.05 lb
+                                                         per wall        +238.66 lb
+FT-SG-S, 300" x 106" (bar region 100" x 294")
+  bottom-x @ 9": 34 at 100" (was 94")      3,400" = 283.33 ft            +17.73 lb
+  top-x    @ 9": ceil(293.375/9) + 1 = 34 at 100" (was 26 at 94")         +83.09 lb
+  bottom-y @ 12": ceil(99.375/12) + 1 = 10 at 294" (was 9)                +25.55 lb
+  top-y    10 lines x 2 zones of 78" = 20 (was 18)                        +13.56 lb
+                                                                        +139.93 lb
+```
+
+The rows: footing #5 **215 → 226 pieces, 1,731.2 → 1,871.1 lb**; foundation wall #4
+**294 → 358, 1,644.8 → 1,974.9**; foundation wall #5 **110 → 136, 1,045.8 → 1,322.5**; and the
+foundation wall #6 row leaves (10 pieces, 129.5 lb). The total is **6,156.9 lb / 970 pieces**
+over 116.20 cy, **52.99 lb/cy**. FT-SG-S's 0.46 cy is the only concrete that moved.

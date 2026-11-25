@@ -2997,7 +2997,8 @@ is that the corner squares are real concrete now, not a gap the free body happen
 > rule, 1.31 one side empty, the table below) was worked on the old unit section: the south
 > wall's thrust on its 18' axis length rather than the body's 25' projected width (§15a), with
 > mu 0.35 on the stone. It is kept as the record of how the backfill rule was chosen. The
-> graded value is **1.529** on the specified mu 0.43, worked from its governing stage in §15h.
+> graded value was **1.529** on the specified mu 0.43 (§15h). Since 2026-11-24 the rule is 3'-0"
+> and FT-SG-S's heel is 6" longer: **1.787** (§15e, §15n).
 
 §4's FS 1.735 is the completed court: all three retained sides full, the heel soil on all
 three footings. While it is being backfilled, neither half of that is true. A review screened
@@ -3187,24 +3188,26 @@ corner delivery FT-SG-S: (78,174 − its own friction 61,184) / 25 = 680 plf ove
 
 ### 15e. Staged backfill on the body
 
-Grid of twelfths of H per side, earth only, W1/E1 empty (concrete only), 110 pcf.
+**The rule is 3'-0" since 2026-11-24** (`retaining_system_staged.RULE_FT`, AN-SG-BACKFILL;
+§15n). Each side is stepped 2" down from its full H = 10.1198'. The search runs earth only,
+with W1/E1 empty (concrete only), at 110 pcf and mu 0.43, on the current body (FT-SG-S +6").
 
-| rule (no side more than ... above another) | worst FS |
-|---|---|
-| H/12 (10") | 1.55 |
-| H/6 (1'-8") | 1.50 |
-| H/4 | 1.44 |
-| H/3 | 1.37 |
-| **H/2 (AN-SG-BACKFILL as drawn)** | **1.24** |
-| one side empty, two full | 1.04 |
+| Rule: no side more than ... above another | Worst FS | Governing stage |
+|---|---|---|
+| 2'-0" | 1.892 | W2 at 8.12', S and E2 full |
+| 2'-8" (four 8" lifts, as AN-SG-BACKFILL prints it) | 1.822 | W2 at 7.45' |
+| **3'-0" (graded)** | **1.787** | W2 at 7.12' (worked in §15n) |
+| 4'-0" (the crew 16" past the printed rule) | 1.683 | E2 at 6.12' |
+| H/2, 5'-0" (the rule until 2026-11-24) | 1.584 | E2 at 6/12 |
+| one side empty, two full (forbidden) | 1.324 | |
 
-The south face is wider than §13 counted, so the drawn rule no longer reaches 1.50.
-AN-SG-BACKFILL's printed 1.64/1.37 is stale and waits on gate G1.
+The note prints 2'-8", which leaves a 4" allowance under the graded 3'-0". Even 16" past the
+printed rule, at 4'-0", the court reads 1.68.
 
-> **Historical basis.** This table is at mu 0.35, the IBC Table 1806.2 class-3 presumption on
-> the stone, on the current body. Its H/2 row, 1.24 (1.2447), is the same governing stage as
-> the graded **1.529** on the specified mu 0.43: 0.35 x 317,855 / 89,375 = 1.2447. §15h works
-> that stage term by term.
+> **History.** At mu 0.35 (the IBC class-3 presumption) on the 8'-4" FT-SG-S, the H/2 rule
+> read 1.24 (1.2447). That is the same governing stage as §15h's 1.529 at mu 0.43:
+> 0.35 x 317,855 / 89,375 = 1.2447. That table (H/12 1.55 ... one side empty 1.04) is in git
+> history.
 
 ### 15f. Gate options (for the owner; nothing is drawn)
 
@@ -3332,16 +3335,20 @@ pattern, with two statuses.
    (deep plane, soakaway full). Every row grades on them:
 
 ```
-sliding dry        0.43 x 350,788 / 78,173                    = 1.930
-perched H/2        0.43 x 350,788 / 96,201                    = 1.568
-flooded court      0.43 x 317,882 / 77,884                    = 1.755
-staged at H/2      0.43 x 317,855 / 89,375 (worked below)       = 1.529   (one side empty 1.28)
-deep, lip          0.4663 x 536,996 / 157,044                 = 1.594   (dry 2.09; flooded 1.39 reported)
+sliding dry        0.43 x 350,788 / 78,173                    = 1.930   -> 2.026 (§15n)
+perched H/2        0.43 x 350,788 / 96,201                    = 1.568   -> 1.644 (§15n, governs)
+flooded court      0.43 x 317,882 / 77,884                    = 1.755   -> 1.791 (§15n, at the threshold)
+staged at H/2      0.43 x 317,855 / 89,375 (worked below)       = 1.529   -> 1.787 at 3'-0" (§15n)
+deep, lip          0.4663 x 536,996 / 157,044                 = 1.594   -> 1.652 (§15n)
 retained full      reported                                   = 1.17
-corner delivery    (78,173 − 0.43 x its 174,812) / 25 = 120 plf -> 0.12
+corner delivery    (78,173 − 0.43 x its 174,812) / 25 = 120 plf -> 0.12 -> 0.00 (§15n)
 ```
 
-**The staged row, worked from its governing stage.** The grid of §13 (each of W2, S and E2
+The left column is the design as closed on 2026-11-23. The arrows are the current values,
+after FT-SG-S +6" and the 3'-0" rule, each worked in §15n.
+
+**The staged row at H/2, worked from its governing stage** (historical: the rule and the heel
+changed on 2026-11-24, and §15n works the current stage the same way). The grid of §13 (each of W2, S and E2
 at a twelfth of H = 10.1198', no side more than H/2 above another, earth only, W1/E1 empty,
 the apron not yet placed) is governed by **E2 at 6/12 (5.0599'), S and W2 full**:
 
@@ -3391,7 +3398,7 @@ returns to the owner with the measured φ′.
 
 **G8 field.** `IsolationBoard.set_after_backfill` replaces the text search. On the specified
 friction the joint row reads 0.0533 + (96,201 − 76,808) / 150,839 x 0.25 = 0.0854" against
-0.125", so 0.68.
+0.125", so 0.68 (0.665 since §15n).
 
 ### 15i. The restraint side at an upper friction (owner, 2026-11-23) — superseded by §15j
 
@@ -3445,7 +3452,7 @@ At μ the per-line tension is μ x 129,306 / 2 on the existing 6 #4 (64,800 lb):
 |---|---|
 | 0.43 | 0.43 |
 | 0.70 | 0.70 |
-| 1.00 | **0.998** |
+| 1.00 | **0.998** (0.272 since W1/E1 carry stem horizontals, §15n) |
 
 The row passes at any plausible stone friction, so **no side-run steel is added** (owner rule:
 material only where a graded row clearly needs it). `bed_friction_max` = **1.00**, where the
@@ -3491,7 +3498,8 @@ conservative span for its own row.
 
 Owner's stated basis: the full 50 psf ground snow on the terrace and perched water at H/2 are
 not taken together, and each is graded alone. Snow alone gives 1.773 and perched water alone
-1.568. Combined they would read **FS 1.46** at μ 0.43, 110 pcf; that is printed once on the
+1.568. Combined they would read **FS 1.46** at μ 0.43, 110 pcf (**1.53** since §15n: (3,820.9 + 276)
+x 25 = 102,423 lb, 157,037 / 102,423); that is printed once on the
 record and not graded. μ stays 0.43.
 
 **NOT COVERED (owner):** that combination; lateral frost thrust in the top 42" of retained
@@ -3543,6 +3551,7 @@ E2/W2: W 5,427.5 plf, B 7' -> B_z 10.5', e 0.8519'
 S:     W 5,627.5 plf, B 8.333' -> B_z 11.833', e 0.3030'
        q_f = 5,627.5 / 11.833 x (1 + 6 x 0.3030 / 11.833) = 475.6 x 1.1537 = 548.6 psf
        q_s = 350 psf                                           q = 898.6 psf    d/c 0.449
+       (FT-SG-S +6", §15n: 955 psf at 130 pcf, d/c 0.477)
 ```
 
 The 110 pcf end governs both (its larger eccentricity outweighs the 130 pcf end's heavier
@@ -3550,6 +3559,203 @@ heel). The review's 1,225 / 1,125 psf are the average footing pressure (775 / 67
 450 psf with no spread; spreading takes them to the figures above. Both pass the 2,000 psf
 presumption. The spread is an engineering approximation, not a code row, and the class-4 value
 is a presumption a site report replaces. `tests/test_retaining_court.py` pins the numbers.
+
+### 15n. The structure fixes (2026-11-24): W1/E1 stem steel, the 3'-0" rule, FT-SG-S +6"
+
+Three changes from the cladding study (C.5) and the sliding study
+(`notes/court_sliding_levers_study.md`). Each number below is hand-worked; the engine is pinned
+against it.
+
+**1. W1/E1 take W2's stem steel.** The laid-out `#6 @ 38"` verticals started 3" above the
+stem's base, so no bar crossed the cold joint into FT-SG-W1/E1. `column_support`'s "stem as a
+cantilever" row still credited them at that joint. W1/E1 now carry `_RET_STEM_STEEL`: #5 @ 10"
+on the retained face, run from the footing mat on a 90° foot (§6b), plus #4 @ 16" each face.
+`column_support` now credits only a vertical that crosses the joint (`hooks` "start", or a
+`dowels` row). A straight vertical credits nothing and the row goes INCOMPLETE.
+
+```
+d = 12 - 3 - 0.3125 = 8.6875";  As = 0.31 x 12 / 10 = 0.372 in²/ft
+a = 0.372 x 60,000 / (0.85 x 5,000 x 12) = 0.4376"
+phi Mn = 0.9 x 0.372 x 60,000 x (8.6875 - 0.2188) / 12 = 14,177 lb-ft/ft
+column_support row (propped soil, as drawn): wind 1,495 + soil 1.6 x 60 x 6.29³ / 15 = 1,590
+                   = 3,085 lb-ft/ft  -> 3,085 / 14,177 = 0.218   (was 0.578 on #6 @ 38")
+unpropped cantilever (graded below, not drawn): soil 1.6 x 60 x 6.287³ / 6 = 3,976 -> 0.28;
+                   with the wind 1,495: 5,471 -> 0.39
+```
+
+R404.1.2(8) still passes: 10' wall, 7' row, and #5 @ 10" is more steel than #6 @ 38". The
+porch-prop sequence (AN-SG-BACKFILL (b)) and the braced read are unchanged, so the register
+holds the same 32 items.
+
+**What the horizontals change: winter tension.** W1/E1's stems now carry 8 rows of #4 on each
+face, continuous along the side run and lapped across `N-SG-MW`/`-ME`. §15j.1's section
+through the side lines cuts 6 #4 in the footing plus 16 #4 in the stem:
+
+```
+T per line = 1.00 x 129,306 / 2                        = 64,653 lb   (unchanged)
+side run   As = 22 x 0.20 = 4.40 in²;  0.9 x 4.40 x 60,000 = 237,600  -> 0.272   (was 0.998)
+joint      As = 3.06 + 16 x 0.20 = 6.26 in²;  338,040                -> 0.191   (was 0.391)
+```
+
+`bed_friction_max` stays **1.00**. The row would now allow a report friction of about 3.6
+before it reached 1.0 (μ x 129,306 / 2 = 237,600 at μ 3.67). Raising the printed bound is the owner's call. Nothing is graded on it.
+
+**2. The backfill rule is 3'-0".** `retaining_system_staged.RULE_FT = 3.0`. The search steps
+each side 2" down from full height, so a whole-foot difference lies on the grid.
+AN-SG-BACKFILL prints four 8" lifts (2'-8") in turn, W2 then S then E2, which leaves a 4"
+allowance inside the graded 3'-0". §15e's table carries the rule set.
+
+**3. FT-SG-S's heel grows 6" outboard, and its top-x bar becomes #5 @ 9"**
+(`south_heel_extension_in` 6, `heel_top_spacing_in` 9). The toe line and the strip's north
+edge stay where they are. B = 8.333 + 0.5 = 8.833', heel 3.5'. FT-SG-S still runs out to out
+in E-W, 25'-0". The grown corner squares lengthen each side face by 6", so 19.833' becomes
+20.333' (E-W cancels).
+
+*What the body gains* (110 pcf):
+
+```
+footing   0.5 x 25 x 1 x 150                                      =  1,875   -> 79,325
+heel soil S strip 0.5 x 19 = 9.5 sf + two corner squares 3 x 0.5 = 3.0 sf
+          12.5 sf x 9.1198 x 110                                  = 12,540   -> 186,346
+W (dry) = 350,788 + 1,875 + 12,540                                = 365,203
+```
+
+*The apron's surcharge on S halves.* The heel's virtual back now stands at the middle of the
+apron's 1'-0" levelling pad, so only the outer 6" pushes on it. That is §4e's strip,
+q 86.67 psf, h 5.787', with b = 0.5' instead of 1.0'. Rigid-wall closed form
+P = q H (θ2 − θ1) / 90°:
+
+```
+theta2 = atan(0.5 / 5.787) = 4.938°;  P = 86.67 x 5.787 x 4.938 / 90 = 27.52 plf   (was 54.63)
+```
+
+The half over the heel bears on the heel soil. That vertical load is not credited, which is
+conservative. W2 and E2 keep their 54.63 plf.
+
+*The rows* (μ 0.43; FS = F / H):
+
+```
+dry        S (3,072.31 + 27.52) x 25 = 77,496;  0.43 x 365,203 / 77,496       = 2.026  (1.930)
+perched    S (2,647.7 + 1,145.7 + 27.52) x 25 = 95,523;  157,037 / 95,523         = 1.644  (1.568)  GOVERNS
+flooded    W' 319,614 (footing +12.5 x 87.6 = 1,095; heel soil 12.5 sf x
+           (8.512 x 110 + 0.608 x 47.6) = 12,065);  H 3,070 x 25 = 76,748;
+           0.43 x 319,614 / 76,748                                             = 1.791  (1.702)
+snow       S (3,072.31 + 0.5455 x 50 x 10.1198 = 276.0 + 27.52) x 25 = 84,395;
+           157,037 / 84,395                                                    = 1.861  (1.773)
+snow + perched (not concurrent, §15k; printed) (3,820.9 + 276.0) x 25 = 102,423  = 1.53   (1.46)
+wind       sqrt((77,496 + 1,348)² + (0 + 1,348)²) = 78,855;  157,037 / 78,855 = 1.991  (1.897)
+deep, lip  N' 536,996 + 1,875 + 12,540 + bed stone 12.5 sf x (4.0 x 37.6 + 0.5 x 100) 2,505
+           = 553,916;  H 6,255 x 25 = 156,366;  0.4663 x 553,916 / 156,366       = 1.652  (1.594)
+corner     its own body 174,812 + 1,875 + 12,540 = 189,227; 0.43 x 189,227 = 81,368
+           > 77,496, so q = 0 plf                                              = 0.00   (0.12)
+```
+
+*Staged at 3'-0"*. The governing stage is E2 and S full, with W2 at 7.12' (3'-0" down):
+
+```
+thrust  E2  30 x 10.1198² x 20.333 = 62,470 lb   pushes west
+        S   30 x 10.1198² x 25.00  = 76,808 lb   pushes north
+        W2  30 x  7.1198² x 20.333 = 30,922 lb   pushes east
+        E-W 31,548;  H = sqrt(31,548² + 76,808²)                          = 83,034 lb
+heel soil (each region to the lower fill line of its sides, above the footing top 1.0'):
+        E2 heel   50.5 x 110 x 9.1198 − 16.333 x 10 x 5.1198 = 50,660.5 − 836.2 = 49,824.3
+        S heel    66.5 x 110 x 9.1198 − 19.000 x 10 x 5.1198 = 66,710.4 − 972.8 = 65,737.6
+        W2 heel   50.5 x 110 x 6.1198 − 16.333 x 10 x 5.1198 = 33,994.5 − 836.2 = 33,158.3
+        SE corner 10.5 x 110 x 9.1198 −  1.052 x 10 x 5.1198 = 10,533.4 −  53.9 = 10,479.5
+        SW corner 10.5 x 110 x 6.1198 −  1.052 x 10 x 5.1198 =  7,068.4 −  53.9 =  7,014.5
+                                                                     W_soil = 166,214
+concrete 79,325 + 1,650 + 97,882 = 178,857;  N' = 345,071;  F = 0.43 x N' = 148,381
+FS = 148,381 / 83,034                                                       = 1.787
+```
+
+W2 low and E2 low are the same stage (earth only, equal heels); the search returns W2.
+One side empty with two full is 1.324 (it was 1.28). The loop alone, with the spliced walls'
+concrete left out, is 1.532.
+
+*FT-SG-S's own rows* (`retaining_wall/W-SG-S`, unit strip, 110 pcf unless stated):
+
+```
+W = stem 1,368 + footing 8.833 x 150 = 1,325 + heel soil 3.5 x 9.12 x 110 = 3,511 = 6,204 plf
+M_o = 3,072 x 10.12 / 3 + 27.52 x 5.42 = 10,513;  M_r = 5,852 + 6,612 + 24,870 = 37,334
+overturning 37,334 / 10,513 = 3.55 (3.04);  e = 8.833/2 − 26,821/6,204 = 0.093' (kern 1.472) 0.06 (0.22)
+heel  (3,511 + 525) x 1.75 x 1.6 = 11,301 vs #5 @ 9" phi Mn 15,707          0.720 (0.700 at @12")
+heel at 130 pcf  (4,149.5 + 525) x 1.75 x 1.6 = 13,089 / 15,707               0.833
+      (at #5 @ 12", phi Mn 11,865: 1.10, OVER — why the bar is heavier)
+toe   q 746.9 / 657.8 psf, M 6,876 x 1.6 = 11,002 / 15,707                   0.700 (0.738)
+native under the stone, 130 pcf: 6,842 / 12.333 x (1 + 6 x 0.1858 / 12.333) + 350 = 955 psf
+                                                                            0.477 (0.449)
+```
+
+`#5 @ 9"`: As 0.4133, a 0.4863, phi Mn = 0.9 x 0.4133 x 60,000 x (8.6875 − 0.2431) / 12 =
+15,707 ft-lb/ft (§12a's toe bar).
+
+**The joint (G8, §15g)** reads the backfilled court with no apron (S 76,808) against the
+perched case:
+
+```
+0.0533 + (95,523 − 76,808) / 157,037 x 0.25 = 0.0533 + 0.0298 = 0.0831"  vs 0.125"   0.665 (0.683)
+```
+
+**Cost** (from `prices.toml`; rebar is priced as material only):
+
+| Item | Quantity | Low–high |
+|---|---|---|
+| W1/E1 stems: #4 horizontals | +330.1 lb at $1.35–2.25 | $446–743 |
+| W1/E1 stems: #5 verticals | +276.7 lb at $1.30–2.15 | $360–595 |
+| W1/E1 stems: #6 @ 38" retired | −129.5 lb | −$162–272 |
+| **W1/E1 subtotal** | +477 lb net | **$644–1,066** |
+| FT-SG-S: concrete | +0.47 cy (`[concrete] footing`) | $135–219 |
+| FT-SG-S: #57 bed | +2.09 cy (`[footing_bedding]`) | $104–157 |
+| FT-SG-S: #5, heel bar @ 9" and the longer bars | +139.9 lb | $182–301 |
+| FT-SG-S: excavation (cut, haul, backfill, cap) | +7.8 / +2.1 / +4.5 / +0.8 cy | $159–354 |
+| **FT-SG-S subtotal** | | **$580–1,031** |
+| **Total** | | **$1,225–2,096** |
+
+**Graded, not adopted: retiring the porch prop.** In this option W1/E1 are cantilevers
+retaining their own fill, backfilled with or before the court instead of after the porch is
+framed. A trial run authored them `lateral_support="unsupported"` with 6.29' of
+`unbalanced_fill`. It adds **2 engineered items**, `retaining_wall/W-SG-W1` and `/W-SG-E1`.
+At active pressure on their own footings they read:
+
+| Row | d/c |
+|---|---|
+| sliding | **0.907** (FS 1.654) |
+| heel | 0.51 |
+| toe | 0.45 |
+| stem flexure | 0.23 |
+| overturning | 0.24 |
+| bearing | 0.23 |
+| shear | 0.25 |
+| native bearing | 0.57 |
+
+Three things keep it a study:
+
+- **At-rest is the honest basis, and the engine cannot grade it.** The W1/E1 footings are tied
+  across the court by W-SG-ARCH and W-SG-BRKBM, so the walls cannot yield to active pressure.
+  Authored `lateral_support="base"` on W-SG-ARCH, `retaining_system` refuses them: they lie on
+  no common cycle with the strut. By hand, at-rest, the stem reads 0.28 on soil alone and 0.39
+  with the E-W wind (part 1 above). Each wall's own-footing sliding would fall to about 1.65 x
+  40/60 = 1.10. W1 and E1 push opposite ways, 16.7 kip each, and that thrust is carried in
+  compression through ARCH and BRKBM. That is a load path to grade, not an assumption.
+- **`base_rotation` goes INCOMPLETE on all four corner columns.** "A free-headed wall under a
+  column is a stacked cantilever this model does not work." `column_support` then loses its
+  flexible-base magnifier, and dowel tension reads 0.538, an unconservative drop from 0.551.
+  So 4 items would need either an engine extension or a seal.
+- **`column_support`'s soil term** would change from propped (H³/15) to a cantilever (H³/6),
+  giving 0.39. The porch-strut rows would retire.
+
+The material cost is **$0** over the adopted steel, which already gives W1/E1 a real base.
+The cost is the engine work above, or a seal on 6 items.
+
+**What retiring the prop gains in sequencing.** Court backfill would no longer wait on porch
+carpentry. AN-SG-BACKFILL (b) goes, and the two side pairs fill with the court. Today the
+order is placement 2, cure, porch ledgers and joists, then W1/E1 backfill. Without the prop,
+the porch is framed after the court is full, from a backfilled grade.
+
+If W1/E1 were filled with the court, their heel soil, 2 x 3 x 10.5 x 5.79 x 110 = 40,124 lb,
+would add 17,253 lb of friction. Dry would read about 0.43 x 405,327 / 77,496 = 2.25. Staged
+gains only if the rule fills W1/E1 first. This is not credited and needs the engine basis
+change named in the sliding study's lever 5.
 
 ## Sources
 

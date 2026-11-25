@@ -2,14 +2,14 @@
 
 The completed body's sliding row assumes every retained side full. While they are filled, a
 side may stand higher than another. Each retained side is taken at a fill fraction f of its
-H on a grid of twelfths: earth thrust ½ K0 γ (H f)² over that side's projected width (the
-apron comes later), the soil on its heel to its fill line, the corner squares at the lower
-of their two sides. The spliced braced walls stand EMPTY until their tops are braced and
+H on a grid (2" steps under RULE_FT, else twelfths): earth thrust ½ K0 γ (H f)² over that
+side's projected width (the apron comes later), the soil on its heel to its fill line, the
+corner squares at the lower of their two sides. The spliced braced walls stand EMPTY until their tops are braced and
 add their concrete only, as in the completed body.
 
 **The permitted sequence is part of the design**: the row grades the worst stage the rule
-allows — no retained side more than :data:`RULE` of its height above another — and the
-drawing's backfill note prints the generated values.
+allows — no retained side more than :data:`RULE_FT` above another (else :data:`RULE` of its
+height) — and the drawing's backfill note (AN-SG-BACKFILL) states that rule.
 """
 
 from __future__ import annotations
@@ -19,9 +19,22 @@ from dataclasses import dataclass
 
 from typehaus.engineering.retaining_system_body import STONE_PCF, Body, _exterior
 
-#: The field rule graded: no retained side more than half its height above another.
+#: The rule as a fraction of H on a grid of twelfths, graded only when RULE_FT is None.
 RULE = 0.5
 _GRID = tuple(i / 12.0 for i in range(13))
+#: The field rule graded (AN-SG-BACKFILL, free body §15e): no retained side more than 3'-0"
+#: above another. The grid steps 2" down from full height, so a whole-foot difference lies on
+#: it. The note prints four 8" lifts (2'-8"), 4" inside it.
+RULE_FT: float | None = 3.0
+_STEP_FT = 2.0 / 12.0
+
+
+def _rule_and_grid(height_ft: float) -> tuple[float, tuple[float, ...]]:
+    if RULE_FT is None:
+        return RULE, _GRID
+    step = _STEP_FT / height_ft
+    grid = {max(0.0, 1.0 - k * step) for k in range(int(1.0 / step) + 2)} | {0.0}
+    return RULE_FT / height_ft + 1e-9, tuple(sorted(grid))
 
 
 def _split(body: Body, members, stem_ft: float  # type: ignore[no-untyped-def]
@@ -115,8 +128,9 @@ def staged(body: Body, members, footing_top_ft: float, stem_ft: float,  # type: 
 
     spliced = sum(p.weight() for p in body.prisms
                   if p.label.partition(":")[2] in body.spliced)
-    grid = list(itertools.product(_GRID, repeat=len(pushes)))
-    ruled = [c for c in grid if max(c) - min(c) <= RULE + 1e-9 and max(c) > 0]
+    rule, steps = _rule_and_grid(max(heights))
+    grid = list(itertools.product(steps, repeat=len(pushes)))
+    ruled = [c for c in grid if max(c) - min(c) <= rule + 1e-9 and max(c) > 0]
     governing = min((stage(c, 0.0) for c in ruled), key=lambda s: s.fs)
     empty = min(stage(c, 0.0).fs for c in grid if max(c) > 0)
     loop_only = min(stage(c, spliced).fs for c in ruled)

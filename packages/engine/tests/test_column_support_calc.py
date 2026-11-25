@@ -61,8 +61,8 @@ def test_both_walls_are_computed_and_pass(results) -> None:
     for wall in ("W-SG-W1", "W-SG-E1"):
         record = results[f"column_support/{wall}"]
         assert record.status is Status.OK, record.missing
-        assert record.governing.name.endswith("stem as a cantilever under E-W wind and the "
-                                              "retained soil")
+        # The dowel tension governs since W1/E1 took W2's stem steel (free body §15n).
+        assert record.governing.name.endswith("dowel tension across the joint")
         # The not-graded list moved from a note to the sheet's "does not cover" table.
         assert any("base_rotation" in row.why for row in sheet_spec("column_support").not_covered)
         # B-05: nothing is handed to "the engineer of record" any more.
@@ -117,13 +117,14 @@ def test_each_stem_is_a_cantilever_under_e_w_wind_plus_the_retained_soil(results
     porch cannot prop one against the other; the SOIL pushes inward on both, so the porch DOES
     prop it. Per foot: the columns' M + V H over the union of their spreads (18.9') = 1,495, plus
     the PROPPED soil 1.6 x 60 psf/ft (the court's at-rest basis) x 6.29'^3 / 15 = 1,590, against
-    #6 @ 38" on the earth face, d 8.625": phi M_n = 0.9 x 0.1389 x 60,000 x (8.625 - 0.0817) / 12
-    = 5,340; d/c 0.58."""
+    #5 @ 10" hooked into the footing (free body §15n), d 8.6875": phi M_n = 0.9 x 0.372 x 60,000
+    x (8.6875 - 0.2188) / 12 = 14,177; d/c 0.218. (It credited #6 @ 38" at 5,340 until
+    2026-11-24, bars that started 3" above the joint.)"""
     for wall in ("W-SG-W1", "W-SG-E1"):
         record = results[f"column_support/{wall}"]
         state = _state_named(record, f"{wall}: stem as a cantilever under E-W wind and the "
                                      f"retained soil")
-        assert state.capacity == pytest.approx(5_340.0, rel=0.002)
+        assert state.capacity == pytest.approx(14_177.0, rel=0.001)
         assert state.demand == pytest.approx(3_085.0, rel=0.01)
         assert "cannot prop one against the other" in state.citation
         assert "PROPPED retained soil 1.6 x 60" in state.citation
@@ -184,3 +185,19 @@ def test_no_embedment_is_incomplete_naming_the_field(tmp_path) -> None:
     record = _results(plan)["column_support/W-SG-W1"]
     assert record.status is Status.INCOMPLETE
     assert any("BarSpec.embedment" in m for m in record.missing)
+
+
+def test_the_stem_row_credits_only_bars_that_cross_the_footing_joint() -> None:
+    """free body §15n: a straight vertical starts at cover above the base and crosses nothing;
+    a hooked one runs from the footing mat, and a dowel row is laid one per vertical."""
+    from typehaus.engineering.column_support_stem import joint_vertical
+    from typehaus.model.rebar import BarSpec, ReinforcementSpec
+    from typehaus.quantities import inch
+
+    straight = BarSpec(role="vertical", bar=6, spacing=inch(38.0))
+    assert joint_vertical(ReinforcementSpec(bars=(straight,))) is None
+    hooked = straight.model_copy(update={"hooks": ("start",)})
+    assert joint_vertical(ReinforcementSpec(bars=(hooked,))) is hooked
+    dowel = BarSpec(role="dowels", bar=5, embedment=inch(12.0), projection=inch(30.0))
+    crossing = joint_vertical(ReinforcementSpec(bars=(straight, dowel)))
+    assert (crossing.bar, float(crossing.spacing.inches)) == (5, 38.0)

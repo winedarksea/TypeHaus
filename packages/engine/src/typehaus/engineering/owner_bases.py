@@ -181,8 +181,9 @@ BOARDS_AFTER_BACKFILL = StatedBasis(
 
 BACKFILL_CONDITIONS = StatedBasis(
     BasisKind.OWNER_BASIS, "backfill sequence the court and the soil's strut rely on",
-    "(a) W-SG-W2, W-SG-S and W-SG-E2 are backfilled together in lifts: no one of the three "
-    "stands more than half its height (5 ft 0 in) above any other at any time. (b) W-SG-W1 "
+    "(a) W-SG-W2, W-SG-S and W-SG-E2 are backfilled together, one 8 in lift at a time in "
+    "turn: no one of the three stands more than four lifts (2 ft 8 in) above any other at any "
+    "time; the staged row grades 3 ft 0 in. (b) W-SG-W1 "
     "and W-SG-E1 are not backfilled until the porch beams brace their tops (IRC R404.1.7); "
     "the porch joists are the soil's strut between them, so every joist end bears tight on "
     "its ledger face (any gap shimmed in the hanger seat), and W1 and E1 are then backfilled "
@@ -190,4 +191,4 @@ BACKFILL_CONDITIONS = StatedBasis(
     "placement has cured and the strut is in.",
     reopens_if="a one-sided or out-of-sequence backfill would load the far stem through the "
                "strut and is outside this design",
-    reference="drawing note AN-SG-BACKFILL; court free body note §13")
+    reference="drawing note AN-SG-BACKFILL; court free body note §13, §15e")
