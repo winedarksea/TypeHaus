@@ -31,6 +31,7 @@ def test_trim_inventory_by_profile(catlin_model_ro):
         # Sill to Soffit: 6 until the garage rakes took it too (decision #143).
         "6460800": 9, "6411499": 6, "CORRUGATED_SILL_TO_SOFFIT": 10,
         "corrugated-outside-closure": 6,
+        "LP_440_BATTEN_3_5": 5,  # the court face's vertical panel joints (decision #146)
     }
 
 

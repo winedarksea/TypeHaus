@@ -429,6 +429,10 @@ def resolve(plan: PlanModel) -> tuple[ResolvedModel, list[Finding]]:
 
         resolve_small_opening_trim(model)
         resolve_screen_ends(model)
+        from typehaus.resolve.cladding_trim.joints import resolve_joint_battens
+
+        # After the opening trims a batten stops at (decision #146's cladding layout).
+        resolve_joint_battens(model)
         from typehaus.resolve.rainscreen_strips import resolve_panel_end_strips
 
         # After every trim a panel end lands on: the base, the window heads, the band.

@@ -15,10 +15,11 @@ POTTERS_CLAY = "#b98766"
 
 #: The panel's own trim kit; the court's two walls have no outside corner, eave or rake. Heads
 #: take the house's dark drips: D-B-SUNKEN the custom door head (D-M-PORCH's), WIN-B-SAUNA the
-#: Z drip flashing.
+#: Z drip flashing. Each vertical joint takes a 440 3.50" batten over its 2x4 nailer.
 LP_PANEL_KIT = {
     TrimCondition.DOOR_HEAD: "DOOR_HEAD_CUSTOM",
     TrimCondition.OPENING_HEAD: "OPENING_HEAD_DRIP_FLASHING",
+    TrimCondition.VERTICAL_JOINT: "LP_440_BATTEN_3_5",
 }
 
 MATERIALS_LP = [

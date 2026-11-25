@@ -32,9 +32,9 @@ _M2_TO_FT2 = 10.7639104167
 _M_TO_FT = 3.280839895013123
 
 #: Scopes ``takeoff/envelope.py`` also bills by the SF: hung sheathing (its ``wall`` / ``roof``
-#: SHEATHING rows) and a room's own ceiling liner. The estimate prices the SF side and skips
-#: these (``cli/prices.py``).
-_ALSO_IN_ENVELOPE = frozenset({"exterior wall", "roof", "ceiling lining"})
+#: SHEATHING rows), a sheet-laid cladding panel and a room's own ceiling liner. The estimate
+#: prices the SF side and skips these (``cli/prices.py``).
+_ALSO_IN_ENVELOPE = frozenset({"exterior wall", "roof", "ceiling lining", "cladding panel"})
 
 
 def deck_net_area_m2(floor) -> float:
@@ -109,6 +109,14 @@ def sheet_goods_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
                     laid[key].append(layout)
             else:
                 unlaid[key] += max(0.0, wall_area)
+
+    # A sheet-laid panel siding (decision #146): its sheets off its pieces, never unlaid.
+    for lay in model.sheet_layouts:
+        if lay.function == "cladding":
+            key = ("cladding panel", lay.material_ref, lay.thickness_m,
+                   round(lay.sheet_l_m / 0.0254, 6))
+            laid[key].append(lay)
+            areas[key] += sum(p.area_m2 for p in lay.pieces) - _cut_area_m2(model, lay)
 
     for roof in model.roofs:
         assembly = model.plan.library.resolve_assembly(roof.assembly)
@@ -187,6 +195,17 @@ def sheet_goods_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     return sorted(rows + rip_sheet_rows(rips),
                   key=lambda row: (str(row["scope"]), str(row["material"]),
                                    float(str(row["thickness_in"]))))
+
+
+def _cut_area_m2(model, lay) -> float:
+    """The area the openings cutting a layout's pieces take out of its band, each once."""
+    tags = {tag for p in lay.pieces for tag in p.opening_cuts}
+    area = 0.0
+    for op in model.openings:
+        if op.tag in tags:
+            z0 = model.wall(op.host_wall).base_ref_z_m + op.sill_m
+            area += op.width_m * max(0.0, min(z0 + op.height_m, lay.z1) - max(z0, lay.z0))
+    return area
 
 
 def layout_standard(plan) -> SheetLayoutStandard:

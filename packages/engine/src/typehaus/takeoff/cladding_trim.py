@@ -46,8 +46,9 @@ _SEALED = {"PBR_WINDOW_JAMB", "WINDOW_JAMB_CUSTOM", "WINDOW_SILL_CUSTOM", WINDOW
            "DOOR_HEAD_CUSTOM"}
 _CLOSED_BY_PANEL = {WINDOW_HEAD_PRODUCT, "WINDOW_SILL_CUSTOM", "CORRUGATED_BASE"}
 #: Straight window-kit cuts that combine from stock (metal_trim_kit.md, "Procurement may
-#: combine short cuts"); formed, lapped and closure pieces stay one stick per solid.
-_POOLED = {WINDOW_HEAD_PRODUCT, "PBR_WINDOW_JAMB"}
+#: combine short cuts"), and joint battens; formed, lapped and closure pieces stay one stick
+#: per solid.
+_POOLED = {WINDOW_HEAD_PRODUCT, "PBR_WINDOW_JAMB", "LP_440_BATTEN_3_5"}
 #: Shear kerf per pooled cut, inches.
 _SHEAR_KERF_IN = 0.25
 _LAP_SEALANT_FT = 1.0

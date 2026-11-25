@@ -19,8 +19,17 @@ def _with_lp_panel(assembly, tag):
     layers = []
     for layer in assembly.layers:
         if layer.name == "cladding":
-            layers += [layer.model_copy(update={"material_ref": "lp-smartside-smooth-panel",
-                                                "thickness": LP_PANEL_DEPTH}), _PAINT]
+            # 4x8 hung vertically: one sheet covers the court's ~7'-6" walls, no horizontal
+            # joint; the vertical joints take 440 trim battens (materials_lp.LP_PANEL_KIT).
+            layers += [layer.model_copy(update={
+                "material_ref": "lp-smartside-smooth-panel", "thickness": LP_PANEL_DEPTH,
+                "sheet_length": inch(96.0),
+                "joint_trim_material_ref": "lp-smartside-trim-smooth"}), _PAINT]
+        elif layer.name == "outer-girt":
+            # ESR-1301 s.4.3 / Table 1 fn 2: every panel edge on 2x framing, so a flat KDAT
+            # 2x4 nailer is cut between the girts at each vertical joint.
+            framing = layer.framing.model_copy(update={"panel_joint_nailers": True})
+            layers.append(layer.model_copy(update={"framing": framing}))
         else:
             layers.append(layer)
     return assembly.model_copy(update={"tag": tag, "layers": tuple(layers),
