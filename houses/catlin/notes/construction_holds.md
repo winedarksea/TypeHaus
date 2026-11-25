@@ -16,6 +16,9 @@ the model goes back to `plans/TODO.md` as a design item.
 - PV: incremental installed pricing and site-specific production estimates for the second-row
   study (`params/solar.py`).
 - A Metal Sales price for 8243100 (upgrade fasteners, decision #105).
+- A Twin Cities yard quote for the court face: LP SmartSide 38 Series smooth panel 4x8 (5
+  sheets), LP 440 3.50" smooth trim (2 sticks) and the KDAT 2x4 girts and nailers. The
+  `prices.toml` rows are ESTIMATEs (`notes/court_face_lp_panel.md` §5).
 
 ## Supplier and manufacturer confirmations
 

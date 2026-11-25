@@ -3611,7 +3611,7 @@ joint      As = 3.06 + 16 x 0.20 = 6.26 in²;  338,040                -> 0.191  
 ```
 
 `bed_friction_max` stays **1.00**. The row would now allow a report friction of about 3.6
-before it reached 1.0 (μ x 129,306 / 2 = 237,600 at μ 3.67). Raising the printed bound is the owner's call. Nothing is graded on it.
+before it reached 1.0 (μ x 129,306 / 2 = 237,600 at μ 3.67). The owner kept 1.00 (2026-11-25): no report will return more for concrete on #57 stone, and nothing is graded on it.
 
 **2. The backfill rule is 3'-0".** `retaining_system_staged.RULE_FT = 3.0`. The search steps
 each side 2" down from full height, so a whole-foot difference lies on the grid.
@@ -3724,7 +3724,7 @@ perched case:
 | **FT-SG-S subtotal** | | **$580–1,031** |
 | **Total** | | **$1,225–2,096** |
 
-**Graded, not adopted: retiring the porch prop.** In this option W1/E1 are cantilevers
+**Graded, not adopted (owner kept the prop, 2026-11-25): retiring the porch prop.** In this option W1/E1 are cantilevers
 retaining their own fill, backfilled with or before the court instead of after the porch is
 framed. A trial run authored them `lateral_support="unsupported"` with 6.29' of
 `unbalanced_fill`. It adds **2 engineered items**, `retaining_wall/W-SG-W1` and `/W-SG-E1`.

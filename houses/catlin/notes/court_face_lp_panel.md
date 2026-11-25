@@ -181,6 +181,10 @@ screen. At D-B-SUNKEN, whose opening reaches the curb, all three stop short of t
 back 3 5/8" past the RO so no aluminium touches the KDAT jamb strapping. The door's pan laps
 over their ends.
 
+At the top of the panel, W-M-S1/S2's BBD75 base screens (the storey above, where the two
+cavities meet) graze the LP walls' top girt by 5.6 in3 each. Accepted in the overlap
+baseline (owner, 2026-11-25): a sliver of screen against a girt face.
+
 ## 4. Winter tension (thermal_break_transfer, the side run)
 
 The house side's sliding load at mu_max 1.00 is the free body's 129,306 lb (house body, section
