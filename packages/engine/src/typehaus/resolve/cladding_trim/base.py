@@ -13,11 +13,9 @@ from typehaus.resolve.cladding_trim.runs import (
     subtract_spans,
 )
 from typehaus.resolve.metal_skin_profiles import SHEET_24_GA_M
-from typehaus.resolve.rainscreen_closures import screens_rainscreen_base
+from typehaus.resolve.rainscreen_closures import BASE_BREAK_REACH_M, screens_rainscreen_base
 
-# An opening whose bottom is within the base's upstand of the panel bottom breaks the base;
-# a door sill above that (a threshold over a skirt) leaves it unbroken beneath.
-_DOOR_REACH_M = 3 * M_PER_IN
+_DOOR_REACH_M = BASE_BREAK_REACH_M
 #: A base's end short of a corner C-Closure's return, as the BBD75 band's.
 _CLOSURE_GAP_M = M_PER_IN / 16
 

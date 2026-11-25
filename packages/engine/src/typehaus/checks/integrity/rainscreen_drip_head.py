@@ -74,18 +74,26 @@ def grade_drip_head(model, wall, opening, frame, cavity_id) -> list:
         if gap + _TOL < HEAD_FLASHING_CLADDING_CLEARANCE_IN * M_PER_IN:
             fail(f"the cladding over the head stands {gap / M_PER_IN:.2f} in off the flashing, "
                  f"under the {HEAD_FLASHING_CLADDING_CLEARANCE_IN} in its maker asks")
-    if _batten_through(wall, d, spans, points, strips, depth0 + frame.mount,
-                       depth0 + frame.clad):
+    # The leg's foot over the battens' depth: a vertex there, else (an outie frame, whose mount
+    # and cladding planes fall between the leg's two ends) the sloped leg itself.
+    back, clad = depth0 + frame.mount, depth0 + frame.clad
+    feet = [z for _s, o, z in points if back - _TOL <= o <= clad + _TOL]
+    if not feet:
+        def leg(v):
+            return bend + (seat - bend) * (min(max(v - depth0, water), front) - water) \
+                / (front - water)
+
+        feet = [leg(back), leg(clad)]
+    if _batten_through(wall, d, spans, min(feet), strips):
         fail("a furring batten runs through the head flashing or the strip over it")
     return out
 
 
-def _batten_through(wall, d, spans, points, strips, back, face) -> bool:
+def _batten_through(wall, d, spans, lo, strips) -> bool:
     """A vertical furring batten over the Z's run whose length crosses the leg or strip."""
     from typehaus.resolve.framing.furring import STRAPPING_CATEGORY
     from typehaus.resolve.framing.profiles import cross_section
 
-    lo = min(z for _s, o, z in points if back - _TOL <= o <= face + _TOL)
     hi = max([z for strip in strips for *_xy, z in strip.body_mesh.positions] or [lo])
     s0, s1 = min(a for a, _b in spans), max(b for _a, b in spans)
     for m in wall.members:

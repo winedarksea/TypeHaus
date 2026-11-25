@@ -25,7 +25,9 @@ def test_trim_inventory_by_profile(catlin_model_ro):
         "BBD_PANEL_STARTER": 6, "CORRUGATED_JAMB": 8, "DOOR_HEAD_CUSTOM": 6,
         "WIDE_OUTSIDE_CORNER": 8, "CORRUGATED_OUTSIDE_CORNER": 4,
         "BBD_C_CLOSURE": 12,  # three sticks under each mixed corner's BBD75 leg
-        "RAINSCREEN_BASE_Z": 21, "EPDM_BASE_ISOLATION": 14,
+        # The court's LP walls: W-B-S3-FR's base splits at D-B-SUNKEN (two Z, two strips).
+        "RAINSCREEN_BASE_Z": 20, "EPDM_BASE_ISOLATION": 15,
+        "OPENING_HEAD_DRIP_FLASHING": 1,  # WIN-B-SAUNA; the door's head is its catalog unit's
         "OPENING_HEAD_CAP": 37,
         # 6411499: the four gable corner stubs inside the eave skins are gone.
         # Sill to Soffit: 6 until the garage rakes took it too (decision #143).

@@ -327,8 +327,9 @@ def test_every_exterior_opening_is_flashed_or_named(catlin_model_ro):
                 layer.function == "cladding" or "water" in layer.control
                 for layer in wall.layers):
             assert (opening.tag in flashed) != (opening.tag in named), opening.tag
-    # The two openings behind the court's brick veneer: spec'd by hand (spec §8).
-    assert named == {"WIN-B-SAUNA"}
+    # The court's LP panel is a cladding layer, so both openings are flashed; behind its brick
+    # veneer (sunken_garden.cladding) they were spec'd by hand (spec §8).
+    assert named == set()
 
 
 def test_opening_membranes_stay_on_their_wall(catlin_model_ro):
