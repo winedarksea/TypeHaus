@@ -124,14 +124,16 @@ def test_landing_conflicts_are_measured():
     assert pad < 0 and "slip pad" in conflicts[0]
 
 
-def test_foam_bed_slot_drains_down_the_isolation_joint(catlin_model_ro):
-    report = _door(catlin_model_ro, "D-B-SUNKEN").doorway.exterior_placement.installation_report
-    assert report["drain_slot_in"] == pytest.approx(0.479, abs=0.01)
-    assert report["joint_drain_bed"] == "FB-SG-BRKBM"
-    assert report["joint_drain_bed_gap_in"] <= 0.5
+def test_foam_bed_nose_drips_onto_the_rim_slab(catlin_model_ro):
+    """LP court face (default): no beam, so the tread's nose drips onto SL-SG-FLOOR, clear of its
+    edge. The brick switch keeps the isolation-joint drain (``joint_drain_*``)."""
+    doorway = _door(catlin_model_ro, "D-B-SUNKEN").doorway
+    report = doorway.exterior_placement.installation_report
+    assert report["drain_slab"] == "SL-SG-FLOOR"
+    assert report["drain_slab_nose_clear_in"] == pytest.approx(0.77, abs=0.02)
+    assert report["drain_slab_drop_in"] > 3
     assert report["sheet_lap_under_pan_in"] == pytest.approx(2.0)
-    # 1/4" reserved each way over an ASTM C920 Class 50 sealant.
-    assert report["box_side_joint_required_in"] == pytest.approx(0.5)
+    assert not any("names no outlet" in u for u in doorway.unknown)
 
 
 def test_a_joint_drain_names_all_three_parts():
@@ -143,3 +145,15 @@ def test_a_joint_drain_names_all_three_parts():
             support_kind="foam_bed", foam_rated_psi=40.0, support_ref="w",
             frame_material_ref="f", head_material_ref="h", transition_material_ref="t",
             joint_drain_wall_ref="W", sheet_lap_under_pan=inch(2))
+
+
+def test_a_tread_drains_down_a_joint_or_onto_a_slab_not_both():
+    from typehaus import ExteriorDoorCatalogInstallation
+
+    with pytest.raises(ValueError, match="not both"):
+        ExteriorDoorCatalogInstallation(
+            source_url="u", source_drawing="d", sill_outline_m=((0, 0), (0.1, 0), (0.1, 0.03)),
+            support_kind="foam_bed", foam_rated_psi=40.0, support_ref="w",
+            frame_material_ref="f", head_material_ref="h", transition_material_ref="t",
+            joint_drain_wall_ref="W", joint_drain_material_ref="m", joint_drain_bed_ref="b",
+            drain_slab_ref="S")

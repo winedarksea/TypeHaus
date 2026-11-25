@@ -2754,7 +2754,9 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   recesses (`AO-B-SUNKEN-TREAD-BED` in the curb's tail, `AO-SG-BRKBM-TREAD-BED` in the beam's
   board) make room; Trex fascia box sides close the cavity at the reveal. The tread's back
   sits at the sill nose (6.6" above the court), ~1/2" under the beam top: its slot's outlet
-  is an open UNKNOWN. `integrity.doorway_assembly` tests the sections against every nearby
+  is an open UNKNOWN. (LP court face, the default: no beam; the nose drips onto SL-SG-FLOOR
+  0.77" in from its edge, `drain_slab_ref`, graded in `resolve/exterior_door_foam_bed.py`; brick keeps
+  the joint drain.) `integrity.doorway_assembly` tests the sections against every nearby
   solid, so a tread that grows into the beam is a FAIL.
 - Do not anchor the wythe to `W-SG-W1`/`W-SG-E1` to cut anchor count:
   unreinforced brick can't span 18'-8" horizontally, and both ends want a soft
