@@ -373,9 +373,8 @@ def _one(ctx: EngineeringContext, ref: str, members: list) -> EngineeringRecord:
             + f"; one side empty and two full {empty:.2f}; the loop alone without "
             f"the spliced walls' concrete {loop_only:.2f}"), is_safety_factor=True,
         combination=W.SERVICE_BACKFILL[0], combination_factors=W.SERVICE_BACKFILL[1],
-        working=W.staged_steps(body, worst, empty, loop_only,
-                               staged.RULE_FT / (body.pushes[0].top_ft - body.plane_ft)
-                               if by_ft else staged.RULE, stage)))
+        working=W.staged_steps(body, worst, empty, loop_only, staged.RULE, stage,
+                               staged.RULE_FT)))
 
     soil_state, soil_how = cases.design_friction(ctx, soil)[2:]
     if soil_state == "specified":

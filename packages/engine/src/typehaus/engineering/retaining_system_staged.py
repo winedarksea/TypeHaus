@@ -2,14 +2,14 @@
 
 The completed body's sliding row assumes every retained side full. While they are filled, a
 side may stand higher than another. Each retained side is taken at a fill fraction f of its
-H on a grid of twelfths: earth thrust ½ K0 γ (H f)² over that side's projected width (the
-apron comes later), the soil on its heel to its fill line, the corner squares at the lower
-of their two sides. The spliced braced walls stand EMPTY until their tops are braced and
+H on a grid (2" steps under RULE_FT, else twelfths): earth thrust ½ K0 γ (H f)² over that
+side's projected width (the apron comes later), the soil on its heel to its fill line, the
+corner squares at the lower of their two sides. The spliced braced walls stand EMPTY until their tops are braced and
 add their concrete only, as in the completed body.
 
 **The permitted sequence is part of the design**: the row grades the worst stage the rule
-allows — no retained side more than :data:`RULE` of its height above another — and the
-drawing's backfill note prints the generated values.
+allows — no retained side more than :data:`RULE_FT` above another (else :data:`RULE` of its
+height) — and the drawing's backfill note (AN-SG-BACKFILL) states that rule.
 """
 
 from __future__ import annotations
@@ -19,12 +19,13 @@ from dataclasses import dataclass
 
 from typehaus.engineering.retaining_system_body import STONE_PCF, Body, _exterior
 
-#: The field rule graded: no retained side more than half its height above another.
+#: The rule as a fraction of H on a grid of twelfths, graded only when RULE_FT is None.
 RULE = 0.5
 _GRID = tuple(i / 12.0 for i in range(13))
-#: Study lever (court sliding study): a rule stated in FEET instead (e.g. 3.0 for 3'-0").
-#: The grid then steps 2" down from full height, so a whole-foot difference lies on it.
-RULE_FT: float | None = None
+#: The field rule graded (AN-SG-BACKFILL, free body §15e): no retained side more than 3'-0"
+#: above another. The grid steps 2" down from full height, so a whole-foot difference lies on
+#: it. The note prints four 8" lifts (2'-8"), 4" inside it.
+RULE_FT: float | None = 3.0
 _STEP_FT = 2.0 / 12.0
 
 
