@@ -204,5 +204,7 @@ def test_catlin_court_face_matches_the_lp_panel_oracle(catlin_model_ro):
     assert (row["sheets"], row["net_area_sqft"]) == (5, 81.8)
     battens = next(r for r in cladding_trim_takeoff(catlin_model_ro)
                    if r["part"] == "LP_440_BATTEN_3_5")
-    assert len(battens["tags"]) == 5 and battens["count"] == 2
-    assert battens["length_ft"] == pytest.approx(246.779 / 12, abs=0.01)
+    # 4, not the note's 5 (2026-11-24): the battens now stop at the window's hosted sill and
+    # head trims (s 48: 31.72 + 20.42) and the door's custom head leaves 2.05" at s 144, no piece.
+    assert len(battens["tags"]) == 4 and battens["count"] == 2
+    assert battens["length_ft"] == pytest.approx(227.58 / 12, abs=0.01)
