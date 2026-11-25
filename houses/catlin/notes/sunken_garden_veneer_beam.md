@@ -1,5 +1,7 @@
 # Sunken-garden veneer grade beam — hand-worked basis
 
+> **DORMANT alternate (2026-11-24)** — live on variant `court-face-brick`; still the oracle for the veneer_beam / veneer_anchor / veneer_cavity tests. The court face is LP SmartSide panel: `court_face_lp_panel.md`.
+
 **House:** catlin
 **Structure:** `W-SG-BRKBM` (the beam), `W-B-BRICK` (the wythe it carries), `FT-B-S2` /
 `FT-B-S3` (the footings it is isolated from), `SG_VENEER_BEAM_14` (the assembly).
