@@ -201,8 +201,8 @@ def test_catlin_court_face_matches_the_lp_panel_oracle(catlin_model_ro):
     # s 170 sits on D-B-SUNKEN's jamb post from the wall base.
     assert [round(b.unbacked_m / IN, 2) for b in lay.vertical_breaks] == [1.22, 1.22, 0.0, 0.0]
     assert _grade(catlin_model_ro, lay, "").result is Result.UNKNOWN
-    assert len(lay.nailers) == 10
-    assert sum(m.length_m for m in lay.nailers) / IN == pytest.approx(145.5, abs=0.01)
+    assert len(lay.nailers) == 14  # girts at 16": six bays at s 26 and 74
+    assert sum(m.length_m for m in lay.nailers) / IN == pytest.approx(131.5, abs=0.01)
     row = next(r for r in sheet_goods_takeoff(catlin_model_ro) if r["scope"] == "cladding panel")
     assert (row["sheets"], row["net_area_sqft"]) == (5, 81.8)
     battens = next(r for r in cladding_trim_takeoff(catlin_model_ro)

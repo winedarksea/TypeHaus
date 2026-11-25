@@ -1254,6 +1254,62 @@
     },
     {
       "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          -6.000000000000001,
+          -86.18749999999999
+        ],
+        [
+          -4.5,
+          -86.18749999999999
+        ],
+        [
+          -4.5,
+          -82.68749999999999
+        ],
+        [
+          -6.000000000000001,
+          -82.68749999999999
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "Z4NRTGEDY5",
+      "tag": "strapping-outer-girt-003"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          -6.000000000000001,
+          -86.18749999999999
+        ],
+        [
+          -4.5,
+          -86.18749999999999
+        ],
+        [
+          -4.5,
+          -82.68749999999999
+        ],
+        [
+          -6.000000000000001,
+          -82.68749999999999
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "kdat"
+    },
+    {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",

@@ -11,19 +11,18 @@ What it removes: the masonry-anchor register item (32 -> 31), the 6 1/2" cavity 
 2024 table's 6 5/8", the ties' unverified friction bound, the beam, its board, bed, slab void and
 tread-bed recess, two soft joints, two lintels and six stainless flashings.
 
-**What is off-label, accepted by the owner** (sheltered under the porch roof, small, cheap to
-replace; "as long as it should generally work"):
+**On the ESR row, off LP's warranty.** The panel is nailed to the house's KDAT girts, closed to
+16" o.c. on these two walls, with 0.092" nails at 6" edges and field: ESR-1301 Table 3B's row,
+which needs only 1-1/2" into framing, the girt's thickness (section 1; owner, 2026-11-25).
+`structural.cladding_wind` PASSes and `haus print` admits the set. Two things stay off-label,
+accepted by the owner (a small wall, sheltered below grade under the porch roof, cheap to
+replace; no warranty cover wanted):
 
-1. The girts stay at 24" o.c.; LP's 38 Series is rated and tabled at 16" (section 1).
-2. LP does not recommend panel siding over furring or strapping and will not warrant buckling
-   there (AI 2024 p.2). The engine has nothing else to hang it on: the girts are the house's
-   rainscreen.
-3. The panel's foot overhangs the lifted starter girt by 1.22" over the base Z (section 2).
-
-Each shows as an UNKNOWN, never a PASS: `structural.cladding_wind` (both directions) and
-`structural.sheathing_edge_support`. They put two lines on the permit checklist ("Exterior wall
-covering — wind pressure", "Wall sheathing joints on framing") in place of the two masonry-veneer
-lines brick carried; the checklist had 8 open lines before and after.
+1. LP does not recommend panel siding over furring or strapping and will not warrant buckling
+   there (AI 2024 p.2). That is a warranty exclusion, not part of the ESR row; the girts are
+   read as the row's framing. An inspector who reads Table 3B's "stud" literally is the risk.
+2. The panel's foot overhangs the lifted starter girt by 1.22" over the base Z (section 2):
+   `structural.sheathing_edge_support` reads it UNKNOWN. It does not gate the permit print.
 
 **Opening trim.** D-B-SUNKEN is trimmed as D-M-PORCH is: Captivate jamb extension and casing,
 the `metal-dark-exterior` wrap, and the dark custom door head (`DOOR_HEAD_CUSTOM`); the panel
@@ -39,59 +38,52 @@ new engine path. The window keeps the dark head, by the owner's rule (only if si
 no depth in the model, so 1/2" off its 1/8" face). The model carries no sealant for that joint;
 it is priced below by hand.
 
-## 1. Wind read (ESR-1301 Table 3A)
+## 1. Wind read (ESR-1301 Table 3B)
 
 `structural.cladding_wind` on `W-B-S2-FR` and `W-B-S3-FR` (material `lp-smartside-smooth-panel`,
 `published_cladding`, `basis="ultimate"`). Reproduced by `tests/test_cladding_ultimate_row.py`.
 
 **Demand (worked in `catlin_truss_engineering.md` §2 and `board_batten_girt_span.md` §2).**
 V_ult 115 mph, Exposure B, RC II, h = 34.7626 ft above the lowest ground, K_h 0.73071,
-q_h = 21.0282 psf. Zone 5 (area 2 ft x 2/3 ft = 1.333 ft^2, under 10 ft^2 so GC_p is flat):
+q_h = 21.0282 psf. Zone 5 (the fastener's area is under 10 ft^2 at 16 or 24 in girts, so GC_p is
+flat):
 
     outward  q_h (1.4 + 0.18) = 33.2246 psf ultimate   ->  0.6 x = 19.9348 psf ASD
     inward   q_h (1.0 + 0.18) = 24.8133 psf ultimate   ->  0.6 x = 14.8880 psf ASD
 
-**The row (ESR-1301, reissued Feb 2026, p.6; APA PR-N124 rev. 2026-07-02 Table 3a).**
-"PANEL SIDING INSTALLED VERTICALLY WITH 0.113-INCH NAILS", category 3/8, 7/16 and 19/32:
-max wall stud spacing 16 in, fasteners 6 in edges / 12 in field, 71 psf maximum ultimate wind
-pressure, V_ult B 170 / C 140 / D 130; **at 6 in field, 133 psf, V_ult B 200 / C 180 / D 180**,
-the row the court face uses (owner, 2026-11-25: the field is nailed at 6 in). The only 24 in rows
-are 19/32 (190 Series); the 38 Series (3/8) has none. fn 1: HDG plain-shank nail, 0.113 in
-minimum shank, "a minimum of 2 inches" into framing; fn 2: studs SG >= 0.42; fn 3: three-second
-gust at 30 ft, Zone 5, smallest area. The pressures are ULTIMATE, so the demand is compared at
-33.2 psf, not 19.93.
+**The rows (ESR-1301, reissued Feb 2026; APA PR-N124 rev. 2026-07-02).** Category 3/8, 7/16 and
+19/32, max wall stud spacing 16 in, edges 6 in:
 
-**On-label check (16 in studs).** 33.2 <= 133 psf, d/c 0.25; V_ult 115 <= 200 (B).
+| Table | Nail | Into framing | Field | psf (ultimate) | V_ult B / C / D |
+|---|---|---|---|---|---|
+| 3A (p.6) | 0.113 in | 2 in | 12 / 6 in | 71 / 133 | 170/140/130, 200/180/180 |
+| **3B (p.7)** | **0.092 in** | **1-1/2 in** | 12 / **6 in** | 44 / **87** | 130/110/-, **180/160/140** |
 
-**Why this wall is not on-label.** Three departures, none of which the table covers:
+The only 24 in rows are 19/32 (190 Series). 3B fn 1 "Tabulated values assume nails penetrate a
+minimum of 1 1/2 inches into the studs"; fn 2 studs SG >= 0.42; fn 3 HDG plain (smooth) shank,
+0.092 in minimum, "a minimum of 1 1/2 inches" into framing, not for lateral bracing; fn 4
+three-second gust at 30 ft, Zone 5, smallest area. The pressures are ULTIMATE, so the demand is
+compared at 33.2 psf, not 19.93.
 
-1. The girts are 24 in o.c., not 16 in (the row's stud spacing; the 38 Series label rating is
-   16 in, CAT 2025 p.35, ESR s.4.3).
-2. The girts are 1-1/2 in KDAT strapping over a vented cavity: AI 2024 p.2 "LP does not
-   recommend panel siding for use over furring strips/strapping ... LP will NOT warrant for
-   Buckling", and a 2-1/2 in 8d box nail bites only the 1-1/2 in girt, not fn 1's 2 in.
-3. (Held on the owner's word, not the model) the vertical joints land on joint nailers.
+**Why 3B.** The girt is a 1-1/2 in KDAT 2x4 laid flat: 3A's 2 in penetration cannot be had in
+it, and a ring-shank nail does not help (3A names plain shank; ESR's ring-shank rows, Tables 4
+and 5, are for panels on SIP or wood-structural-panel sheathing). 3B's 1-1/2 in is the girt's
+full depth: a 2 in nail through the 0.354 in panel puts 1.646 in of shank past the panel face,
+so 1-1/2 in in the girt and 0.15 in of tip in the vent space behind it.
 
-**Off-label estimate (not a code read).**
+**Check (16 in girts, the 6/6 row).**
 
-    12 in field: 71 x 0.6 x (16 x 12 / 144 ft^2) = 56.8 lbf ASD per nail (PR-N124 fn 2's floor)
-    6 in field: 133 x 0.6 x (16 x 6 / 144 ft^2)  = 53.2 lbf ASD per nail, below 56.8, so the
-        6/6 row is not purely nail-governed; 53.2 is the conservative per-nail capacity.
-    At 24 in girts, one field nail takes 19.9348 x (24 x 6 / 144 = 1 ft^2) = 19.9 lbf
-        -> d/c 19.9 / 53.2 = 0.375  (= 33.2 / (133 x 16/24 = 88.7 psf); the engine prints 0.37)
-    withdrawal at 1-1/2 in embedment, at most 3/4 of the row's 2 in -> 0.375 / 0.75 = 0.50
-    panel bending, 133 x (16/24)^2 = 59.1 psf ultimate vs 33.2 -> d/c 0.56, governs
-    inward 24.8 psf is below all three.
+    outward  33.2 / 87 = 0.38      inward  24.8 / 87 = 0.29      V_ult 115 <= 180 (B)
+    framing  KDAT southern pine, SG 0.55 >= 0.42; 1-1/2 in penetration = 1-1/2 in required
 
-At the 12 in field the nail read 0.70, and 0.94 once embedment was capped at 3/4: too close to
-lean on an unread withdrawal value. The 6 in field halves the nail's share, so the estimate is
-governed by the panel's bending (0.56), which embedment does not touch. The extra nails ride in
-the panel's installed $/SF.
+The 6/12 row (44 psf, 0.75) would also pass; the field stays at 6 in, as decided first
+(owner, 2026-11-25), for the margin. The girts' own anchorage at 16 in, one TimberLOK per
+32 x 16 in crossing, is `structural.girt_fastening` (PASS).
 
-**Verdict.** UNKNOWN, by design, on both directions: the row's 16 in spacing and 2 in
-penetration drift, and LP's strapping position is off-label. The estimate says it should
-generally work (d/c ~0.56, bending). The owner accepted it 2026-11-24: the wall is sheltered
-under the porch roof and the panel is small and cheap to replace.
+**History.** At 24 in girts and 3A the read was UNKNOWN with an off-label estimate (0.70 on
+the nail at 6/12, 0.94 with withdrawal capped for the girt's embedment; 0.56 on panel bending at
+6/6), and that UNKNOWN blocked `haus print`. Closing the girts to 16 in and taking 3B's nail put
+the wall on the row.
 
 `structural.cladding_fastener` is N/A for this panel: the row's pressure is the nailed
 assembly's capacity, so the nail is a condition of the row (graded here), and no concealed-leg
@@ -115,9 +107,10 @@ laid as one run.
   **no horizontal joint** and no Z-flashing seam (AI 2024 p.2 is for a horizontal seam).
 - Sheet 4x8 (48" module; LP's actual 47.81" plus the 1/8" gap is the module). Narrowest rip 12"
   (the house's `SheetLayoutStandard`).
-- Girt courses (KDAT 2x4 flat, 3 1/2" tall), bottoms at -99 15/16 (the starter, lifted
-  2 1/4" clear of the base metal), -78 3/16, -54 3/16, -30 3/16, -15 3/8; the -54 3/16
-  course is broken by WIN-B-SAUNA.
+- Girt courses at 16" (KDAT 2x4 flat, 3 1/2" tall), bottoms at -99 15/16 (the starter,
+  lifted 2 1/4" clear of the base metal), -86 3/16, -70 3/16, -54 3/16, -38 3/16, -22 3/16
+  and the top course -15 3/8; the window breaks the courses round it, the door's head ladder
+  the -22 3/16 course over the door.
 - WIN-B-SAUNA: RO s 43 to 57 (x 161 to 175), z -65 7/16 to -41 7/16, sill ladder
   -68 15/16 to -65 7/16, head ladder -41 7/16 to -37 15/16.
 - D-B-SUNKEN: RO 63 5/16" wide, s 106 11/32 to 169 21/32 (x 224.34 to 287.66), head
@@ -141,16 +134,16 @@ fit no other column. **5 sheets**: W-B-S2-FR 2, W-B-S3-FR 2, one across the spli
 - Bought 5 x 32 = 160 ft2: 78.2 ft2 of offcut, 49% of what is bought (the door takes most).
 
 **Joint nailers** (KDAT 2x4 flat, 3 1/2" on the panel, cut between courses; ESR-1301 s.4.3).
-s 26 and 74 lie clear of the window, so the -54 3/16 course runs through both.
+s 26 and 74 lie clear of the window, so every course runs through both.
 
 | Joint | Pieces (z, in) | Length |
 |---|---|---|
-| s 26 | the four bays between courses, -96 7/16 to -15 3/8 | 18.25 + 20.5 + 20.5 + 11.3125 = 70.5625 |
-| s 74 | as s 26 | 70.5625 |
+| s 26 | the six bays between courses, -96 7/16 to -15 3/8 | 10.25 + 4 x 12.5 + 3.3125 = 63.5625 |
+| s 74 | as s 26 | 63.5625 |
 | s 122 | head ladder top -17 9/16 to top course -15 3/8 | 2.1875 |
 | s 170 | as s 122 (below it, the jamb post backs the joint) | 2.1875 |
 
-**10 pieces, 145.5" = 12.13 LF.** At s 170 the joint's 7/16" bearing either side (s 169 9/16
+**14 pieces, 131.5" = 10.96 LF.** At s 170 the joint's 7/16" bearing either side (s 169 9/16
 to 170 7/16) lies on the jamb post (169 21/32 to 173 5/32) with the buck's jamb leg beside it
 (169 9/32 to 169 21/32), from the wall base up; above the head ladder, the nailer. No nailer
 goes under the starter course: it would stand on the aluminium base strip (AWC DCA6). So the
@@ -209,7 +202,7 @@ stem steel (free body §15n), each side run carries 4.4 in2 of steel, 0.9 x 4.4 
 ## 5. Cost (takeoff, net installed, ESTIMATE rows as priced in prices.toml)
 
 LP default against the `court-face-brick` house, both with the structure lane's steel and heel:
-**-$2,839 to -$5,026.** The study read -$2.2k to -$4.3k with its additions.
+**-$2,797 to -$4,961.** The study read -$2.2k to -$4.3k with its additions.
 
 | Change | Low | High |
 |---|---|---|
@@ -222,10 +215,10 @@ LP default against the `court-face-brick` house, both with the structure lane's 
 | LP panel 84.2 SF in (ESTIMATE) | +286 | +602 |
 | panel paint 84.2 SF in (ESTIMATE) | +125 | +372 |
 | LP 440 battens, 1 stick (ESTIMATE) | +46 | +130 |
-| ccSPF 4" +84 SF, girts, nailers, TimberLOKs, fibreglass for mineral wool, buck rip | +702 | +1,120 |
+| ccSPF 4" +84 SF, girts at 16", nailers, TimberLOKs, fibreglass for mineral wool, buck rip | +744 | +1,185 |
 | rainscreen base Z, bug screens, strips, heads, closures, net | -144 | -348 |
 | rim slab to the curb, capillary stone, allowances, sealants | +100 | +199 |
-| **total** | **-2,839** | **-5,026** |
+| **total** | **-2,797** | **-4,961** |
 
 Not in the takeoff, added by hand: the 0.69" rim-slab-to-curb joint, ~17 LF of sealant at the
 movement-joint rate, **ESTIMATE +$200-425**. The W-M-S1/S2 BBD75 panels above now bill their

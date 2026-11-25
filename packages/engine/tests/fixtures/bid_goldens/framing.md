@@ -3,7 +3,7 @@
 **House:** Catlin House  
 **Trade:** Framing  
 **Engine:** 0.1.2  
-**Model hash:** dd69a708d939d83b  
+**Model hash:** 17e43bf5911471cf  
 **Lines:** 277
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks and their boards, and the tape on every member top. Trusses and engineered wood are called out by the profile. Set the windows and exterior doors (supplied under Windows and doors).
@@ -72,7 +72,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2x4 SPF No. 2 & Btr framing lumber, 104 5/8" PET (2x4) | 242 | pc | corner stud, king stud, stud | 2109.9 LF | building |
 | 2x4 SPF No. 2 & Btr framing lumber, 10' (2x4) | 31 | pc | partition backer, plate, raked top plate | 310 LF | building |
 | 2x4 SPF No. 2 & Btr framing lumber, 14' (2x4) | 12 | pc | plate | 168 LF | building |
-| 2x4 KDAT southern yellow pine No. 2 (treated exterior framing), 8' (2x4:kdat) | 223 | pc | girt strapping, truss ladder blocking | 1784 LF | building |
+| 2x4 KDAT southern yellow pine No. 2 (treated exterior framing), 8' (2x4:kdat) | 225 | pc | girt strapping, truss ladder blocking | 1800 LF | building |
 | 2x4 KDAT southern yellow pine No. 2 (treated exterior framing), 10' (2x4:kdat) | 40 | pc | girt strapping | 400 LF | building |
 | 2x4 KDAT southern yellow pine No. 2 (treated exterior framing), 12' (2x4:kdat) | 10 | pc | girt strapping | 120 LF | building |
 | 2x4 KDAT southern yellow pine No. 2 (treated exterior framing), 14' (2x4:kdat) | 15 | pc | girt strapping | 210 LF | building |
@@ -250,7 +250,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | THA422 top-flange floor truss hanger (THA422:hung framing) | 2 | ea |  | building |
 | Titen HD 1/2 in x 6 in Type 316 stainless screw anchor, deck ledger to concrete (THD50600H6SS:modeled connector) | 18 | ea |  | building |
 | TimberLOK heavy-duty wood screw (0.189 in shank) (TLOK08:eave gutter girt standoffs) | 72 | ea |  | building |
-| TimberLOK heavy-duty wood screw (0.189 in shank) (TLOK08:girt wall blocks) | 1,202 | ea |  | building |
+| TimberLOK heavy-duty wood screw (0.189 in shank) (TLOK08:girt wall blocks) | 1,214 | ea |  | building |
 | Strong-Drive WSV SUBFLOOR screw, #9 x 2-1/2in (WSV212S:sheathing nails) | 4,786 | ea |  | building |
 
 ## Other structural solids

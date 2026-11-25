@@ -9404,11 +9404,11 @@ The owner kept the review and changed seven rooms. Rules updated in
   custom head; its tread drains off the nose onto the rim slab, which now runs to the curb.
   WIN-B-SAUNA takes the generic Z drip head: a Potters Clay picture-frame was not simple (the
   window casing has no material path), so the window stays dark by the owner's rule.
-- **Off-label, accepted.** LP tables the 38 Series at 16" and does not recommend panels over
-  strapping; the girts stay at 24" (sheltered, small, cheap to replace). `structural.cladding_wind`
-  is UNKNOWN with the scaled estimate (the field nailed at 6", d/c 0.56 on panel bending); the panel foot's 1.22" overhang
-  below the starter is an UNKNOWN on `sheathing_edge_support`. The permit checklist swaps the two
-  masonry-veneer lines for these two; it had 8 open lines before and after.
+- **On the ESR row, off LP's warranty.** The court face's girts close to 16" and the panel takes
+  ESR-1301 Table 3B's 0.092" nail (1-1/2" into the girt, 6"/6", 87 psf): `structural.cladding_wind`
+  PASSes at 0.38 and `haus print` admits the set. At 24" girts on Table 3A it was UNKNOWN and
+  blocked the print. LP's "not over furring" note is a warranty exclusion the owner waives; the
+  panel foot's 1.22" overhang below the starter stays an UNKNOWN on `sheathing_edge_support`.
 - **Brick stays live.** Variant `court-face-brick` (one parameter, two swaps) rebuilds the wythe
   set from `params/court_face.py` and the beam side gated in `params/sunken_garden.py`; it reads
   0 FAIL and main's fingerprints except the 7 court records re-derived below. The brick notes are
@@ -9421,7 +9421,7 @@ The owner kept the review and changed seven rooms. Rules updated in
   The new horizontals take winter tension to 0.264 (LP) / 0.272 (brick); `thermal_break_transfer`
   is governed by joint closure, 0.665. Retiring the porch prop was graded, not taken: +2 items,
   all four `base_rotation` go INCOMPLETE; the owner kept the prop (2026-11-25).
-- **Register** 32 -> 31. **Cost** LP against brick -$2,839 to -$5,026 (takeoff), plus ~$200-425
+- **Register** 32 -> 31. **Cost** LP against brick -$2,797 to -$4,961 (takeoff), plus ~$200-425
   of slab-to-curb sealant by hand; the structure fixes add $1,225-2,096.
 - **Engine fixes the face exposed.** A wall continues the rainscreen cavity below only where
   rainscreen walls cover its whole length (W-M-S1/S2 had lost their base Z, EPDM and screen). An
@@ -9430,6 +9430,7 @@ The owner kept the review and changed seven rooms. Rules updated in
   reached into FT-B-S3) and no sill buck (it sat in the door's sill package). S-001 lists a trim
   fastener only where a counted run bills it. `SheetLayoutStandard.centre_cladding` centres an
   exposed panel run; sheathing still walks from its through end.
-- **Finishing pass (owner, 2026-11-25).** Centred joints; 6" field nailing; no sill buck on a
+- **Finishing pass (owner, 2026-11-25).** Centred joints; 16" girts and Table 3B nails at 6"
+  edge and field (+$42-64); no sill buck on a
   curb-seated door; porch prop kept; `bed_friction_max` kept at 1.00; the BBD75 base screens'
   5.6 in3 graze on the LP top girt accepted; the LP/KDAT yard quote is a construction hold.

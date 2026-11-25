@@ -1,9 +1,9 @@
 """The sunken court's framed walkout clad in LP SmartSide panel (notes/court_face_lp_panel.md).
 
-EXT_2X6's own stack (studs, CDX, 4" ccSPF, vent gap, KDAT girts at 24") with the cladding
-layer swapped and its acrylic coat outboard, aligned on `sheathing-ext` so nothing indoors
-moves. The girts at 24" are off LP's 16" table (owner, 2026-11-24: sheltered, small, cheap to
-replace); the vertical joints are backed and battened (decision in the note).
+EXT_2X6's own stack (studs, CDX, 4" ccSPF, vent gap, KDAT girts) with the cladding layer
+swapped and its acrylic coat outboard, aligned on `sheathing-ext` so nothing indoors moves.
+The girts close to 16" here, ESR-1301 Table 3B's spacing; the vertical joints are backed and
+battened (decisions in the note).
 """
 from typehaus import Layer, LayerFunction, inch
 
@@ -28,7 +28,9 @@ def _with_lp_panel(assembly, tag):
         elif layer.name == "outer-girt":
             # ESR-1301 s.4.3 / Table 1 fn 2: every panel edge on 2x framing, so a flat KDAT
             # 2x4 nailer is cut between the girts at each vertical joint.
-            framing = layer.framing.model_copy(update={"panel_joint_nailers": True})
+            # Girts at 16" here, ESR-1301 Table 3B's stud spacing (owner, 2026-11-25).
+            framing = layer.framing.model_copy(update={"panel_joint_nailers": True,
+                                                       "spacing": inch(16)})
             layers.append(layer.model_copy(update={"framing": framing}))
         else:
             layers.append(layer)

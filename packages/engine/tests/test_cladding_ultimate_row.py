@@ -45,14 +45,14 @@ def test_off_label_keeps_a_clean_row_unknown():
     assert finding.result is Result.UNKNOWN and "over strapping" in finding.message
 
 
-def test_catlin_lp_court_face_is_read_unknown_and_metal_is_untouched(catlin_ctx):
+def test_catlin_lp_court_face_is_on_the_3b_row_and_metal_is_untouched(catlin_ctx):
     from typehaus.checks.structural.cladding import cladding_fastener, cladding_wind
     wind = cladding_wind(catlin_ctx)
     lp = [f for f in wind if f.element_tags == _LP_TAGS]
-    assert [f.result for f in lp] == [Result.UNKNOWN, Result.UNKNOWN]
+    # 16" girts, 0.092" nails at 6/6: ESR-1301 Table 3B, 87 psf (owner, 2026-11-25).
+    assert [f.result for f in lp] == [Result.PASS, Result.PASS]
     outward = next(f for f in lp if " outward" in f.message)
-    for fragment in ("33.2 psf ultimate", 'indexed at 16" fastener spacing and the girts here '
-                     'are 24" apart', "88.7 psf ultimate", "d/c 0.37", "Owner accepted"):
+    for fragment in ("33.2 psf ultimate", "Table 3B", '16" open girts'):
         assert fragment in outward.message, fragment
     assert all(f.result is Result.PASS for f in wind if f.element_tags != _LP_TAGS)
     fastener = {f.element_tags: f.result for f in cladding_fastener(catlin_ctx)}

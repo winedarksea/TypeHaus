@@ -337,7 +337,8 @@ def test_catlin_bills_no_through_foam_screw_on_wall_or_roof(catlin_model) -> Non
     # 1158 on 2026-11-19: the band drops to +10'-5 1/2", its course cut at D-S-BALCONY.
     # 1204 on 2026-11-24: the court's LP walkout is a girt wall, +46 blocks on W-B-S2-FR/S3-FR.
     # 1202: D-B-SUNKEN sits on its curb (sill_on_base), so its posts take no foot block.
-    assert row["count"] == 1202 and furring[0]["count"] == 198
+    # 1214 on 2026-11-25: the court's LP walls close their girts to 16" (ESR-1301 Table 3B).
+    assert row["count"] == 1214 and furring[0]["count"] == 198
 
 
 # --- hangers -------------------------------------------------------------------------
