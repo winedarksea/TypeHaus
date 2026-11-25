@@ -499,13 +499,13 @@ WALLS = [
     # modelling gap with nothing in it (the concrete walls fill that band with a sill plate).
     # None (underside of the floor above) would stop at the finished ceiling, -12.5", 5/8" short.
     Wall(uid="3BF9ZDQPT1", tag="W-B-S2-FR", start_node="N-B-S1F", end_node="N-B-S2F",
-         assembly="SAUNA_LINER_ON_GARDEN_FRAMED",
+         assembly="SAUNA_LINER_ON_EXT_2X6_LP",
          alignment=face("sheathing-ext"),
          interior_room="RM-B-SAUNA",
          base_elevation=inch(-102.1875), top=inch(90.3125),
          structural_role=StructuralRole.BEARING),
     Wall(uid="Z4NRTGEDY5", tag="W-B-S3-FR", start_node="N-B-S2F", end_node="N-B-S3F",
-         assembly="GARDEN_FRAMED_2X6",
+         assembly="EXT_2X6_LP_PANEL",
          alignment=face("sheathing-ext"),
          interior_room="RM-B-GYM",
          base_elevation=inch(-102.1875), top=inch(90.3125),

@@ -43,7 +43,7 @@ def _option() -> SunkenGardenOption:
         raised_soil_height_in=parameter("sunken_garden.raised_soil_height_in", 40.0),
         planting_width_in=parameter("sunken_garden.planting_width_in", 36.0),
         planter_setback_in=parameter("sunken_garden.planter_setback_in", 36.0),
-        cladding=parameter("sunken_garden.cladding", "brick"),
+        cladding=parameter("sunken_garden.cladding", "lp-panel"),
         stem_thickness_in=parameter("sunken_garden.stem_thickness_in", 12.0),
         footing_width_in=parameter("sunken_garden.footing_width_in", 84.0),
         footing_toe_in=parameter("sunken_garden.footing_toe_in", 36.0),

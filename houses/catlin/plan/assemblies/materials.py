@@ -17,11 +17,13 @@ from .materials_titanium import MATERIALS_TITANIUM
 from .materials_hardwood import MATERIALS_HARDWOOD
 from .materials_study_booth import MATERIALS_STUDY_BOOTH
 from .materials_exterior_darks import MATERIALS_EXTERIOR_DARKS
+from .materials_lp import MATERIALS_LP
 
 
 MATERIALS = [
     # Every exterior dark: coloured from plan/exterior_palette.py (METAL, WINDOW).
     *MATERIALS_EXTERIOR_DARKS,
+    *MATERIALS_LP,
     # Wiring devices and plates (notes/wiring_device_geometry.md): their faces and nylon plates.
     Material(tag="device-white", name="Wiring device / nylon wall plate, white",
              color="#f2f1ec", source="Leviton and Lutron white (-W / -WH) devices and plates."),

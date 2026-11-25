@@ -10,6 +10,7 @@ materials.MATERIALS.
 """
 
 from .board_batten import EXT_2X6_BOARD_BATTEN, PLANT_EXT_2X6_HUMID_BOARD_BATTEN
+from .lp_panel import EXT_2X6_LP_PANEL, SAUNA_LINER_ON_EXT_2X6_LP
 from .catalog import (
     ASSEMBLIES,
     CONSTRUCTION_RULES,
@@ -138,6 +139,8 @@ __all__ = [
     "GARAGE_ROOF",
     "CANOPY_ROOF",
     "EXT_2X6_BOARD_BATTEN",
+    "EXT_2X6_LP_PANEL",
+    "SAUNA_LINER_ON_EXT_2X6_LP",
     "PLANT_EXT_2X6_HUMID_BOARD_BATTEN",
     "EXT_2X6",
     "RAFTER_PLATE",
