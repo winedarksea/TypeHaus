@@ -1,24 +1,56 @@
 import { useState } from "react";
 import { useStore } from "../state/store";
 import type { NewProjectResult } from "../engine/EngineClient";
+import type { Model } from "../model/types";
+import { buildHandoff } from "../model/handoff";
+import { Icon } from "../icons/Icon";
 
-// The served house's path, and a "New / Open house" disclosure. The server stays single-house:
-// a new house is scaffolded on disk and opened by running the `haus serve` command it returns.
-export function ProjectHouseSection() {
+// Where the house lives, the agent handoff, and a "New / Open house" disclosure. The server
+// stays single-house: a new house is scaffolded on disk and opened by running the
+// `haus serve` command it returns. The PWA has no house_dir, so it says which engine instead.
+export function ProjectHouseSection({ model }: { model: Model }) {
   const project = useStore((s) => s.project);
+  const offlineHouse = useStore((s) => s.offlineHouse);
+  const toast = useStore((s) => s.toast);
   const [open, setOpen] = useState(false);
-  if (!project?.house_dir) return null;
-  const canCreate = project.capabilities.includes("project_new");
+  const houseDir = project?.house_dir ?? null;
+  const canCreate = project?.capabilities.includes("project_new") ?? false;
+
+  const copy = async (text: string, done: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      toast(done);
+    } catch (err) {
+      toast(`Could not copy: ${(err as Error).message}`, "error");
+    }
+  };
+  const copyHandoff = () => {
+    const { sessionEdits, activeStorey } = useStore.getState();
+    const text = buildHandoff(model, sessionEdits, { name: model.project.name, houseDir }, activeStorey);
+    void copy(text, "Agent handoff copied");
+  };
+
   return (
     <div className="project-house">
-      <div className="kv">
-        <span className="k">House</span>
-        <code style={{ overflowWrap: "anywhere" }}>{project.house_dir}</code>
+      <div className="project-house-where">
+        {houseDir ? <>
+          <code title={houseDir}>{houseDir.replace(/[\\/]+$/, "").split(/[\\/]/).pop()}</code>
+          <button className="btn icon-btn" onClick={() => void copy(houseDir, "Path copied")} title={`Copy path — ${houseDir}`}>
+            <Icon name="duplicate" size={18} />
+          </button>
+        </> : (
+          <span className="muted">In-browser engine{offlineHouse ? ` · ${offlineHouse}` : ""}</span>
+        )}
       </div>
-      <button className="btn" aria-expanded={open} onClick={() => setOpen(!open)} style={{ marginTop: 6 }}>
-        New / Open house
-      </button>
-      {open && <HouseForm templates={canCreate ? project.templates : []} />}
+      <div className="project-house-actions">
+        <button className="btn" onClick={copyHandoff} title="Copy a Markdown brief of this session for an agent">
+          Copy agent handoff
+        </button>
+        {houseDir && (
+          <button className="btn" aria-expanded={open} onClick={() => setOpen(!open)}>New / Open house…</button>
+        )}
+      </div>
+      {houseDir && open && <HouseForm templates={canCreate ? project!.templates : []} />}
     </div>
   );
 }

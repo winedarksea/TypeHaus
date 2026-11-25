@@ -17,8 +17,6 @@ export function TopBar({ pwa }: { pwa: PwaState }) {
   const offline = useStore((s) => s.offline);
   const offlineHouse = useStore((s) => s.offlineHouse);
   const engineReady = useStore((s) => s.engineReady);
-  const activePanel = useStore((s) => s.activePanel);
-  const setActivePanel = useStore((s) => s.setActivePanel);
   const setCommandPaletteOpen = useStore((s) => s.setCommandPaletteOpen);
   const detailView = useStore((s) => s.detailView);
   const setDetailView = useStore((s) => s.setDetailView);
@@ -32,15 +30,6 @@ export function TopBar({ pwa }: { pwa: PwaState }) {
 
   return (
     <header className="topbar">
-      <button
-        className={`btn icon-btn${activePanel === "project" ? " active" : ""}`}
-        onClick={() => setActivePanel("project")}
-        title="Toggle project drawer"
-        aria-pressed={activePanel === "project"}
-      >
-        <Icon name="menu" />
-      </button>
-
       {/* On a phone the wordmark yields to the breadcrumb: which storey you are on is
           navigational, the app's own name is not. */}
       {!isCompact && <span className="title">Type:Haus</span>}

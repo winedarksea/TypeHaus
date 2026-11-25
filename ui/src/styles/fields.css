@@ -149,7 +149,7 @@
 }
 
 /* Collapsible section headers, list rows, and jump targets all get a real row height. */
-.drawer-section-head {
+.drawer-section-toggle {
   min-height: var(--hit);
   padding-inline: 6px;
 }

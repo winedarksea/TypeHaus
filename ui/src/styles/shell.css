@@ -29,6 +29,8 @@
   align-items: center;
   gap: var(--space-2);
   padding-inline: var(--space-2);
+  /* The wordmark leads now (no ☰): give text the inset an icon button had. */
+  padding-inline-start: calc(var(--space-4) + var(--safe-l));
   /* Opaque, not glass. This is structural frame, not an overlay on the drawing: a
      full-screen backdrop blur recomputes every frame over a rotating three.js canvas
      (that is the shimmer while orbiting), and a translucent bar has no defined

@@ -152,26 +152,44 @@
 .hierarchy-building-name {
   font-size: var(--text-xs);
   color: var(--muted);
-  margin-bottom: 3px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 4px;
 }
 .hierarchy-levels {
   display: flex;
   flex-wrap: wrap;
   gap: 4px;
 }
+/* Shape, padding and the active fill are the MD3 pill in fields.css. */
 .hierarchy-level {
   border: 1px solid var(--panel-line);
-  border-radius: var(--radius-input);
-  background: var(--raised);
   color: var(--ink);
-  padding: 4px 10px;
   font-size: var(--text-xs);
   cursor: pointer;
 }
-.hierarchy-level.active {
-  background: var(--accent);
-  color: var(--canvas-white);
-  border-color: var(--accent);
+.hierarchy-level.add {
+  border-style: dashed;
+  color: var(--muted);
+}
+
+/* House section: where it lives on one line, then its actions. */
+.project-house-where {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  min-width: 0;
+}
+.project-house-where code {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.project-house-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
 }
 
 /* Details navigator (Phase 8). */
@@ -413,17 +431,18 @@
    is a divider-topped block whose header reads as the single title for its body. */
 .drawer-section { border-top: 1px solid var(--panel-line); }
 .drawer-section:first-of-type { border-top: none; }
-.drawer-section-head {
-  display: flex; align-items: center; gap: 8px; width: 100%;
+.drawer-section-head { display: flex; align-items: center; gap: 8px; }
+.drawer-section-toggle {
+  display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0;
   background: none; border: none; cursor: pointer;
   padding: 10px 6px; margin: 0 -6px; border-radius: var(--radius-input);
   color: var(--ink);
   font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em;
   transition: background var(--dur-fast) var(--ease);
 }
-.drawer-section-head .chev { color: var(--muted); font-size: 10px; width: 10px; }
+.drawer-section-toggle .chev { color: var(--muted); font-size: 10px; width: 10px; }
 .drawer-section-title { flex: 1; text-align: left; }
-.drawer-section-right { text-transform: none; letter-spacing: 0; font-weight: 400; }
+.drawer-section-right { flex: 0 0 auto; }
 .drawer-section-body { padding: 2px 0 12px; }
 
 /* Table-like readouts inside the drawer get hairline row separators so the label/value
