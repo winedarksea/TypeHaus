@@ -47,6 +47,11 @@ def _runs(model: ResolvedModel):
                        board.cut_dimensions_m[2], "door box")
 
 
+def trim_fastened_materials(model: ResolvedModel) -> set[str]:
+    """Materials some counted run uses: only their ``trim_fastening`` prints on S-001."""
+    return {material for material, _, _, _ in _runs(model)}
+
+
 def trim_fastener_rows(model: ResolvedModel) -> list:
     """One row per fastener model, by storey, with each material's rule in the basis."""
     specs = {m.tag: m.trim_fastening for m in model.plan.library.materials

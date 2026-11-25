@@ -12,6 +12,7 @@ from typehaus.hardware.catalog import (
 )
 from typehaus.hardware.connector_fastening import STAINLESS_FINISHES
 from typehaus.quantities import M_PER_IN
+from typehaus.takeoff.fastening_specs import fastening_specs
 from typehaus.takeoff.hardware import hardware_takeoff
 from typehaus.takeoff.trim_fasteners import fasteners_per_run
 from typehaus.takeoff.window_fasteners import fin_fasteners
@@ -47,14 +48,16 @@ def test_hl_site_bolt_lengths_match_the_hand_note(catlin_model_ro):
     assert rows == {"BOLT-34X8-HDG": 2, "LAG-34X5-HDG": 2, "ROD-12X18-HDG": 1}
 
 
-def test_every_catlin_trim_schedule_bills(catlin_model_ro):
-    """An authored ``trim_fastening`` that counts nothing would print on S-001 unbilled."""
-    rows = {row["part_number"]: row for row in hardware_takeoff(catlin_model_ro)
-            if row["scope"] == "trim fasteners"}
-    authored = {m.trim_fastening.part for m in catlin_model_ro.plan.library.materials
-                if m.trim_fastening is not None}
-    assert authored == set(rows)
-    # D-B-SUNKEN's Trex box: two 82" sides (6 x 2) and a 63" head (5 x 2).
+def test_every_catlin_trim_schedule_bills(catlin_model_ro, catlin_brick_model_ro):
+    """S-001 lists a ``trim_fastening`` exactly when something bills it."""
+    for model in (catlin_model_ro, catlin_brick_model_ro):
+        rows = {row["part_number"]: row for row in hardware_takeoff(model)
+                if row["scope"] == "trim fasteners"}
+        listed = {spec.part for spec in fastening_specs(model)
+                  if any(use.endswith(" trim") for use in spec.use.split(", "))}
+        assert listed == set(rows)
+    # Brick only (rows is the last model's): D-B-SUNKEN's Trex box, two 82" sides (6 x 2)
+    # and a 63" head (5 x 2).
     assert rows["T08175FS75"]["count"] == 34
 
 
