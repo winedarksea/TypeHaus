@@ -127,12 +127,14 @@ def test_catlin_basement_structures_resolve_independently(catlin_model) -> None:
     # the tracing changed — the same components, keyed on the same nodes — but "each must
     # answer for itself" is now structural rather than something the tracer has to recover
     # from a graph that mixes four buildings.
-    assert len(windings.sign_by_component_key) == 3
+    # ** FIVE SINCE 2026-11-24 **: the LP court face drops W-B-BRICK (N-B-BRICK-E, basement)
+    # and W-SG-BRKBM (N-SG-BME, court-low); court-face-brick still traces all seven.
+    assert len(windings.sign_by_component_key) == 2
     per_storey = {tag: len(resolve_storey_windings(catlin_model.plan,
                                                   tag).sign_by_component_key)
                   for tag in ("basement", "g-foundation", "court-low", "yard-low")}
-    assert per_storey == {"basement": 3, "g-foundation": 1, "court-low": 2, "yard-low": 1}
-    assert sum(per_storey.values()) == 7
+    assert per_storey == {"basement": 2, "g-foundation": 1, "court-low": 1, "yard-low": 1}
+    assert sum(per_storey.values()) == 5
 
     basement_walls = [e for e in catlin_model.plan.storey_elements("basement")
                       if e.element_kind in ("Wall", "FoundationWall")]

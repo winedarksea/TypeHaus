@@ -228,7 +228,8 @@ def test_catlin_bills_no_through_foam_screw_on_wall_or_roof(catlin_model) -> Non
     assert "3 plies" in row["basis"], row["basis"]
     assert "32 in o.c." in row["basis"], row["basis"]
     assert "into the stud" in row["basis"], row["basis"]
-    assert set(row["by_storey"]) == {"main", "second", "attic"}
+    # basement since 2026-11-24: the court's LP walkout is the same girt wall (EXT_2X6).
+    assert set(row["by_storey"]) == {"basement", "main", "second", "attic"}
     assert row["count"] == sum(row["by_storey"].values())
 
     # Counted off the resolved blocks, not off a grid — exactly one screw per block.
@@ -334,7 +335,8 @@ def test_catlin_bills_no_through_foam_screw_on_wall_or_roof(catlin_model) -> Non
     # 1161 on 2026-11-14: the three door sill courses' blocks bill their own TLOK10 row.
     # 1159 on 2026-11-16: WIN-S-BED3's move and WIN-S-BED3-N's removal repack the girt blocks.
     # 1158 on 2026-11-19: the band drops to +10'-5 1/2", its course cut at D-S-BALCONY.
-    assert row["count"] == 1158 and furring[0]["count"] == 198
+    # 1204 on 2026-11-24: the court's LP walkout is a girt wall, +46 blocks on W-B-S2-FR/S3-FR.
+    assert row["count"] == 1204 and furring[0]["count"] == 198
 
 
 # --- hangers -------------------------------------------------------------------------

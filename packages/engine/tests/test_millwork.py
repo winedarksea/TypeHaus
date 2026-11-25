@@ -142,7 +142,9 @@ def test_a_stools_depth_is_derived_from_its_host_wall_not_authored(stools):
         assert stool.return_m is not None and stool.frame_depth_m is not None
         expected = stool.return_m + stool.proud_m - stool.frame_depth_m + stool.overhang_m
         assert stool.depth_m == pytest.approx(expected, abs=1e-9)
-    assert [s.window_ref for s in stools if s.proud_m > 0] == ["WIN-B-SAUNA"]
+    # None since 2026-11-24: WIN-B-SAUNA was the one (0.16" proud on a 13.31" return); the LP
+    # walkout's EXT_2X6 stack returns 15.25" and takes its product inside the mount plane.
+    assert [s.window_ref for s in stools if s.proud_m > 0] == []
 
 
 def test_host_assembly_variants_preserve_their_window_mount_returns(catlin_model_ro):
@@ -182,7 +184,7 @@ def test_the_mount_plane_ignores_furring_on_the_inside_face(catlin_model_ro):
     from typehaus.resolve.millwork import interior_return_m
 
     wall = next(w for w in catlin_model_ro.walls
-                if w.assembly == "SAUNA_LINER_ON_GARDEN_FRAMED")
+                if w.assembly == "SAUNA_LINER_ON_EXT_2X6_LP")  # W-B-S2-FR (LP court face)
     assert interior_return_m(wall) * M_TO_IN > 10.0
 
 

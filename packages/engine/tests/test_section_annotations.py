@@ -154,7 +154,10 @@ def test_section_ground_runs_are_flat_at_the_soil_plane(section):
     # x=45' spot at -3'-4". Both runs stay between the soil plane and that lowest spot.
     for run in runs:
         assert all(-40.0 - 1e-6 <= point[1] <= -36.0 + 1e-6 for point in run.points), run.points
-    assert max(max(p[1] for p in run.points) for run in runs) == pytest.approx(-36.0, abs=1e-6)
+    # -38.38 since 2026-11-24: the cut station is the dwelling walls' y midpoint, and with
+    # W-B-BRICK (south of y=0) gone it sits on the house's own 18'-0" centre, where the band
+    # captures the falling spots on both sides rather than the -3'-0" soil-plane spot.
+    assert max(max(p[1] for p in run.points) for run in runs) == pytest.approx(-38.38, abs=0.01)
 
 
 def test_a_structure_spot_beside_the_cut_is_not_section_ground(catlin_model, plane):

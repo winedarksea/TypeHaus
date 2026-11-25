@@ -27,7 +27,7 @@ _CATLIN = Path(__file__).resolve().parents[3] / "houses" / "catlin"
 #: hosts in these rows are laid out bar for bar in notes/rebar_layout_basis.md and pinned by
 #: test_rebar_layout_oracle.py; this pins the house-wide sum they sit inside.
 #:
-#: Eight rows: §4's gaps are authored (basement horizontals, the garage ICF stems,
+#: Seven rows (eight under court-face-brick): §4's gaps are authored (basement horizontals, the garage ICF stems,
 #: W-SG-BRKBM's cage, dowels). The three BLACK ``slab`` rows were SL-M-DECK's BuildDeck
 #: schedule and left with the deck (#112, 2026-11-01) — every billed bar is A767 now. The
 #: note's §1 table still lists them and needs re-working.
@@ -40,12 +40,15 @@ _SCHEDULE = {
     # (27.6 + 6 + 27.6)") = 254.4 ft x 1.043.
     # +11 / +139.9 lb on 2026-11-24 (free body §15n): FT-SG-S's heel +6", top-x #5 @ 9".
     ("footing", "#5", "hdg-a767"): (226, 1871.1),
-    ("foundation wall", "#3", "hdg-a767"): (12, 16.2),
+    # W-SG-BRKBM's 12 #3 ties (16.2 lb) left with the brick court face on 2026-11-24, and with
+    # them the "foundation wall" #3 row; they return under court-face-brick.
     # STHD bars; garage's 5 -> 2 SSTB. +64 / +330.1 lb on 2026-11-24: W-SG-W1/E1's #4 @ 16"
     # each face, 16 lines + 16 splice bars across N-SG-MW/-ME per wall (note addendum).
-    ("foundation wall", "#4", "hdg-a767"): (358, 1974.9),
+    # -2 / -24.7 lb on 2026-11-24: W-SG-BRKBM's two #4 hangers (brick-only).
+    ("foundation wall", "#4", "hdg-a767"): (356, 1950.2),
     # +26 / +276.7 lb the same day: W1/E1's 13 #5 @ 10" verticals each, hooked.
-    ("foundation wall", "#5", "hdg-a767"): (136, 1322.5),
+    # -6 / -37.5 lb on 2026-11-24: W-SG-BRKBM's two bottom #5 and four toe dowels (brick-only).
+    ("foundation wall", "#5", "hdg-a767"): (130, 1285.0),
     # The #6 row left the same day: W1/E1's 5 #6 @ 38" each (-129.5 lb).
 }
 # +3,215.6 lb on 2026-09-17 over the area/spacing era's 3,514.7 (newly authored steel, laps and
@@ -108,8 +111,10 @@ _SCHEDULE = {
 # SSTB16 bars (C-C-2026 p. 43) in.
 # +617.2 lb, +91 pieces on 2026-11-24 (note addendum): W1/E1 take W2's stem steel (+477.3)
 # and FT-SG-S's heel grows 6" (+139.9).
-_TOTAL_LB = 6156.9
-_TOTAL_PIECES = 970
+# -78.4 lb, -20 pieces the same day: the court face is LP panel and W-SG-BRKBM is variant
+# court-face-brick only (which still bills 6,156.9 lb / 970). Note §1 not yet re-worked.
+_TOTAL_LB = 6078.5
+_TOTAL_PIECES = 950
 
 @pytest.fixture(scope="module")
 def rows(catlin_model):
