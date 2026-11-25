@@ -151,18 +151,14 @@ stopped at an opening (and at any trim hosted on it):
 
 | Joint | Pieces (z, in) | Length |
 |---|---|---|
-| s 48 | -101.1555 to -65 7/16 (window sill); -41 7/16 (head) to -13 7/16 | 35.718 + 28.000 |
+| s 48 | -101.1555 to -69 7/16 (window sill trim); -33.862 (head drip) to -13 7/16 | 31.718 + 20.425 |
 | s 96 | -101.1555 to -13 7/16 | 87.718 |
-| s 144 | door head -21 1/16 to -13 7/16 | 7.625 |
+| s 144 | none: the door's custom head reaches the top of the panel | 0 |
 | s 184 | -101.1555 to -13 7/16 | 87.718 |
 
-**5 pieces, 246.8" = 20.56 LF**, cut from **2 sticks** (87.718 x 2 in one; 35.718 + 28 +
-7.625 in the other). No head trim is hosted on either opening yet; when one is, the batten
-stops at it instead of at the RO.
-
-Since that count, both openings carry head trim (D-B-SUNKEN's custom head, WIN-B-SAUNA's Z drip),
-so battens stop at the trim, not at the RO; `test_sheet_layout.py` pins whatever the model now
-lays.
+**4 pieces, 227.58" = 18.96 LF**, cut from **2 sticks** (87.718 x 2 in one; 31.718 + 20.425 in
+the other). The battens stop at the trim hosted on each opening, not at the RO;
+`test_sheet_layout.py` pins it.
 
 ## 3. Base and clearances (AI 2024, confirmed for panel)
 
