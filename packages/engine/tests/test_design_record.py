@@ -103,7 +103,7 @@ def test_the_output_is_deterministic_and_sorted() -> None:
     assert list(first) == sorted(first)
 
 
-def test_the_catlin_record_covers_every_note(catlin_model_ro, tmp_path):
+def test_the_catlin_record_covers_every_note(catlin_model_ro, catlin_brick_model_ro, tmp_path):
     """End to end, on the real house — including `superseded/`, which is deliberately in.
 
     A superseded note opens with a banner naming what replaced it, and the rule it
@@ -113,7 +113,10 @@ def test_the_catlin_record_covers_every_note(catlin_model_ro, tmp_path):
 
     notes = sorted((Path(catlin_model_ro.plan.source_root) / "notes").rglob("*.md"))
     on_sheets = sheets_by_note(catlin_model_ro)
-    assert len(on_sheets) == 12, "exactly twelve catlin notes are bound to a drawing"
+    assert len(on_sheets) == 10, "exactly ten catlin notes are bound to a drawing"
+    # The brick court face binds its two opening notes too.
+    brick = set(sheets_by_note(catlin_brick_model_ro)) - set(on_sheets)
+    assert brick == {"notes/court_opening_detail.md", "notes/veneer_opening_detail.md"}
     stems = {p.stem for p in notes} - {"README", "TEMPLATE"}
     files = design_record(_inputs(*[
         NoteSource(f"notes/{p.name}", p.read_text(encoding="utf-8"))
