@@ -424,33 +424,23 @@ BASEMENT_LIGHTING = [
                          wall_ref="W-B-CE", face="left", distance_from_start=inch(68.4),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
 
-    # RM-B-STAIR: the railing light the notes ask for. A 24V tape at 34" on the stair's
-    # west wall, under the handrail — it lights the treads without a fixture in anyone's
-    # eyeline coming up. 3-way with the main-storey stair switch, because a stair light
-    # that can only be switched from the bottom is a stair light nobody uses.
-    #
-    # ** A KNOWN LIMIT, MADE VISIBLE BY THE 2026-09-05 CLOSET AND NOT CAUSED BY IT. **
-    # `LightRun` carries ONE `Mount` elevation for its whole path, and 34" is measured off
-    # the SLAB, not off the raking nosing line — so this tape does not climb with the flight
-    # it lights. From y=25'-8" to y=31'-0" it lies under the arriving flight, which is the
-    # under-stair storage; north of that it is under the landing deck. Nothing
-    # grades a light run's room, so no check says this. Fixing it needs a raked run, which
-    # the schema does not have (see `serves_stair` on Railing for the same problem solved
-    # for guards).
-    LightRun(uid="QRB0001AAA", tag="LR-B-STAIR-RAIL", type_ref="ED-T-LT-STRIP24",
-             path=(pt(ft(10, 4.375), ft(25, 8)), pt(ft(10, 4.375), ft(34, 10))),
-             room="RM-B-STAIR", psu_ref="ED-B-STAIR-LT-PSU", serves_stair="ST-B2M",
-             controlled_by=("ED-B-STAIR-SW", "ED-M-STAIR-SW"),
-             aperture="down", mount=Mount(kind=MountKind.WALL, elevation=inch(34))),
-    # The AC/DC supply in a ceiling box, at the head of the run it feeds (notes: "Box in
-    # ceiling for AC/DC power supply"). 9'-5" of tape at 3 W/ft is 28 W; x1.25 = 35 W, so
-    # the 60 W supply is the catalog size above it. **It moved to the lower landing's
-    # ceiling on 2026-09-05**: (11', 26') is inside the under-stair storage, and a stair
-    # light's supply does not belong behind the stored goods.
-    ElectricalDevice(uid="QTB000GAAA", tag="ED-B-STAIR-LT-PSU", kind=DeviceKind.LED_DRIVER,
-                     position=pt(ft(15, 6), ft(33)), type_ref="ED-T-LT-PSU-60",
-                     circuit="CKT-LT-BSMT", room="RM-B-STAIR",
-                     mount=Mount(kind=MountKind.CEILING)),
+    # RM-B-STAIR's landing lights (owner, 2026-11-25): two recessed cans over the two
+    # half-landings, one per lane, on CKT-LT-BSMT (not backup; ED-M-STAIR-NIGHT-LT is the
+    # outage light) and the stair's 3-way pair. They recess into ST-M2S's landing underside
+    # (painted gypsum at +51.89" abs), which a ceiling mount over FO-M-STAIR's open well hangs
+    # from (resolve/placeables.py). y=33'-11 1/2" is the mid-bay between that landing's joists
+    # at 399.1"/415.1"; x=190" is the hall cans' line, x=145 1/2" the west lane's centre. The
+    # railing tape LR-B-STAIR-RAIL and its supply ED-B-STAIR-LT-PSU are retired.
+    ElectricalDevice(uid="9KFSBVZDPD", tag="ED-B-STAIR-LAND-CAN1", kind=DeviceKind.LIGHT,
+                     position=pt(inch(145.5), inch(407.5)), type_ref="ED-T-LT-CAN4",
+                     circuit="CKT-LT-BSMT", room="RM-B-STAIR", serves_stair="ST-B2M",
+                     controlled_by=("ED-B-STAIR-SW", "ED-M-STAIR-SW"),
+                     mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
+    ElectricalDevice(uid="BSSN4HYTM5", tag="ED-B-STAIR-LAND-CAN2", kind=DeviceKind.LIGHT,
+                     position=pt(inch(190), inch(407.5)), type_ref="ED-T-LT-CAN4",
+                     circuit="CKT-LT-BSMT", room="RM-B-STAIR", serves_stair="ST-B2M",
+                     controlled_by=("ED-B-STAIR-SW", "ED-M-STAIR-SW"),
+                     mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     # The 3-way at the stair foot. It hung on W-B-STR3's east face at (10'-4 3/8", 26'-6")
     # until 2026-09-05, which the under-stair closet then enclosed — so it moved across the
     # well onto **W-B-WELL-HEAD's east face** (x=14'-2 1/4") at the same height, level with the

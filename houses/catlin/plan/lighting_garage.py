@@ -49,7 +49,7 @@ GARAGE_LIGHTING = [
     # unconditioned garage makes it read as an exterior stair (`_stair_is_indoors`).
     ElectricalDevice(uid="4PQRD03TG8", tag="ED-G-LT3", kind=DeviceKind.LIGHT,
                      position=pt(ft(8, 5.625), ft(45, 7.75)), type_ref="ED-T-LT-KEYLESS-COLD",
-                     circuit="CKT-LT-GARAGE", room="RM-GARAGE",
+                     circuit="CKT-LT-GARAGE", room="RM-GARAGE", serves_stair="ST-G-SERVICE",
                      controlled_by=("ED-G-SW",),
                      mount=Mount(kind=MountKind.CEILING, drop=inch(5.5))),
     ElectricalDevice(uid="PQX96QHYWG", tag="ED-G-LT4", kind=DeviceKind.LIGHT,

@@ -65,6 +65,29 @@ def resolve_placeables(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
     from typehaus.resolve.ceilings import ceiling_faces, finished_ceiling_at
 
     faces = ceiling_faces(model)
+    stairs_by_tag = {stair.tag: stair for stair in model.stairs if stair.undersides}
+    overhead = None
+
+    def stair_board_over(xy: tuple[float, float], floor_z: float,
+                         served: str | None) -> float | None:
+        """Over an open well a ceiling mount hangs from the stair underside above it.
+
+        The underside of the stair the fixture serves (``serves_stair``) is the lid of what
+        it lights, not its ceiling: probe again from that stair's walking surface.
+        """
+        nonlocal overhead
+        if not stairs_by_tag:
+            return None
+        if overhead is None:
+            from typehaus.resolve.overhead import OverheadIndex
+
+            overhead = OverheadIndex(model)
+        hit = overhead.lowest_above(xy[0], xy[1], floor_z)
+        if hit is not None and hit.tag == served:
+            walk = _stair_walk_top(stairs_by_tag[served], xy, hit.z_m)
+            hit = None if walk is None else overhead.lowest_above(xy[0], xy[1], walk)
+        return hit.z_m if hit is not None and hit.tag in stairs_by_tag else None
+
     dish_drains = {dish.drain_ref for slab in plan.elements_of_kind("Slab")
                    for dish in slab.drain_dishes}
     for storey in plan.storeys:
@@ -112,10 +135,13 @@ def resolve_placeables(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
                     _floor_fall(model, explicit_room or resolved_room, center, fall_rooms,
                                 under=plan_ring))
             floor, structural_floor = floor + fall, structural_floor + fall
-            ceiling = (finished_ceiling_at(faces, storey.tag, explicit_room or resolved_room,
-                                           center)
-                       if mount is not None and mount.kind.value == "ceiling"
-                       and mount.elevation is None else None)
+            ceiling = None
+            if hung and mount.elevation is None:
+                ceiling = finished_ceiling_at(faces, storey.tag, explicit_room or resolved_room,
+                                              center)
+                if ceiling is None:
+                    ceiling = stair_board_over(center, structural_floor,
+                                               getattr(item, "serves_stair", None))
             mount_elevation = resolved_mount_elevation(
                 storey, item, floor_m=floor, structural_floor_m=structural_floor,
                 soffit_underside_m=_soffit_underside(model, item), ceiling_m=ceiling)
@@ -296,6 +322,21 @@ def _floor_fall(model: ResolvedModel, room_tag: str | None, center: tuple[float,
     room = cache[room_tag]
     return 0.0 if room is None else floor_fall_at(model, room, *center, frame_hung=frame_hung,
                                                   under=under)
+
+
+def _stair_walk_top(stair: object, xy: tuple[float, float], above_m: float) -> float | None:
+    """The top of ``stair``'s tread or landing over ``xy``, higher than ``above_m``."""
+    from typehaus.resolve.framing.footprint import member_footprint
+
+    point = Point(xy)
+    tops = []
+    for member in stair.members:
+        if member.category not in ("tread", "landing"):
+            continue
+        ring, _, z_hi = member_footprint(member)
+        if z_hi > above_m and len(ring) >= 3 and Polygon(ring).covers(point):
+            tops.append(z_hi)
+    return max(tops) if tops else None
 
 
 def _soffit_underside(model: ResolvedModel, item: object) -> float | None:

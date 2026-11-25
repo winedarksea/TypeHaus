@@ -4,7 +4,8 @@
 # tape and channel; the engine builds the section, fills modules, derives the leads
 # (resolve/led_leads.py) and bills them in [light_run_materials]. Read 2026-11-17; a figure
 # no sheet publishes is left unset (drawn generic, graded UNKNOWN), never guessed.
-#   * Stair rail (mark E, 8 mm tape): Diode LED DI-CHB-S2 surface channel, frosted lens.
+#   * Mark E, 8 mm tape (catalog-only since the stair rail retired 2026-11-25): Diode LED
+#     DI-CHB-S2 surface channel, frosted lens.
 #   * Garage eaves and gable (mark W, 15 mm IP67 tube): Superlighting QSG-3211, 19.9 mm
 #     inside, semi-clear flat PC cover. HL-BAPL057 (15 mm inside) leaves the tube no room.
 #     No channel was found that publishes an IP rating: the IP67 is the tube's.

@@ -61,6 +61,13 @@ def _hosts(model) -> list[tuple[str, float, float, object, tuple, list]]:
         if len(soffit.outline) >= 3:
             out.append((soffit.tag, soffit.z0_m, soffit.z0_m, Polygon(soffit.outline), (),
                         list(soffit.members)))
+    # A stair's gypsum underside over an open well: its own framing is what a housing clears.
+    for stair in model.stairs:
+        framing = [m for m in stair.members if m.category not in ("stair_soffit", "partition")]
+        for board in stair.undersides:
+            if board.role in ("flight", "landing") and len(board.outline) >= 3:
+                low, high = sorted((board.z_start_m, board.z_end_m))
+                out.append((stair.tag, low, high, Polygon(board.outline), (), framing))
     return out
 
 

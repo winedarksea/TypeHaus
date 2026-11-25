@@ -368,7 +368,7 @@ not instruction: when it disagrees with this file or the model, it is the one th
   2026-10-31). Coloured/tunable runs (E4, E6, W) take one 96 W HLG-100H-24A plus one
   controller per segment (`ED-T-LT-CTRL-5IN1` indoors; the garage's `ED-T-LT-CTRL-MATTER`
   GL-C-208M in a vented NEMA 4X box, 2026-11-07); split a run rather than reach for a bigger driver.
-  Every HLG-100H-24A takes a RACO 232 AC splice box (`PSU-96-WE.parts`, drawn with the driver). **LED construction is derived (decision #137, `plan/led_construction.py`):** each strip type's `LedStrip` (datasheet widths; E4 12 mm, E6 10 mm, MITTLED filled as modules) builds its section, the stair rail sits in Diode DI-CHB-S2 and the garage W tube in QSG-3211, and the 24 V leads are derived off `LED-STANDARD` (18/16/14 AWG, 3%). **Every driver and controller must be reachable** (`electrical.led_gear_access`): the lounge/dining bank is surface-mounted on the study ceiling's east half (owner, 2026-11-17), `ED-M-BATH2-PSU` on the laundry ceiling across W-M-BA2E. Hand oracle: `notes/led_construction.md`. The
+  Every HLG-100H-24A takes a RACO 232 AC splice box (`PSU-96-WE.parts`, drawn with the driver). **LED construction is derived (decision #137, `plan/led_construction.py`):** each strip type's `LedStrip` (datasheet widths; E4 12 mm, E6 10 mm, MITTLED filled as modules) builds its section, the garage W tube sits in QSG-3211 (mark E's DI-CHB-S2 is catalog-only), and the 24 V leads are derived off `LED-STANDARD` (18/16/14 AWG, 3%). **Every driver and controller must be reachable** (`electrical.led_gear_access`): the lounge/dining bank is surface-mounted on the study ceiling's east half (owner, 2026-11-17), `ED-M-BATH2-PSU` on the laundry ceiling across W-M-BA2E. Hand oracle: `notes/led_construction.md`. The
   hall cove is two straight legs (`LR-S-HALL-GAP` west to y=22'-4", `-GAP2` east to the 27'-6"
   bulkhead), drivers and controllers in RM-S-NCLOSET; a soffit run's ends snap to host edges only within 10".
 - **Lighting conventions (2026-10-31 review, trimmed 2026-11-03; `DESIGN-LOG.md` "Lighting
@@ -2295,8 +2295,8 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   side covers the receptacles (210.8(A)(5)); no check sees a lampholder's receptacle. Plain storage: `EQ-B-WH` left it for the workshop the day it
   arrived (2026-11-09). Its gypsum underside is derived from `ST-B2M.underside_*` (5/8"
   Type X, taped, unpainted; `notes/stair_underside.md`).
-  `LR-B-STAIR-RAIL` lies under the flight rather than along it — one `Mount` elevation for
-  the whole `LightRun`, measured off the slab, so it cannot rake.
+  The flight's lights are two recessed cans over the half-landings in ST-M2S's landing
+  underside (`ED-B-STAIR-LAND-CAN1`/`2`, owner 2026-11-25); the railing tape is retired.
   - `W-B-WELL` gives the well partition its faces only — `resolve/stairs/u_split.py`
     generates the 2x4 plates and studs between the two flights, and
     `resolve/stairs/well_wall.py` frames the rest of the wall past the landing corner (the
