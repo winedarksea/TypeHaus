@@ -23,7 +23,7 @@ from typehaus.resolve.geometry_openings import (
     _exterior_face,
 )
 from typehaus.resolve.model import ResolvedModel, ResolvedOpening, ResolvedWall
-from typehaus.resolve.model_window_seat import WindowSeat, mount_seat, orderable_size
+from typehaus.resolve.model_window_seat import WindowSeat, frame_mount, mount_seat, orderable_size
 from typehaus.resolve.rainscreen_closures import rainscreen_band
 from typehaus.resolve.sheet_geometry import combine_sheets, extruded_quad, sheet_between
 
@@ -136,8 +136,7 @@ def resolve_window_seats(model: ResolvedModel, cfg: FlashingConfig = FLASHING) -
     for opening in model.openings:
         wall = walls[opening.host_wall]
         frame = opening_flashing_frame(model, wall) if opening.kind == "window" else None
-        mount = "metal_trim" if frame is not None and is_profiled_metal_wall(model, wall) \
-            else None
+        mount = frame_mount(frame, frame is not None and is_profiled_metal_wall(model, wall))
         if frame is None and opening.kind == "window":
             # A hand-flashed unit bucked through foam behind a separate veneer's reveal.
             frame = veneer_backed_frame(model, wall, opening)

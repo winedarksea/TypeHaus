@@ -383,7 +383,7 @@ def _opening_parts(wall: ResolvedWall, opening, operation: DoorOperation | None,
                                       (-_WINDOW_GLAZING_THICKNESS_M / 2.0,
                                        _WINDOW_GLAZING_THICKNESS_M / 2.0), z0 + sill)
     if (opening.kind == "window" and exterior is not None
-            and (seat is None or seat.outer_m is None)):
+            and (seat is None or seat.mount in (None, "casing"))):
         # Picture-frame casing on the cladding plane: two jambs beside the RO, a head
         # band over it, an apron under the sill, each a flat board sitting proud of the
         # exterior face. Appended last so every pre-existing part keeps its box order.

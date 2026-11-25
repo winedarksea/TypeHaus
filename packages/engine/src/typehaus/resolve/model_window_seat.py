@@ -34,7 +34,8 @@ class WindowSeat:
     #: The product's ``WindowType.frame_depth`` back from ``outer_m``; None draws to the dam.
     frame_depth_m: float | None = None
     #: What terminates the reveal outside the unit: ``"metal_trim"`` (a profiled metal kit's
-    #: jamb, sill and head) or ``"veneer"`` (a separate wythe's reveal, hand-flashed).
+    #: jamb, sill and head), ``"casing"`` (an outie under any other skin: a picture-frame
+    #: casing on the cladding) or ``"veneer"`` (a separate wythe's reveal, hand-flashed).
     mount: str | None = None
     #: How far the unit stands proud of the mount plane because the plane sits closer to the
     #: back dam than the product is deep. A misfit for the supplier to confirm, not a choice.
@@ -59,6 +60,17 @@ def mount_layer_index(layers) -> int | None:
         if layer.function not in _SKIN:
             index = position
     return index
+
+
+def frame_mount(frame, metal_wall: bool) -> str | None:
+    """How a flashed unit is mounted, or None for one drawn from its back dam out.
+
+    An outie stands on its buck at ``frame.mount`` whatever the skin (its pan drains there,
+    and the stool's return reads that plane), so it is mounted under LP as under metal.
+    """
+    if frame is None:
+        return None
+    return "metal_trim" if metal_wall else "casing" if frame.outie else None
 
 
 def mount_seat(seat: WindowSeat, frame, depth_m: float | None, mount: str) -> WindowSeat:
