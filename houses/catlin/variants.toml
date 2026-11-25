@@ -10,11 +10,21 @@ allowance_words = ["sunken-garden", "court"]
 
 [[variant]]
 name = "reference"
-description = "Existing 40-inch raised garden, brick, 12-inch stems and 7-foot footings."
+description = "Existing 40-inch raised garden, LP SmartSide panel court face, 12-inch stems and 7-foot footings."
+
+# The court face as brick (W-B-BRICK on W-SG-BRKBM): one parameter and two assembly swaps
+# (notes/court_face_lp_panel.md, "Switching back to brick").
+[[variant]]
+name = "court-face-brick"
+description = "The court's house face as the anchored brown brick wythe on its grade beam."
+assembly_swaps = { EXT_2X6_LP_PANEL = "GARDEN_FRAMED_2X6", SAUNA_LINER_ON_EXT_2X6_LP = "SAUNA_LINER_ON_GARDEN_FRAMED" }
+[variant.parameters]
+"sunken_garden.cladding" = "brick"
 
 [[variant]]
 name = "yard-grade-brick"
 description = "Planting at ordinary yard grade; full-depth brick."
+assembly_swaps = { EXT_2X6_LP_PANEL = "GARDEN_FRAMED_2X6", SAUNA_LINER_ON_EXT_2X6_LP = "SAUNA_LINER_ON_GARDEN_FRAMED" }
 [variant.parameters]
 "sunken_garden.planting_layout" = "yard-grade"
 "sunken_garden.raised_soil_height_in" = 0
@@ -23,7 +33,7 @@ description = "Planting at ordinary yard grade; full-depth brick."
 [[variant]]
 name = "yard-grade-fiber-cement"
 description = "Planting at ordinary yard grade; drained fiber-cement panel screen."
-assembly_swaps = { BASEMENT_BRICK_VENEER = "BASEMENT_FIBER_CEMENT_SCREEN" }
+assembly_swaps = { BASEMENT_BRICK_VENEER = "BASEMENT_FIBER_CEMENT_SCREEN", EXT_2X6_LP_PANEL = "GARDEN_FRAMED_2X6", SAUNA_LINER_ON_EXT_2X6_LP = "SAUNA_LINER_ON_GARDEN_FRAMED" }
 [variant.parameters]
 "sunken_garden.planting_layout" = "yard-grade"
 "sunken_garden.raised_soil_height_in" = 0
@@ -32,6 +42,7 @@ assembly_swaps = { BASEMENT_BRICK_VENEER = "BASEMENT_FIBER_CEMENT_SCREEN" }
 [[variant]]
 name = "against-wall-24-brick"
 description = "30-inch bed against the court wall, 24 inches clear; brick and metal guard."
+assembly_swaps = { EXT_2X6_LP_PANEL = "GARDEN_FRAMED_2X6", SAUNA_LINER_ON_EXT_2X6_LP = "SAUNA_LINER_ON_GARDEN_FRAMED" }
 [variant.parameters]
 "sunken_garden.planting_layout" = "against-wall"
 "sunken_garden.raised_soil_height_in" = 30
@@ -41,7 +52,7 @@ description = "30-inch bed against the court wall, 24 inches clear; brick and me
 [[variant]]
 name = "against-wall-24-fiber-cement"
 description = "30-inch bed against the court wall, 24 inches clear; panel screen and guard."
-assembly_swaps = { BASEMENT_BRICK_VENEER = "BASEMENT_FIBER_CEMENT_SCREEN" }
+assembly_swaps = { BASEMENT_BRICK_VENEER = "BASEMENT_FIBER_CEMENT_SCREEN", EXT_2X6_LP_PANEL = "GARDEN_FRAMED_2X6", SAUNA_LINER_ON_EXT_2X6_LP = "SAUNA_LINER_ON_GARDEN_FRAMED" }
 [variant.parameters]
 "sunken_garden.planting_layout" = "against-wall"
 "sunken_garden.raised_soil_height_in" = 30
@@ -51,6 +62,7 @@ assembly_swaps = { BASEMENT_BRICK_VENEER = "BASEMENT_FIBER_CEMENT_SCREEN" }
 [[variant]]
 name = "against-wall-36-brick"
 description = "30-inch bed against the court wall, 36 inches clear; brick and metal guard."
+assembly_swaps = { EXT_2X6_LP_PANEL = "GARDEN_FRAMED_2X6", SAUNA_LINER_ON_EXT_2X6_LP = "SAUNA_LINER_ON_GARDEN_FRAMED" }
 [variant.parameters]
 "sunken_garden.planting_layout" = "against-wall"
 "sunken_garden.raised_soil_height_in" = 30
@@ -60,7 +72,7 @@ description = "30-inch bed against the court wall, 36 inches clear; brick and me
 [[variant]]
 name = "against-wall-36-fiber-cement"
 description = "30-inch bed against the court wall, 36 inches clear; panel screen and guard."
-assembly_swaps = { BASEMENT_BRICK_VENEER = "BASEMENT_FIBER_CEMENT_SCREEN" }
+assembly_swaps = { BASEMENT_BRICK_VENEER = "BASEMENT_FIBER_CEMENT_SCREEN", EXT_2X6_LP_PANEL = "GARDEN_FRAMED_2X6", SAUNA_LINER_ON_EXT_2X6_LP = "SAUNA_LINER_ON_GARDEN_FRAMED" }
 [variant.parameters]
 "sunken_garden.planting_layout" = "against-wall"
 "sunken_garden.raised_soil_height_in" = 30
@@ -70,6 +82,7 @@ assembly_swaps = { BASEMENT_BRICK_VENEER = "BASEMENT_FIBER_CEMENT_SCREEN" }
 [[variant]]
 name = "setback-24-brick"
 description = "Separate 30-inch by 24-inch bed beyond a 36-inch clear strip; brick."
+assembly_swaps = { EXT_2X6_LP_PANEL = "GARDEN_FRAMED_2X6", SAUNA_LINER_ON_EXT_2X6_LP = "SAUNA_LINER_ON_GARDEN_FRAMED" }
 [variant.parameters]
 "sunken_garden.planting_layout" = "setback"
 "sunken_garden.raised_soil_height_in" = 30
@@ -80,7 +93,7 @@ description = "Separate 30-inch by 24-inch bed beyond a 36-inch clear strip; bri
 [[variant]]
 name = "setback-24-fiber-cement"
 description = "Separate 30-inch by 24-inch bed beyond a 36-inch clear strip; panel screen."
-assembly_swaps = { BASEMENT_BRICK_VENEER = "BASEMENT_FIBER_CEMENT_SCREEN" }
+assembly_swaps = { BASEMENT_BRICK_VENEER = "BASEMENT_FIBER_CEMENT_SCREEN", EXT_2X6_LP_PANEL = "GARDEN_FRAMED_2X6", SAUNA_LINER_ON_EXT_2X6_LP = "SAUNA_LINER_ON_GARDEN_FRAMED" }
 [variant.parameters]
 "sunken_garden.planting_layout" = "setback"
 "sunken_garden.raised_soil_height_in" = 30
@@ -91,6 +104,7 @@ assembly_swaps = { BASEMENT_BRICK_VENEER = "BASEMENT_FIBER_CEMENT_SCREEN" }
 [[variant]]
 name = "setback-36-brick"
 description = "Separate 30-inch by 36-inch bed beyond a 36-inch clear strip; brick."
+assembly_swaps = { EXT_2X6_LP_PANEL = "GARDEN_FRAMED_2X6", SAUNA_LINER_ON_EXT_2X6_LP = "SAUNA_LINER_ON_GARDEN_FRAMED" }
 [variant.parameters]
 "sunken_garden.planting_layout" = "setback"
 "sunken_garden.raised_soil_height_in" = 30
@@ -101,7 +115,7 @@ description = "Separate 30-inch by 36-inch bed beyond a 36-inch clear strip; bri
 [[variant]]
 name = "setback-36-fiber-cement"
 description = "Separate 30-inch by 36-inch bed beyond a 36-inch clear strip; panel screen."
-assembly_swaps = { BASEMENT_BRICK_VENEER = "BASEMENT_FIBER_CEMENT_SCREEN" }
+assembly_swaps = { BASEMENT_BRICK_VENEER = "BASEMENT_FIBER_CEMENT_SCREEN", EXT_2X6_LP_PANEL = "GARDEN_FRAMED_2X6", SAUNA_LINER_ON_EXT_2X6_LP = "SAUNA_LINER_ON_GARDEN_FRAMED" }
 [variant.parameters]
 "sunken_garden.planting_layout" = "setback"
 "sunken_garden.raised_soil_height_in" = 30
