@@ -14,11 +14,11 @@ from typehaus.model.published_cladding import PublishedCladdingLoad
 #: 2026-11-24). The panel and its trim are field-painted in it.
 POTTERS_CLAY = "#b98766"
 
-#: The panel's own trim kit; the court's two walls have no outside corner, eave or rake. Heads
-#: take the house's dark drips: D-B-SUNKEN the custom door head (D-M-PORCH's), WIN-B-SAUNA the
-#: Z drip flashing.
+#: The panel's own trim kit; the court's two walls have no outside corner, eave or rake. Both
+#: heads take the generic Z drip flashing (a door's custom head needs a DOOR_JAMB key too, which
+#: this kit has none of).
 LP_PANEL_KIT = {
-    TrimCondition.DOOR_HEAD: "DOOR_HEAD_CUSTOM",
+    TrimCondition.DOOR_HEAD: "OPENING_HEAD_DRIP_FLASHING",
     TrimCondition.OPENING_HEAD: "OPENING_HEAD_DRIP_FLASHING",
 }
 

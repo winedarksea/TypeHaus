@@ -80,11 +80,8 @@ def _exterior_face(wall: ResolvedWall) -> tuple[float, float] | None:
     cladding plane to sit a casing on. Offsets are along the wall's right-hand normal
     measured from the axis line, the same frame ``opening_parts`` lays its boxes out in.
     """
-    layers = wall.depth_layers()
-    # A coating takes no depth (resolve/coatings.py): a paint over the cladding is not the face.
-    while len(layers) > 2 and layers[-1].thickness_m <= 1e-9 and (
-            layers[-1].function.strip().lower() != "cladding"):
-        layers = layers[:-1]
+    # A paint coat over the cladding takes no depth and is not the plane a casing sits on.
+    layers = [layer for layer in wall.depth_layers() if not layer.coating]
     if len(layers) < 2 or layers[-1].function.strip().lower() != "cladding":
         return None
     (x0, y0), _tangent, (nx, ny), axis_length = wall_frame(wall)

@@ -24,6 +24,7 @@ from typehaus.resolve.rainscreen_closures import (
     BUG_SCREEN_HEIGHT_IN,
     MIN_NET_FREE_AREA_CM2_PER_M,
     base_flashing_spec,
+    base_run_spans,
     cavity_base_run,
     net_free_area_cm2_per_m,
     opening_head_spans,
@@ -119,9 +120,16 @@ def _base_wall(model, wall, run, spec, areas):
     epdm = _mine(model, tag, {"EPDM_BASE_ISOLATION"})
     trim = [s for s in model.solids if s.host_ref == tag and s.body_mesh is not None
             and s.tag.startswith(f"TRIM-{tag}-BASE-")]
-    if not spans_cover([_along(p, d) for p in z_pieces], run.start, run.end):
+    # Each stretch between doors is covered; the door's own opening is not.
+    stretches = base_run_spans(model, wall, run)
+
+    def covered(pieces):
+        along = [_along(p, d) for p in pieces]
+        return all(spans_cover(along, lo, hi) for lo, hi in stretches)
+
+    if not covered(z_pieces):
         fail("the cavity has no continuous Z flashing to drain it")
-    if not spans_cover([_along(p, d) for p in screens], run.start, run.end):
+    if not covered(screens):
         fail("the cavity base is open to insects: no continuous insect screen")
         return out
     holes = perforation(model, screens)
@@ -153,7 +161,7 @@ def _base_wall(model, wall, run, spec, areas):
     foot = min(z for p in trim for x, y, z in p.body_mesh.positions
                if x * n[0] + y * n[1] <= leg)
     exposed = foot  # the screen's outer leg breathes from the pan up to the lap
-    if not spans_cover([_along(p, d) for p in epdm], run.start, run.end):
+    if not covered(epdm):
         fail("no continuous EPDM where the steel trim laps the screen")
     else:
         e_off = [o for p in epdm for o in _offsets(p, n)]
