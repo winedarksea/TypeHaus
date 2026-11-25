@@ -16,18 +16,21 @@ from typehaus.resolve.opening_flashing import head_flashing_section
 
 # A rough opening this small is a penetration closed by its fixture's own flange and sealant.
 SMALL_PENETRATION_M = 6 * M_PER_IN
+GENERIC_DRIP_HEAD = "OPENING_HEAD_DRIP_FLASHING"
 
 
 def door_face(model, wall):
     """(face, jamb key, head key) for a door's host wall, or None off a kit-trimmed wall.
 
     A kit naming a door head but no door jamb (a panel siding butted and sealed to the casing)
-    takes the head alone: jamb key None."""
+    takes the head alone: jamb key None, unless that head is the generic drip."""
     jambs = {face.wall.tag: key for face, key in kit_faces(model, TrimCondition.DOOR_JAMB)}
     heads = {face.wall.tag: (face, key) for face, key in kit_faces(model, TrimCondition.DOOR_HEAD)}
     if wall.tag not in heads:
         return None
     face, head_key = heads[wall.tag]
+    if wall.tag not in jambs and head_key == GENERIC_DRIP_HEAD:
+        return None  # the generic drip takes the dammed opening-head path instead
     return face, jambs.get(wall.tag), head_key
 
 

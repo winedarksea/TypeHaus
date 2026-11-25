@@ -19,7 +19,7 @@ from dataclasses import dataclass, replace
 from typehaus.model.enums import LayerFunction, TrimKind
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.framing.profiles import cross_section
-from typehaus.resolve.geometry import clip_half_plane, length, sub, wall_frame
+from typehaus.resolve.geometry import clip_half_plane, wall_frame
 from typehaus.resolve.model import (
     ResolvedLayer,
     ResolvedModel,
@@ -212,16 +212,6 @@ def rainscreen_cavity_m(layers: Sequence[ResolvedLayer]) -> float | None:
     return found[1] if found is not None else None
 
 
-def _point_segment_distance(p: tuple[float, float], a: tuple[float, float],
-                            b: tuple[float, float]) -> float:
-    run = sub(b, a)
-    span = run[0] * run[0] + run[1] * run[1]
-    if span <= 0.0:
-        return length(sub(p, a))
-    t = min(1.0, max(0.0, ((p[0] - a[0]) * run[0] + (p[1] - a[1]) * run[1]) / span))
-    return length(sub(p, (a[0] + run[0] * t, a[1] + run[1] * t)))
-
-
 def _continues_cavity_below(model: ResolvedModel, wall) -> bool:
     """Is this wall's rainscreen cavity fed from a rainscreen wall directly beneath it?
 
@@ -230,20 +220,34 @@ def _continues_cavity_below(model: ResolvedModel, wall) -> bool:
     no screen. A wall only gets one where the cavity genuinely begins: at grade, or on top
     of something that is not itself a rainscreen (a concrete stem wall, a garage curb).
 
-    The test is that some rainscreen wall's top lands on this wall's base *and* shares its
-    plan line; matching elevation alone would suppress the screen on every wall in a storey
-    the moment one of them stacked.
+    The test is that rainscreen walls whose tops land on this wall's base, on its plan line,
+    cover its whole length; matching elevation alone would suppress the screen on every wall
+    in a storey the moment one of them stacked, and a wall only partly over a cavity (W-M-S1
+    over the court's panel walls and the concrete) still starts one along the rest.
     """
+    (ax, ay), (bx, by) = wall.axis
+    run = math.hypot(bx - ax, by - ay)
+    if run <= 0.0:
+        return False
+    ux, uy = (bx - ax) / run, (by - ay) / run
+    spans = []
     for other in model.walls:
         if other.tag == wall.tag or abs(other.z1_m - wall.z0_m) > _STACK_TOLERANCE_M:
             continue
         if rainscreen_cavity_m(other.layers) is None:
             continue
-        mid = ((wall.axis[0][0] + wall.axis[1][0]) / 2.0,
-               (wall.axis[0][1] + wall.axis[1][1]) / 2.0)
-        if _point_segment_distance(mid, other.axis[0], other.axis[1]) <= _STACK_PLAN_TOL_M:
-            return True
-    return False
+        if any(abs((p[0] - ax) * uy - (p[1] - ay) * ux) > _STACK_PLAN_TOL_M
+               for p in other.axis):
+            continue
+        s0, s1 = sorted((p[0] - ax) * ux + (p[1] - ay) * uy for p in other.axis)
+        spans.append((s0, s1))
+    slop = min(_STACK_PLAN_TOL_M, run / 4.0)  # corner slop, never the whole of a short wall
+    reach = slop
+    for s0, s1 in sorted(spans):
+        if s0 > reach:
+            break
+        reach = max(reach, s1)
+    return bool(spans) and reach >= run - slop
 
 
 def pan_top_z(wall, spec, run: CavityBaseRun, offset: float) -> float:
