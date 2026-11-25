@@ -2704,7 +2704,17 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   face (`RailingType.fascia_post_offset`, ESR-3485 Fig. 10). `TR-SG-GUTTER` hangs 1" under
   the bracket bottoms (derived from them, 2026-10-31) and `TR-SG-APRON` laps from behind the
   drip's face into the trough; `test_catlin_balcony_guard_gutter.py` holds the clearance.
-- Veneer `W-B-BRICK` (both faces exposed; top at -13 1/3" since 2026-09-22 so
+- **The court's house face is LP SmartSide 38 Series smooth panel since 2026-11-24**, on
+  `W-B-S2-FR`/`W-B-S3-FR` (`EXT_2X6_LP_PANEL`, `SAUNA_LINER_ON_EXT_2X6_LP`: the house's girt
+  stack, field-painted Benjamin Moore Potters Clay; `notes/court_face_lp_panel.md`). The girts
+  stay at 24", off LP's 16" table, by the owner's call (sheltered, small, cheap to replace), so
+  `structural.cladding_wind` is an UNKNOWN carrying the scaled estimate, not a PASS. **Brick is one
+  switch away**: variant `court-face-brick` (`sunken_garden.cladding = "brick"` plus the two
+  assembly swaps back to `GARDEN_FRAMED_2X6`/`SAUNA_LINER_ON_GARDEN_FRAMED`). `params/court_face.py`
+  builds the wythe set and `OPTION.has_brick_face` gates the beam side in place. The brick
+  bullets below describe that variant, and its fingerprints are pinned to equal the pre-switch
+  house.
+- Veneer `W-B-BRICK` (variant `court-face-brick`; both faces exposed; top at -13 1/3" since 2026-09-22 so
   `FS-SG-PORCH`'s 2x12s pass over it with 2 1/12" of air — nothing grades that gap) stands on
   `W-SG-BRKBM`, a 12" x 17-3/4" grade beam **bedded on stone** (`FB-SG-BRKBM`, drained NFS
   on the wall-bed plane): a soil-supported veneer footing, not a span (owner, 2026-11-04;
@@ -2732,7 +2742,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   re-centring these footings must keep that face (`_HOUSE_STRIP_FACE_IN` transcribes it).
 - Brick's y is fixed at -6.0"..-9.625" by the beam; `N-B-BRICK-W`/`-E` sit at -4.06" with
   a 1.94" `air-gap`. x: **9'-6 1/2" / 26'-5 1/2"**, 1/2" off W-SG-W1/E1's clear faces — the
-  two soft joints, both 1/2" Class 50 neutral-cure silicone over 5/8" rod (`plan/masonry_joints.py`,
+  two soft joints, both 1/2" Class 50 neutral-cure silicone over 5/8" rod (`params/court_face.py`,
   d/c 0.365, 0.731 if one takes the whole run; a Class 25 sealant FAILs that case). The 4"
   Emseal is gone. The reveals are `from_node("N-B-BRICK-W", ...)`, so moving that node means
   moving both offsets with it; `integrity.reveal_concentric` is the guard.
@@ -3114,10 +3124,12 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   the boards: the butt joint lands on the court floor plane (lap the upper board); no board
   has a positive tie any more (adhere/pin and brace every one); and the beam's board depends
   on the FT-B-S2/S3 toe trim, which is a HOLD POINT before the house footing pour.
-- **The brick stays, and it is load-bearing for five other things.** If `W-B-BRICK` ever
-  goes it takes `W-SG-BRKBM`, that beam's isolation board, an engineered masonry-anchor
-  item no prescriptive table reaches, the weeps, two soft joints and a slab void with it.
-  Retiring it is a design pass, not a deletion.
+- **The brick is a switch, and five other things ride on it** (variant `court-face-brick`). With
+  `W-B-BRICK` come `W-SG-BRKBM`, that beam's isolation board, an engineered masonry-anchor item
+  no prescriptive table reaches, the weeps, two soft joints and a slab void; on the LP default
+  none of them exists. Keep both sides live: anything edited on one side of
+  `OPTION.has_brick_face` gets a look on the other, and `tasks.toml` cannot branch, so the
+  note's switch-back recipe lists its lines.
   - Stem blocks and footing blocks are sized by different rules and must stay that way: a
     stem block derives as `max(row_span + 8*dia, 12")` off the bar row (right for a 12" wall
     end); a footing block is `Dowel.foam_length` (default derives the old way) because it
@@ -3142,7 +3154,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     argument that carries the ENTIRE sliding margin (`notes/sunken_garden_court_free_body.md`
     §5 — at μ = 0.25 the court is at FS 1.16 against 1.50). Do not take it on a takeoff
     reading.
-- **`W-B-BRICK` is one flat field of unglazed `brown-brick` (`#a07c5c`)**, ASTM C216 Grade SW,
+- **`W-B-BRICK` (variant `court-face-brick`) is one flat field of unglazed `brown-brick` (`#a07c5c`)**, ASTM C216 Grade SW,
   full height (plinth to top), **112.5 SF** (18'-8" x 94 7/16" = 146.9 SF gross, less
   `AO-B-BRICK-WIN` 1.94 and `AO-B-BRICK-DOOR` 32.5), one BOM row
   `BASEMENT_BRICK_VENEER:brown-brick`. The 129.2 SF this line and `prices.toml` used to claim was
@@ -3582,8 +3594,9 @@ haus analysis . --solve                     # the engineered frame, solved in Py
   behind at 0.68 on barely half the axial. And the dowels' ANCHORAGE into the pad is graded
   beside the lap that already was: the lap alone was half the joint, and the half it left
   out is the one the fixed base depends on.
-- **Three items are deferred to a designer of record** (2026-09-20): the TWO trussed roofs'
-  component designs (`rafter/*`) and the brick veneer's anchors (`veneer_anchor/W-B-BRICK`).
+- **Two items are deferred to a designer of record** (2026-09-20): the TWO trussed roofs'
+  component designs (`rafter/*`); variant `court-face-brick` adds a third, the brick veneer's
+  anchors (`veneer_anchor/W-B-BRICK`).
   The wall tops, veneer beam, thermal breaks and SRW apron are computed now; the uplift
   chain below a truss heel is graded on `Roof.published_reactions` once the fabricator's
   sealed schedule is quoted in (`structural.truss_reactions`). `out/calcs/03-open-items.md`
