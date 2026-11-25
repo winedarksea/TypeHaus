@@ -77,8 +77,10 @@ so 1-1/2 in in the girt and 0.15 in of tip in the vent space behind it.
     framing  KDAT southern pine, SG 0.55 >= 0.42; 1-1/2 in penetration = 1-1/2 in required
 
 The 6/12 row (44 psf, 0.75) would also pass; the field stays at 6 in, as decided first
-(owner, 2026-11-25), for the margin. The girts' own anchorage at 16 in, one TimberLOK per
-32 x 16 in crossing, is `structural.girt_fastening` (PASS).
+(owner, 2026-11-25), for the margin. The girts' own anchorage at 16 in is
+`structural.girt_fastening`, the 24 in walls' read at two-thirds the area: one TLOK08 per
+32 x 16 in crossing, 19.93 psf x 3.556 sf x 1.25 (girt) x 1.143 (panel) = 101.3 lb suction
++ 27.5 lb prying = 128.8 lb against 224 lb head pull-through, d/c 0.575 (PASS).
 
 **History.** At 24 in girts and 3A the read was UNKNOWN with an off-label estimate (0.70 on
 the nail at 6/12, 0.94 with withdrawal capped for the girt's embedment; 0.56 on panel bending at
@@ -107,10 +109,10 @@ laid as one run.
   **no horizontal joint** and no Z-flashing seam (AI 2024 p.2 is for a horizontal seam).
 - Sheet 4x8 (48" module; LP's actual 47.81" plus the 1/8" gap is the module). Narrowest rip 12"
   (the house's `SheetLayoutStandard`).
-- Girt courses at 16" (KDAT 2x4 flat, 3 1/2" tall), bottoms at -99 15/16 (the starter,
-  lifted 2 1/4" clear of the base metal), -86 3/16, -70 3/16, -54 3/16, -38 3/16, -22 3/16
-  and the top course -15 3/8; the window breaks the courses round it, the door's head ladder
-  the -22 3/16 course over the door.
+- Girt courses at 16" (KDAT 2x4 flat, 3 1/2" tall), phased -3 1/4" (`lp_panel.py`), bottoms
+  at -99 15/16 (the starter, lifted 2 1/4" clear of the base metal), -89 7/16, -73 7/16,
+  -57 7/16, -41 7/16 (WIN-B-SAUNA's head course, exact), -25 7/16 and the top course -15 3/8;
+  the window breaks the courses round it, the door's head ladder the -25 7/16 course over it.
 - WIN-B-SAUNA: RO s 43 to 57 (x 161 to 175), z -65 7/16 to -41 7/16, sill ladder
   -68 15/16 to -65 7/16, head ladder -41 7/16 to -37 15/16.
 - D-B-SUNKEN: RO 63 5/16" wide, s 106 11/32 to 169 21/32 (x 224.34 to 287.66), head
@@ -138,7 +140,7 @@ s 26 and 74 lie clear of the window, so every course runs through both.
 
 | Joint | Pieces (z, in) | Length |
 |---|---|---|
-| s 26 | the six bays between courses, -96 7/16 to -15 3/8 | 10.25 + 4 x 12.5 + 3.3125 = 63.5625 |
+| s 26 | the six bays between courses, -96 7/16 to -15 3/8 | 7.0 + 4 x 12.5 + 6.5625 = 63.5625 |
 | s 74 | as s 26 | 63.5625 |
 | s 122 | head ladder top -17 9/16 to top course -15 3/8 | 2.1875 |
 | s 170 | as s 122 (below it, the jamb post backs the joint) | 2.1875 |
@@ -202,7 +204,7 @@ stem steel (free body §15n), each side run carries 4.4 in2 of steel, 0.9 x 4.4 
 ## 5. Cost (takeoff, net installed, ESTIMATE rows as priced in prices.toml)
 
 LP default against the `court-face-brick` house, both with the structure lane's steel and heel:
-**-$2,797 to -$4,961.** The study read -$2.2k to -$4.3k with its additions.
+**-$2,792 to -$4,954.** The study read -$2.2k to -$4.3k with its additions.
 
 | Change | Low | High |
 |---|---|---|
@@ -215,10 +217,10 @@ LP default against the `court-face-brick` house, both with the structure lane's 
 | LP panel 84.2 SF in (ESTIMATE) | +286 | +602 |
 | panel paint 84.2 SF in (ESTIMATE) | +125 | +372 |
 | LP 440 battens, 1 stick (ESTIMATE) | +46 | +130 |
-| ccSPF 4" +84 SF, girts at 16", nailers, TimberLOKs, fibreglass for mineral wool, buck rip | +744 | +1,185 |
+| ccSPF 4" +84 SF, girts at 16", nailers, TimberLOKs, fibreglass for mineral wool, buck rip | +749 | +1,192 |
 | rainscreen base Z, bug screens, strips, heads, closures, net | -144 | -348 |
 | rim slab to the curb, capillary stone, allowances, sealants | +100 | +199 |
-| **total** | **-2,797** | **-4,961** |
+| **total** | **-2,792** | **-4,954** |
 
 Not in the takeoff, added by hand: the 0.69" rim-slab-to-curb joint, ~17 LF of sealant at the
 movement-joint rate, **ESTIMATE +$200-425**. The W-M-S1/S2 BBD75 panels above now bill their

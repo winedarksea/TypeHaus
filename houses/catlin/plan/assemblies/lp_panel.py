@@ -28,9 +28,13 @@ def _with_lp_panel(assembly, tag):
         elif layer.name == "outer-girt":
             # ESR-1301 s.4.3 / Table 1 fn 2: every panel edge on 2x framing, so a flat KDAT
             # 2x4 nailer is cut between the girts at each vertical joint.
-            # Girts at 16" here, ESR-1301 Table 3B's stud spacing (owner, 2026-11-25).
+            # Girts at 16" here, ESR-1301 Table 3B's stud spacing (owner, 2026-11-25), phased
+            # -3 1/4" so WIN-B-SAUNA's head lands on a course and no field course half-laps
+            # an opening's (swept at 1/8"; D-B-SUNKEN's head under the fixed top course is
+            # a sliver at every phase).
             framing = layer.framing.model_copy(update={"panel_joint_nailers": True,
-                                                       "spacing": inch(16)})
+                                                       "spacing": inch(16),
+                                                       "course_offset": inch(-3.25)})
             layers.append(layer.model_copy(update={"framing": framing}))
         else:
             layers.append(layer)

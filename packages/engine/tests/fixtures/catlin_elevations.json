@@ -6668,106 +6668,112 @@
 "70269ecce719"
 ],
 "geometry/3BF9ZDQPT1::framing/member:block-2-001-00": [
--2.1891625,
--2.1002625,
+-2.2717125,
+-2.1828125,
 8,
-"7a7659a54a70"
+"afd5c47610b4"
 ],
 "geometry/3BF9ZDQPT1::framing/member:block-2-001-01": [
--2.1891625,
--2.1002625,
+-2.2717125,
+-2.1828125,
 8,
-"7a7659a54a70"
+"afd5c47610b4"
 ],
 "geometry/3BF9ZDQPT1::framing/member:block-2-001-02": [
--2.1891625,
--2.1002625,
+-2.2717125,
+-2.1828125,
 8,
-"7a7659a54a70"
+"afd5c47610b4"
 ],
 "geometry/3BF9ZDQPT1::framing/member:block-2-001-03": [
--2.1891625,
--2.1002625,
+-2.2717125,
+-2.1828125,
 8,
-"7a7659a54a70"
+"afd5c47610b4"
 ],
 "geometry/3BF9ZDQPT1::framing/member:block-2-002-00": [
--1.7827625,
--1.6938625,
+-1.8653125,
+-1.7764125,
 8,
-"9673d8eb4504"
+"f029ca0ab306"
 ],
 "geometry/3BF9ZDQPT1::framing/member:block-2-002-01": [
--1.7827625,
--1.6938625,
+-1.8653125,
+-1.7764125,
 8,
-"9673d8eb4504"
+"f029ca0ab306"
 ],
 "geometry/3BF9ZDQPT1::framing/member:block-2-002-02": [
--1.7827625,
--1.6938625,
+-1.8653125,
+-1.7764125,
 8,
-"9673d8eb4504"
+"f029ca0ab306"
+],
+"geometry/3BF9ZDQPT1::framing/member:block-2-002-03": [
+-1.8653125,
+-1.7764125,
+8,
+"f029ca0ab306"
 ],
 "geometry/3BF9ZDQPT1::framing/member:block-2-003-00": [
--1.3763625,
--1.2874625,
+-1.4589125,
+-1.3700125,
 8,
-"065c6667ad36"
+"84245f243cff"
 ],
 "geometry/3BF9ZDQPT1::framing/member:block-2-003-01": [
--1.3763625,
--1.2874625,
+-1.4589125,
+-1.3700125,
 8,
-"065c6667ad36"
+"84245f243cff"
 ],
 "geometry/3BF9ZDQPT1::framing/member:block-2-003-02": [
--1.3763625,
--1.2874625,
+-1.4589125,
+-1.3700125,
 8,
-"065c6667ad36"
+"84245f243cff"
 ],
 "geometry/3BF9ZDQPT1::framing/member:block-2-004-00": [
--0.9699625,
--0.8810625,
+-1.0525125,
+-0.9636125,
 8,
-"61b53bd7d201"
+"aeb5a312e4e6"
 ],
 "geometry/3BF9ZDQPT1::framing/member:block-2-004-01": [
--0.9699625,
--0.8810625,
+-1.0525125,
+-0.9636125,
 8,
-"61b53bd7d201"
+"aeb5a312e4e6"
 ],
 "geometry/3BF9ZDQPT1::framing/member:block-2-004-02": [
--0.9699625,
--0.8810625,
+-1.0525125,
+-0.9636125,
 8,
-"61b53bd7d201"
+"aeb5a312e4e6"
 ],
 "geometry/3BF9ZDQPT1::framing/member:block-2-005-00": [
--0.5635625,
--0.4746625,
+-0.6461125,
+-0.5572125,
 8,
-"3e4b14883d55"
+"91b89f2896f9"
 ],
 "geometry/3BF9ZDQPT1::framing/member:block-2-005-01": [
--0.5635625,
--0.4746625,
+-0.6461125,
+-0.5572125,
 8,
-"3e4b14883d55"
+"91b89f2896f9"
 ],
 "geometry/3BF9ZDQPT1::framing/member:block-2-005-02": [
--0.5635625,
--0.4746625,
+-0.6461125,
+-0.5572125,
 8,
-"3e4b14883d55"
+"91b89f2896f9"
 ],
 "geometry/3BF9ZDQPT1::framing/member:block-2-005-03": [
--0.5635625,
--0.4746625,
+-0.6461125,
+-0.5572125,
 8,
-"3e4b14883d55"
+"91b89f2896f9"
 ],
 "geometry/3BF9ZDQPT1::framing/member:block-2-006-00": [
 -0.390525,
@@ -6800,10 +6806,10 @@
 "08460d522e1d"
 ],
 "geometry/3BF9ZDQPT1::framing/member:block-2-jamb-000-0-01": [
--1.376362,
--1.287462,
+-1.458912,
+-1.370012,
 8,
-"2f60257c388e"
+"7091a949d3fd"
 ],
 "geometry/3BF9ZDQPT1::framing/member:block-2-jamb-000-0-02": [
 -1.052512,
@@ -6818,10 +6824,10 @@
 "08460d522e1d"
 ],
 "geometry/3BF9ZDQPT1::framing/member:block-2-jamb-000-1-01": [
--1.376362,
--1.287462,
+-1.458912,
+-1.370012,
 8,
-"2f60257c388e"
+"7091a949d3fd"
 ],
 "geometry/3BF9ZDQPT1::framing/member:block-2-jamb-000-1-02": [
 -1.052512,
@@ -6867,75 +6873,75 @@
 ],
 "geometry/3BF9ZDQPT1::framing/member:nailer-outer-girt-000-0": [
 -2.4495125,
--2.1891625,
+-2.2717125,
 8,
-"ff1eecaa3bf5"
+"490d596b16a2"
 ],
 "geometry/3BF9ZDQPT1::framing/member:nailer-outer-girt-000-1": [
--2.1002625,
--1.7827625,
+-2.1828125,
+-1.8653125,
 8,
-"dac12217fedf"
+"767c4ca82f20"
 ],
 "geometry/3BF9ZDQPT1::framing/member:nailer-outer-girt-000-2": [
--1.6938625,
--1.3763625,
+-1.7764125,
+-1.4589125,
 8,
-"ff352693eb89"
+"e23952a11bc0"
 ],
 "geometry/3BF9ZDQPT1::framing/member:nailer-outer-girt-000-3": [
--1.2874625,
--0.9699625,
+-1.3700125,
+-1.0525125,
 8,
-"b1cd8a722d38"
+"4e198971082f"
 ],
 "geometry/3BF9ZDQPT1::framing/member:nailer-outer-girt-000-4": [
--0.8810625,
--0.5635625,
+-0.9636125,
+-0.6461125,
 8,
-"c2842dec5ba5"
+"4ea7fb7065e5"
 ],
 "geometry/3BF9ZDQPT1::framing/member:nailer-outer-girt-000-5": [
--0.4746625,
+-0.5572125,
 -0.390525,
 8,
-"5b701e6df5be"
+"4473ce807724"
 ],
 "geometry/3BF9ZDQPT1::framing/member:nailer-outer-girt-001-0": [
 -2.4495125,
--2.1891625,
+-2.2717125,
 8,
-"ff1eecaa3bf5"
+"490d596b16a2"
 ],
 "geometry/3BF9ZDQPT1::framing/member:nailer-outer-girt-001-1": [
--2.1002625,
--1.7827625,
+-2.1828125,
+-1.8653125,
 8,
-"dac12217fedf"
+"767c4ca82f20"
 ],
 "geometry/3BF9ZDQPT1::framing/member:nailer-outer-girt-001-2": [
--1.6938625,
--1.3763625,
+-1.7764125,
+-1.4589125,
 8,
-"ff352693eb89"
+"e23952a11bc0"
 ],
 "geometry/3BF9ZDQPT1::framing/member:nailer-outer-girt-001-3": [
--1.2874625,
--0.9699625,
+-1.3700125,
+-1.0525125,
 8,
-"b1cd8a722d38"
+"4e198971082f"
 ],
 "geometry/3BF9ZDQPT1::framing/member:nailer-outer-girt-001-4": [
--0.8810625,
--0.5635625,
+-0.9636125,
+-0.6461125,
 8,
-"c2842dec5ba5"
+"4ea7fb7065e5"
 ],
 "geometry/3BF9ZDQPT1::framing/member:nailer-outer-girt-001-5": [
--0.4746625,
+-0.5572125,
 -0.390525,
 8,
-"5b701e6df5be"
+"4473ce807724"
 ],
 "geometry/3BF9ZDQPT1::framing/member:plate-bottom": [
 -2.5955625,
@@ -7028,54 +7034,48 @@
 "70269ecce719"
 ],
 "geometry/3BF9ZDQPT1::framing/member:strapping-outer-girt-001": [
--2.1891625,
--2.1002625,
+-2.2717125,
+-2.1828125,
 8,
-"7a7659a54a70"
+"afd5c47610b4"
 ],
 "geometry/3BF9ZDQPT1::framing/member:strapping-outer-girt-002": [
--1.7827625,
--1.6938625,
+-1.8653125,
+-1.7764125,
 8,
-"9673d8eb4504"
+"f029ca0ab306"
 ],
 "geometry/3BF9ZDQPT1::framing/member:strapping-outer-girt-003": [
--1.7827625,
--1.6938625,
+-1.4589125,
+-1.3700125,
 8,
-"9673d8eb4504"
+"84245f243cff"
 ],
 "geometry/3BF9ZDQPT1::framing/member:strapping-outer-girt-004": [
--1.3763625,
--1.2874625,
+-1.4589125,
+-1.3700125,
 8,
-"065c6667ad36"
+"84245f243cff"
 ],
 "geometry/3BF9ZDQPT1::framing/member:strapping-outer-girt-005": [
--1.3763625,
--1.2874625,
+-1.0525125,
+-0.9636125,
 8,
-"065c6667ad36"
+"aeb5a312e4e6"
 ],
 "geometry/3BF9ZDQPT1::framing/member:strapping-outer-girt-006": [
--0.9699625,
--0.8810625,
+-1.0525125,
+-0.9636125,
 8,
-"61b53bd7d201"
+"aeb5a312e4e6"
 ],
 "geometry/3BF9ZDQPT1::framing/member:strapping-outer-girt-007": [
--0.9699625,
--0.8810625,
+-0.6461125,
+-0.5572125,
 8,
-"61b53bd7d201"
+"91b89f2896f9"
 ],
 "geometry/3BF9ZDQPT1::framing/member:strapping-outer-girt-008": [
--0.5635625,
--0.4746625,
-8,
-"3e4b14883d55"
-],
-"geometry/3BF9ZDQPT1::framing/member:strapping-outer-girt-009": [
 -0.390525,
 -0.301625,
 8,
@@ -84758,34 +84758,34 @@
 "70269ecce719"
 ],
 "geometry/Z4NRTGEDY5::framing/member:block-2-001-00": [
--2.1891625,
--2.1002625,
+-2.2717125,
+-2.1828125,
 8,
-"7a7659a54a70"
+"afd5c47610b4"
 ],
 "geometry/Z4NRTGEDY5::framing/member:block-2-002-00": [
--1.7827625,
--1.6938625,
+-1.8653125,
+-1.7764125,
 8,
-"9673d8eb4504"
+"f029ca0ab306"
 ],
 "geometry/Z4NRTGEDY5::framing/member:block-2-003-00": [
--1.3763625,
--1.2874625,
+-1.4589125,
+-1.3700125,
 8,
-"065c6667ad36"
+"84245f243cff"
 ],
 "geometry/Z4NRTGEDY5::framing/member:block-2-004-00": [
--0.9699625,
--0.8810625,
+-1.0525125,
+-0.9636125,
 8,
-"61b53bd7d201"
+"aeb5a312e4e6"
 ],
 "geometry/Z4NRTGEDY5::framing/member:block-2-005-00": [
--0.5635625,
--0.4746625,
+-0.6461125,
+-0.5572125,
 8,
-"3e4b14883d55"
+"91b89f2896f9"
 ],
 "geometry/Z4NRTGEDY5::framing/member:block-2-006-00": [
 -0.390525,
@@ -84824,34 +84824,34 @@
 "d911bcfa015e"
 ],
 "geometry/Z4NRTGEDY5::framing/member:block-2-jamb-000-0-01": [
--2.189162,
--2.100262,
+-2.271712,
+-2.182812,
 8,
-"43ba94ad8bcb"
+"4585439a6d7c"
 ],
 "geometry/Z4NRTGEDY5::framing/member:block-2-jamb-000-0-02": [
--1.782762,
--1.693862,
+-1.865312,
+-1.776412,
 8,
-"9f077daa2658"
+"bc5ed58df0e5"
 ],
 "geometry/Z4NRTGEDY5::framing/member:block-2-jamb-000-0-03": [
--1.376362,
--1.287462,
+-1.458912,
+-1.370012,
 8,
-"2f60257c388e"
+"7091a949d3fd"
 ],
 "geometry/Z4NRTGEDY5::framing/member:block-2-jamb-000-0-04": [
--0.969962,
--0.881062,
+-1.052512,
+-0.963612,
 8,
-"1ad3e1317241"
+"8b6dbd898825"
 ],
 "geometry/Z4NRTGEDY5::framing/member:block-2-jamb-000-0-05": [
--0.563562,
--0.474662,
+-0.646112,
+-0.557212,
 8,
-"c55c0ff77b53"
+"7403fb186676"
 ],
 "geometry/Z4NRTGEDY5::framing/member:block-2-jamb-000-0-06": [
 -0.534987,
@@ -84866,34 +84866,34 @@
 "d911bcfa015e"
 ],
 "geometry/Z4NRTGEDY5::framing/member:block-2-jamb-000-1-01": [
--2.189162,
--2.100262,
+-2.271712,
+-2.182812,
 8,
-"43ba94ad8bcb"
+"4585439a6d7c"
 ],
 "geometry/Z4NRTGEDY5::framing/member:block-2-jamb-000-1-02": [
--1.782762,
--1.693862,
+-1.865312,
+-1.776412,
 8,
-"9f077daa2658"
+"bc5ed58df0e5"
 ],
 "geometry/Z4NRTGEDY5::framing/member:block-2-jamb-000-1-03": [
--1.376362,
--1.287462,
+-1.458912,
+-1.370012,
 8,
-"2f60257c388e"
+"7091a949d3fd"
 ],
 "geometry/Z4NRTGEDY5::framing/member:block-2-jamb-000-1-04": [
--0.969962,
--0.881062,
+-1.052512,
+-0.963612,
 8,
-"1ad3e1317241"
+"8b6dbd898825"
 ],
 "geometry/Z4NRTGEDY5::framing/member:block-2-jamb-000-1-05": [
--0.563562,
--0.474662,
+-0.646112,
+-0.557212,
 8,
-"c55c0ff77b53"
+"7403fb186676"
 ],
 "geometry/Z4NRTGEDY5::framing/member:block-2-jamb-000-1-06": [
 -0.534987,
@@ -85118,64 +85118,64 @@
 "70269ecce719"
 ],
 "geometry/Z4NRTGEDY5::framing/member:strapping-outer-girt-002": [
--2.1891625,
--2.1002625,
+-2.2717125,
+-2.1828125,
 8,
-"7a7659a54a70"
+"afd5c47610b4"
 ],
 "geometry/Z4NRTGEDY5::framing/member:strapping-outer-girt-003": [
--2.1891625,
--2.1002625,
+-2.2717125,
+-2.1828125,
 8,
-"7a7659a54a70"
+"afd5c47610b4"
 ],
 "geometry/Z4NRTGEDY5::framing/member:strapping-outer-girt-004": [
--1.7827625,
--1.6938625,
+-1.8653125,
+-1.7764125,
 8,
-"9673d8eb4504"
+"f029ca0ab306"
 ],
 "geometry/Z4NRTGEDY5::framing/member:strapping-outer-girt-005": [
--1.7827625,
--1.6938625,
+-1.8653125,
+-1.7764125,
 8,
-"9673d8eb4504"
+"f029ca0ab306"
 ],
 "geometry/Z4NRTGEDY5::framing/member:strapping-outer-girt-006": [
--1.3763625,
--1.2874625,
+-1.4589125,
+-1.3700125,
 8,
-"065c6667ad36"
+"84245f243cff"
 ],
 "geometry/Z4NRTGEDY5::framing/member:strapping-outer-girt-007": [
--1.3763625,
--1.2874625,
+-1.4589125,
+-1.3700125,
 8,
-"065c6667ad36"
+"84245f243cff"
 ],
 "geometry/Z4NRTGEDY5::framing/member:strapping-outer-girt-008": [
--0.9699625,
--0.8810625,
+-1.0525125,
+-0.9636125,
 8,
-"61b53bd7d201"
+"aeb5a312e4e6"
 ],
 "geometry/Z4NRTGEDY5::framing/member:strapping-outer-girt-009": [
--0.9699625,
--0.8810625,
+-1.0525125,
+-0.9636125,
 8,
-"61b53bd7d201"
+"aeb5a312e4e6"
 ],
 "geometry/Z4NRTGEDY5::framing/member:strapping-outer-girt-010": [
--0.5635625,
--0.4746625,
+-0.6461125,
+-0.5572125,
 8,
-"3e4b14883d55"
+"91b89f2896f9"
 ],
 "geometry/Z4NRTGEDY5::framing/member:strapping-outer-girt-011": [
--0.5635625,
--0.4746625,
+-0.6461125,
+-0.5572125,
 8,
-"3e4b14883d55"
+"91b89f2896f9"
 ],
 "geometry/Z4NRTGEDY5::framing/member:strapping-outer-girt-012": [
 -0.390525,
@@ -86756,106 +86756,112 @@
 "4a75891530a0"
 ],
 "member/3BF9ZDQPT1/block-2-001-00": [
--2.1891625,
--2.1002625,
+-2.2717125,
+-2.1828125,
 2,
-"490f1311284f"
+"dcabdd863c5a"
 ],
 "member/3BF9ZDQPT1/block-2-001-01": [
--2.1891625,
--2.1002625,
+-2.2717125,
+-2.1828125,
 2,
-"490f1311284f"
+"dcabdd863c5a"
 ],
 "member/3BF9ZDQPT1/block-2-001-02": [
--2.1891625,
--2.1002625,
+-2.2717125,
+-2.1828125,
 2,
-"490f1311284f"
+"dcabdd863c5a"
 ],
 "member/3BF9ZDQPT1/block-2-001-03": [
--2.1891625,
--2.1002625,
+-2.2717125,
+-2.1828125,
 2,
-"490f1311284f"
+"dcabdd863c5a"
 ],
 "member/3BF9ZDQPT1/block-2-002-00": [
--1.7827625,
--1.6938625,
+-1.8653125,
+-1.7764125,
 2,
-"0026f8a1f38c"
+"311be1deb2cb"
 ],
 "member/3BF9ZDQPT1/block-2-002-01": [
--1.7827625,
--1.6938625,
+-1.8653125,
+-1.7764125,
 2,
-"0026f8a1f38c"
+"311be1deb2cb"
 ],
 "member/3BF9ZDQPT1/block-2-002-02": [
--1.7827625,
--1.6938625,
+-1.8653125,
+-1.7764125,
 2,
-"0026f8a1f38c"
+"311be1deb2cb"
+],
+"member/3BF9ZDQPT1/block-2-002-03": [
+-1.8653125,
+-1.7764125,
+2,
+"311be1deb2cb"
 ],
 "member/3BF9ZDQPT1/block-2-003-00": [
--1.3763625,
--1.2874625,
+-1.4589125,
+-1.3700125,
 2,
-"e972a4a95b42"
+"3e217d824a08"
 ],
 "member/3BF9ZDQPT1/block-2-003-01": [
--1.3763625,
--1.2874625,
+-1.4589125,
+-1.3700125,
 2,
-"e972a4a95b42"
+"3e217d824a08"
 ],
 "member/3BF9ZDQPT1/block-2-003-02": [
--1.3763625,
--1.2874625,
+-1.4589125,
+-1.3700125,
 2,
-"e972a4a95b42"
+"3e217d824a08"
 ],
 "member/3BF9ZDQPT1/block-2-004-00": [
--0.9699625,
--0.8810625,
+-1.0525125,
+-0.9636125,
 2,
-"0b409e0503d6"
+"0b36b55ad10c"
 ],
 "member/3BF9ZDQPT1/block-2-004-01": [
--0.9699625,
--0.8810625,
+-1.0525125,
+-0.9636125,
 2,
-"0b409e0503d6"
+"0b36b55ad10c"
 ],
 "member/3BF9ZDQPT1/block-2-004-02": [
--0.9699625,
--0.8810625,
+-1.0525125,
+-0.9636125,
 2,
-"0b409e0503d6"
+"0b36b55ad10c"
 ],
 "member/3BF9ZDQPT1/block-2-005-00": [
--0.5635625,
--0.4746625,
+-0.6461125,
+-0.5572125,
 2,
-"127a6891fe50"
+"15f76727ca4a"
 ],
 "member/3BF9ZDQPT1/block-2-005-01": [
--0.5635625,
--0.4746625,
+-0.6461125,
+-0.5572125,
 2,
-"127a6891fe50"
+"15f76727ca4a"
 ],
 "member/3BF9ZDQPT1/block-2-005-02": [
--0.5635625,
--0.4746625,
+-0.6461125,
+-0.5572125,
 2,
-"127a6891fe50"
+"15f76727ca4a"
 ],
 "member/3BF9ZDQPT1/block-2-005-03": [
--0.5635625,
--0.4746625,
+-0.6461125,
+-0.5572125,
 2,
-"127a6891fe50"
+"15f76727ca4a"
 ],
 "member/3BF9ZDQPT1/block-2-006-00": [
 -0.390525,
@@ -86888,10 +86894,10 @@
 "9b1dd7200b6b"
 ],
 "member/3BF9ZDQPT1/block-2-jamb-000-0-01": [
--1.376362,
--1.287462,
+-1.458912,
+-1.370012,
 2,
-"b793909c52e4"
+"3c7cbd8ca457"
 ],
 "member/3BF9ZDQPT1/block-2-jamb-000-0-02": [
 -1.052512,
@@ -86906,10 +86912,10 @@
 "9b1dd7200b6b"
 ],
 "member/3BF9ZDQPT1/block-2-jamb-000-1-01": [
--1.376362,
--1.287462,
+-1.458912,
+-1.370012,
 2,
-"b793909c52e4"
+"3c7cbd8ca457"
 ],
 "member/3BF9ZDQPT1/block-2-jamb-000-1-02": [
 -1.052512,
@@ -86955,75 +86961,75 @@
 ],
 "member/3BF9ZDQPT1/nailer-outer-girt-000-0": [
 -2.4495125,
--2.1891625,
+-2.2717125,
 2,
-"89e99221bf5b"
+"89db16337be8"
 ],
 "member/3BF9ZDQPT1/nailer-outer-girt-000-1": [
--2.1002625,
--1.7827625,
+-2.1828125,
+-1.8653125,
 2,
-"3cee5042032f"
+"c8d8bccf5eed"
 ],
 "member/3BF9ZDQPT1/nailer-outer-girt-000-2": [
--1.6938625,
--1.3763625,
+-1.7764125,
+-1.4589125,
 2,
-"3f6099cdf190"
+"d75afb4b5ceb"
 ],
 "member/3BF9ZDQPT1/nailer-outer-girt-000-3": [
--1.2874625,
--0.9699625,
+-1.3700125,
+-1.0525125,
 2,
-"753d70cc1ed0"
+"17dcc61b91e9"
 ],
 "member/3BF9ZDQPT1/nailer-outer-girt-000-4": [
--0.8810625,
--0.5635625,
+-0.9636125,
+-0.6461125,
 2,
-"de2f2beccdf7"
+"d2f6a047bff2"
 ],
 "member/3BF9ZDQPT1/nailer-outer-girt-000-5": [
--0.4746625,
+-0.5572125,
 -0.390525,
 2,
-"32b9a0b6dc18"
+"a50b2c61650a"
 ],
 "member/3BF9ZDQPT1/nailer-outer-girt-001-0": [
 -2.4495125,
--2.1891625,
+-2.2717125,
 2,
-"89e99221bf5b"
+"89db16337be8"
 ],
 "member/3BF9ZDQPT1/nailer-outer-girt-001-1": [
--2.1002625,
--1.7827625,
+-2.1828125,
+-1.8653125,
 2,
-"3cee5042032f"
+"c8d8bccf5eed"
 ],
 "member/3BF9ZDQPT1/nailer-outer-girt-001-2": [
--1.6938625,
--1.3763625,
+-1.7764125,
+-1.4589125,
 2,
-"3f6099cdf190"
+"d75afb4b5ceb"
 ],
 "member/3BF9ZDQPT1/nailer-outer-girt-001-3": [
--1.2874625,
--0.9699625,
+-1.3700125,
+-1.0525125,
 2,
-"753d70cc1ed0"
+"17dcc61b91e9"
 ],
 "member/3BF9ZDQPT1/nailer-outer-girt-001-4": [
--0.8810625,
--0.5635625,
+-0.9636125,
+-0.6461125,
 2,
-"de2f2beccdf7"
+"d2f6a047bff2"
 ],
 "member/3BF9ZDQPT1/nailer-outer-girt-001-5": [
--0.4746625,
+-0.5572125,
 -0.390525,
 2,
-"32b9a0b6dc18"
+"a50b2c61650a"
 ],
 "member/3BF9ZDQPT1/plate-bottom": [
 -2.5955625,
@@ -87116,54 +87122,48 @@
 "4a75891530a0"
 ],
 "member/3BF9ZDQPT1/strapping-outer-girt-001": [
--2.1891625,
--2.1002625,
+-2.2717125,
+-2.1828125,
 2,
-"490f1311284f"
+"dcabdd863c5a"
 ],
 "member/3BF9ZDQPT1/strapping-outer-girt-002": [
--1.7827625,
--1.6938625,
+-1.8653125,
+-1.7764125,
 2,
-"0026f8a1f38c"
+"311be1deb2cb"
 ],
 "member/3BF9ZDQPT1/strapping-outer-girt-003": [
--1.7827625,
--1.6938625,
+-1.4589125,
+-1.3700125,
 2,
-"0026f8a1f38c"
+"3e217d824a08"
 ],
 "member/3BF9ZDQPT1/strapping-outer-girt-004": [
--1.3763625,
--1.2874625,
+-1.4589125,
+-1.3700125,
 2,
-"e972a4a95b42"
+"3e217d824a08"
 ],
 "member/3BF9ZDQPT1/strapping-outer-girt-005": [
--1.3763625,
--1.2874625,
+-1.0525125,
+-0.9636125,
 2,
-"e972a4a95b42"
+"0b36b55ad10c"
 ],
 "member/3BF9ZDQPT1/strapping-outer-girt-006": [
--0.9699625,
--0.8810625,
+-1.0525125,
+-0.9636125,
 2,
-"0b409e0503d6"
+"0b36b55ad10c"
 ],
 "member/3BF9ZDQPT1/strapping-outer-girt-007": [
--0.9699625,
--0.8810625,
+-0.6461125,
+-0.5572125,
 2,
-"0b409e0503d6"
+"15f76727ca4a"
 ],
 "member/3BF9ZDQPT1/strapping-outer-girt-008": [
--0.5635625,
--0.4746625,
-2,
-"127a6891fe50"
-],
-"member/3BF9ZDQPT1/strapping-outer-girt-009": [
 -0.390525,
 -0.301625,
 2,
@@ -124412,34 +124412,34 @@
 "4a75891530a0"
 ],
 "member/Z4NRTGEDY5/block-2-001-00": [
--2.1891625,
--2.1002625,
+-2.2717125,
+-2.1828125,
 2,
-"490f1311284f"
+"dcabdd863c5a"
 ],
 "member/Z4NRTGEDY5/block-2-002-00": [
--1.7827625,
--1.6938625,
+-1.8653125,
+-1.7764125,
 2,
-"0026f8a1f38c"
+"311be1deb2cb"
 ],
 "member/Z4NRTGEDY5/block-2-003-00": [
--1.3763625,
--1.2874625,
+-1.4589125,
+-1.3700125,
 2,
-"e972a4a95b42"
+"3e217d824a08"
 ],
 "member/Z4NRTGEDY5/block-2-004-00": [
--0.9699625,
--0.8810625,
+-1.0525125,
+-0.9636125,
 2,
-"0b409e0503d6"
+"0b36b55ad10c"
 ],
 "member/Z4NRTGEDY5/block-2-005-00": [
--0.5635625,
--0.4746625,
+-0.6461125,
+-0.5572125,
 2,
-"127a6891fe50"
+"15f76727ca4a"
 ],
 "member/Z4NRTGEDY5/block-2-006-00": [
 -0.390525,
@@ -124478,34 +124478,34 @@
 "d3b084321dcb"
 ],
 "member/Z4NRTGEDY5/block-2-jamb-000-0-01": [
--2.189162,
--2.100262,
+-2.271712,
+-2.182812,
 2,
-"bdc416aae116"
+"e1aeba7853fd"
 ],
 "member/Z4NRTGEDY5/block-2-jamb-000-0-02": [
--1.782762,
--1.693862,
+-1.865312,
+-1.776412,
 2,
-"b05b97eb46bd"
+"aabc0cdf9469"
 ],
 "member/Z4NRTGEDY5/block-2-jamb-000-0-03": [
--1.376362,
--1.287462,
+-1.458912,
+-1.370012,
 2,
-"b793909c52e4"
+"3c7cbd8ca457"
 ],
 "member/Z4NRTGEDY5/block-2-jamb-000-0-04": [
--0.969962,
--0.881062,
+-1.052512,
+-0.963612,
 2,
-"e09f03fcbe42"
+"ef7a1b519dd9"
 ],
 "member/Z4NRTGEDY5/block-2-jamb-000-0-05": [
--0.563562,
--0.474662,
+-0.646112,
+-0.557212,
 2,
-"a3c9e3700ade"
+"57ef1421b663"
 ],
 "member/Z4NRTGEDY5/block-2-jamb-000-0-06": [
 -0.534987,
@@ -124520,34 +124520,34 @@
 "d3b084321dcb"
 ],
 "member/Z4NRTGEDY5/block-2-jamb-000-1-01": [
--2.189162,
--2.100262,
+-2.271712,
+-2.182812,
 2,
-"bdc416aae116"
+"e1aeba7853fd"
 ],
 "member/Z4NRTGEDY5/block-2-jamb-000-1-02": [
--1.782762,
--1.693862,
+-1.865312,
+-1.776412,
 2,
-"b05b97eb46bd"
+"aabc0cdf9469"
 ],
 "member/Z4NRTGEDY5/block-2-jamb-000-1-03": [
--1.376362,
--1.287462,
+-1.458912,
+-1.370012,
 2,
-"b793909c52e4"
+"3c7cbd8ca457"
 ],
 "member/Z4NRTGEDY5/block-2-jamb-000-1-04": [
--0.969962,
--0.881062,
+-1.052512,
+-0.963612,
 2,
-"e09f03fcbe42"
+"ef7a1b519dd9"
 ],
 "member/Z4NRTGEDY5/block-2-jamb-000-1-05": [
--0.563562,
--0.474662,
+-0.646112,
+-0.557212,
 2,
-"a3c9e3700ade"
+"57ef1421b663"
 ],
 "member/Z4NRTGEDY5/block-2-jamb-000-1-06": [
 -0.534987,
@@ -124772,64 +124772,64 @@
 "4a75891530a0"
 ],
 "member/Z4NRTGEDY5/strapping-outer-girt-002": [
--2.1891625,
--2.1002625,
+-2.2717125,
+-2.1828125,
 2,
-"490f1311284f"
+"dcabdd863c5a"
 ],
 "member/Z4NRTGEDY5/strapping-outer-girt-003": [
--2.1891625,
--2.1002625,
+-2.2717125,
+-2.1828125,
 2,
-"490f1311284f"
+"dcabdd863c5a"
 ],
 "member/Z4NRTGEDY5/strapping-outer-girt-004": [
--1.7827625,
--1.6938625,
+-1.8653125,
+-1.7764125,
 2,
-"0026f8a1f38c"
+"311be1deb2cb"
 ],
 "member/Z4NRTGEDY5/strapping-outer-girt-005": [
--1.7827625,
--1.6938625,
+-1.8653125,
+-1.7764125,
 2,
-"0026f8a1f38c"
+"311be1deb2cb"
 ],
 "member/Z4NRTGEDY5/strapping-outer-girt-006": [
--1.3763625,
--1.2874625,
+-1.4589125,
+-1.3700125,
 2,
-"e972a4a95b42"
+"3e217d824a08"
 ],
 "member/Z4NRTGEDY5/strapping-outer-girt-007": [
--1.3763625,
--1.2874625,
+-1.4589125,
+-1.3700125,
 2,
-"e972a4a95b42"
+"3e217d824a08"
 ],
 "member/Z4NRTGEDY5/strapping-outer-girt-008": [
--0.9699625,
--0.8810625,
+-1.0525125,
+-0.9636125,
 2,
-"0b409e0503d6"
+"0b36b55ad10c"
 ],
 "member/Z4NRTGEDY5/strapping-outer-girt-009": [
--0.9699625,
--0.8810625,
+-1.0525125,
+-0.9636125,
 2,
-"0b409e0503d6"
+"0b36b55ad10c"
 ],
 "member/Z4NRTGEDY5/strapping-outer-girt-010": [
--0.5635625,
--0.4746625,
+-0.6461125,
+-0.5572125,
 2,
-"127a6891fe50"
+"15f76727ca4a"
 ],
 "member/Z4NRTGEDY5/strapping-outer-girt-011": [
--0.5635625,
--0.4746625,
+-0.6461125,
+-0.5572125,
 2,
-"127a6891fe50"
+"15f76727ca4a"
 ],
 "member/Z4NRTGEDY5/strapping-outer-girt-012": [
 -0.390525,

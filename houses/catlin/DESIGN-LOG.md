@@ -9421,7 +9421,7 @@ The owner kept the review and changed seven rooms. Rules updated in
   The new horizontals take winter tension to 0.264 (LP) / 0.272 (brick); `thermal_break_transfer`
   is governed by joint closure, 0.665. Retiring the porch prop was graded, not taken: +2 items,
   all four `base_rotation` go INCOMPLETE; the owner kept the prop (2026-11-25).
-- **Register** 32 -> 31. **Cost** LP against brick -$2,797 to -$4,961 (takeoff), plus ~$200-425
+- **Register** 32 -> 31. **Cost** LP against brick -$2,792 to -$4,954 (takeoff), plus ~$200-425
   of slab-to-curb sealant by hand; the structure fixes add $1,225-2,096.
 - **Engine fixes the face exposed.** A wall continues the rainscreen cavity below only where
   rainscreen walls cover its whole length (W-M-S1/S2 had lost their base Z, EPDM and screen). An
@@ -9430,7 +9430,7 @@ The owner kept the review and changed seven rooms. Rules updated in
   reached into FT-B-S3) and no sill buck (it sat in the door's sill package). S-001 lists a trim
   fastener only where a counted run bills it. `SheetLayoutStandard.centre_cladding` centres an
   exposed panel run; sheathing still walks from its through end.
-- **Finishing pass (owner, 2026-11-25).** Centred joints; 16" girts and Table 3B nails at 6"
-  edge and field (+$42-64); no sill buck on a
+- **Finishing pass (owner, 2026-11-25).** Centred joints; 16" girts (phased -3 1/4") and Table 3B
+  nails at 6" edge and field (+$47-72); no sill buck on a
   curb-seated door; porch prop kept; `bed_friction_max` kept at 1.00; the BBD75 base screens'
   5.6 in3 graze on the LP top girt accepted; the LP/KDAT yard quote is a construction hold.
