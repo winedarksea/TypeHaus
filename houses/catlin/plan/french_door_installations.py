@@ -63,6 +63,10 @@ if OPTION.has_brick_face:
     _SUNKEN_TREAD.update(joint_drain_wall_ref='W-SG-BRKBM',
                          joint_drain_material_ref='xps-drainage-board',
                          joint_drain_bed_ref='FB-SG-BRKBM')
+else:
+    # No beam: the nose overhangs the rim slab's north edge (1/2" off the curb's foam) and drips
+    # onto SL-SG-FLOOR under the porch roof; the tread covers the joint, so none drains into it.
+    _SUNKEN_TREAD.update(drain_slab_ref='SL-SG-FLOOR')
 
 
 # The box sides. Brick: Trex Tide Pool fascia ripped ~6" deep, frame to the brick's back, sealed

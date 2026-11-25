@@ -64,10 +64,10 @@ def grade_drip_head(model, wall, opening, frame, cavity_id) -> list:
         fail("the head flashing's upstand is not lapped under the WRB strip-in above it")
     strips = [s for s in model.solids if s.host_ref == tag and s.product == _STRIP_PRODUCT
               and s.body_mesh is not None]
-    if strips:
-        def line(v):
-            return bend + (seat - bend) * (v - water) / (front - water)
+    def line(v):
+        return bend + (seat - bend) * (v - water) / (front - water)
 
+    if strips:
         gap = min(z - line(o - depth0) for strip in strips
                   for o, z in ((x * n[0] + y * n[1], z)
                                for x, y, z in strip.body_mesh.positions))
@@ -75,17 +75,19 @@ def grade_drip_head(model, wall, opening, frame, cavity_id) -> list:
             fail(f"the cladding over the head stands {gap / M_PER_IN:.2f} in off the flashing, "
                  f"under the {HEAD_FLASHING_CLADDING_CLEARANCE_IN} in its maker asks")
     if _batten_through(wall, d, spans, points, strips, depth0 + frame.mount,
-                       depth0 + frame.clad):
+                       depth0 + frame.clad, lambda o: line(o - depth0)):
         fail("a furring batten runs through the head flashing or the strip over it")
     return out
 
 
-def _batten_through(wall, d, spans, points, strips, back, face) -> bool:
+def _batten_through(wall, d, spans, points, strips, back, face, leg_z) -> bool:
     """A vertical furring batten over the Z's run whose length crosses the leg or strip."""
     from typehaus.resolve.framing.furring import STRAPPING_CATEGORY
     from typehaus.resolve.framing.profiles import cross_section
 
-    lo = min(z for _s, o, z in points if back - _TOL <= o <= face + _TOL)
+    # The leg's vertices sit on the water plane and the drip face, so none may fall in the band:
+    # its low point there is the leg's height at the cladding plane.
+    lo = min((z for _s, o, z in points if back - _TOL <= o <= face + _TOL), default=leg_z(face))
     hi = max([z for strip in strips for *_xy, z in strip.body_mesh.positions] or [lo])
     s0, s1 = min(a for a, _b in spans), max(b for _a, b in spans)
     for m in wall.members:

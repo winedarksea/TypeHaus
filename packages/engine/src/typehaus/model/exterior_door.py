@@ -138,6 +138,10 @@ class ExteriorDoorCatalogInstallation(HausModel):
     joint_drain_wall_ref: str | None = None
     joint_drain_material_ref: str | None = None
     joint_drain_bed_ref: str | None = None
+    # foam_bed, no joint to drain down: the tread's nose drips onto ``drain_slab_ref``'s top,
+    # at least ``drain_slab_clearance`` in from that slab's own edge (the joint to the host).
+    drain_slab_ref: str | None = None
+    drain_slab_clearance: Length = inch(0.5)
     # Box sides sealed to separately supported masonry: the joint must take the reserved
     # house/court movement at the sealant's ASTM C920 class (0.5 = Class 50).
     box_side_sealant_ref: str | None = None
@@ -213,6 +217,10 @@ class ExteriorDoorCatalogInstallation(HausModel):
                  self.joint_drain_bed_ref)
         if any(drain) and not all(drain):
             raise ValueError("a joint drain names its wall, its material and its stone bed")
+        if self.drain_slab_ref and any(drain):
+            raise ValueError("a tread drains down a joint or onto a slab, not both")
+        if self.drain_slab_clearance.meters <= 0:
+            raise ValueError("the slab drip clearance must be positive")
         if self.sheet_lap_under_pan.meters <= 0 or self.box_side_joint_width.meters <= 0:
             raise ValueError("sheet lap and box-side joint must be positive")
         if (self.support_kind == "concrete_cantilever" and self.support_depth.meters
