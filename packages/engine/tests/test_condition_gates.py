@@ -344,13 +344,9 @@ def test_catlin_assembly_change_noise_is_gone(catlin_model_ro):
     keys = sorted({c.key for c in catlin_model_ro.conditions
                    if c.key.startswith("assembly_change:")})
     assert keys == [
-        # N-B-S1, where the buried south wall meets the sunken garden's sauna curb: the
-        # liner starts here.
-        # N-B-S3: W-B-S4's buried end meets W-B-S3's curb. The buried end carries a
-        # GRADE-banded protection panel and the curb carries nothing, so the skin STOPS at
-        # this node — exactly what a builder has to be told, the same shape of key as the
-        # resilient-channel ones below.
-        "assembly_change:BASEMENT_8|GARDEN_CURB_6",
+        # (N-B-S3, W-B-S4's buried end against W-B-S3's curb, was a key while the curb
+        # carried no skin. Since 2026-11-24 the curb takes BASEMENT_8's coating too, so the
+        # two differ by pour thickness only and the equivalence gate drops the node.)
         # N-B-S1, the excavation edge, where the buried 8" pour hands off to the 7 1/4"
         # garden curb — and the sauna's liner starts on the curb. It wandered west to
         # x=4'-8" for one afternoon on 2026-09-05 (W-B-S1 -> W-B-S1B) while the rotated sauna
@@ -364,13 +360,13 @@ def test_catlin_assembly_change_noise_is_gone(catlin_model_ro):
         # assemblies meet at once, which is one node and therefore one key. Real changes of
         # construction, and the returns they imply are what TR-CATLIN-ASSEMBLY-JOG records.
         "assembly_change:EXT_2X6_BOARD_BATTEN|PLANT_EXT_2X6_HUMID_BOARD_BATTEN",
-        "assembly_change:EXT_2X6|PLANT_EXT_2X6_HUMID",
         # The framed walkout's two nodes are the same condition one storey down from each
         # other: N-B-S2 where the two 7 1/4" curbs meet, and N-B-S2F where the two framed
-        # walls on them do. The liner starts at x=18' on both, so both are real changes of
-        # construction and each wants telling once.
+        # walls on them do (LP panel since 2026-11-24; GARDEN_FRAMED_2X6 under brick). The
+        # liner starts at x=18' on both, so both are real changes of construction.
+        "assembly_change:EXT_2X6_LP_PANEL|SAUNA_LINER_ON_EXT_2X6_LP",
+        "assembly_change:EXT_2X6|PLANT_EXT_2X6_HUMID",
         "assembly_change:GARDEN_CURB_6|SAUNA_LINER_ON_GARDEN_CURB",
-        "assembly_change:GARDEN_FRAMED_2X6|SAUNA_LINER_ON_GARDEN_FRAMED",
         # N-B-BA-W is not a key. Two collinear wall lines cross here: x=10', where
         # W-B-STR3 hands off to the steel stub, and y=21'-9 3/8", a single wall since the
         # ESS closet left for the NE corner. Giving W-B-STR2 its neighbour's assembly

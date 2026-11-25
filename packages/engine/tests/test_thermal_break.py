@@ -11,6 +11,10 @@ estimated modulus. Every item is OK (the stems' floor line was 0.786 until §14'
 §11m adds the house's near footing line in plan and the court's winter contraction, both OK.
 The ablations below are the proof that each decision is the lever: take one away and its
 numbers come back.
+
+Since 2026-11-24 the court face is LP panel and W-SG-BRKBM (the veneer beam, ``_BEAM``) is in
+variant ``court-face-brick`` only. §11l's tables and the ablations read that variant
+(``brick_ctx``); the default house's four boards are ``_NOTE_LP``.
 """
 
 from __future__ import annotations
@@ -23,7 +27,8 @@ from typehaus.engineering.item import Status
 from typehaus.engineering.thermal_break import KIND
 
 _FOOT, _STEM, _BEAM = ("TB-SG-W1", "TB-SG-E1"), ("TB-SG-W1-STEM", "TB-SG-E1-STEM"), "W-SG-BRKBM"
-_ALL = (*_FOOT, *_STEM, _BEAM)
+_ALL = (*_FOOT, *_STEM, _BEAM)     # the brick variant's five boards
+_LP_TAGS = (*_FOOT, *_STEM)        # the LP default's four
 
 # Basis 9 (§11l) at the 17'-0" court (§12, 2026-09-22) — RE-WORKED HERE by §11l's own lines;
 # §11l itself still prints the 19'-0" figures. What moved, and why:
@@ -180,6 +185,34 @@ _NOTE_TOTAL_LB = 46_348.0
 _FORM_FACE_TOTAL_LB = 96_336.4             # 46,348.0 + 2 x 233.3 + 2 x 6,237.8 + 37,046.2
 _NOTE_RUN_IN = 323.0
 
+# The LP default (2026-11-24): §11l's lines without the beam's board.
+#   * ΣA = 2 x 672 + 2 x 1,313.25 = 3,970.5 in², T = 3.5 x 3,970.5 = 13,896.75 lb;
+#   * line = 13,896.75 − 2 x 2,580.375 = 8,736 lb; strut 8,736 / 1,512 = 5.778 psi;
+#   * global: the model's friction + at-rest 102,164.0 (W-B-BRICK's 8 psf is no longer house
+#     D) / 13,896.75 = 7.3516;
+#   * winter: W-SG-BRKBM's 3,994 leaves the body, (129,306 − 3,994) / 2 = 62,656 lb;
+#   * the near-line rows are the line solver's: with only the side lines' point loads the
+#     ends push onto both struts (313 / 321 lb), where brick's mid-span board lifted them.
+_PATH_LP = {
+    "house slab-edge bearing": (8_736.0, 151_200.0, 0.057778),
+    "house slab-edge sustained load": (8_736.0, 50_394.96, 0.17335),
+    "house slab strut compression": (5.77778, 2_040.0, 0.002832),
+    "house global sliding": (1.5, 7.351644, 0.20404),
+    "house far-wall soil bearing": (61_342.1, 153_355.2, 0.4000),
+    "court sliding under break thrust": (0.0, 112_969.1, 0.0),
+}
+_WINTER_LP = {"court winter tension, side run": (62_656.1, 237_600.0, 0.26370),
+              "court winter tension, spliced joint": (62_656.1, 338_040.0, 0.18535)}
+_LINE_LP = {"house near-line plan flexure": (62_147.4, 287_262.1, 0.21634),
+            "house near-line plan shear": (1_344.95, 18_384.78, 0.07316),
+            "house slab-edge peak sustained load": (7.67001, 33.33, 0.23012), **_WINTER_LP}
+_NOTE_LP = {
+    "foot": {**_CAP_2IN, **_PATH_LP, **_LINE_LP},
+    "stem": {**{k: v for k, v in _NOTE["stem"].items() if k not in _PATH and k not in _LINE},
+             **_PATH_LP, **_LINE_LP},
+}
+_LP_TOTAL_LB = 13_896.75
+
 
 def _group(tag):
     return "beam" if tag == _BEAM else ("stem" if tag in _STEM else "foot")
@@ -190,6 +223,15 @@ def ctx(catlin_plan, catlin_model_ro):
     from typehaus.engineering import EngineeringContext
 
     return EngineeringContext(plan=catlin_plan, model=catlin_model_ro, soil_class="GM")
+
+
+@pytest.fixture(scope="module")
+def brick_ctx(catlin_brick_plan, catlin_brick_model_ro):
+    """Variant ``court-face-brick``: the loop with the veneer beam's board, §11l's oracle."""
+    from typehaus.engineering import EngineeringContext
+
+    return EngineeringContext(plan=catlin_brick_plan, model=catlin_brick_model_ro,
+                              soil_class="GM")
 
 
 def _boards_of(recs) -> dict:
@@ -218,6 +260,13 @@ def records(ctx):
     return _boards_of(compute(ctx))
 
 
+@pytest.fixture(scope="module")
+def brick_records(brick_ctx):
+    from typehaus.engineering.thermal_break import compute
+
+    return _boards_of(compute(brick_ctx))
+
+
 def _state(record, name):
     return next((s for s in record.limit_states if s.name == name), None)
 
@@ -226,11 +275,12 @@ def _input(record, name):
     return next(q.value for q in record.inputs if q.name == name)
 
 
-def test_the_kind_is_computed_and_the_beam_board_is_an_item(ctx) -> None:
+def test_the_kind_is_computed_and_the_beam_board_is_an_item(ctx, records) -> None:
     from typehaus.engineering import DEFERRALS, keys_of
 
     assert KIND not in DEFERRALS
     assert keys_of(KIND, ctx) == ["W-SG-ARCH"]   # one item per loop (decision 13)
+    assert _BEAM not in records and set(_LP_TAGS) <= set(records)  # LP: four boards
 
 
 def _rows_match(record, expected, tag) -> None:
@@ -242,26 +292,23 @@ def _rows_match(record, expected, tag) -> None:
         assert state.ratio == pytest.approx(ratio, rel=1e-3, abs=6e-4), (tag, name)
 
 
-@pytest.mark.parametrize("tag", _ALL)
+@pytest.mark.parametrize("tag", _LP_TAGS)
 def test_every_row_reproduces_section_11l(records, tag) -> None:
-    _rows_match(records[tag], _NOTE[_group(tag)], tag)
+    """The LP default's four boards, on §11l's lines less the beam's board (``_NOTE_LP``)."""
+    _rows_match(records[tag], _NOTE_LP[_group(tag)], tag)
     assert _input(records[tag], "board_stress") == 3.5
-    assert _input(records[tag], "house_thrust") == pytest.approx(_CAPPED_TOTAL_LB, rel=1e-6)
+    assert _input(records[tag], "house_thrust") == pytest.approx(_LP_TOTAL_LB, rel=1e-6)
 
 
-def test_the_brick_variant_reproduces_section_11l(catlin_brick_plan, catlin_brick_model_ro) -> None:
+def test_the_brick_variant_reproduces_section_11l(brick_records) -> None:
     """Variant ``court-face-brick`` keeps the veneer beam's board in the loop (``_BEAM``),
-    and every row of §11l, winter 0.998 included, is the pre-switch number."""
-    from typehaus.engineering import EngineeringContext
-    from typehaus.engineering.thermal_break import compute
-
-    brick_ctx = EngineeringContext(plan=catlin_brick_plan, model=catlin_brick_model_ro,
-                                   soil_class="GM")
-    records = _boards_of(compute(brick_ctx))
+    and every row of §11l is its number (winter 0.272 since §15n's W1/E1 stem steel)."""
     for tag in _ALL:
-        _rows_match(records[tag], _NOTE[_group(tag)], tag)
-    assert _state(records[_BEAM], "court winter tension, side run").ratio == pytest.approx(
-        0.99773, abs=6e-4)
+        _rows_match(brick_records[tag], _NOTE[_group(tag)], tag)
+        assert _input(brick_records[tag], "house_thrust") == pytest.approx(
+            _CAPPED_TOTAL_LB, rel=1e-6)
+    assert _state(brick_records[_BEAM], "court winter tension, side run").ratio == pytest.approx(
+        _WINTER["court winter tension, side run"][2], abs=6e-4)
 
 
 def test_the_joint_takes_only_post_backfill_movement(records) -> None:
@@ -271,11 +318,13 @@ def test_the_joint_takes_only_post_backfill_movement(records) -> None:
     assert joint.demand == pytest.approx(0.0831, abs=0.0005)
     assert joint.capacity == pytest.approx(0.125)
     assert "boards set after backfill" in joint.citation
+    # On the LP default it is the governing row (0.665).
+    assert joint.ratio == max(s.ratio for s in records["W-SG-ARCH"].limit_states)
 
 
-def test_without_the_cap_basis_8_comes_back(ctx, monkeypatch) -> None:
+def test_without_the_cap_basis_8_comes_back(brick_ctx, monkeypatch) -> None:
     """§11j-§11k: the uncapped spring, E and the neutral point back in every row."""
-    out = _compute_with(ctx, monkeypatch, compliant=None)
+    out = _compute_with(brick_ctx, monkeypatch, compliant=None)
     for tag in _ALL:
         _rows_match(out[tag], _NOTE_8[_group(tag)], tag)
         assert "NEUTRAL POINT" in " ".join(out[tag].notes)
@@ -298,7 +347,7 @@ def test_without_the_cap_basis_8_comes_back(ctx, monkeypatch) -> None:
     assert "house slab-edge sustained load 0.887 -> 0.633 / 1.211 / 1.481" in note
 
 
-@pytest.mark.parametrize("tag", _ALL)
+@pytest.mark.parametrize("tag", _LP_TAGS)
 def test_basis_9_is_ok_with_nothing_open(records, tag) -> None:
     """Every row passes, the joint (§11r, boards set after backfill) included."""
     record = records[tag]
@@ -321,7 +370,7 @@ def test_the_stem_shrinkage_is_aci_209r() -> None:
     assert stem_shrinkage() * 1e6 == pytest.approx(137.42, abs=0.01)
 
 
-@pytest.mark.parametrize("tag", _ALL)
+@pytest.mark.parametrize("tag", _LP_TAGS)
 def test_no_row_moves_across_the_modulus_band(records, tag) -> None:
     """The owner's aim (§11l): the verdict does not hinge on the estimated modulus."""
     note = next(n for n in records[tag].notes if n.startswith("SENSITIVITY"))
@@ -338,8 +387,8 @@ def _compute_with(ctx, monkeypatch, **values):
     return _boards_of(tb.compute(ctx))
 
 
-def test_an_unnamed_product_holds_every_row_open(ctx, monkeypatch) -> None:
-    out = _compute_with(ctx, monkeypatch, source=None)
+def test_an_unnamed_product_holds_every_row_open(brick_ctx, monkeypatch) -> None:
+    out = _compute_with(brick_ctx, monkeypatch, source=None)
     assert out["TB-SG-W1"].limit_states == ()
     assert "IsolationBoard.psi" in " ".join(out["TB-SG-W1"].missing)
     assert out[_BEAM].limit_states == (), "the beam's board names the closure boards' product"
@@ -381,10 +430,10 @@ def test_a_k_v_only_report_leaves_base_rotation_on_its_band(ctx) -> None:
     assert measured(ctx) is not None, "catlin authors a presumed n_h since 2026-09-21"
 
 
-def test_a_formed_and_stripped_board_carries_no_pour(ctx, monkeypatch) -> None:
+def test_a_formed_and_stripped_board_carries_no_pour(brick_ctx, monkeypatch) -> None:
     """The flag is the lever, and this reads it BOTH ways: off, every board is a form face
     again and basis 6's lock-in, thrust and slab edge come straight back."""
-    out = _compute_with(ctx, monkeypatch, formed_and_stripped=False, compliant=None)
+    out = _compute_with(brick_ctx, monkeypatch, formed_and_stripped=False, compliant=None)
     for tag, lock in _FORM_FACE_LOCK_LB.items():
         assert _input(out[tag], "board_lock_in") == pytest.approx(lock, rel=1e-3), tag
         assert _input(out[tag], "house_thrust") == pytest.approx(_FORM_FACE_TOTAL_LB, rel=1e-4)
@@ -398,7 +447,7 @@ def test_a_formed_and_stripped_board_carries_no_pour(ctx, monkeypatch) -> None:
     assert out[_BEAM].status is Status.OVER
     # The cap does not replace the stripping: a board cast against adds its pour in full.
     monkeypatch.undo()
-    capped = _compute_with(ctx, monkeypatch, formed_and_stripped=False)
+    capped = _compute_with(brick_ctx, monkeypatch, formed_and_stripped=False)
     locked = 2 * _FORM_FACE_LOCK_LB["TB-SG-W1"] + 2 * _FORM_FACE_LOCK_LB["TB-SG-W1-STEM"] \
         + _FORM_FACE_LOCK_LB[_BEAM]
     assert _input(capped["TB-SG-W1"], "house_thrust") == pytest.approx(
@@ -406,16 +455,16 @@ def test_a_formed_and_stripped_board_carries_no_pour(ctx, monkeypatch) -> None:
     assert capped[_BEAM].status is Status.OVER
 
 
-def test_the_beam_board_inherits_the_stripping_statement(ctx, monkeypatch) -> None:
+def test_the_beam_board_inherits_the_stripping_statement(brick_ctx, monkeypatch) -> None:
     """A Layer names no sequence of its own, so the veneer beam's board reads the authored
     boards' statement — 37,046 lb of it at the 17'-0" court (41,162 on the 240" board), 74%
     of the lock-in that would put the record over."""
-    assert _input(_compute_with(ctx, monkeypatch, formed_and_stripped=False)[_BEAM],
+    assert _input(_compute_with(brick_ctx, monkeypatch, formed_and_stripped=False)[_BEAM],
                   "board_lock_in") == pytest.approx(_FORM_FACE_LOCK_LB[_BEAM], rel=1e-3)
     monkeypatch.undo()
     from typehaus.engineering import thermal_break as tb
 
-    assert _input(_boards_of(tb.compute(ctx))[_BEAM], "board_lock_in") == 0.0
+    assert _input(_boards_of(tb.compute(brick_ctx))[_BEAM], "board_lock_in") == 0.0
 
 
 def test_a_stripped_board_must_name_its_placement_annotation(ctx, monkeypatch) -> None:
@@ -432,13 +481,14 @@ def _with_slab_break(ctx, **values):
     return slab.model_copy(update={"perimeter_thermal_break": brk}), path
 
 
-def test_the_slab_edge_reads_the_authored_grade(ctx, monkeypatch) -> None:
+def test_the_slab_edge_reads_the_authored_grade(brick_ctx, monkeypatch) -> None:
     """Strip the product off SL-B-FLOOR's break and the edge falls back to the C578 floor —
     15 psi, an unstated grade: 1.786 OVER uncapped, 0.977 at the cap since the 17'-0" court
     (1.966 / 1.043 at 19'-0") — but since §11m the near line reads it OVER even capped. It
     never goes INCOMPLETE: an ungraded row can never read over (how 4.14 stayed visible)."""
     from typehaus.engineering import thermal_break as tb
 
+    ctx = brick_ctx
     slab, path = _with_slab_break(ctx, psi=None, modulus_psi=None, source=None,
                                  sustained_load_fraction=None)
     real = path.house_slab
@@ -469,12 +519,13 @@ def test_the_slab_edge_reads_the_authored_grade(ctx, monkeypatch) -> None:
 
 
 def test_the_sheets_sustained_load_rule_is_graded_and_foamular_400_fails_it(
-        ctx, monkeypatch) -> None:
+        brick_ctx, monkeypatch) -> None:
     """§11k-§11l: the 1/3 rule is a limit state. On FOAMULAR 400 (basis 7's board) even the
     capped 22,155 lb reads 1.099 OVER at the 17'-0" court (1.173 at 19'-0"); FOAMULAR 1000
     reads 0.440."""
     from typehaus.engineering import thermal_break as tb
 
+    ctx = brick_ctx
     slab, path = _with_slab_break(ctx, psi=40.0, modulus_psi=1800.0)
     real = path.house_slab
     monkeypatch.setattr(path, "house_slab",
@@ -534,13 +585,16 @@ def test_site_inputs_carry_their_provenance() -> None:
     assert temps.provenance == "published"
 
 
-def test_the_near_line_floats_on_the_slab_edge(records) -> None:
+def test_the_near_line_floats_on_the_slab_edge(records, brick_records) -> None:
     """§11m.1: the end chains are struts, the x = 18' line (gapped at D-B-GYM) is not, and at
-    the cap the line's ends lift off both struts — the slab edge carries it all."""
-    cite = _state(records["TB-SG-W1"], "house near-line plan flexure").citation
+    the cap the brick variant's line lifts off both struts — the slab edge carries it all.
+    The LP default has no mid-span board, so its end loads seat the line on both struts."""
+    cite = _state(brick_records["TB-SG-W1"], "house near-line plan flexure").citation
     assert "FT-B-W2+FT-B-W1" in cite and "FT-B-E1+FT-B-E2" in cite
     assert "FT-B-CS" not in cite
     assert "none bear" in cite and "E 3,700 x 3.5\" / 1.5\"" in cite
+    lp = _state(records["TB-SG-W1"], "house near-line plan flexure").citation
+    assert "none bear" not in lp and "struts carrying" in lp and "FT-B-CS" not in lp
 
 
 def test_the_line_solver_is_hetenyi_far_from_its_ends() -> None:
@@ -570,7 +624,7 @@ def test_the_court_side_joint_is_spliced(records) -> None:
     assert not [s for s in record.limit_states if "unreinforced joint" in s.name]
 
 
-def test_a_raised_layer_board_stops_at_the_house_concrete(ctx, monkeypatch) -> None:
+def test_a_raised_layer_board_stops_at_the_house_concrete(brick_ctx, monkeypatch) -> None:
     """A beam grown into a wall keeps only the board area that faces house concrete: the
     W-B-S2/S3 curb over 196", and W-B-S1/S4's full-height pour over the 10" each end that the
     axis-to-axis board reaches past N-B-S1/N-B-S4. Above the curb it faces a framed wall across
@@ -578,6 +632,7 @@ def test_a_raised_layer_board_stops_at_the_house_concrete(ctx, monkeypatch) -> N
     from typehaus.engineering import thermal_break_geometry as geo
     from typehaus.engineering.retaining_system import footing_shortfalls
 
+    ctx = brick_ctx
     loops = footing_shortfalls(ctx)
     before = next(b for b in geo.layer_boards(ctx, loops) if b.tag == _BEAM)
     assert (before.h_in, before.length_in) == (pytest.approx(17.75), pytest.approx(216.0))

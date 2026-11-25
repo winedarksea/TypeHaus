@@ -185,12 +185,16 @@ def test_the_takeoff_bills_the_band_and_not_the_wall(catlin_model):
     toward it, 2' more banded run x 2.214' = 4.4 SF.
 
     282.6 -> 288.6 on 2026-11-21: every layer bills off its own polygon (face_run_m), so
-    the coating runs to its corners rather than the node axis."""
+    the coating runs to its corners rather than the node axis.
+
+    288.6 -> 297.2 on 2026-11-24: the walkout curbs W-B-S2/S3 take the coating full height
+    (their foam faces the court under the LP panel or brick): 4.9 SF on W-B-S2 and 3.7 on
+    W-B-S3, net of the door seat's notch. Same in both court-face variants."""
     from typehaus.takeoff.envelope import envelope_layer_takeoff
 
     rows = {row["material"]: row for row in envelope_layer_takeoff(catlin_model)}
     panel = rows["foundation-coating-acrylic-tinted"]
-    assert panel["net_area_sqft"] == pytest.approx(288.6, abs=1.0)
+    assert panel["net_area_sqft"] == pytest.approx(297.2, abs=1.0)
     # The parge survives nowhere: `Material(tag="stucco")` is still in library/materials/
     # — this house simply has no instance of it. Nor does the protection board, which is
     # kept as the named alternate in plan/assemblies.py and priced in prices.toml but is
