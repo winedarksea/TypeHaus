@@ -7062,6 +7062,10 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 "WINDOW_JAMB_CUSTOM" = { material = { low = 2.5, high = 4.5 }, labour = { low = 3, high = 5 }, unit = "LF" }
 "WINDOW_SILL_CUSTOM" = { material = { low = 3, high = 5 }, labour = { low = 3, high = 5 }, unit = "LF" }
 "DOOR_HEAD_CUSTOM" = { material = { low = 3, high = 5 }, labour = { low = 3, high = 5.5 }, unit = "LF" }
+# ESTIMATE 2026-11-24 — the court face's LP 440 Series smooth 3.50" x 16' batten over each vertical
+# panel joint (notes/court_face_lp_panel.md), per stick: $13.99-33.61 retail (Stine; Menards 46000);
+# labour $2-6/LF x 16 ft, low confidence (no primary labour-only source). Painted with the panel.
+"LP_440_BATTEN_3_5" = { material = { low = 14, high = 34 }, labour = { low = 32, high = 96 } }  # 16' stick, 2 ea
 "OPENING_HEAD_CAP" = { material = { low = 3, high = 5 }, labour = { low = 3, high = 5 }, unit = "LF" }  # K6 window head cap, 6.6-7" girth, 2 bends and end dams; the door head's shop rate less a hem (2026-10-29)
 "RAINSCREEN_BASE_Z" = { material = { low = 3, high = 6 }, labour = { low = 3, high = 5 }, unit = "LF" }
 "CORRUGATED_SILL_TO_SOFFIT" = { material = { low = 32, high = 44 }, labour = { low = 18, high = 30 } }
