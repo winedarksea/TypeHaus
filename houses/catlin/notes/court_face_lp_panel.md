@@ -107,7 +107,8 @@ laid as one run.
 **Inputs.**
 
 - Run: W-B-S2-FR x 118 to 216 (98"), W-B-S3-FR x 216 to 314 (98"): **196"**, both ends free
-  (no through corner), so the walk starts at W-B-S2-FR's end, s = 0.
+  (no through corner). The layout is **centred** (`SheetLayoutStandard.centre_cladding`, owner
+  2026-11-25): equal end columns, for the look.
 - Band: the panel's foot stands on the base strip, -102 3/16 (wall base) + 1" (base trim
   rise) + 0.032" (strip) = **-101.1555"**, to -13 7/16", where W-M-S1/S2's cladding begins
   over the court walls: **87.718"**. One 96" sheet stood vertically covers it, so there is
@@ -120,50 +121,57 @@ laid as one run.
 - WIN-B-SAUNA: RO s 43 to 57 (x 161 to 175), z -65 7/16 to -41 7/16, sill ladder
   -68 15/16 to -65 7/16, head ladder -41 7/16 to -37 15/16.
 - D-B-SUNKEN: RO 63 5/16" wide, s 106 11/32 to 169 21/32 (x 224.34 to 287.66), head
-  -21 1/16, head ladder -21 1/16 to -17 9/16; its foot is below the band.
+  -21 1/16, head ladder -21 1/16 to -17 9/16; its foot is below the band. Jamb posts (KDAT 2x4
+  flat) centred at s 104 19/32 and 171 13/32, from the wall base -102 3/16 to -17 9/16; the
+  buck's 3/8" jamb legs inside the RO. Its casing and head trim span s 101.84 to 174.16.
 
-**Joints.** 48, 96, 144; a fourth at 192 would leave 4" (< 12"), so it comes back to
-196 - 12 = **184**. Joints at s **48, 96, 144, 184** (x 166, 214, 262, 302). A nailer fits at
-each (none lands within a nailer's half-width of an RO edge or a jamb post), so none moves.
-s 48 crosses WIN-B-SAUNA 2" left of its centre; s 144 crosses D-B-SUNKEN over its head.
+**Joints.** 196 / 48 = 4 modules and 4" over; 4/2 = 2" end columns are under the 12" rip, so
+one module goes to the ends: (196 - 3 x 48) / 2 = **26"** each. Joints at s **26, 74, 122,
+170** (x 144, 192, 240, 288). s 26 and 74 stand 17" clear of WIN-B-SAUNA's RO either side and
+24" from its centre (s 50), so no joint crosses the window. s 122 crosses D-B-SUNKEN over its
+head. s 170 is 11/32" past the door's RO edge, under its casing (to s 174.16).
 
-**Sheets.** Columns 0-48 and 48-96 (both cut round the window, W-B-S2-FR), 96-144 (cut
-round the door, across the wall split), 144-184 (door, W-B-S3-FR), 184-196 (12" rip, W-B-S3-FR).
-Every column needs its own strip of a sheet: 48 + 48 + 48 + 40, and the 12" rip does not fit
-the 40" column's 7 7/8" offcut. **5 sheets**: W-B-S2-FR 2, W-B-S3-FR 2, one across the split.
+**Sheets.** Columns 0-26 and 26-74 (W-B-S2-FR, the second cut round the window), 74-122
+(across the wall split at s 98, cut round the door), 122-170 (door, W-B-S3-FR), 170-196
+(W-B-S3-FR). The two 26" end columns cannot share a 47.81" sheet (52"), and their 22" offcuts
+fit no other column. **5 sheets**: W-B-S2-FR 2, W-B-S3-FR 2, one across the split.
 
 - Gross 196 x 87.718 = 17,192.7 in2. Window 14 x 24 = 336.0; door 63.3125 x (-21.0625 +
   101.1555 = 80.093) = 5,070.9. Net **11,785.8 in2 = 81.8 ft2**.
 - Bought 5 x 32 = 160 ft2: 78.2 ft2 of offcut, 49% of what is bought (the door takes most).
 
 **Joint nailers** (KDAT 2x4 flat, 3 1/2" on the panel, cut between courses; ESR-1301 s.4.3).
+s 26 and 74 lie clear of the window, so the -54 3/16 course runs through both.
 
 | Joint | Pieces (z, in) | Length |
 |---|---|---|
-| s 48 | -96 7/16 to -78 3/16; -74 11/16 to -68 15/16 (sill ladder); -37 15/16 (head ladder) to -30 3/16; -26 11/16 to -15 3/8 | 18.25 + 5.75 + 7.75 + 11.3125 = 43.0625 |
-| s 96 | the four bays between courses, -96 7/16 to -15 3/8 | 18.25 + 20.5 + 20.5 + 11.3125 = 70.5625 |
-| s 144 | head ladder top -17 9/16 to top course -15 3/8 | 2.1875 |
-| s 184 | as s 96 | 70.5625 |
+| s 26 | the four bays between courses, -96 7/16 to -15 3/8 | 18.25 + 20.5 + 20.5 + 11.3125 = 70.5625 |
+| s 74 | as s 26 | 70.5625 |
+| s 122 | head ladder top -17 9/16 to top course -15 3/8 | 2.1875 |
+| s 170 | as s 122 (below it, the jamb post backs the joint) | 2.1875 |
 
-**13 pieces, 186.375" = 15.53 LF.** No nailer goes under the starter course: it would stand
-on the aluminium base strip (AWC DCA6). So the panel's foot, -101.1555 to -99 15/16
-(**1.22"**), is bare at joints s 48, 96 and 184 (s 144 starts at the door head):
-`structural.sheathing_edge_support` reads it UNKNOWN. The same 1.22" is the whole bottom
-edge's overhang below the starter, which is the base detail's question, not the joints'.
+**10 pieces, 145.5" = 12.13 LF.** At s 170 the joint's 7/16" bearing either side (s 169 9/16
+to 170 7/16) lies on the jamb post (169 21/32 to 173 5/32) with the buck's jamb leg beside it
+(169 9/32 to 169 21/32), from the wall base up; above the head ladder, the nailer. No nailer
+goes under the starter course: it would stand on the aluminium base strip (AWC DCA6). So the
+panel's foot, -101.1555 to -99 15/16 (**1.22"**), is bare at s 26 and 74 (s 122 starts at the
+door head; s 170 sits on the post): `structural.sheathing_edge_support` reads it UNKNOWN. The
+same 1.22" is the whole bottom edge's overhang below the starter, which is the base detail's
+question, not the joints'.
 
 **Battens** (LP 440 Series smooth 3.50" x 0.675", 16 ft, PID 46000), vertical joints only,
-stopped at an opening (and at any trim hosted on it):
+stopped at an opening their 3.50" face touches, over the full height of that opening and the
+trim hosted on it:
 
 | Joint | Pieces (z, in) | Length |
 |---|---|---|
-| s 48 | -101.1555 to -69 7/16 (window sill trim); -33.862 (head drip) to -13 7/16 | 31.718 + 20.425 |
-| s 96 | -101.1555 to -13 7/16 | 87.718 |
-| s 144 | none: the door's custom head reaches the top of the panel | 0 |
-| s 184 | -101.1555 to -13 7/16 | 87.718 |
+| s 26 | -101.1555 to -13 7/16 | 87.718 |
+| s 74 | -101.1555 to -13 7/16 | 87.718 |
+| s 122 | none: the door's custom head and flashing reach the top of the panel | 0 |
+| s 170 | none: the batten would sit on the casing; the joint is under it | 0 |
 
-**4 pieces, 227.58" = 18.96 LF**, cut from **2 sticks** (87.718 x 2 in one; 31.718 + 20.425 in
-the other). The battens stop at the trim hosted on each opening, not at the RO;
-`test_sheet_layout.py` pins it.
+**2 pieces, 175.44" = 14.62 LF**, cut from **1 stick** (87.718 x 2 + kerf in 192"). The two
+battens frame WIN-B-SAUNA symmetrically, 48" apart.
 
 ## 3. Base and clearances (AI 2024, confirmed for panel)
 
@@ -201,7 +209,7 @@ stem steel (free body §15n), each side run carries 4.4 in2 of steel, 0.9 x 4.4 
 ## 5. Cost (takeoff, net installed, ESTIMATE rows as priced in prices.toml)
 
 LP default against the `court-face-brick` house, both with the structure lane's steel and heel:
-**-$2,777 to -$4,870.** The study read -$2.2k to -$4.3k with its additions.
+**-$2,839 to -$5,026.** The study read -$2.2k to -$4.3k with its additions.
 
 | Change | Low | High |
 |---|---|---|
@@ -213,11 +221,11 @@ LP default against the `court-face-brick` house, both with the structure lane's 
 | Trex box sides, soft joints, brick flashings, bed stone, the beam's bars | -766 | -1,419 |
 | LP panel 84.2 SF in (ESTIMATE) | +286 | +602 |
 | panel paint 84.2 SF in (ESTIMATE) | +125 | +372 |
-| LP 440 battens, 2 sticks (ESTIMATE) | +92 | +260 |
-| ccSPF 4" +84 SF, girts, nailers, TimberLOKs, fibreglass for mineral wool, buck rip | +718 | +1,146 |
+| LP 440 battens, 1 stick (ESTIMATE) | +46 | +130 |
+| ccSPF 4" +84 SF, girts, nailers, TimberLOKs, fibreglass for mineral wool, buck rip | +702 | +1,120 |
 | rainscreen base Z, bug screens, strips, heads, closures, net | -144 | -348 |
 | rim slab to the curb, capillary stone, allowances, sealants | +100 | +199 |
-| **total** | **-2,777** | **-4,870** |
+| **total** | **-2,839** | **-5,026** |
 
 Not in the takeoff, added by hand: the 0.69" rim-slab-to-curb joint, ~17 LF of sealant at the
 movement-joint rate, **ESTIMATE +$200-425**. The W-M-S1/S2 BBD75 panels above now bill their

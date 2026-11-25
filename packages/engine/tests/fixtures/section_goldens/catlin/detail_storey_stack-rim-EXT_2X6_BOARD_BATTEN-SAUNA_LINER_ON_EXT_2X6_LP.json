@@ -1930,6 +1930,118 @@
       "node": "polyline",
       "points": [
         [
+          -6.000000000000001,
+          -33.52854330708662
+        ],
+        [
+          -4.5,
+          -33.52854330708662
+        ],
+        [
+          -4.5,
+          -30.1875
+        ],
+        [
+          -6.000000000000001,
+          -30.1875
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "3BF9ZDQPT1",
+      "tag": "nailer-outer-girt-000-2"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          -6.000000000000001,
+          -33.52854330708662
+        ],
+        [
+          -4.5,
+          -33.52854330708662
+        ],
+        [
+          -4.5,
+          -30.1875
+        ],
+        [
+          -6.000000000000001,
+          -30.1875
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "kdat"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          -6.000000000000001,
+          -26.687500000000004
+        ],
+        [
+          -4.5,
+          -26.687500000000004
+        ],
+        [
+          -4.5,
+          -15.375000000000002
+        ],
+        [
+          -6.000000000000001,
+          -15.375000000000002
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "3BF9ZDQPT1",
+      "tag": "nailer-outer-girt-000-3"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          -6.000000000000001,
+          -26.687500000000004
+        ],
+        [
+          -4.5,
+          -26.687500000000004
+        ],
+        [
+          -4.5,
+          -15.375000000000002
+        ],
+        [
+          -6.000000000000001,
+          -15.375000000000002
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "kdat"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
           0.5,
           0.7499999999999999
         ],

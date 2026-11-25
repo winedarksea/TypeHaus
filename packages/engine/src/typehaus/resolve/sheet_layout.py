@@ -44,7 +44,7 @@ from typehaus.resolve.sheet_layout_nailers import (
     with_nailers,
 )
 from typehaus.resolve.sheet_layout_runs import Face, Run, build_runs, direction
-from typehaus.resolve.sheet_layout_walk import pieces, walk
+from typehaus.resolve.sheet_layout_walk import pieces, walk, walk_centred
 from typehaus.resolve.sheet_stock import SHEET_WIDTH_IN, layer_sheet_length_in, wall_layer
 
 _GAP_TOL_M = 0.125 * M_PER_IN  # unbacked joint length under a panel gap's width is none
@@ -71,6 +71,7 @@ def layout_params(standard: SheetLayoutStandard | None) -> SimpleNamespace:
                            bearing=std.min_edge_bearing.meters,
                            stagger=std.stagger_min.meters,
                            start_at_through=std.start_at_through_end,
+                           centre_cladding=std.centre_cladding,
                            tail=std.max_course_shortfall.meters)
 
 
@@ -163,11 +164,17 @@ def lay_run(model, run: Run, params, nailers: dict[str, list] | None = None
     ctx = SimpleNamespace(rects=rects, holes=holes, top=top, z0=z0, params=params,
                           size_s=size_s, size_z=size_z, framed=bool(rects),
                           nailer=first.nailer, run=run)
-    start_end = _start_end(model, run, params)
+    centred = params.centre_cladding and first.layer.function == "cladding"
+    start_end = "centre" if centred else _start_end(model, run, params)
     from_hi = start_end == "end"
     s_faces = [(r.s0, r.s1) for r in rects]
-    s_breaks = walk(lo, hi, size_s, s_faces, params.bearing, lambda x: _vertical_cost(ctx, x),
-                    params.min_rip, _GAP_TOL_M, from_hi=from_hi)
+    if centred:
+        s_breaks = walk_centred(lo, hi, size_s, s_faces, params.bearing,
+                                lambda x: _vertical_cost(ctx, x), params.min_rip, _GAP_TOL_M)
+    else:
+        s_breaks = walk(lo, hi, size_s, s_faces, params.bearing,
+                        lambda x: _vertical_cost(ctx, x), params.min_rip, _GAP_TOL_M,
+                        from_hi=from_hi)
     derived = (nailers_at(run, lambda f: frames[id(f)], first.nailer, ctx, s_breaks)
                if first.nailer is not None and ctx.framed else [])
     for tag, member, rect in derived:

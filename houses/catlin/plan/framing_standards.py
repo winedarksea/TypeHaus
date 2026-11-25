@@ -25,9 +25,11 @@ SUBFLOOR_FASTENING = SheathingNailing(
 
 HEADER_STANDARD = [
     HeaderStandard(uid="FPEZ7QS5W4", tag="HEADER-STANDARD", min_bearing_header="2-2x8"),
+    # centre_cladding: the court's LP panel is laid from its centre, for the look (owner,
+    # 2026-11-25); sheathing still walks from its through end.
     SheetLayoutStandard(uid="D0FSC9880R", tag="SHEET-LAYOUT-STANDARD", orientation="vertical",
                         min_rip_width=inch(12), min_edge_bearing=inch(0.4375),
                         stagger_min=inch(16), kerf=inch(0.125), start_at_through_end=True,
-                        max_course_shortfall=inch(0.75),
+                        max_course_shortfall=inch(0.75), centre_cladding=True,
                         source="APA E30 (3/8 in. nail edge distance) + 1/2 of an 8d common shank"),
 ]

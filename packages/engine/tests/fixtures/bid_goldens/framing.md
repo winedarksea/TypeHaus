@@ -3,7 +3,7 @@
 **House:** Catlin House  
 **Trade:** Framing  
 **Engine:** 0.1.2  
-**Model hash:** 6f114ae086c688d5  
+**Model hash:** dd69a708d939d83b  
 **Lines:** 277
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks and their boards, and the tape on every member top. Trusses and engineered wood are called out by the profile. Set the windows and exterior doors (supplied under Windows and doors).
@@ -72,7 +72,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2x4 SPF No. 2 & Btr framing lumber, 104 5/8" PET (2x4) | 242 | pc | corner stud, king stud, stud | 2109.9 LF | building |
 | 2x4 SPF No. 2 & Btr framing lumber, 10' (2x4) | 31 | pc | partition backer, plate, raked top plate | 310 LF | building |
 | 2x4 SPF No. 2 & Btr framing lumber, 14' (2x4) | 12 | pc | plate | 168 LF | building |
-| 2x4 KDAT southern yellow pine No. 2 (treated exterior framing), 8' (2x4:kdat) | 224 | pc | girt strapping, truss ladder blocking | 1792 LF | building |
+| 2x4 KDAT southern yellow pine No. 2 (treated exterior framing), 8' (2x4:kdat) | 223 | pc | girt strapping, truss ladder blocking | 1784 LF | building |
 | 2x4 KDAT southern yellow pine No. 2 (treated exterior framing), 10' (2x4:kdat) | 40 | pc | girt strapping | 400 LF | building |
 | 2x4 KDAT southern yellow pine No. 2 (treated exterior framing), 12' (2x4:kdat) | 10 | pc | girt strapping | 120 LF | building |
 | 2x4 KDAT southern yellow pine No. 2 (treated exterior framing), 14' (2x4:kdat) | 15 | pc | girt strapping | 210 LF | building |
@@ -93,7 +93,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2x6 Douglas fir-larch No. 2 framing, 10' (2x6:df-l-no2) | 2 | pc | plate | 20 LF | building |
 | 2x6 Douglas fir-larch No. 2 framing, 14' (2x6:df-l-no2) | 2 | pc | plate | 28 LF | building |
 | 2x6 Douglas fir Select Structural S4S, eased corners, 10' (2x6:df-select-s4s) | 9 | pc | corner stud, stud | 90 LF | building |
-| 2x6 KDAT southern yellow pine No. 2 (treated exterior framing), 8' (2x6:kdat) | 11 | pc | cripple stud, plate, sill, girt strapping, truss ladder blocking | 88 LF | building |
+| 2x6 KDAT southern yellow pine No. 2 (treated exterior framing), 8' (2x6:kdat) | 10 | pc | cripple stud, plate, sill, girt strapping, truss ladder blocking | 80 LF | building |
 | 2x6 KDAT southern yellow pine No. 2 (treated exterior framing), 10' (2x6:kdat) | 6 | pc | plate, girt strapping | 60 LF | building |
 | 2x6 KDAT southern yellow pine No. 2 (treated exterior framing), 14' (2x6:kdat) | 1 | pc | girt strapping | 14 LF | building |
 | 2x6 Laminated strand lumber, 8' (2x6:lsl) | 69 | pc | cripple stud, door blocking, jack stud | 552 LF | building |
@@ -129,7 +129,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 3/4" plywood subfloor, 3/4" stair subdeck (plywood-subfloor:stair subdeck) | 1 | sheets 4x8 | 1 sheets 4x8 over 29.6 SF net | building |
 | 3/4" plywood subfloor, 3/4" subfloor (plywood-subfloor:subfloor) | 112 | sheets 4x8 | 112 sheets 4x8 over 3560.5 SF net | building |
 | Structural 1 plywood, 7/8" bearing stiffener rip (struct-1-plywood:bearing stiffener rip) | 3 | sheets 4x8 | 3 sheets 4x8 over 71.0 SF net | building |
-| Structural 1 plywood, 3/8" buck rip (struct-1-plywood:buck rip) | 19 | sheets 4x8 | 19 sheets 4x8 over 466.2 SF net | building |
+| Structural 1 plywood, 3/8" buck rip (struct-1-plywood:buck rip) | 19 | sheets 4x8 | 19 sheets 4x8 over 463.5 SF net | building |
 | Structural 1 plywood, 19/32" roof (struct-1-plywood:roof) | 28 | sheets 4x8 | 28 sheets 4x8 over 882.8 SF net | building |
 | Trex Enhance Basics composite decking, Tide Pool (square edge), 15/16" subfloor (trex-enhance-basics:subfloor) | 6 | sheets 4x8 | 6 sheets 4x8 over 168.7 SF net | building |
 | ZIP System sheathing, 7/16" exterior wall (zip-sheathing:exterior wall) | 27 | sheets 4x9 | 27 sheets 4x9 over 689.4 SF net | building |
@@ -182,7 +182,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | HHUS410 face-mount hanger, 2-ply 1-3/4" LVL (HHUS410:hung framing) | 1 | ea |  | building |
 | HHUS410 face-mount hanger, 2-ply 1-3/4" LVL (HHUS410:hung framing) | 1 | ea |  | building |
 | HL43HDG heavy angle, 3 ga, hot-dip galvanized (HL43HDG:modeled connector) | 2 | ea |  | building |
-| HeadLOK flat-head structural wood screw (0.191 in shank) (HLGM10:girt door sill beam seats) | 32 | ea |  | building |
+| HeadLOK flat-head structural wood screw (0.191 in shank) (HLGM10:girt door sill beam seats) | 24 | ea |  | building |
 | HTT4 tension tie (bolted hold-down) (HTT4:modeled connector) | 2 | ea |  | building |
 | HUC concealed-flange masonry/concrete hanger (HUC:hung framing) | 2 | ea |  | building |
 | IUS2.37/11.88 face-mount I-joist hanger (IUS2.37/11.88:hung framing) | 3 | ea |  | building |
@@ -250,7 +250,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | THA422 top-flange floor truss hanger (THA422:hung framing) | 2 | ea |  | building |
 | Titen HD 1/2 in x 6 in Type 316 stainless screw anchor, deck ledger to concrete (THD50600H6SS:modeled connector) | 18 | ea |  | building |
 | TimberLOK heavy-duty wood screw (0.189 in shank) (TLOK08:eave gutter girt standoffs) | 72 | ea |  | building |
-| TimberLOK heavy-duty wood screw (0.189 in shank) (TLOK08:girt wall blocks) | 1,204 | ea |  | building |
+| TimberLOK heavy-duty wood screw (0.189 in shank) (TLOK08:girt wall blocks) | 1,202 | ea |  | building |
 | Strong-Drive WSV SUBFLOOR screw, #9 x 2-1/2in (WSV212S:sheathing nails) | 4,786 | ea |  | building |
 
 ## Other structural solids

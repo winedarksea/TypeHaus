@@ -74,8 +74,9 @@ class ResolvedSheetLayout:
 
     ``framed`` is False where no framing stands behind the layer (masonry, a hung board):
     pieces are laid on the bare module and no break is graded. ``start_end`` is the end the
-    walk began at (``start`` | ``end``); ``shortfall_m`` the band height left to the layer
-    above (``SheetLayoutStandard.max_course_shortfall``)."""
+    walk began at (``start`` | ``end``; ``centre`` for a centred cladding run);
+    ``shortfall_m`` the band height left to the layer above
+    (``SheetLayoutStandard.max_course_shortfall``)."""
 
     wall_tag: str
     layer_name: str

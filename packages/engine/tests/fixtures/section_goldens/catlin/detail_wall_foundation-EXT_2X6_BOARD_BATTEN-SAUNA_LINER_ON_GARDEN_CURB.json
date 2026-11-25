@@ -1899,6 +1899,118 @@
     },
     {
       "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          -6.000000000000001,
+          -96.43749999999999
+        ],
+        [
+          -4.5,
+          -96.43749999999999
+        ],
+        [
+          -4.5,
+          -78.1875
+        ],
+        [
+          -6.000000000000001,
+          -78.1875
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "3BF9ZDQPT1",
+      "tag": "nailer-outer-girt-000-0"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          -6.000000000000001,
+          -96.43749999999999
+        ],
+        [
+          -4.5,
+          -96.43749999999999
+        ],
+        [
+          -4.5,
+          -78.1875
+        ],
+        [
+          -6.000000000000001,
+          -78.1875
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "kdat"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          -6.000000000000001,
+          -74.6875
+        ],
+        [
+          -4.5,
+          -74.6875
+        ],
+        [
+          -4.5,
+          -66.75442913385827
+        ],
+        [
+          -6.000000000000001,
+          -66.75442913385827
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "3BF9ZDQPT1",
+      "tag": "nailer-outer-girt-000-1"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          -6.000000000000001,
+          -74.6875
+        ],
+        [
+          -4.5,
+          -74.6875
+        ],
+        [
+          -4.5,
+          -66.75442913385827
+        ],
+        [
+          -6.000000000000001,
+          -66.75442913385827
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "kdat"
+    },
+    {
+      "space": "model",
       "node": "leader",
       "anchor": {
         "kind": "point",

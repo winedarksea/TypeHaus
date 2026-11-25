@@ -6571,19 +6571,13 @@
 8,
 "2447f337cbb4"
 ],
-"geometry/3BF9ZDQPT1-batten-166-0/body": [
+"geometry/3BF9ZDQPT1-batten-144-0/body": [
 -2.5693497,
--1.7637125,
-2,
-"a70172c9913a"
-],
-"geometry/3BF9ZDQPT1-batten-166-1/body": [
--0.8600953,
 -0.3413125,
 2,
-"19eaa1f1c298"
+"14854fcfe143"
 ],
-"geometry/3BF9ZDQPT1-batten-214-0/body": [
+"geometry/3BF9ZDQPT1-batten-192-0/body": [
 -2.5693497,
 -0.3413125,
 2,
@@ -6843,15 +6837,15 @@
 ],
 "geometry/3BF9ZDQPT1::framing/member:nailer-outer-girt-000-1": [
 -1.8970625,
--1.7510125,
+-1.3763625,
 8,
-"f1738137727a"
+"b6942928b6ce"
 ],
 "geometry/3BF9ZDQPT1::framing/member:nailer-outer-girt-000-2": [
--0.954778,
+-1.2874625,
 -0.7667625,
 8,
-"655832a58749"
+"722972a4814e"
 ],
 "geometry/3BF9ZDQPT1::framing/member:nailer-outer-girt-000-3": [
 -0.6778625,
@@ -84619,12 +84613,6 @@
 8,
 "2447f337cbb4"
 ],
-"geometry/Z4NRTGEDY5-batten-302-0/body": [
--2.5693497,
--0.3413125,
-2,
-"14854fcfe143"
-],
 "geometry/Z4NRTGEDY5-bugscreen-S1-0/body": [
 -2.5956046,
 -2.5437463,
@@ -84800,22 +84788,16 @@
 "5c355cb053b7"
 ],
 "geometry/Z4NRTGEDY5::framing/member:buck-jamb-000-0": [
--2.6304875,
+-2.6400125,
 -0.5445125,
 8,
-"42c2a0fd0270"
+"4ee6e020c293"
 ],
 "geometry/Z4NRTGEDY5::framing/member:buck-jamb-000-1": [
--2.6304875,
+-2.6400125,
 -0.5445125,
 8,
-"42c2a0fd0270"
-],
-"geometry/Z4NRTGEDY5::framing/member:buck-sill-000": [
--2.6495375,
--2.6400125,
-8,
-"e2eb2374bc69"
+"4ee6e020c293"
 ],
 "geometry/Z4NRTGEDY5::framing/member:cripple-head-0-01": [
 -0.4968875,
@@ -84962,28 +84944,10 @@
 "47eb1aa6787c"
 ],
 "geometry/Z4NRTGEDY5::framing/member:nailer-outer-girt-003-0": [
--2.4495125,
--1.9859625,
-8,
-"9bab56a99f5c"
-],
-"geometry/Z4NRTGEDY5::framing/member:nailer-outer-girt-003-1": [
--1.8970625,
--1.3763625,
-8,
-"b6942928b6ce"
-],
-"geometry/Z4NRTGEDY5::framing/member:nailer-outer-girt-003-2": [
--1.2874625,
--0.7667625,
-8,
-"722972a4814e"
-],
-"geometry/Z4NRTGEDY5::framing/member:nailer-outer-girt-003-3": [
--0.6778625,
+-0.4460875,
 -0.390525,
 8,
-"8122c0d18916"
+"47eb1aa6787c"
 ],
 "geometry/Z4NRTGEDY5::framing/member:plate-bottom-0-passage-0": [
 -2.5955625,
@@ -86817,15 +86781,15 @@
 ],
 "member/3BF9ZDQPT1/nailer-outer-girt-000-1": [
 -1.8970625,
--1.7510125,
+-1.3763625,
 2,
-"2bdd606a4837"
+"9ea0b3138557"
 ],
 "member/3BF9ZDQPT1/nailer-outer-girt-000-2": [
--0.954778,
+-1.2874625,
 -0.7667625,
 2,
-"b626cc9fd964"
+"342cc834f985"
 ],
 "member/3BF9ZDQPT1/nailer-outer-girt-000-3": [
 -0.6778625,
@@ -124334,22 +124298,16 @@
 "32ed2b7fda7a"
 ],
 "member/Z4NRTGEDY5/buck-jamb-000-0": [
--2.6304875,
+-2.6400125,
 -0.5445125,
 2,
-"1975f6700b2d"
+"14ffcb5c95c9"
 ],
 "member/Z4NRTGEDY5/buck-jamb-000-1": [
--2.6304875,
+-2.6400125,
 -0.5445125,
 2,
-"1975f6700b2d"
-],
-"member/Z4NRTGEDY5/buck-sill-000": [
--2.6495375,
--2.6400125,
-2,
-"b373865fcc2a"
+"14ffcb5c95c9"
 ],
 "member/Z4NRTGEDY5/cripple-head-0-01": [
 -0.4968875,
@@ -124496,28 +124454,10 @@
 "57988ddaa8ef"
 ],
 "member/Z4NRTGEDY5/nailer-outer-girt-003-0": [
--2.4495125,
--1.9859625,
-2,
-"199a9c9e4bf1"
-],
-"member/Z4NRTGEDY5/nailer-outer-girt-003-1": [
--1.8970625,
--1.3763625,
-2,
-"9ea0b3138557"
-],
-"member/Z4NRTGEDY5/nailer-outer-girt-003-2": [
--1.2874625,
--0.7667625,
-2,
-"342cc834f985"
-],
-"member/Z4NRTGEDY5/nailer-outer-girt-003-3": [
--0.6778625,
+-0.4460875,
 -0.390525,
 2,
-"2b802632b04b"
+"57988ddaa8ef"
 ],
 "member/Z4NRTGEDY5/plate-bottom-0-passage-0": [
 -2.5955625,
@@ -134802,14 +134742,10 @@
 "solids/TRIM-W-A-S2-RAKE_TOP-8/z1_m": 9.2385903,
 "solids/TRIM-W-A-S3-RAKE_TOP-9/z0_m": 6.4128403,
 "solids/TRIM-W-A-S3-RAKE_TOP-9/z1_m": 9.2385903,
-"solids/TRIM-W-B-S2-FR-JOINT-166-A/z0_m": -2.5693497,
-"solids/TRIM-W-B-S2-FR-JOINT-166-A/z1_m": -1.7637125,
-"solids/TRIM-W-B-S2-FR-JOINT-166-B/z0_m": -0.8600953,
-"solids/TRIM-W-B-S2-FR-JOINT-166-B/z1_m": -0.3413125,
-"solids/TRIM-W-B-S2-FR-JOINT-214-A/z0_m": -2.5693497,
-"solids/TRIM-W-B-S2-FR-JOINT-214-A/z1_m": -0.3413125,
-"solids/TRIM-W-B-S3-FR-JOINT-302-A/z0_m": -2.5693497,
-"solids/TRIM-W-B-S3-FR-JOINT-302-A/z1_m": -0.3413125,
+"solids/TRIM-W-B-S2-FR-JOINT-144-A/z0_m": -2.5693497,
+"solids/TRIM-W-B-S2-FR-JOINT-144-A/z1_m": -0.3413125,
+"solids/TRIM-W-B-S2-FR-JOINT-192-A/z0_m": -2.5693497,
+"solids/TRIM-W-B-S2-FR-JOINT-192-A/z1_m": -0.3413125,
 "solids/TRIM-W-BW-SCREEN-END-HI-1/z0_m": -0.023876,
 "solids/TRIM-W-BW-SCREEN-END-HI-1/z1_m": 1.2192,
 "solids/TRIM-W-BW-SCREEN-END-LO-1/z0_m": -0.023876,

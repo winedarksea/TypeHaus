@@ -5,7 +5,7 @@ candidate at or before ``lo + k*size`` whose joint is backed (and no nearer than
 ``min_rip`` to the previous break); none, and it takes the least-unbacked candidate. A
 last piece under ``min_rip`` pulls the previous break back. ``tail`` lets the band end
 that much past whole pieces without another (``max_course_shortfall``). A walk from
-``hi`` mirrors it.
+``hi`` mirrors it. ``walk_centred`` lays the module from the run's centre instead.
 """
 
 from __future__ import annotations
@@ -67,6 +67,38 @@ def walk_forward(lo: float, hi: float, size: float, latest: list[float],
         before = breaks[-2] if len(breaks) > 1 else lo
         breaks[-1] = _snap(before, min(before + size, hi - min_rip), latest, cost, min_rip,
                            tol)
+    return breaks
+
+
+def walk_centred(lo: float, hi: float, size: float, faces: list[tuple[float, float]],
+                 bearing: float, cost: Callable[[float], float], min_rip: float,
+                 tol: float) -> list[float]:
+    """Breaks on the module centred in ``lo``-``hi``: equal end pieces, each at least
+    ``min_rip`` (else a module wider). An unbacked break moves to the nearest backed face
+    centre that keeps every piece within ``size`` and ``min_rip``."""
+    length = hi - lo
+    if length <= size + _EPS:
+        return []
+    full = int((length + _EPS) // size)
+    rest = length - full * size
+    if rest <= _EPS:
+        targets = [lo + i * size for i in range(1, full)]
+    else:
+        if rest / 2.0 < min_rip - _EPS:
+            full, rest = full - 1, rest + size
+        targets = [lo + rest / 2.0 + i * size for i in range(full + 1)]
+    latest = [(a + b) / 2.0 for a, b in faces if b - a > 2 * bearing]
+    breaks: list[float] = []
+    for target in targets:
+        if cost(target) <= tol:
+            breaks.append(target)
+            continue
+        before = breaks[-1] if breaks else lo
+        fits = [x for x in latest if abs(x - target) < size / 2.0
+                and min_rip - _EPS <= x - before <= size + _EPS and hi - x >= min_rip - _EPS]
+        backed = [x for x in fits if cost(x) <= tol]
+        best = min(backed or fits or [target], key=lambda x: (cost(x), abs(x - target)))
+        breaks.append(best if cost(best) < cost(target) - tol else target)
     return breaks
 
 

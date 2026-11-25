@@ -194,17 +194,30 @@ def test_catlin_court_face_matches_the_lp_panel_oracle(catlin_model_ro):
 
     lay = next(lay for lay in catlin_model_ro.sheet_layouts if lay.function == "cladding")
     assert lay.wall_tags == ("W-B-S2-FR", "W-B-S3-FR") and not lay.horizontal_breaks
-    assert [round(b.at / IN, 2) for b in lay.vertical_breaks] == [48.0, 96.0, 144.0, 184.0]
-    # Backed by girts and nailers, bar the 1.22" panel foot under the lifted starter course.
-    assert [round(b.unbacked_m / IN, 2) for b in lay.vertical_breaks] == [1.22, 1.22, 0.0, 1.22]
+    # Centred (centre_cladding): 26" end columns, no joint through WIN-B-SAUNA.
+    assert lay.start_end == "centre"
+    assert [round(b.at / IN, 2) for b in lay.vertical_breaks] == [26.0, 74.0, 122.0, 170.0]
+    # Backed by girts and nailers, bar the 1.22" panel foot under the lifted starter course;
+    # s 170 sits on D-B-SUNKEN's jamb post from the wall base.
+    assert [round(b.unbacked_m / IN, 2) for b in lay.vertical_breaks] == [1.22, 1.22, 0.0, 0.0]
     assert _grade(catlin_model_ro, lay, "").result is Result.UNKNOWN
-    assert len(lay.nailers) == 13
-    assert sum(m.length_m for m in lay.nailers) / IN == pytest.approx(186.375, abs=0.01)
+    assert len(lay.nailers) == 10
+    assert sum(m.length_m for m in lay.nailers) / IN == pytest.approx(145.5, abs=0.01)
     row = next(r for r in sheet_goods_takeoff(catlin_model_ro) if r["scope"] == "cladding panel")
     assert (row["sheets"], row["net_area_sqft"]) == (5, 81.8)
     battens = next(r for r in cladding_trim_takeoff(catlin_model_ro)
                    if r["part"] == "LP_440_BATTEN_3_5")
-    # 4, not the note's 5 (2026-11-24): the battens now stop at the window's hosted sill and
-    # head trims (s 48: 31.72 + 20.42) and the door's custom head leaves 2.05" at s 144, no piece.
-    assert len(battens["tags"]) == 4 and battens["count"] == 2
-    assert battens["length_ft"] == pytest.approx(227.58 / 12, abs=0.01)
+    # s 26 and 74 full height; the door's trim takes s 122 (head) and s 170 (casing).
+    assert len(battens["tags"]) == 2 and battens["count"] == 1
+    assert battens["length_ft"] == pytest.approx(2 * 87.718 / 12, abs=0.01)
+
+
+def test_centred_walk_keeps_equal_end_columns_over_the_rip():
+    from typehaus.resolve.sheet_layout_walk import walk_centred
+
+    def lay(length):
+        return walk_centred(0.0, length, 48.0, [], 0.4375, lambda _x: 0.0, 12.0, 0.125)
+
+    assert lay(196.0) == [26.0, 74.0, 122.0, 170.0]  # 2" ends under the rip: a module wider
+    assert lay(216.0) == [12.0, 60.0, 108.0, 156.0, 204.0]  # 12" ends are a rip
+    assert lay(192.0) == [48.0, 96.0, 144.0] and lay(40.0) == []
