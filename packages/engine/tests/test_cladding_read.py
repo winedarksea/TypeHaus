@@ -61,14 +61,19 @@ _FOOTNOTE = "does not address web crippling, fasteners, support material or load
 _CATLIN = Path(__file__).resolve().parents[3] / "houses" / "catlin"
 
 
+def _metal(findings):
+    """The metal oracle's findings; the LP court face (ESR row) is in test_cladding_ultimate_row."""
+    return [f for f in findings if "lp-smartside" not in f.message]
+
+
 def _wind(ctx):
     from typehaus.checks.structural.cladding import cladding_wind
-    return cladding_wind(ctx)
+    return _metal(cladding_wind(ctx))
 
 
 def _fastener(ctx):
     from typehaus.checks.structural.cladding import cladding_fastener
-    return cladding_fastener(ctx)
+    return _metal(cladding_fastener(ctx))
 
 
 @pytest.fixture(scope="module")

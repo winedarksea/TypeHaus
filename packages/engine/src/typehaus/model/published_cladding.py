@@ -6,6 +6,8 @@ module only because ``refs.py`` is at the file-size limit.
 
 from __future__ import annotations
 
+from typing import Literal
+
 from typehaus.model.base import HausModel
 from typehaus.quantities import Length
 
@@ -38,7 +40,11 @@ class PublishedCladdingLoad(HausModel):
     table: str
     #: The product the row is for, as the Material's name spells it.
     member: str
-    #: Allowable (ASD) outward (suction) and inward uniform loads, psf.
+    #: ``"asd"``: the two loads below are allowables (Metal Sales). ``"ultimate"``: they are
+    #: a strength-level pressure (ESR-1301 Table 3A) and the check compares the ULTIMATE
+    #: demand; a table that publishes one pressure authors it in both fields.
+    basis: Literal["asd", "ultimate"] = "asd"
+    #: Allowable outward (suction) and inward uniform loads, psf, at ``basis``.
     allowable_outward_psf: float
     allowable_inward_psf: float
     #: The fastener spacing the row is indexed by — along the panel, i.e. the girt spacing
@@ -64,6 +70,16 @@ class PublishedCladdingLoad(HausModel):
     excludes: str | None = None
     #: The demand the reader judged the row against, psf ASD. Increase-only guard.
     demand_psf: float | None = None
-    #: The wind basis the demand was read at.
+    #: The wind basis the demand was read at (an ultimate row: the row's max V_ult at
+    #: ``exposure``, so the site's own speed may not exceed it).
     wind_speed_mph: float | None = None
     exposure: str | None = None
+
+    #: The row is governed by per-fastener tributary load, so a wider support spacing scales
+    #: it by row/model spacing. Used only for the printed off-label ESTIMATE, never a verdict.
+    fastener_governed: bool = False
+    #: A departure from the row the engine cannot see, accepted by the owner (LP over
+    #: strapping). Keeps the finding UNKNOWN even when every guard agrees.
+    off_label: str | None = None
+    #: Hand arithmetic printed after an UNKNOWN: the estimate and who accepted it.
+    off_label_note: str | None = None
