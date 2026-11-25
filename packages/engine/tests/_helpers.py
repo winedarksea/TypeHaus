@@ -147,6 +147,14 @@ def east_variant_house(dst: Path, variant: str) -> Path:
     return house
 
 
+def court_face_brick_plan(house: Path = CATLIN):
+    """The plan of ``house`` (catlin or a sandbox copy) as variant ``court-face-brick``."""
+    from typehaus.diff.compare import variant_plan
+    from typehaus.diff.variants import find_variant, load_variants
+
+    return variant_plan(find_variant(load_variants(house), "court-face-brick").selection(house))
+
+
 def assert_wire_mesh(wire, positions, triangles) -> None:
     """A model.json mesh (→ server/model_json_mesh.py) is the engine mesh, to its quantum."""
     from typehaus.server.model_json_mesh import decode_mesh

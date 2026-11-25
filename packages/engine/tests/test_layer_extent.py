@@ -62,7 +62,7 @@ _SOUTH_COURT = {
 _SOUTH_ASSEMBLIES = {**_SOUTH_BANDED, **_SOUTH_COURT}
 
 
-def test_the_south_wall_carries_no_parge_and_bands_only_its_buried_ends(catlin_model):
+def test_the_south_wall_carries_no_parge_and_bands_only_its_buried_ends(catlin_brick_model_ro):
     """The court walls' XPS is not exposed at all — it is inside W-B-BRICK's ventilated
     cavity, with no UV and no impact on it — so it needs no finish. The only genuinely
     exposed south foam is on the two ends, where the exposure IS a grade band. So: no parge
@@ -70,24 +70,27 @@ def test_the_south_wall_carries_no_parge_and_bands_only_its_buried_ends(catlin_m
     ``xps-b`` on the four court segments.
     """
     for tag, assembly in _SOUTH_ASSEMBLIES.items():
-        wall = catlin_model.wall(tag)
+        wall = catlin_brick_model_ro.wall(tag)
         assert wall.assembly == assembly
         assert not any(ly.name == "parge" for ly in wall.layers), tag
 
     for tag in _SOUTH_BANDED:
-        wall = catlin_model.wall(tag)
+        wall = catlin_brick_model_ro.wall(tag)
         panel = next(ly for ly in wall.layers if ly.name == _PANEL)
         assert panel.is_banded, tag
         assert panel.band(wall) != (wall.z0_m, wall.z1_m), tag
 
     for tag in _SOUTH_COURT:
-        wall = catlin_model.wall(tag)
-        assert not any(ly.name == _PANEL for ly in wall.layers), tag
+        wall = catlin_brick_model_ro.wall(tag)
+        # The 7 1/4" curbs wear the house's acrylic skin (walkout.py, both court faces); the
+        # framed walls over them, in the brick cavity, carry none.
+        skin = tag in ("W-B-S2", "W-B-S3")
+        assert any(ly.name == _PANEL for ly in wall.layers) is skin, tag
         names = [ly.name for ly in wall.layers]
         # The outermost layer is `xps-b` again since 2026-11-04 (the 2" EPS came off). What
         # must not be out here is a *protective skin* (`_PANEL`, checked just above): this
         # foam lives inside W-B-BRICK's ventilated cavity, with no UV and no impact.
-        assert names[-1] == "xps-b", tag
+        assert names[-1] == (_PANEL if skin else "xps-b"), tag
 
 
 def test_the_sauna_liner_stops_at_the_room_ceiling_not_the_wall_top(catlin_model):
@@ -280,7 +283,7 @@ _WYTHE_IN = 3.625
 _CAVITY_IN = 1.94
 
 
-def test_the_veneer_is_one_wythe_and_the_cavity_is_clear(catlin_model):
+def test_the_veneer_is_one_wythe_and_the_cavity_is_clear(catlin_brick_model_ro):
     """W-B-BRICK's depth, which is what the ``Layer.slot`` machinery was protecting.
 
     THE BANDING IS GONE (2026-09-04): the wythe was five ``slot="wythe"`` regions of the
@@ -309,7 +312,7 @@ def test_the_veneer_is_one_wythe_and_the_cavity_is_clear(catlin_model):
     houses/catlin/notes/sunken_garden_veneer_beam.md Sec. 5.1. It was 1-1/2" of cavity while
     the brick stood on a plinth cast on the house footing's own toe, and 1" before that.
     """
-    wall = catlin_model.wall("W-B-BRICK")
+    wall = catlin_brick_model_ro.wall("W-B-BRICK")
     assert [ly.name for ly in wall.layers] == ["air-gap", "brick"]
     assert [ly.name for ly in wall.depth_layers()] == ["air-gap", "brick"]
     assert not any(ly.slot for ly in wall.layers), "the flat field must not carry a slot"

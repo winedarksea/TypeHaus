@@ -1454,7 +1454,7 @@ def test_the_brick_standoff_is_independent_of_the_pour(catlin_model):
             assert skin == [], tag
 
 
-def test_the_brick_reveals_are_concentric_with_the_openings_they_reveal(catlin_model):
+def test_the_brick_reveals_are_concentric_with_the_openings_they_reveal(catlin_brick_model):
     """``AO-B-BRICK-DOOR``/``-WIN`` are holes FOR ``D-B-SUNKEN``/``WIN-B-SAUNA``, not openings
     of their own, and nothing but this pin and ``integrity.reveal_concentric`` says so.
 
@@ -1463,8 +1463,8 @@ def test_the_brick_reveals_are_concentric_with_the_openings_they_reveal(catlin_m
     the door came to move 6" west on 2026-08-30 while its arched reveal stayed put — five
     days of a segmental crown centred on nothing, at 0 FAIL.
     """
-    by_tag = {o.tag: o for o in catlin_model.openings}
-    walls = {w.tag: w for w in catlin_model.walls}
+    by_tag = {o.tag: o for o in catlin_brick_model.openings}
+    walls = {w.tag: w for w in catlin_brick_model.walls}
     for reveal_tag, opening_tag in (("AO-B-BRICK-DOOR", "D-B-SUNKEN"),
                                     ("AO-B-BRICK-WIN", "WIN-B-SAUNA")):
         reveal, opening = by_tag[reveal_tag], by_tag[opening_tag]
@@ -2064,7 +2064,7 @@ def test_nothing_crosses_the_closure(catlin_model):
     assert len(boards) == 4
 
 
-def test_the_veneer_beam_isolates_the_house_footing(catlin_model):
+def test_the_veneer_beam_isolates_the_house_footing(catlin_brick_model):
     """W-B-BRICK's load and its cold both leave the house footing alone. The FACE matters.
 
     The old detail put a plinth (FT-B-BRICK) straight onto FT-B-S2/S3's projecting toe and
@@ -2082,7 +2082,7 @@ def test_the_veneer_beam_isolates_the_house_footing(catlin_model):
     Both faces are asserted in absolute coordinates for that reason.
     """
     inch_m = 0.0254
-    beam = catlin_model.wall("W-SG-BRKBM")
+    beam = catlin_brick_model.wall("W-SG-BRKBM")
     layers = {ly.name: ly for ly in beam.layers}
     assert set(layers) == {"concrete", "xps-break"}
     # ** THE LAYER ORDER IS LOAD-BEARING FOR A FIRE CHECK, AND THE FACES ALONE DO NOT PIN
@@ -2117,7 +2117,7 @@ def test_the_veneer_beam_isolates_the_house_footing(catlin_model):
     # Since 2026-11-04 the beam's board sits flush on that -4" face: the beam is bedded on
     # its own stone (FB-SG-BRKBM) and bears nothing on the strips.
     for tag in ("FT-B-S1", "FT-B-S2", "FT-B-S3", "FT-B-S4"):
-        strip = next(s for s in catlin_model.solids if s.tag == tag)
+        strip = next(s for s in catlin_brick_model.solids if s.tag == tag)
         south_in = min(y for _x, y in strip.outline) / inch_m
         assert south_in == pytest.approx(-4.0, abs=1e-6), tag
         # All four are 15": the 13"/15" north toes of a 25" strip (R403.1.1 P <= T, 2026-11-05).
@@ -2128,7 +2128,7 @@ def test_the_veneer_beam_isolates_the_house_footing(catlin_model):
     # neither the board nor the concrete laps a strip in plan.
     from shapely.geometry import Polygon as _Poly
     for tag in ("FT-B-S1", "FT-B-S2", "FT-B-S3", "FT-B-S4"):
-        house = _Poly(next(s for s in catlin_model.solids if s.tag == tag).outline)
+        house = _Poly(next(s for s in catlin_brick_model.solids if s.tag == tag).outline)
         for name in ("xps-break", "concrete"):
             lap = _Poly(layers[name].polygon).intersection(house).area
             assert lap == pytest.approx(0.0, abs=1e-9), (tag, name)
@@ -2140,8 +2140,8 @@ def test_the_veneer_beam_isolates_the_house_footing(catlin_model):
     # joint 84" wide, and where it was missing there was concrete on both sides of the line.
     from shapely.geometry import Polygon
     for garden, block in (("FT-SG-W1", "TB-SG-W1"), ("FT-SG-E1", "TB-SG-E1")):
-        strip = next(s for s in catlin_model.solids if s.tag == garden)
-        foam = next(s for s in catlin_model.solids if s.tag == block)
+        strip = next(s for s in catlin_brick_model.solids if s.tag == garden)
+        foam = next(s for s in catlin_brick_model.solids if s.tag == block)
         xs = [x for x, _y in strip.outline]
         fxs = [x for x, _y in foam.outline]
         # 84" again. The porch strips went 84" -> 96" on 2026-09-10 to match the retaining
@@ -2164,14 +2164,14 @@ def test_the_veneer_beam_isolates_the_house_footing(catlin_model):
         # Nothing on the far side of it is concrete: no house strip reaches the garden one.
         garden_plan = Polygon(strip.outline)
         for tag in ("FT-B-S1", "FT-B-S2", "FT-B-S3", "FT-B-S4"):
-            house = next(s for s in catlin_model.solids if s.tag == tag)
+            house = next(s for s in catlin_brick_model.solids if s.tag == tag)
             lap = garden_plan.intersection(Polygon(house.outline)).area
             assert lap == pytest.approx(0.0, abs=1e-9), (garden, tag)
 
     # The plinth and its bed are gone, not merely unreferenced.
-    tags = {s.tag for s in catlin_model.solids}
+    tags = {s.tag for s in catlin_brick_model.solids}
     assert "FT-B-BRICK" not in tags
-    assert not any(b.tag == "FB-B-BRICK" for b in catlin_model.footing_beddings)
+    assert not any(b.tag == "FB-B-BRICK" for b in catlin_brick_model.footing_beddings)
 
     # The wythe bears on the beam's CONCRETE over its whole width. Its position is the
     # invariant of this whole detail: the beam's north face cannot pass -10", so the brick
@@ -2183,7 +2183,7 @@ def test_the_veneer_beam_isolates_the_house_footing(catlin_model):
     # EPS on the backup wall plus a 4" cavity on 2026-09-05.
     # Since 2026-11-04 the brick's back is the concrete's north face, -6.0": 1.94" of cavity
     # off the backup's XPS, 6 1/2" off its studs (IRC 2024 W2.8 reaches 6 5/8").
-    brick = catlin_model.wall("W-B-BRICK")
+    brick = catlin_brick_model.wall("W-B-BRICK")
     faces = {ly.name: span_in(ly.polygon) for ly in brick.layers}
     assert faces["brick"] == pytest.approx((-9.625, -6.0), abs=1e-6)
     assert faces["air-gap"] == pytest.approx((-6.0, -4.06), abs=1e-6)
@@ -2195,7 +2195,7 @@ def test_the_veneer_beam_isolates_the_house_footing(catlin_model):
     # face("air-gap-int"), so the cavity's inboard face has to land exactly on the backup's
     # outermost layer, whatever either of them happens to be on the day.
     for backup in ("W-B-S2", "W-B-S3", "W-B-S2-FR", "W-B-S3-FR"):
-        outermost = catlin_model.wall(backup).layers[-1]
+        outermost = catlin_brick_model.wall(backup).layers[-1]
         assert span_in(outermost.polygon)[0] == pytest.approx(-4.06, abs=1e-6), backup
     assert faces["air-gap"][1] == pytest.approx(-4.06, abs=1e-6)
 
@@ -2203,7 +2203,7 @@ def test_the_veneer_beam_isolates_the_house_footing(catlin_model):
     # skin tucks under EXT_2X6's rainscreen Z-flashing, so a lower wall proud of the
     # upper one turns that lap into an upward-facing ledge. 4" of EPS did exactly that at
     # -8.05" and nothing in `haus check` noticed.
-    main_face = min(y for ly in catlin_model.wall("W-M-S1").layers for _x, y in ly.polygon)
+    main_face = min(y for ly in catlin_brick_model.wall("W-M-S1").layers for _x, y in ly.polygon)
     assert -4.06 * inch_m > main_face, "the court walls must not stand proud of W-M-S1"
     beam_lo, beam_hi = span_in(layers["concrete"].polygon)
     assert beam_lo <= faces["brick"][0] and faces["brick"][1] <= beam_hi + 1e-6, \
