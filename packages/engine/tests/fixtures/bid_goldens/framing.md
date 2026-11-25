@@ -3,8 +3,8 @@
 **House:** Catlin House  
 **Trade:** Framing  
 **Engine:** 0.1.2  
-**Model hash:** 6332b36fea9ab839  
-**Lines:** 281
+**Model hash:** 6f114ae086c688d5  
+**Lines:** 277
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks and their boards, and the tape on every member top. Trusses and engineered wood are called out by the profile. Set the windows and exterior doors (supplied under Windows and doors).
 
@@ -55,8 +55,8 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 24 gable roof truss, 24' (24 gable roof truss) | 2 | ea | roof truss | 48 LF | building |
 | 24 roof truss, 24' (24 roof truss) | 14 | ea | roof truss | 336 LF | building |
 | 25 ga. resilient channel 1/2" resilient channel, 8' (25 ga. resilient channel:resilient-channel) | 8 | pc | girt strapping | 64 LF | building |
-| 25 ga. resilient channel 1/2" resilient channel, 12' (25 ga. resilient channel:resilient-channel) | 3 | pc | girt strapping | 36 LF | building |
-| 25 ga. resilient channel 1/2" resilient channel, 14' (25 ga. resilient channel:resilient-channel) | 17 | pc | girt strapping | 238 LF | building |
+| 25 ga. resilient channel 1/2" resilient channel, 12' (25 ga. resilient channel:resilient-channel) | 2 | pc | girt strapping | 24 LF | building |
+| 25 ga. resilient channel 1/2" resilient channel, 14' (25 ga. resilient channel:resilient-channel) | 18 | pc | girt strapping | 252 LF | building |
 | 2x10 SPF No. 2 & Btr framing lumber, 8' (2x10) | 2 | pc | hanger board | 16 LF | building |
 | 2x10 SPF No. 2 & Btr framing lumber, 10' (2x10) | 1 | pc | hanger board | 10 LF | building |
 | 2x10 SPF No. 2 & Btr framing lumber, 8' (2x10:spf) | 10 | pc | blocking, ceiling furring | 80 LF | building |
@@ -72,8 +72,8 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2x4 SPF No. 2 & Btr framing lumber, 104 5/8" PET (2x4) | 242 | pc | corner stud, king stud, stud | 2109.9 LF | building |
 | 2x4 SPF No. 2 & Btr framing lumber, 10' (2x4) | 31 | pc | partition backer, plate, raked top plate | 310 LF | building |
 | 2x4 SPF No. 2 & Btr framing lumber, 14' (2x4) | 12 | pc | plate | 168 LF | building |
-| 2x4 KDAT southern yellow pine No. 2 (treated exterior framing), 8' (2x4:kdat) | 215 | pc | girt strapping, truss ladder blocking | 1720 LF | building |
-| 2x4 KDAT southern yellow pine No. 2 (treated exterior framing), 10' (2x4:kdat) | 35 | pc | girt strapping | 350 LF | building |
+| 2x4 KDAT southern yellow pine No. 2 (treated exterior framing), 8' (2x4:kdat) | 224 | pc | girt strapping, truss ladder blocking | 1792 LF | building |
+| 2x4 KDAT southern yellow pine No. 2 (treated exterior framing), 10' (2x4:kdat) | 40 | pc | girt strapping | 400 LF | building |
 | 2x4 KDAT southern yellow pine No. 2 (treated exterior framing), 12' (2x4:kdat) | 10 | pc | girt strapping | 120 LF | building |
 | 2x4 KDAT southern yellow pine No. 2 (treated exterior framing), 14' (2x4:kdat) | 15 | pc | girt strapping | 210 LF | building |
 | 2x4 KDAT southern yellow pine No. 2 (treated exterior framing), 16' (2x4:kdat) | 7 | pc | girt strapping | 112 LF | building |
@@ -93,7 +93,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2x6 Douglas fir-larch No. 2 framing, 10' (2x6:df-l-no2) | 2 | pc | plate | 20 LF | building |
 | 2x6 Douglas fir-larch No. 2 framing, 14' (2x6:df-l-no2) | 2 | pc | plate | 28 LF | building |
 | 2x6 Douglas fir Select Structural S4S, eased corners, 10' (2x6:df-select-s4s) | 9 | pc | corner stud, stud | 90 LF | building |
-| 2x6 KDAT southern yellow pine No. 2 (treated exterior framing), 8' (2x6:kdat) | 10 | pc | cripple stud, plate, sill, girt strapping, truss ladder blocking | 80 LF | building |
+| 2x6 KDAT southern yellow pine No. 2 (treated exterior framing), 8' (2x6:kdat) | 11 | pc | cripple stud, plate, sill, girt strapping, truss ladder blocking | 88 LF | building |
 | 2x6 KDAT southern yellow pine No. 2 (treated exterior framing), 10' (2x6:kdat) | 6 | pc | plate, girt strapping | 60 LF | building |
 | 2x6 KDAT southern yellow pine No. 2 (treated exterior framing), 14' (2x6:kdat) | 1 | pc | girt strapping | 14 LF | building |
 | 2x6 Laminated strand lumber, 8' (2x6:lsl) | 69 | pc | cripple stud, door blocking, jack stud | 552 LF | building |
@@ -108,7 +108,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2x8 Pressure-treated southern yellow pine No. 2 (sill plate), 16' (2x8:pt-syp) | 3 | pc | plate | 48 LF | building |
 | 2x8 SPF No. 2 & Btr framing lumber, 8' (2x8:spf) | 40 | pc | blocking | 320 LF | building |
 | 2x12 KDAT southern yellow pine No. 2 (treated exterior framing), 20' (3-2x12:kdat) | 6 | pc | joist (3-ply) | 120 LF | building |
-| 2x4 KDAT southern yellow pine No. 2 (treated exterior framing), 8' (3-2x4:kdat) | 135 | pc | truss girt block (3-ply) | 1080 LF | building |
+| 2x4 KDAT southern yellow pine No. 2 (treated exterior framing), 8' (3-2x4:kdat) | 141 | pc | truss girt block (3-ply) | 1128 LF | building |
 | 2x6 KDAT southern yellow pine No. 2 (treated exterior framing), 8' (3-2x6:kdat) | 9 | pc | truss girt block (3-ply) | 72 LF | building |
 | 2x8 KDAT southern yellow pine No. 2 (treated exterior framing), 8' (4-2x8:kdat) | 4 | pc | truss girt block (4-ply) | 32 LF | building |
 | 5 1/4" x 7" LVL 2.0E, 8' (5.25x7 LVL) | 1 | pc | header | 8 LF | building |
@@ -121,14 +121,15 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | item | quantity | unit | detail | storeys |
 |---|---|---|---|---|
 | Aluminum deck board (Wahoo AridDek, Granite), 1 1/2" subfloor (aluminum-deck:subfloor) | 189.6 | SF | 6 sheets 4x8 over 189.6 SF net; 6.0 sheets in the takeoff | building |
-| CDX sheathing plywood, 4- or 5-ply, Exposure 1, 1/2" exterior wall (cdx-plywood:exterior wall) | 101 | sheets 4x10 | 101 sheets 4x10 over 3059.6 SF net | building |
+| CDX sheathing plywood, 4- or 5-ply, Exposure 1, 1/2" exterior wall (cdx-plywood:exterior wall) | 106 | sheets 4x10 | 106 sheets 4x10 over 3143.8 SF net | building |
 | CDX sheathing plywood, 4- or 5-ply, Exposure 1, 19/32" roof (cdx-plywood:roof) | 49 | sheets 4x8 | 49 sheets 4x8 over 1544.4 SF net | building |
 | CDX sheathing plywood, 4- or 5-ply, Exposure 1, 1/2" sheathing rip (cdx-plywood:sheathing rip) | 1 | sheets 4x8 | 1 sheets 4x8 over 3.0 SF net | building |
+| LP SmartSide 38 Series 3/8" Brushed Smooth primed panel siding, 4x8, vertical, 3/8" cladding panel (lp-smartside-smooth-panel:cladding panel) | 5 | sheets 4x8 | 5 sheets 4x8 over 81.8 SF net | building |
 | 3/4" plywood subfloor, 3/4" fireblock (plywood-subfloor:fireblock) | 1 | sheets 4x8 | 1 sheets 4x8 over 11.3 SF net | building |
 | 3/4" plywood subfloor, 3/4" stair subdeck (plywood-subfloor:stair subdeck) | 1 | sheets 4x8 | 1 sheets 4x8 over 29.6 SF net | building |
 | 3/4" plywood subfloor, 3/4" subfloor (plywood-subfloor:subfloor) | 112 | sheets 4x8 | 112 sheets 4x8 over 3560.5 SF net | building |
 | Structural 1 plywood, 7/8" bearing stiffener rip (struct-1-plywood:bearing stiffener rip) | 3 | sheets 4x8 | 3 sheets 4x8 over 71.0 SF net | building |
-| Structural 1 plywood, 3/8" buck rip (struct-1-plywood:buck rip) | 18 | sheets 4x8 | 18 sheets 4x8 over 450.3 SF net | building |
+| Structural 1 plywood, 3/8" buck rip (struct-1-plywood:buck rip) | 19 | sheets 4x8 | 19 sheets 4x8 over 466.2 SF net | building |
 | Structural 1 plywood, 19/32" roof (struct-1-plywood:roof) | 28 | sheets 4x8 | 28 sheets 4x8 over 882.8 SF net | building |
 | Trex Enhance Basics composite decking, Tide Pool (square edge), 15/16" subfloor (trex-enhance-basics:subfloor) | 6 | sheets 4x8 | 6 sheets 4x8 over 168.7 SF net | building |
 | ZIP System sheathing, 7/16" exterior wall (zip-sheathing:exterior wall) | 27 | sheets 4x9 | 27 sheets 4x9 over 689.4 SF net | building |
@@ -181,7 +182,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | HHUS410 face-mount hanger, 2-ply 1-3/4" LVL (HHUS410:hung framing) | 1 | ea |  | building |
 | HHUS410 face-mount hanger, 2-ply 1-3/4" LVL (HHUS410:hung framing) | 1 | ea |  | building |
 | HL43HDG heavy angle, 3 ga, hot-dip galvanized (HL43HDG:modeled connector) | 2 | ea |  | building |
-| HeadLOK flat-head structural wood screw (0.191 in shank) (HLGM10:girt door sill beam seats) | 24 | ea |  | building |
+| HeadLOK flat-head structural wood screw (0.191 in shank) (HLGM10:girt door sill beam seats) | 32 | ea |  | building |
 | HTT4 tension tie (bolted hold-down) (HTT4:modeled connector) | 2 | ea |  | building |
 | HUC concealed-flange masonry/concrete hanger (HUC:hung framing) | 2 | ea |  | building |
 | IUS2.37/11.88 face-mount I-joist hanger (IUS2.37/11.88:hung framing) | 3 | ea |  | building |
@@ -238,19 +239,18 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | SDWS Timber Screw (0.220 in shank), ridge plate to wall top plates (SDWS22600DB:ridge plate) | 36 | ea |  | building |
 | SDWS Timber Screw (0.220 in shank), stringer through spacer to stud (SDWS22600DB:stair stringer spacers) | 8 | ea |  | building |
 | SP4Z stud plate tie (2x4, ZMAX) (SP4Z:framed exterior wall) | 6 | ea |  | building |
-| SP6 stud plate tie (2x6) (SP6:framed exterior wall) | 320 | ea |  | building |
+| SP6 stud plate tie (2x6) (SP6:framed exterior wall) | 333 | ea |  | building |
 | 3/8 in Type 316 stainless through-bolt with nut and washer (SS316-BOLT-38:modeled connector) | 4 | ea |  | building |
 | 3-1/2 in square 316 stainless beam standoff shim pack, 1/2 in to 1 in (SS316-SHIM-35:modeled connector) | 13 | ea |  | building |
 | SCNR ring-shank connector nail, 0.148in x 3in, Type 316 (SSA10D:connector fasteners) | 192 | ea |  | building |
 | SCNR ring-shank connector nail, 0.131in x 2.5in, Type 316 (SSA8D:connector fasteners) | 100 | ea |  | building |
 | SCNR ring-shank connector nail, 0.148in x 1.5in, Type 316 (SSNA10D:connector fasteners) | 360 | ea |  | building |
-| Fascia-Fastening Solution screw, #8 x 1-3/4in, Type 316 (T08175FS75:trim fasteners) | 34 | ea |  | building |
 | 15-gauge DA finishing nail, 2-1/2in, Type 316 (T15N250SFN:trim fasteners) | 416 | ea |  | building |
 | THA422 top-flange floor truss hanger (THA422:hung framing) | 1 | ea |  | building |
 | THA422 top-flange floor truss hanger (THA422:hung framing) | 2 | ea |  | building |
 | Titen HD 1/2 in x 6 in Type 316 stainless screw anchor, deck ledger to concrete (THD50600H6SS:modeled connector) | 18 | ea |  | building |
 | TimberLOK heavy-duty wood screw (0.189 in shank) (TLOK08:eave gutter girt standoffs) | 72 | ea |  | building |
-| TimberLOK heavy-duty wood screw (0.189 in shank) (TLOK08:girt wall blocks) | 1,158 | ea |  | building |
+| TimberLOK heavy-duty wood screw (0.189 in shank) (TLOK08:girt wall blocks) | 1,204 | ea |  | building |
 | Strong-Drive WSV SUBFLOOR screw, #9 x 2-1/2in (WSV212S:sheathing nails) | 4,786 | ea |  | building |
 
 ## Other structural solids
@@ -336,22 +336,18 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | rough opening, 9" x 9" (no type) (None) | 2 | ea | 9" x 9" | main, second |
 | rough opening, 10.5" x 6.5" (no type) (None) | 2 | ea | 10 1/2" x 6 1/2" | second |
 | rough opening, 12" x 10" (no type) (None) | 1 | ea | 12" x 10" | main |
-| rough opening, 14" x 20" (no type) (None) | 1 | ea | 14" x 20" | basement |
 | rough opening, 30" x 80" (no type) (None) | 1 | ea | 30" x 80" | second |
 | rough opening, 32" x 80" (no type) (None) | 1 | ea | 32" x 80" | second |
 | rough opening, 34" x 25" (no type) (None) | 1 | ea | 34" x 25" | main |
 | rough opening, 36" x 80" (no type) (None) | 1 | ea | 36" x 80" | basement |
 | rough opening, 63.31" x 1.75" (no type) (None) | 1 | ea | 63 5/16" x 1 3/4" | basement |
 | rough opening, 63.31" x 2.75" (no type) (None) | 1 | ea | 63 5/16" x 2 3/4" | basement |
-| rough opening, 63.31" x 17.75" (no type) (None) | 1 | ea | 63 5/16" x 17 3/4" | basement |
-| rough opening, 63.31" x 80" (no type) (None) | 1 | ea | 63 5/16" x 80" | basement |
 
 ## Steel members
 
 | item | quantity | unit | detail | storeys |
 |---|---|---|---|---|
 | L3 1/2" x 3 1/2" x 1/4" steel angle (L3.5x3.5x0.25) | 3.79 | LF |  | main |
-| L3" x 3" x 1/4" steel angle (L3x3x0.25) | 7.78 | LF |  | basement |
 
 ## Appendix A — elements, per line
 
@@ -460,6 +456,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | CDX sheathing plywood, 4- or 5-ply, Exposure 1, 1/2" exterior wall (cdx-plywood:exterior wall) | — |
 | CDX sheathing plywood, 4- or 5-ply, Exposure 1, 19/32" roof (cdx-plywood:roof) | — |
 | CDX sheathing plywood, 4- or 5-ply, Exposure 1, 1/2" sheathing rip (cdx-plywood:sheathing rip) | — |
+| LP SmartSide 38 Series 3/8" Brushed Smooth primed panel siding, 4x8, vertical, 3/8" cladding panel (lp-smartside-smooth-panel:cladding panel) | — |
 | 3/4" plywood subfloor, 3/4" fireblock (plywood-subfloor:fireblock) | — |
 | 3/4" plywood subfloor, 3/4" stair subdeck (plywood-subfloor:stair subdeck) | — |
 | 3/4" plywood subfloor, 3/4" subfloor (plywood-subfloor:subfloor) | — |
@@ -575,7 +572,6 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | SCNR ring-shank connector nail, 0.148in x 3in, Type 316 (SSA10D:connector fasteners) | — |
 | SCNR ring-shank connector nail, 0.131in x 2.5in, Type 316 (SSA8D:connector fasteners) | — |
 | SCNR ring-shank connector nail, 0.148in x 1.5in, Type 316 (SSNA10D:connector fasteners) | — |
-| Fascia-Fastening Solution screw, #8 x 1-3/4in, Type 316 (T08175FS75:trim fasteners) | — |
 | 15-gauge DA finishing nail, 2-1/2in, Type 316 (T15N250SFN:trim fasteners) | — |
 | THA422 top-flange floor truss hanger (THA422:hung framing) | — |
 | THA422 top-flange floor truss hanger (THA422:hung framing) | — |
@@ -627,17 +623,13 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | rough opening, 9" x 9" (no type) (None) | AO-M-ERV-OA, AO-S-ERV-EA |
 | rough opening, 10.5" x 6.5" (no type) (None) | AO-S-XFER-PLANT-HI, AO-S-XFER-PLANT-LO |
 | rough opening, 12" x 10" (no type) (None) | AO-M-XFER-MUD |
-| rough opening, 14" x 20" (no type) (None) | AO-B-BRICK-WIN |
 | rough opening, 30" x 80" (no type) (None) | D-S-STUDY2 |
 | rough opening, 32" x 80" (no type) (None) | O-S-VANITY |
 | rough opening, 34" x 25" (no type) (None) | AO-M-FIRE-NICHE |
 | rough opening, 36" x 80" (no type) (None) | D-B-GYM |
 | rough opening, 63.31" x 1.75" (no type) (None) | AO-B-SUNKEN-SEAT |
 | rough opening, 63.31" x 2.75" (no type) (None) | AO-B-SUNKEN-TREAD-BED |
-| rough opening, 63.31" x 17.75" (no type) (None) | AO-SG-BRKBM-TREAD-BED |
-| rough opening, 63.31" x 80" (no type) (None) | AO-B-BRICK-DOOR |
 | L3 1/2" x 3 1/2" x 1/4" steel angle (L3.5x3.5x0.25) | BM-M-FIRE-LINTEL |
-| L3" x 3" x 1/4" steel angle (L3x3x0.25) | BM-B-BRICK-LINTEL-DOOR, BM-B-BRICK-LINTEL-WIN |
 
 ## Appendix B — drawings
 
