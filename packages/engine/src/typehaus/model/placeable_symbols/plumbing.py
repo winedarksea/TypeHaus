@@ -33,6 +33,7 @@ from typehaus.model.placeable_symbols._kohler_underscore import kohler_underscor
 from typehaus.model.placeable_symbols._kohler_underscore_rect import kohler_underscore_rect
 from typehaus.model.placeable_symbols._laundry_sink import laundry_tub
 from typehaus.model.placeable_symbols._roman_tub_filler import roman_tub_filler
+from typehaus.model.placeable_symbols._shower_door import entry_edge, hinge_frame, leaf_sector
 from typehaus.model.placeable_symbols._solid_surface_vanity import solid_surface_vanity
 from typehaus.model.placeable_symbols._sunnersta import sunnersta_sink
 from typehaus.model.placeable_symbols._toto_ap import toto_ap
@@ -258,13 +259,17 @@ def _edge_band(p0: Point, p1: Point, inward: Point, thickness: float) -> tuple[P
     return (p0, p1, (p1[0] + dx, p1[1] + dy), (p0[0] + dx, p0[1] + dy))
 
 
-def shower(*, corner_cut_fraction: float | None = None) -> Builder:
+def shower(*, corner_cut_fraction: float | None = None, enclosure=None) -> Builder:
     """A shower enclosure: the square-with-diagonals convention, plus a pan, curb and glass.
 
     ``corner_cut_fraction`` turns it neo-angle: the room-facing corner comes off at 45 deg,
     the glyph draws the true pentagon and the massing extrudes it, so the diagonal a person
     actually walks through is in the drawing and in the model rather than only in the
     resolver's collision footprint.
+
+    ``enclosure`` (a ``ShowerEnclosure``) puts glass and curb on its entry and fixed-glass
+    edges, the walls on the rest, and draws a hinged/pivot door's swing. Without one the
+    glass stands on the -x/-y legs and +x/+y are walls.
     """
 
     def build(width: float, depth: float, height: float) -> Geometry:
@@ -289,6 +294,20 @@ def shower(*, corner_cut_fraction: float | None = None) -> Builder:
         if cut:
             open_edges.append((ring[2], ring[3], (SQRT_HALF, SQRT_HALF)))
         open_edges.append((ring[3], ring[4], (0.0, 1.0)))
+        if enclosure is not None:
+            open_edges, door = [], None
+            for name in (enclosure.entry_edge, *enclosure.fixed_glass_edges):
+                edge = entry_edge(ring, name)
+                if edge is not None:
+                    open_edges.append((edge[0], edge[1], (-edge[2][0], -edge[2][1])))
+                if name == enclosure.entry_edge:
+                    door = edge
+            if door is not None and enclosure.swings:
+                hinge, closed = hinge_frame(door, enclosure.hinge, enclosure.hinge_inset.meters,
+                                            enclosure.plane_inset.meters)
+                strokes.append(polygon(leaf_sector(
+                    hinge, closed, door[2], enclosure.reach.meters,
+                    enclosure.max_opening_degrees), weight=DETAIL_WEIGHT))
         parts: list[Part] = [prism(ring, 0.0, pan_h, "porcelain")]
         for p0, p1, inward in open_edges:
             parts.append(prism(_edge_band(p0, p1, inward, curb), 0.0, wall_z0, "porcelain"))

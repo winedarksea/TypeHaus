@@ -48,6 +48,7 @@ def fixture_parts(product_type, tag: str, hosted_countertops) -> list | None:
     return [part for part in model_parts(
         symbol, product_type.footprint[0].meters, product_type.footprint[1].meters,
         product_type.height.meters, shower_assembly=shower,
+        shower_enclosure=getattr(product_type, "shower_enclosure", None),
         material_refs=representation.material_refs if representation else None)
         # A vanity under a countertop slab: the slab draws its deck (→ millwork).
         if tag not in hosted_countertops or not is_counter_part(part)]

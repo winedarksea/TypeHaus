@@ -28,6 +28,7 @@ from typehaus.resolve.room_floor import (
     room_floor_elevation,
 )
 from typehaus.resolve.room_lookup import axis_polygon
+from typehaus.resolve.shower_enclosures import derive_shower_enclosures
 from typehaus.resolve.wall_hosting import resolve_location
 
 _TYPE_COLLECTIONS = (
@@ -234,6 +235,7 @@ def resolve_placeables(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
     footprints = {obj.uid: Polygon(obj.footprint) for obj in model.canvas_objects}
     findings.extend(_clearance_conflicts(model, obstruction_by_uid, footprints, profiles_by_uid))
     findings.extend(_door_swing_conflicts(model, obstruction_by_uid, footprints))
+    derive_shower_enclosures(model, obstruction_by_uid, footprints)
     return findings
 
 

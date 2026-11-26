@@ -29,6 +29,7 @@ if TYPE_CHECKING:
     from typehaus.model.air_handler_installation import AirHandlerInstallation
     from typehaus.model.placeables import ServicePort
     from typehaus.model.shower_assembly import ShowerAssemblySpec
+    from typehaus.model.shower_enclosure import ShowerEnclosure
 
 from typehaus.model.placeable_symbols._badger_disposal import (
     badger_disposal,
@@ -83,7 +84,11 @@ from typehaus.model.placeable_symbols._unifi_access_point import (
 from typehaus.model.placeable_symbols.appliances import APPLIANCE_SYMBOLS
 from typehaus.model.placeable_symbols.furniture import FURNITURE_SYMBOLS
 from typehaus.model.placeable_symbols.lighting import LIGHTING_SYMBOLS
-from typehaus.model.placeable_symbols.plumbing import PLUMBING_SYMBOLS
+from typehaus.model.placeable_symbols.plumbing import (
+    NEO_ANGLE_CUT_FRACTION,
+    PLUMBING_SYMBOLS,
+    shower,
+)
 from typehaus.model.placeable_symbols.receptacles import RECEPTACLE_SYMBOLS
 from typehaus.model.placeable_symbols.switches import SWITCH_SYMBOLS
 
@@ -94,6 +99,8 @@ __all__ = ["SYMBOL_NAMES", "PART_COLORS", "Part", "Stroke", "lamp_role", "model_
 # sofa's drawn arms and its 3D arm boxes cannot drift apart.
 Builder = Callable[[float, float, float], tuple[tuple[Stroke, ...], tuple[Part, ...]]]
 
+# The two generic shower glyphs and their corner cut, redrawn off a ShowerEnclosure.
+_GENERIC_SHOWERS = {"shower": None, "shower-neo-angle": NEO_ANGLE_CUT_FRACTION}
 _REGISTRY: dict[str, Builder] = {**FURNITURE_SYMBOLS, **APPLIANCE_SYMBOLS, **PLUMBING_SYMBOLS,
                                  **LIGHTING_SYMBOLS, **KITCHEN_SEKTION_SYMBOLS,
                                  **RECEPTACLE_SYMBOLS, **SWITCH_SYMBOLS,
@@ -249,10 +256,13 @@ PENDING_SYMBOLS: frozenset[str] = frozenset()
 _NOMINAL_HEIGHT = 1.0
 
 
-def symbol_geometry(symbol: str | None, width_m: float, depth_m: float,
-                    height_m: float) -> tuple[tuple[Stroke, ...], tuple[Part, ...]]:
+def symbol_geometry(symbol: str | None, width_m: float, depth_m: float, height_m: float,
+                    *, shower_enclosure: ShowerEnclosure | None = None,
+                    ) -> tuple[tuple[Stroke, ...], tuple[Part, ...]]:
     """Both halves of a symbol at a concrete size. ``()``/``()`` when it has no builder."""
     builder = _REGISTRY.get(symbol or "")
+    if shower_enclosure is not None and symbol in _GENERIC_SHOWERS:
+        builder = shower(corner_cut_fraction=_GENERIC_SHOWERS[symbol], enclosure=shower_enclosure)
     if builder is None or width_m <= 0 or depth_m <= 0 or height_m <= 0:
         return (), ()
     return builder(float(width_m), float(depth_m), float(height_m))
@@ -261,9 +271,11 @@ def symbol_geometry(symbol: str | None, width_m: float, depth_m: float,
 def plan_symbol_strokes(symbol: str | None, width_m: float,
                         depth_m: float, *,
                         air_handler_installation: AirHandlerInstallation | None = None,
+                        shower_enclosure: ShowerEnclosure | None = None,
                         ) -> tuple[Stroke, ...]:
     """The drawn plan glyph for ``symbol`` at a W×D footprint, in the local frame."""
-    strokes = symbol_geometry(symbol, width_m, depth_m, _NOMINAL_HEIGHT)[0]
+    strokes = symbol_geometry(symbol, width_m, depth_m, _NOMINAL_HEIGHT,
+                              shower_enclosure=shower_enclosure)[0]
     if air_handler_installation is not None and symbol == "gree-flexx-ultra-24-horizontal":
         from typehaus.model.placeable_symbols._flexx_installation import installation_strokes
 
@@ -273,6 +285,7 @@ def plan_symbol_strokes(symbol: str | None, width_m: float,
 
 def model_parts(symbol: str | None, width_m: float, depth_m: float,
                 height_m: float, *, shower_assembly: ShowerAssemblySpec | None = None,
+                shower_enclosure: ShowerEnclosure | None = None,
                 material_refs: Mapping[str, str] | None = None,
                 ports: Sequence[ServicePort] = (),
                 air_handler_installation: AirHandlerInstallation | None = None,
@@ -280,7 +293,8 @@ def model_parts(symbol: str | None, width_m: float, depth_m: float,
     """The generated 3D parts for ``symbol`` at a W×D×H size, in the local frame."""
     parts = (plenum_parts(width_m, depth_m, height_m, ports)
              if symbol == "sheet-metal-plenum"
-             else symbol_geometry(symbol, width_m, depth_m, height_m)[1])
+             else symbol_geometry(symbol, width_m, depth_m, height_m,
+                                  shower_enclosure=shower_enclosure)[1])
     if air_handler_installation is not None and symbol == "gree-flexx-ultra-24-horizontal":
         from typehaus.model.placeable_symbols._flexx_installation import installed_flexx_parts
         from typehaus.model.placeable_symbols._gree_flexx import CABINET_IN

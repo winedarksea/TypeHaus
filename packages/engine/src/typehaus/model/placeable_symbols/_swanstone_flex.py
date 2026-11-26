@@ -8,6 +8,7 @@ from math import cos, pi, sin
 
 from typehaus.model.placeable_symbols._frame import Part, box, circle, prism, rect
 from typehaus.model.placeable_symbols._mesh import mesh_part
+from typehaus.model.placeable_symbols._shower_door import leaf_sector
 from typehaus.model.placeable_symbols._swanstone_flex_config import BATH2_SHOWER
 
 
@@ -24,13 +25,11 @@ def door_swing_outline(width: float, depth: float) -> tuple[tuple[float, float],
     dimensions = BATH2_SHOWER
     sx, sy = width / dimensions.pan_width, depth / dimensions.pan_depth
     _, south = front_opening_limits(width)
-    pivot = south - dimensions.rail_width * sx
-    front = -depth / 2 + dimensions.threshold_depth * sy / 2
+    pivot = (south - dimensions.rail_width * sx,
+             -depth / 2 + dimensions.threshold_depth * sy / 2)
     radius = (dimensions.door_swing_radius + dimensions.handle_projection) * sx
-    return ((pivot, front), *(
-        (pivot - radius * cos(pi * i / (2 * dimensions.swing_segments)),
-         front - radius * sin(pi * i / (2 * dimensions.swing_segments)))
-        for i in range(dimensions.swing_segments + 1)))
+    return leaf_sector(pivot, (-1.0, 0.0), (0.0, -1.0), radius, 90.0,
+                       dimensions.swing_segments)
 
 
 def swanstone_flex(width: float, depth: float, height: float):

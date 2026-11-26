@@ -252,6 +252,7 @@ from typehaus.model.shower_assembly import (
     ShowerValveDimensions,
     ShowerValvePocket,
 )
+from typehaus.model.shower_enclosure import ShowerEnclosure
 from typehaus.model.sill_course import SillCourseFastening
 from typehaus.model.site import (
     Basemap,
@@ -431,6 +432,7 @@ for _name, _obj in (
     ("ClearanceZone", ClearanceZone), ("ServicePort", ServicePort),
     ("ShowerAssemblySpec", ShowerAssemblySpec), ("ShowerComponent", ShowerComponent),
     ("ShowerValveDimensions", ShowerValveDimensions), ("ShowerValvePocket", ShowerValvePocket),
+    ("ShowerEnclosure", ShowerEnclosure),
     ("PlanRepresentation", PlanRepresentation), ("ModelRepresentation", ModelRepresentation),
     ("Location", Location), ("WallAttachment", WallAttachment), ("Mount", Mount),
 ):
@@ -546,7 +548,7 @@ __all__ = [
     "ClearZone", "PlacementStrategy", "MountKind", "ClearancePolicy",
     "Footprint2D", "CountertopHole", "ClearanceZone",
     "ServicePort", "PortCertainty", "ShowerAssemblySpec", "ShowerComponent",
-    "ShowerValveDimensions", "ShowerValvePocket",
+    "ShowerValveDimensions", "ShowerValvePocket", "ShowerEnclosure",
     "PlanRepresentation", "ModelRepresentation", "Location", "WallAttachment",
     "Mount",
     "Length", "Area", "Angle", "Pitch", "RValue", "UFactor", "Temperature", "Point2D",

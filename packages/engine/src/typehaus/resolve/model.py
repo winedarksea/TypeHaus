@@ -1855,6 +1855,8 @@ class ResolvedModel:
     conduits: list[ResolvedConduitRun] = field(default_factory=list)
     # Derived device boxes, one per boxed wall device (→ resolve/device_boxes.py, #93).
     device_boxes: list[Any] = field(default_factory=list)
+    # A shower's door in world space and its free swing (→ resolve/shower_enclosures.py, #152).
+    shower_enclosures: list[Any] = field(default_factory=list)
     # Derived NEC labels, one record per label (→ resolve/electrical_labels.py).
     electrical_labels: list[Any] = field(default_factory=list)
     # One head per Alarm: point and body for viewer/GLB/IFC (→ resolve/alarm_heads.py).

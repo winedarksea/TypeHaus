@@ -721,6 +721,8 @@ export interface CanvasObject {
   footprint?: Vec2[];
   required_clearances?: Vec2[][];
   recommended_clearances?: Vec2[][];
+  /** A shower door's leaf sweep, as an opening's `swing_clearance` (resolve/shower_enclosures.py). */
+  door_swing?: Vec2[];
   framing_bumper?: Vec2[];
   ports?: { tag: string; service: string }[];
   plan_svg?: string | null;

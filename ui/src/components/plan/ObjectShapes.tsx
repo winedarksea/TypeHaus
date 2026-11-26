@@ -274,7 +274,8 @@ export const ClearanceOverlays = memo(function ClearanceOverlays({ model, storey
     ...(model.furniture ?? []).map((item) => ({ ...item, kind: "furniture" as const })),
   ].filter((item) => (!storey || item.storey === storey) && item.clearance_m);
   const resolvedItems = (model.canvas_objects ?? []).filter((item) =>
-    (!storey || item.storey === storey) && ((item.required_clearances?.length ?? 0) > 0 || (item.recommended_clearances?.length ?? 0) > 0));
+    (!storey || item.storey === storey) && ((item.required_clearances?.length ?? 0) > 0 || (item.recommended_clearances?.length ?? 0) > 0
+      || (item.door_swing?.length ?? 0) > 0));
   const openingOverlays = model.openings.filter((opening) => {
     const host = openingHostWall(model.walls, opening);
     return (!storey || host?.storey === storey) && ((opening.swing_clearance?.length ?? 0) > 0 ||
@@ -288,6 +289,9 @@ export const ClearanceOverlays = memo(function ClearanceOverlays({ model, storey
     fill={required ? "var(--canvas-selection)" : "var(--canvas-wood-soft)"}
     fillOpacity={0.22} stroke={required ? "var(--error)" : "var(--canvas-wood)"}
     strokeDasharray="4 3" strokeWidth={required ? 1.4 : 1} />)}
+  {resolvedItems.filter((item) => (item.door_swing?.length ?? 0) > 0).map((item) =>
+    <polygon key={`door-swing-${item.uid}`} points={item.door_swing!.map((point) => project(point).join(",")).join(" ")}
+      fill="var(--canvas-wood-soft)" fillOpacity={.22} stroke="var(--canvas-wood)" strokeDasharray="4 3" strokeWidth={1} />)}
   {openingOverlays.map((opening) => <g key={`opening-overlay-${opening.uid}`}>
     {opening.swing_clearance && <polygon points={opening.swing_clearance.map((point) => project(point).join(",")).join(" ")}
       fill="var(--canvas-wood-soft)" fillOpacity={.22} stroke="var(--canvas-wood)" strokeDasharray="4 3" strokeWidth={1} />}

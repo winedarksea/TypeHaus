@@ -186,10 +186,12 @@ def _symbol_geometry(item: Any, footprint: Any, wood: Any | None = None,
     else:
         # Not one build for both halves: some builders' strokes do read the height.
         strokes = plan_symbol_strokes(symbol, width_m, depth_m,
-                air_handler_installation=getattr(item, "air_handler_installation", None))
+                air_handler_installation=getattr(item, "air_handler_installation", None),
+                shower_enclosure=getattr(item, "shower_enclosure", None))
         parts = model_parts(model_symbol, width_m, depth_m, height_m,
                 air_handler_installation=getattr(item, "air_handler_installation", None),
                 shower_assembly=getattr(item, "shower_assembly", None),
+                shower_enclosure=getattr(item, "shower_enclosure", None),
                             ports=getattr(item, "ports", ()),
                             material_refs=getattr(getattr(item, "model_representation", None),
                                                   "material_refs", None)) if with_parts else ()
@@ -276,6 +278,8 @@ def resolved_canvas_objects(
     from typehaus.resolve.suspension import hung_types
 
     luminaires = hung_types(model.plan.library)
+    # A shower's leaf sweep (→ resolve/shower_enclosures.py), drawn like an opening's swing.
+    door_swings = {r.tag: r.sector for r in model.shower_enclosures if r.sector}
     placeables = [{
         "uid": item.uid, "tag": item.tag, "storey": item.storey, "kind": item.kind,
         "type": item.type_ref, "domain": item.domain, "room": item.room,
@@ -296,6 +300,7 @@ def resolved_canvas_objects(
                                 for polygon in item.required_clearances],
         "recommended_clearances": [[list(point) for point in polygon]
                                    for polygon in item.recommended_clearances],
+        "door_swing": [list(point) for point in door_swings.get(item.tag, ())],
         # Tag of the furniture set this object belongs to (a table and its chairs), or null.
         "placement_group": item.placement_group,
         # Feeding circuit for the placeables that consume power, else null.
