@@ -112,6 +112,7 @@ from typehaus.checks.mep import (  # noqa: F401 - register
     run_in_slab,
     run_interference,
     shower_assembly,
+    shower_door,
     soakaway_storage,
     standby_capacity,
     sump_discharge,

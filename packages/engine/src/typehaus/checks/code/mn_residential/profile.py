@@ -410,6 +410,10 @@ MN_2020 = JurisdictionProfile(
                        ("MN Plumbing Code (ch. 4714) 608.5",
                         "MN Plumbing Code (ch. 4714) 507.5",
                         "MN Plumbing Code (ch. 4714) 604.13"), blocking=False),
+        # UPC 408.5 via Minn. R. 4714.0050 (4714.0408 amends only 408.7): the shower door
+        # opens to 22" clear. IRC P2708.1 is struck with ch. 25-33 (#152).
+        PermitItemSpec("Shower door opening", ("code.MN_4714_0408_shower_door",),
+                       ("MN Plumbing Code (ch. 4714) 408.5",)),
         PermitItemSpec("Smoke / CO alarm placement",
                        ("code.R314_R315_alarms", "code.R315_garage_alarms"),
                        ("IRC R314", "IRC R315")),
