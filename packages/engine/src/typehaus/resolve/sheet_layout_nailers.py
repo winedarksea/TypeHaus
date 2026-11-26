@@ -5,7 +5,8 @@ courses, so its vertical edges are bare between them; the panel maker wants ever
 2x framing. A furring band with ``FramingSpec.panel_joint_nailers`` takes a nailer of its
 own stock, laid flat in its plane and cut between the courses, at each vertical joint: one
 piece per bare span the courses, jamb posts and ladders leave (``unbacked_spans``), never
-below the band's own start (the panel's foot over a screened base stays bare). A joint
+below the band's own start (the panel's foot over a screened base stays bare). The run's
+two end edges take one too, flush with the panel's end (``end_stations``). A joint
 whose nailer would clash with an opening or another member is not placeable, and the
 column walk moves the joint instead (``sheet_layout.lay_run``).
 """
@@ -88,11 +89,11 @@ def nailer_spans(ctx, spec: NailerSpec, x: float) -> list[tuple[float, float]] |
     return spans
 
 
-def nailers_at(run, frame_of, spec: NailerSpec, ctx, breaks: list[float]):
+def nailers_at(run, frame_of, spec: NailerSpec, ctx, breaks: list[float], label: str = ""):
     """``(wall tag, member, rect)`` per nailer piece at every placeable joint in ``breaks``.
 
-    ``frame_of(face)`` is the face's ``Frame``; a piece is keyed on its wall and the joint's
-    index along the run, so a re-resolve mints the same keys."""
+    ``frame_of(face)`` is the face's ``Frame``; a piece is keyed on its wall, ``label`` and
+    the joint's index along the run, so a re-resolve mints the same keys."""
     out = []
     for index, x in enumerate(breaks):
         spans = nailer_spans(ctx, spec, x)
@@ -104,12 +105,18 @@ def nailers_at(run, frame_of, spec: NailerSpec, ctx, breaks: list[float]):
         point = (frame.origin[0] + frame.d[0] * x + frame.n[0] * offset,
                  frame.origin[1] + frame.d[1] * x + frame.n[1] * offset)
         for piece, (a, b) in enumerate(spans):
-            key = f"{NAILER_PREFIX}{spec.band}-{index:03d}-{piece}"
+            key = f"{NAILER_PREFIX}{spec.band}-{label}{index:03d}-{piece}"
             member = FramedMember(face.wall.uid, key, STRAPPING_CATEGORY, spec.profile, point,
                                   point, a, b, b - a, orient=frame.n, material=spec.material)
             out.append((face.wall.tag, member,
                         Rect(x - spec.face_m / 2.0, x + spec.face_m / 2.0, a, b, key)))
     return out
+
+
+def end_stations(run, spec: NailerSpec) -> list[float]:
+    """Where an end nailer centres: flush with each end of the run, under the panel's edge."""
+    half = spec.face_m / 2.0
+    return [run.lo + half, run.hi - half] if run.hi - run.lo > 2.0 * spec.face_m else []
 
 
 def with_nailers(model, by_wall: dict[str, list]) -> None:

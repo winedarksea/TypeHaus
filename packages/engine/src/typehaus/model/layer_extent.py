@@ -28,3 +28,18 @@ class LayerExtent(HausModel):
 
     bottom: LayerBound | None = None   # None -> the wall's base
     top: LayerBound | None = None      # None -> the wall's top
+
+
+class SkinOverrun(HausModel):
+    """The outboard layers of a wall carried past its axis ends, over the face beside it.
+
+    A framed run whose node stops short of the wall it meets (its concrete neighbour owns
+    the last inches) would leave its rainscreen open there. ``from_layer`` and every layer
+    outboard of it run ``start``/``end`` further along the axis; the layers inboard stay
+    on the node. Furring courses run to the band's end and a sheet-laid panel lays its
+    columns, battens and end nailers over the longer run. Measured in plan, never negative.
+    """
+
+    from_layer: str
+    start: Length = inch(0)
+    end: Length = inch(0)

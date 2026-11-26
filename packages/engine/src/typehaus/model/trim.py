@@ -245,6 +245,9 @@ class GlazingTrim(_EdgeRun):
 class MovementJoint(_EdgeRun):
     """A masonry wythe's soft end joint: a seal over a compressible backer or filler.
 
+    Hosted on a slab or an isolation board instead, it is a plain sealant joint
+    (``resolve/edge_runs.edge_run_category``); ``vertical=False`` lays it along ``path``.
+
     Vertical by construction: ``path`` spans the joint WIDTH across the gap in plan (wythe end
     face to the face it stands off), ``depth`` is the run up the wythe, ``thickness`` the
     seal's depth. ``host_ref`` is the wythe, ``abuts`` the rigid element beyond the gap.

@@ -162,6 +162,8 @@ def edge_run_host(ctx: CheckContext) -> list[Finding]:
         if solid is not None:
             gap = _plan_gap(run.path, getattr(solid, "outline", None))
             low, high = _top_range(solid)
+            if getattr(run, "vertical", False) and getattr(solid, "z0_m", None) is not None:
+                low = min(low, solid.z0_m)  # a vertical joint may stop anywhere up its host
             top = run.top_elevation.meters
             if gap is not None and gap > _PLAN_TOLERANCE_M:
                 findings.append(failed(

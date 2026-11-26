@@ -189,10 +189,22 @@ def frame_wall_furring(
             members.extend(_layout_vertical(
                 rw, resolved, spec, band_openings, line, continuations))
         else:
-            butted = ((rw.tag, "start") in l_ends, (rw.tag, "end") in l_ends)
+            overrun = _overrun_ends(plan, rw.tag)
+            butted = ((rw.tag, "start") in l_ends or overrun[0],
+                      (rw.tag, "end") in l_ends or overrun[1])
             members.extend(_layout_horizontal(
                 rw, resolved, spec, band_openings, line, continuations, butted))
     return tuple(members), findings
+
+
+def _overrun_ends(plan: PlanModel, tag: str) -> tuple[bool, bool]:
+    """Ends where a ``SkinOverrun`` carries the band past the node: its courses run to the
+    band's end, as at a butt-cut L (``course_extent``)."""
+    by_tag = getattr(plan, "by_tag", None)
+    overrun = getattr(by_tag(tag), "skin_overrun", None) if by_tag is not None else None
+    if overrun is None:
+        return False, False
+    return overrun.start.meters > 0.0, overrun.end.meters > 0.0
 
 
 def _layout_vertical(rw: ResolvedWall, layer, spec, openings: list[ResolvedOpening],

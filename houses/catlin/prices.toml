@@ -6999,6 +6999,10 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 # GE SCS2000, Pecora 890NST as equals) and rod run ~$2-5/LF; the Emseal 4" stick is gone.
 # Labour is a mason's small lump spread over the run. notes/sunken_garden_veneer_beam.md §6k.
 "movement_joint" = { material = { low = 2, high = 5 }, labour = { low = 10, high = 20 } }  # 14.9 LF — MJ-B-BRICK-E/-W
+# The LP court face's sealant joints (params/court_face.py `_LP_JOINTS`, 2026-11-25): the two
+# stem-board caps (8.0 LF each, 2 5/8" wide over rod) and the rim slab's 0.69" joint to the
+# curbs (17.0 LF). ESTIMATE at the movement-joint rate; no sealant quote.
+"sealant_joint" = { material = { low = 2, high = 5 }, labour = { low = 10, high = 20 } }  # 33.0 LF
 "drip_flashing" = { material = { low = 1, high = 3 }, labour = { low = 1, high = 2 } }  # 123.9 LF (re-read 2026-11-21) — 17.9 LF balcony drip TR-SG-DRIP-1..4 + 19.5 LF balcony gutter apron (TR-SG-APRON, 2026-10-31) + 80.0 LF garage STEM_TOP_Z_FLASHING + 5.4 LF TR-BW-SCREEN-TOP (PVDF aluminium over the west screen cladding top, 2026-11-20; over the posts since 2026-11-21) + 1.1 LF TR-BW-SCREEN-END-S/-N end caps. The 321.6 LF of derived roof-edge drip (house 149.7 + garage/canopy 171.9) bills as Image II pieces since 2026-10-27: 52124XX Extended Eave and 52126XX Rake sticks in [cladding_trim]. $1-2/LF on a NEW roof (retrofit is $3-7). Material is high for mill aluminium and right for the prefinished dark Kynar this house uses. Commonly inside the roofer's price — check for a double count against any roofing bid
 # 251.8 LF in three runs (81.2 / 96.4 / 74.2): the wall-top closure band, wall-panel metal that
 # the roof edge closes between the wall cladding and the roofing (resolve/roof_edge._closure_segment).

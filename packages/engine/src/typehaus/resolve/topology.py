@@ -264,9 +264,17 @@ def resolve_wall_geometry(plan: PlanModel, wall, storey_tag: str, z0: float,
         if not cavity:
             pos += add_t
 
-    def _ring(span_in: float, span_out: float):
+    overrun = getattr(wall, "skin_overrun", None)
+    overrun_from = next((i for i, layer in enumerate(stack)
+                         if overrun is not None and layer.name == overrun.from_layer), None)
+
+    def _ring(span_in: float, span_out: float, index: int = -1):
+        # A SkinOverrun carries the named layer and every one outboard past the axis ends.
+        more = overrun_from is not None and index >= overrun_from
         return rect_between(p0, p1, (span_in - axis_from_int) * outward_sign,
-                            (span_out - axis_from_int) * outward_sign, ext0, ext1)
+                            (span_out - axis_from_int) * outward_sign,
+                            ext0 + (overrun.start.meters if more else 0.0),
+                            ext1 + (overrun.end.meters if more else 0.0))
 
     grade_m = site_grade_elevation_m_from_plan(plan)
     datums = band_datums(z0, z1, grade_m, line)
@@ -309,7 +317,7 @@ def resolve_wall_geometry(plan: PlanModel, wall, storey_tag: str, z0: float,
         # A band that resolves to the wall's own ends is not a band on THIS wall.
         band_z0, band_z1 = band_ends_on_wall(band_z0, band_z1, z0, z1)
         run_span = getattr(layer, "run_span", None)
-        ring = _ring(span_in, span_out)
+        ring = _ring(span_in, span_out, index)
         resolved_run = None
         if run_span is not None:
             run_length = math.hypot(p1[0] - p0[0], p1[1] - p0[1])
@@ -361,7 +369,8 @@ def resolve_wall_geometry(plan: PlanModel, wall, storey_tag: str, z0: float,
                     material_ref=fill.material_ref,
                     function=LayerFunction.INSULATION.value,
                     thickness_m=fill_t,
-                    polygon=_ring(span_in + fill_offset, span_in + fill_offset + fill_t),
+                    polygon=_ring(span_in + fill_offset, span_in + fill_offset + fill_t,
+                                  index),
                     control=frozenset(c.value for c in fill.control),
                     is_cavity=True,
                     cavity_host=layer.name,

@@ -38,6 +38,7 @@ from typehaus.resolve.sheet_layout_backing import (
 )
 from typehaus.resolve.sheet_layout_nailers import (
     cladding_backing,
+    end_stations,
     nailer_spans,
     nailer_spec,
     nailers_at,
@@ -175,8 +176,11 @@ def lay_run(model, run: Run, params, nailers: dict[str, list] | None = None
         s_breaks = walk(lo, hi, size_s, s_faces, params.bearing,
                         lambda x: _vertical_cost(ctx, x), params.min_rip, _GAP_TOL_M,
                         from_hi=from_hi)
-    derived = (nailers_at(run, lambda f: frames[id(f)], first.nailer, ctx, s_breaks)
-               if first.nailer is not None and ctx.framed else [])
+    derived = []
+    if first.nailer is not None and ctx.framed:
+        derived = (nailers_at(run, lambda f: frames[id(f)], first.nailer, ctx, s_breaks)
+                   + nailers_at(run, lambda f: frames[id(f)], first.nailer, ctx,
+                                end_stations(run, first.nailer), "end-"))
     for tag, member, rect in derived:
         rects.append(rect)
         if nailers is not None:

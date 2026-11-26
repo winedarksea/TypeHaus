@@ -35,8 +35,7 @@ new engine path. The window keeps the dark head, by the owner's rule (only if si
 **The tread.** D-B-SUNKEN's foam-bed Trex tread drains off its nose onto the rim slab
 (`drain_slab_ref="SL-SG-FLOOR"`): the nose clears the slab's north edge by 0.77" and drops
 5.24" to it. The slab now runs north to the curb's coated foam, a 0.69" joint (the coating takes
-no depth in the model, so 1/2" off its 1/8" face). The model carries no sealant for that joint;
-it is priced below by hand.
+no depth in the model, so 1/2" off its 1/8" face), sealed since 2026-11-25 (section 2a).
 
 ## 1. Wind read (ESR-1301 Table 3B)
 
@@ -100,8 +99,9 @@ laid as one run.
 
 **Inputs.**
 
-- Run: W-B-S2-FR x 118 to 216 (98"), W-B-S3-FR x 216 to 314 (98"): **196"**, both ends free
-  (no through corner). The layout is **centred** (`SheetLayoutStandard.centre_cladding`, owner
+- Run: W-B-S2-FR x 118 to 216 (98"), W-B-S3-FR x 216 to 314 (98"): 196" between the nodes,
+  and the skin runs 3 3/4" past each end to the court walls (section 2a): s -3.75 to 199.75,
+  **203.5"**, both ends free (no through corner). The layout is **centred** (`SheetLayoutStandard.centre_cladding`, owner
   2026-11-25): equal end columns, for the look.
 - Band: the panel's foot stands on the base strip, -102 3/16 (wall base) + 1" (base trim
   rise) + 0.032" (strip) = **-101.1555"**, to -13 7/16", where W-M-S1/S2's cladding begins
@@ -120,20 +120,21 @@ laid as one run.
   flat) centred at s 104 19/32 and 171 13/32, from the wall base -102 3/16 to -17 9/16; the
   buck's 3/8" jamb legs inside the RO. Its casing and head trim span s 101.84 to 174.16.
 
-**Joints.** 196 / 48 = 4 modules and 4" over; 4/2 = 2" end columns are under the 12" rip, so
-one module goes to the ends: (196 - 3 x 48) / 2 = **26"** each. Joints at s **26, 74, 122,
-170** (x 144, 192, 240, 288). s 26 and 74 stand 17" clear of WIN-B-SAUNA's RO either side and
+**Joints.** 203.5 / 48 = 4 modules and 11.5" over; 5.75" end columns are under the 12" rip, so
+one module goes to the ends: (203.5 - 3 x 48) / 2 = **29.75"** each. Joints at s **26, 74,
+122, 170** (x 144, 192, 240, 288), where they were on the 196" run: the run grew equally both
+ends. s 26 and 74 stand 17" clear of WIN-B-SAUNA's RO either side and
 24" from its centre (s 50), so no joint crosses the window. s 122 crosses D-B-SUNKEN over its
 head. s 170 is 11/32" past the door's RO edge, under its casing (to s 174.16).
 
-**Sheets.** Columns 0-26 and 26-74 (W-B-S2-FR, the second cut round the window), 74-122
-(across the wall split at s 98, cut round the door), 122-170 (door, W-B-S3-FR), 170-196
-(W-B-S3-FR). The two 26" end columns cannot share a 47.81" sheet (52"), and their 22" offcuts
-fit no other column. **5 sheets**: W-B-S2-FR 2, W-B-S3-FR 2, one across the split.
+**Sheets.** Columns -3.75-26 and 26-74 (W-B-S2-FR, the second cut round the window), 74-122
+(across the wall split at s 98, cut round the door), 122-170 (door, W-B-S3-FR), 170-199.75
+(W-B-S3-FR). The two 29.75" end columns cannot share a 47.81" sheet (59.5"), and their 18"
+offcuts fit no other column. **5 sheets**: W-B-S2-FR 2, W-B-S3-FR 2, one across the split.
 
-- Gross 196 x 87.718 = 17,192.7 in2. Window 14 x 24 = 336.0; door 63.3125 x (-21.0625 +
-  101.1555 = 80.093) = 5,070.9. Net **11,785.8 in2 = 81.8 ft2**.
-- Bought 5 x 32 = 160 ft2: 78.2 ft2 of offcut, 49% of what is bought (the door takes most).
+- Gross 203.5 x 87.718 = 17,850.6 in2. Window 14 x 24 = 336.0; door 63.3125 x (-21.0625 +
+  101.1555 = 80.093) = 5,070.9. Net **12,443.7 in2 = 86.4 ft2**.
+- Bought 5 x 32 = 160 ft2: 73.6 ft2 of offcut, 46% of what is bought (the door takes most).
 
 **Joint nailers** (KDAT 2x4 flat, 3 1/2" on the panel, cut between courses; ESR-1301 s.4.3).
 s 26 and 74 lie clear of the window, so every course runs through both.
@@ -144,8 +145,9 @@ s 26 and 74 lie clear of the window, so every course runs through both.
 | s 74 | as s 26 | 63.5625 |
 | s 122 | head ladder top -17 9/16 to top course -15 3/8 | 2.1875 |
 | s 170 | as s 122 (below it, the jamb post backs the joint) | 2.1875 |
+| s -1.875, 197.875 (end nailers, flush with each panel end) | as s 26, each | 2 x 63.5625 |
 
-**14 pieces, 131.5" = 10.96 LF.** At s 170 the joint's 7/16" bearing either side (s 169 9/16
+**26 pieces, 258.625" = 21.55 LF.** At s 170 the joint's 7/16" bearing either side (s 169 9/16
 to 170 7/16) lies on the jamb post (169 21/32 to 173 5/32) with the buck's jamb leg beside it
 (169 9/32 to 169 21/32), from the wall base up; above the head ladder, the nailer. No nailer
 goes under the starter course: it would stand on the aluminium base strip (AWC DCA6). So the
@@ -167,6 +169,44 @@ trim hosted on it:
 
 **2 pieces, 175.44" = 14.62 LF**, cut from **1 stick** (87.718 x 2 + kerf in 192"). The two
 battens frame WIN-B-SAUNA symmetrically, 48" apart.
+
+## 2a. Court-wall ends (owner, 2026-11-25)
+
+The framed runs stop 4" short of each court wall: W-B-S1/S4's pour laps 4" past W-SG-W1/E1's
+court face (x 114 to 118 and 314 to 318), and N-B-S1 cannot move (W-B-SA-W, the sauna's west
+wall, tees there). The panel stopped at the node, so that strip showed the pour's XPS, coated
+only above -40" as if buried. Now (`Wall.skin_overrun`, engine):
+
+- **The skin runs on.** W-B-S2-FR/S3-FR carry the vent gap, girts, panel and paint 3 3/4" past
+  their open ends, over W-B-S1/S4's XPS (face -4.06", the ccSPF's plane within 1/16"), to
+  1/4" off the stem board's court edge. The curbs' coating runs 4" on, to the board.
+- **Girts.** Every course runs to the band's end (x 114.25 / 317.75). Its end block is the
+  framed run's end block at x 118.75-122.25 (W) and the mirror (E), so a girt end reaches
+  **4 1/2"** past it, where it reached 3/4" before. No block can go over the pour (no screw in
+  the house's list fastens through 6" of wood and 4" of XPS into concrete). Load on the tail:
+  16/12 x 3.75/12 = 0.417 ft2 x 33.2 psf = 13.8 lb ultimate per course, centred ~2.6" off the
+  block: 36 lb-in on a flat 2x4 (S = 1.5^2 x 3.5 / 6 = 1.31 in3), 28 psi. Trivial, but it is a
+  short cantilever, which nothing in the engine grades.
+- **Panel edge.** ESR-1301 s.4.3 puts every panel edge on framing: each end takes a KDAT 2x4
+  nailer flat in the girt plane, flush with the panel end, cut between the courses (six pieces
+  each) like the joint nailers. The engine now derives an end nailer at both ends of
+  any sheet-laid panel run whose girts ask for joint nailers.
+- **Seals** (`params/court_face.py` `_LP_JOINTS`, category `sealant_joint`, siding crew).
+  MJ-SG-W1/E1-STEM: each stem board's 2 1/2" court edge, slab to panel top (W-M-S1/S2's skin
+  covers it above), capped 1/4"
+  deep flush with the court face over closed-cell rod, paintable ASTM C920 Class 50 (the board
+  moves with the court), painted with the panel: the cap is also the panel's butt joint (LP AI
+  2024 p.11). It keeps UV off the XPS edge. MJ-SG-CURB: the rim slab's 0.69" joint to the
+  curbs, Grade P traffic seal over rod, between the caps. **33.0 LF, ESTIMATE $396-825** at the
+  movement-joint rate (`prices.toml` `sealant_joint`); it may overlap the envelope sealant
+  allowance.
+- **Still open (owner).** (1) D-B-SUNKEN's 60 psi XPS tread bed stands proud of the coated curb
+  with its front face open; it wants the curb's Tuff II coat (or a Trex fascia) over that
+  face, and the door installation has no field for either. (2) TB-SG-W1/E1 (the footing-level
+  boards, y -6 to -4) top out flush with the rim slab, which runs over 1 1/4" of them at x 114
+  to 150 and 282 to 318: the model has slab and board in one volume (it draws as a pink sliver
+  at each corner). Either the board stops under the slab there (its bearing area feeds the
+  court sliding free body) or the slab stops on the board.
 
 ## 3. Base and clearances (AI 2024, confirmed for panel)
 
@@ -222,10 +262,10 @@ LP default against the `court-face-brick` house, both with the structure lane's 
 | rim slab to the curb, capillary stone, allowances, sealants | +100 | +199 |
 | **total** | **-2,792** | **-4,954** |
 
-Not in the takeoff, added by hand: the 0.69" rim-slab-to-curb joint, ~17 LF of sealant at the
-movement-joint rate, **ESTIMATE +$200-425**. The W-M-S1/S2 BBD75 panels above now bill their
-base C-closure (+37 LF, +$138-205: their panel end no longer stops on a perforated strip,
-because the LP cavity runs on below), included above. Prices are retail and published labour
+The 0.69" rim-slab-to-curb joint, added here by hand until 2026-11-25, is in the takeoff now
+with the two stem caps (section 2a, +$396-825, not in the table above). The W-M-S1/S2
+BBD75 panels above now bill their base C-closure (+37 LF, +$138-205: their panel end no longer
+stops on a perforated strip, because the LP cavity runs on below), included above. Prices are retail and published labour
 bands (2026-11-24); no Twin Cities yard quote yet (4x8 smooth panel, KDAT 2x4).
 
 ## 6. Switching back to brick

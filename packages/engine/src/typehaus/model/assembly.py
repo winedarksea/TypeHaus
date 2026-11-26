@@ -17,6 +17,7 @@ from typehaus.model.enums import (
 )
 from typehaus.model.layer_extent import LayerBound as LayerBound
 from typehaus.model.layer_extent import LayerExtent as LayerExtent
+from typehaus.model.layer_extent import SkinOverrun as SkinOverrun
 from typehaus.model.refs import LayerSpan
 from typehaus.model.registry import register_constructor
 from typehaus.model.sheathing_nailing import SheathingNailing
@@ -641,6 +642,7 @@ for _name, _obj in (
     ("Layer", Layer),
     ("LayerBound", LayerBound),
     ("LayerExtent", LayerExtent),
+    ("SkinOverrun", SkinOverrun),
     ("CavityFill", CavityFill),
     ("FramingSpec", FramingSpec),
     ("MasonrySpec", MasonrySpec),

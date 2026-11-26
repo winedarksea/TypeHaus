@@ -306,6 +306,7 @@
     "roof_panel_hem": 14277598,
     "roof_truss": 11699540,
     "screen_slat": 10384711,
+    "sealant_joint": 10066324,
     "seam_clamp": 12106431,
     "seat_cut": 9725501,
     "shadow_gap": 3026480,
@@ -548,6 +549,7 @@
     "roof_panel_hem": 14277598,
     "roof_truss": 11699540,
     "screen_slat": 10384711,
+    "sealant_joint": 10066324,
     "seam_clamp": 12106431,
     "seat_cut": 9725501,
     "shadow_gap": 3026480,
@@ -867,6 +869,9 @@
     "screen_slat": [
       "siding"
     ],
+    "sealant_joint": [
+      "siding"
+    ],
     "seam_clamp": [
       "roofing"
     ],
@@ -1038,6 +1043,7 @@
     "ridge_cap": "roofing",
     "ro_stub": "plumbing",
     "screen_slat": "siding",
+    "sealant_joint": "siding",
     "seam_clamp": "roofing",
     "shutoff": "plumbing",
     "sill_gasket": "framing",

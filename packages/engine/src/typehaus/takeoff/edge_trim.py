@@ -100,6 +100,7 @@ def edge_trim_runs(model: ResolvedModel) -> list[dict[str, object]]:
     The one walk ``edge_trim_takeoff`` folds and ``takeoff/trim_fasteners.py`` counts off.
     """
     from typehaus.model.trim import EaveSoffit, Fascia, Flashing, MovementJoint
+    from typehaus.resolve.edge_runs import edge_run_category
 
     runs: list[dict[str, object]] = []
     for storey in model.plan.storeys:
@@ -123,7 +124,8 @@ def edge_trim_runs(model: ResolvedModel) -> list[dict[str, object]]:
             if isinstance(element, MovementJoint) and element.backer:
                 material = f"{material} over {element.backer}"  # one installed joint per LF
             runs.append({
-                "category": element.kind.value,
+                "category": (edge_run_category(model.plan, element)
+                             if isinstance(element, MovementJoint) else element.kind.value),
                 "profile": _section_profile(face_m, element.thickness.meters),
                 "material": material, "tag": element.tag, "storey": storey.tag,
                 "length_m": length_m,

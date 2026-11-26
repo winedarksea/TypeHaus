@@ -127,6 +127,8 @@ def _edge_trade(row: Mapping[str, Any]) -> str | None:
         return "siding"
     if category == "movement_joint":
         return "masonry"               # the mason seals the wythe's own end joints
+    if category == "sealant_joint":
+        return "siding"                # caulked with the cladding it closes
     return "roofing" if category else None
 
 

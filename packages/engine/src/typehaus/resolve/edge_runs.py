@@ -43,13 +43,23 @@ _TRIM_CATEGORY = {
 }
 
 
+def edge_run_category(plan, el) -> str:
+    """The solid category of an edge run. A ``MovementJoint`` on a wall is the mason's; one
+    on a slab or an isolation board is a ``sealant_joint``, the siding crew's caulk."""
+    if el.kind is TrimKind.MOVEMENT_JOINT and el.host_ref:
+        host = plan.by_tag(el.host_ref) if plan is not None else None
+        if host is not None and host.element_kind not in ("Wall", "FoundationWall"):
+            return "sealant_joint"
+    return _TRIM_CATEGORY.get(el.kind.value, "flashing")
+
+
 def resolve_edge_run(model: ResolvedModel, el, storey: str) -> None:
     path = [p.xy_m for p in el.path]
     if len(path) < 2:
         return
     if el.kind is TrimKind.GUTTER and resolve_formed_gutter(model, el, storey):
         return  # a catalog gutter whose whole formed piece is transcribed
-    category = _TRIM_CATEGORY.get(el.kind.value, "flashing")
+    category = edge_run_category(getattr(model, "plan", None), el)
     section = getattr(el, "section", None)
     if section is not None:
         if el.vertical:

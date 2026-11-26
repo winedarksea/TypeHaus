@@ -96,12 +96,17 @@ def restore_coatings(walls: list, taken: dict[str, tuple]) -> list:
             hosts = hosts[:1] + [ly for ly in original[index + 1:]
                                  if not (ly.coating or ly.is_cavity)][:1]
             ring = list(layer.polygon)
+            own = [_coords(origin, tangent, normal, p)[0] for p in layer.polygon]
             for host in hosts:
                 along = [t for t, n in (_coords(origin, tangent, normal, p)
                                         for p in solved.get(host.name, host).polygon)
                          if abs(n - offset) <= 1e-6]
                 if len(along) >= 2:
-                    start, end = min(along), max(along)
+                    # A coating carried past its host's raw ends (a ``SkinOverrun``) keeps
+                    # that reach beyond the host's solved face; every other coating has none.
+                    raw = [_coords(origin, tangent, normal, p)[0] for p in host.polygon]
+                    start = min(along) - max(0.0, min(raw) - min(own))
+                    end = max(along) + max(0.0, max(own) - max(raw))
                     if layer.run_span_m is not None:
                         start = max(start, layer.run_span_m[0])
                         end = min(end, layer.run_span_m[1])

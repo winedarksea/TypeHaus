@@ -194,6 +194,10 @@ a release or for exhaustive local verification.
 - **A pour slab stops at what it is cast against; a rim band has one wall** (decision #107):
   `resolve/slab_clip.py` cuts flush footings and through-walls out of the slab; read the slab
   as a floor through `floor_plan`. A wall dropping to a foundation owns its band outright.
+- **`Wall.skin_overrun` carries a wall's outboard layers past its axis ends** (`SkinOverrun`,
+  `from_layer` outward, `resolve/topology.py`): furring courses run to the band end, a sheet-laid
+  panel lays over the longer run and takes an end nailer each end, and a coating keeps the reach
+  past its host (`resolve/coatings.py`). A `MovementJoint` not hosted on a wall is a `sealant_joint`.
 - **A wall stands on the subfloor; its sills stay on the datum** (decision #110):
   `ResolvedWall.frame_base_z_m` (plates, studs, `resolve/plate_seat.py`) vs `base_ref_z_m`
   (every `sill_m`, backing band and girt course). Never measure framing off `base_ref_z_m`.

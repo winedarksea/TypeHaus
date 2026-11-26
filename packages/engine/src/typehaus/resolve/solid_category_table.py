@@ -143,6 +143,7 @@ ROWS: tuple[C, ...] = (
       ifc_object_type="INSECTSCREEN", finish_group="accessory", billed_elsewhere=True),
     _trim("screen_slat", "siding", ifc=_FOOTING, elevation=None, finish=None),
     _trim("movement_joint", "masonry"),  # a brick wythe's sealant end joint
+    _trim("sealant_joint", "siding"),  # a sealant joint on a slab or an isolation board
     # Stormwater, gutter to daylight.
     _drain("gutter", _PIPE, "GUTTER", elevation="trim", trade="gutters"),
     _drain("downspout", _PIPE, "RIGIDSEGMENT", elevation="trim", trade="gutters"),

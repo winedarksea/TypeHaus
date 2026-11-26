@@ -6154,6 +6154,12 @@
 2,
 "937cfb09965b"
 ],
+"geometry/2QYJH3CTKV-00/body": [
+-2.7797125,
+-0.3413125,
+2,
+"c0fa4924d6c7"
+],
 "geometry/2S0EP92C13-box-support/body": [
 8.5423282,
 8.5714362,
@@ -6946,6 +6952,42 @@
 8,
 "4473ce807724"
 ],
+"geometry/3BF9ZDQPT1::framing/member:nailer-outer-girt-end-000-0": [
+-2.4495125,
+-2.2717125,
+8,
+"490d596b16a2"
+],
+"geometry/3BF9ZDQPT1::framing/member:nailer-outer-girt-end-000-1": [
+-2.1828125,
+-1.8653125,
+8,
+"767c4ca82f20"
+],
+"geometry/3BF9ZDQPT1::framing/member:nailer-outer-girt-end-000-2": [
+-1.7764125,
+-1.4589125,
+8,
+"e23952a11bc0"
+],
+"geometry/3BF9ZDQPT1::framing/member:nailer-outer-girt-end-000-3": [
+-1.3700125,
+-1.0525125,
+8,
+"4e198971082f"
+],
+"geometry/3BF9ZDQPT1::framing/member:nailer-outer-girt-end-000-4": [
+-0.9636125,
+-0.6461125,
+8,
+"4ea7fb7065e5"
+],
+"geometry/3BF9ZDQPT1::framing/member:nailer-outer-girt-end-000-5": [
+-0.5572125,
+-0.390525,
+8,
+"4473ce807724"
+],
 "geometry/3BF9ZDQPT1::framing/member:plate-bottom": [
 -2.5955625,
 -2.5574625,
@@ -7407,6 +7449,12 @@
 0.0762,
 2,
 "35faca7e176f"
+],
+"geometry/422VHQBG5R-00/body": [
+-2.7924125,
+-2.7797125,
+2,
+"40ec24dd8dc5"
 ],
 "geometry/45ZN1WN7QE-boot-1/body": [
 5.9309,
@@ -83668,6 +83716,12 @@
 914,
 "92567c4cd972"
 ],
+"geometry/XX7AHGSA0V-00/body": [
+-2.7797125,
+-0.3413125,
+2,
+"c0fa4924d6c7"
+],
 "geometry/XX9YQFJ8PT-neck/body": [
 5.178425,
 5.356225,
@@ -85071,6 +85125,42 @@
 -0.390525,
 8,
 "47eb1aa6787c"
+],
+"geometry/Z4NRTGEDY5::framing/member:nailer-outer-girt-end-001-0": [
+-2.4495125,
+-2.2717125,
+8,
+"490d596b16a2"
+],
+"geometry/Z4NRTGEDY5::framing/member:nailer-outer-girt-end-001-1": [
+-2.1828125,
+-1.8653125,
+8,
+"767c4ca82f20"
+],
+"geometry/Z4NRTGEDY5::framing/member:nailer-outer-girt-end-001-2": [
+-1.7764125,
+-1.4589125,
+8,
+"e23952a11bc0"
+],
+"geometry/Z4NRTGEDY5::framing/member:nailer-outer-girt-end-001-3": [
+-1.3700125,
+-1.0525125,
+8,
+"4e198971082f"
+],
+"geometry/Z4NRTGEDY5::framing/member:nailer-outer-girt-end-001-4": [
+-0.9636125,
+-0.6461125,
+8,
+"4ea7fb7065e5"
+],
+"geometry/Z4NRTGEDY5::framing/member:nailer-outer-girt-end-001-5": [
+-0.5572125,
+-0.390525,
+8,
+"4473ce807724"
 ],
 "geometry/Z4NRTGEDY5::framing/member:plate-bottom-0-passage-0": [
 -2.5955625,
@@ -87028,6 +87118,42 @@
 "d2f6a047bff2"
 ],
 "member/3BF9ZDQPT1/nailer-outer-girt-001-5": [
+-0.5572125,
+-0.390525,
+2,
+"a50b2c61650a"
+],
+"member/3BF9ZDQPT1/nailer-outer-girt-end-000-0": [
+-2.4495125,
+-2.2717125,
+2,
+"89db16337be8"
+],
+"member/3BF9ZDQPT1/nailer-outer-girt-end-000-1": [
+-2.1828125,
+-1.8653125,
+2,
+"c8d8bccf5eed"
+],
+"member/3BF9ZDQPT1/nailer-outer-girt-end-000-2": [
+-1.7764125,
+-1.4589125,
+2,
+"d75afb4b5ceb"
+],
+"member/3BF9ZDQPT1/nailer-outer-girt-end-000-3": [
+-1.3700125,
+-1.0525125,
+2,
+"17dcc61b91e9"
+],
+"member/3BF9ZDQPT1/nailer-outer-girt-end-000-4": [
+-0.9636125,
+-0.6461125,
+2,
+"d2f6a047bff2"
+],
+"member/3BF9ZDQPT1/nailer-outer-girt-end-000-5": [
 -0.5572125,
 -0.390525,
 2,
@@ -124725,6 +124851,42 @@
 2,
 "57988ddaa8ef"
 ],
+"member/Z4NRTGEDY5/nailer-outer-girt-end-001-0": [
+-2.4495125,
+-2.2717125,
+2,
+"89db16337be8"
+],
+"member/Z4NRTGEDY5/nailer-outer-girt-end-001-1": [
+-2.1828125,
+-1.8653125,
+2,
+"c8d8bccf5eed"
+],
+"member/Z4NRTGEDY5/nailer-outer-girt-end-001-2": [
+-1.7764125,
+-1.4589125,
+2,
+"d75afb4b5ceb"
+],
+"member/Z4NRTGEDY5/nailer-outer-girt-end-001-3": [
+-1.3700125,
+-1.0525125,
+2,
+"17dcc61b91e9"
+],
+"member/Z4NRTGEDY5/nailer-outer-girt-end-001-4": [
+-0.9636125,
+-0.6461125,
+2,
+"d2f6a047bff2"
+],
+"member/Z4NRTGEDY5/nailer-outer-girt-end-001-5": [
+-0.5572125,
+-0.390525,
+2,
+"a50b2c61650a"
+],
 "member/Z4NRTGEDY5/plate-bottom-0-passage-0": [
 -2.5955625,
 -2.5574625,
@@ -131860,6 +132022,12 @@
 "solids/MB-ED-S-BALCONY-LT/z1_m": 5.334,
 "solids/MB-ED-S-BALCONY-RC1/z0_m": 3.4798,
 "solids/MB-ED-S-BALCONY-RC1/z1_m": 3.700526,
+"solids/MJ-SG-CURB-1/z0_m": -2.7924125,
+"solids/MJ-SG-CURB-1/z1_m": -2.7797125,
+"solids/MJ-SG-E1-STEM-1/z0_m": -2.7797125,
+"solids/MJ-SG-E1-STEM-1/z1_m": -0.3413125,
+"solids/MJ-SG-W1-STEM-1/z0_m": -2.7797125,
+"solids/MJ-SG-W1-STEM-1/z1_m": -0.3413125,
 "solids/MS-ED-M-METER/z0_m": -0.0508,
 "solids/MS-ED-M-METER/z1_m": 0.9652,
 "solids/O-S-VANITY-wrap-a-head/z0_m": 5.0673,

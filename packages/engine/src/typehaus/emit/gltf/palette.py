@@ -306,6 +306,7 @@ _PALETTE: dict[str, tuple[float, float, float, float]] = {
     "opening_flashing_membrane": (0.30, 0.13, 0.12, 1.0),
     "wall_corner": (0.75, 0.77, 0.80, 1.0),  # formed-metal wall corner closure
     "movement_joint": (0.45, 0.38, 0.33, 1.0),  # brick-matched silicone joint
+    "sealant_joint": (0.60, 0.60, 0.58, 1.0),  # grey sealant; a painted one reads its material
     "beam_cap": (0.75, 0.77, 0.80, 1.0),  # mill-finish aluminium beam cap
     # LightRun's channel + tape (→ emit/gltf/emitter.py::_add_light_run). Mirrors
     # ui/src/three/builders/structure.ts COVE_CHANNEL_COLOR / LED_TAPE_COLOR.

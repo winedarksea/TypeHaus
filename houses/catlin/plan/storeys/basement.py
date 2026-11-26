@@ -30,6 +30,7 @@ from typehaus import (
     ReinforcementSpec,
     Room,
     RoughOpening,
+    SkinOverrun,
     Slab,
     SlabThermalBreak,
     Soffit,
@@ -468,7 +469,8 @@ WALLS = [
                    unbalanced_fill=ft(0),
                    top_elevation=inch(-102.1875), bottom_elevation=inch(-109.4375),
                    min_threshold_step=inch(7.25),
-                   lateral_support="top_and_bottom"),
+                   lateral_support="top_and_bottom",
+                   skin_overrun=SkinOverrun(from_layer="foundation-coating", start=inch(4))),
     FoundationWall(uid="CBW103AAAA", tag="W-B-S3", start_node="N-B-S2",
                    end_node="N-B-S3", assembly="GARDEN_CURB_6",
                    interior_room="RM-B-GYM",
@@ -476,7 +478,8 @@ WALLS = [
                    unbalanced_fill=ft(0),
                    top_elevation=inch(-102.1875), bottom_elevation=inch(-109.4375),
                    min_threshold_step=inch(5.5),
-                   lateral_support="top_and_bottom"),
+                   lateral_support="top_and_bottom",
+                   skin_overrun=SkinOverrun(from_layer="foundation-coating", end=inch(4))),
     # The framed run itself: base on the curb top (-102 3/16"), 88 3/4" to the same
     # -13 7/16" bearing seat every other wall in this basement stops on. `base_elevation`
     # is what lets a framed wall stand on something inside its own storey; `top` stays a
@@ -498,18 +501,25 @@ WALLS = [
     # BEARING walls and the floor bears on the plate. It stood at 88 3/4", 1 9/16" short, a
     # modelling gap with nothing in it (the concrete walls fill that band with a sill plate).
     # None (underside of the floor above) would stop at the finished ceiling, -12.5", 5/8" short.
+    # The court face reaches the court walls (owner, 2026-11-25): each run stops 4" short, on
+    # the pour's lap past W-SG-W1/E1 (N-B-S1 is the sauna wall's tee and cannot move), so the
+    # vent gap, girts and LP panel run 3 3/4" on over W-B-S1/S4's XPS to the 1/4" sealant cap
+    # on TB-SG-*-STEM's court edge (params/court_face.py); the curbs' coating runs to the board.
+    # Girt ends then reach 4 1/2" past their end block; the panel edge takes an end nailer.
     Wall(uid="3BF9ZDQPT1", tag="W-B-S2-FR", start_node="N-B-S1F", end_node="N-B-S2F",
          assembly="SAUNA_LINER_ON_EXT_2X6_LP",
          alignment=face("sheathing-ext"),
          interior_room="RM-B-SAUNA",
          base_elevation=inch(-102.1875), top=inch(90.3125),
-         structural_role=StructuralRole.BEARING),
+         structural_role=StructuralRole.BEARING,
+         skin_overrun=SkinOverrun(from_layer="vent-gap", start=inch(3.75))),
     Wall(uid="Z4NRTGEDY5", tag="W-B-S3-FR", start_node="N-B-S2F", end_node="N-B-S3F",
          assembly="EXT_2X6_LP_PANEL",
          alignment=face("sheathing-ext"),
          interior_room="RM-B-GYM",
          base_elevation=inch(-102.1875), top=inch(90.3125),
-         structural_role=StructuralRole.BEARING),
+         structural_role=StructuralRole.BEARING,
+         skin_overrun=SkinOverrun(from_layer="vent-gap", end=inch(3.75))),
     # The east 8'-10" of the old W-B-S3, split off 4" west of the court's east face
     # (see N-B-S3 — the split used to sit on the wall AXIS, half a wall inside the soil).
     # Buried like W-B-S1, so it keeps the 7'-row bar — and it must join

@@ -3,11 +3,11 @@
 Built only under ``sunken_garden.cladding`` = brick / fiber-cement (variant ``court-face-brick``;
 the fiber-cement variants swap the wythe's assembly and keep its geometry). The default face
 is LP SmartSide panel on W-B-S2-FR/S3-FR (notes/court_face_lp_panel.md), which needs none of
-this. The beam-side half (W-SG-BRKBM, its bed, board and slab void) is gated in place in
-params/sunken_garden.py. Not ``# haus: editable``: the switch is the point, and the elements
-keep the uids and tags they had in plan/storeys/basement.py, masonry_joints.py and
-transitions.py. The oracles stay live: notes/sunken_garden_veneer_beam.md,
-notes/veneer_opening_detail.md.
+this, only its sealant joints at the court walls (``_LP_JOINTS``, below). The beam-side half
+(W-SG-BRKBM, its bed, board and slab void) is gated in place in params/sunken_garden.py.
+Not ``# haus: editable``: the switch is the point, and the elements keep the uids and tags
+they had in plan/storeys/basement.py, masonry_joints.py and transitions.py. The oracles stay
+live: notes/sunken_garden_veneer_beam.md, notes/veneer_opening_detail.md.
 """
 
 from __future__ import annotations
@@ -157,6 +157,35 @@ _TRANSITIONS = (
                star=True),
 )
 
-BASEMENT_ELEMENTS = [*_NODES, *_WALLS, *_OPENINGS, *_BEAMS, *_FLASHINGS, *_JOINTS] if IS_BRICK else []
+# The LP face's sealant joints (notes/court_face_lp_panel.md, "Court-wall ends"). Each stem
+# board's court edge (2 1/2" of XPS between W-SG-W1/E1's end and the house foam) is capped
+# 1/4" deep, flush with the court face, slab to the panel top (above it, W-M-S1/S2's skin
+# covers the edge), and is the panel's butt joint:
+# the panel overruns to 1/4" off it (W-B-S2-FR/S3-FR `skin_overrun`). The rim slab's 0.69" joint
+# to the curbs' coated foam takes a traffic-grade seal between the caps. Both are movement
+# joints: the court slides on the house (court_sliding_levers_study.md).
+_LP_BACKER = "closed-cell backer rod (ASTM C1330 Type C), 25% over the joint width"
+_LP_SEAL_SOURCE = ("LP AI 2024 p.11 (3/16 in gap and sealant where the panel meets another "
+                   "material); backer ASTM C1330 Type C")
+_LP_JOINTS = [
+    MovementJoint(uid="2QYJH3CTKV", tag="MJ-SG-W1-STEM",
+                  path=(pt(inch(114.125), inch(-6.68)), pt(inch(114.125), inch(-4.06))),
+                  top_elevation=inch(-13.4375), depth=inch(96.0), thickness=inch(0.25),
+                  material="lp-joint-sealant", host_ref="TB-SG-W1-STEM", abuts="W-B-S2-FR",
+                  compression_pct=50.0, backer=_LP_BACKER, source=_LP_SEAL_SOURCE),
+    MovementJoint(uid="XX7AHGSA0V", tag="MJ-SG-E1-STEM",
+                  path=(pt(inch(317.875), inch(-6.68)), pt(inch(317.875), inch(-4.06))),
+                  top_elevation=inch(-13.4375), depth=inch(96.0), thickness=inch(0.25),
+                  material="lp-joint-sealant", host_ref="TB-SG-E1-STEM", abuts="W-B-S3-FR",
+                  compression_pct=50.0, backer=_LP_BACKER, source=_LP_SEAL_SOURCE),
+    MovementJoint(uid="422VHQBG5R", tag="MJ-SG-CURB", vertical=False,
+                  path=(pt(inch(114.25), inch(-4.40625)), pt(inch(317.75), inch(-4.40625))),
+                  top_elevation=inch(-109.4375), depth=inch(0.5), thickness=inch(0.6875),
+                  material="slab-joint-sealant", host_ref="SL-SG-FLOOR", abuts="W-B-S2",
+                  compression_pct=25.0, backer=_LP_BACKER, source=_LP_SEAL_SOURCE),
+]
+
+BASEMENT_ELEMENTS = ([*_NODES, *_WALLS, *_OPENINGS, *_BEAMS, *_FLASHINGS, *_JOINTS] if IS_BRICK
+                     else [*_LP_JOINTS])
 MAIN_ELEMENTS = [*_SLICES] if IS_BRICK else []
 TRANSITIONS = _TRANSITIONS if IS_BRICK else ()

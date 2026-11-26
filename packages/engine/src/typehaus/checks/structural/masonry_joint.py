@@ -202,8 +202,12 @@ def masonry_movement_joint(ctx: CheckContext) -> list[Finding]:
                                           f"{_REACH_IN:g}\"")
                    for side, j in joints.items() if side not in returns)
     hosts = {w.tag for w in wythes}
+    walls = {w.tag for w in ctx.model.walls}
+    # A sealant joint on a slab or an isolation board is not masonry and not this check's
+    # subject; one on a wall that is not a veneer (or on nothing) is a stray.
     out.extend(_stray(j, j.host_ref or "(none)", "the host is not an anchored brick veneer")
-               for j in _all_joints(ctx) if j.host_ref not in hosts)
+               for j in _all_joints(ctx)
+               if j.host_ref not in hosts and (j.host_ref is None or j.host_ref in walls))
     if not out and ctx.model.walls:
         what = ("no end of an anchored brick veneer stands against a rigid return"
                 if wythes else "no wall is an anchored brick veneer over a drained cavity")

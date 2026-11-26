@@ -20,6 +20,7 @@ from typehaus.model.assembly import (
     LayerExtent,
     MasonrySpec,
     RainscreenBaseFlashing,
+    SkinOverrun,
     Substitution,
 )
 from typehaus.model.backing import WallBacking
@@ -466,7 +467,8 @@ __all__ = [
     "PlantType", "Plant", "PlantingBed", "GridLayout", "PocketLayout", "AccentRule",
     "Trellis", "RainGarden",
     "SolarPanel",
-    "Assembly", "RainscreenBaseFlashing", "Layer", "LayerBound", "LayerExtent", "CavityFill",
+    "Assembly", "RainscreenBaseFlashing", "Layer", "LayerBound", "LayerExtent", "SkinOverrun",
+    "CavityFill",
     "FramingSpec",
     "MasonrySpec", "AssemblyInterface",
     "ConstructionRule", "Substitution", "Material", "Product",

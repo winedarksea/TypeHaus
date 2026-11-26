@@ -84,6 +84,17 @@ MATERIALS_LP = [
                     "primed widths 1.50/2.50/3.50/5.50/7.21/9.21/11.21 in, 16 ft; AI 2024 p.2: 440 or "
                     "540 trim so the panel does not stand past the trim face; 3/16 in gap and sealant "
                     "at the panel (p.11). Painted with the panel. Density = CAT's 2 psf / 0.675 in."),
+    # The court-face joints (params/court_face.py `_LP_JOINTS`). Generic by spec, not product.
+    Material(tag="lp-joint-sealant",
+             name="Paintable polyurethane or hybrid sealant, ASTM C920 Type S Grade NS Class 50, "
+                  "XPS-compatible, painted Potters Clay with the panel",
+             r_per_inch=0.0, color=POTTERS_CLAY, finish="paint",
+             source="LP AI 2024 p.11: 3/16 in gap and sealant where the panel meets another "
+                    "material; Class 50 for the court's isolation joint (the board moves)."),
+    Material(tag="slab-joint-sealant",
+             name="Self-levelling polyurethane sealant, ASTM C920 Type S Grade P, Use T, grey",
+             r_per_inch=0.0, color="#9a9a94",
+             source="ASTM C920 Grade P (pourable, traffic) for the court slab's joint to the curb."),
     Material(tag="lp-panel-paint-exterior",
              name="100% acrylic exterior paint, Benjamin Moore Potters Clay 1221, 2 coats",
              r_per_inch=0.0, coating=True, color=POTTERS_CLAY, finish="paint",

@@ -1417,6 +1417,63 @@
       "node": "polyline",
       "points": [
         [
+          -4.75,
+          -109.93750000000001
+        ],
+        [
+          -4.0625,
+          -109.93750000000001
+        ],
+        [
+          -4.0625,
+          -109.4375
+        ],
+        [
+          -4.75,
+          -109.4375
+        ]
+      ],
+      "layer": "S-FNDN",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "422VHQBG5R-00",
+      "tag": "MJ-SG-CURB-1"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          -4.75,
+          -109.93750000000001
+        ],
+        [
+          -4.0625,
+          -109.93750000000001
+        ],
+        [
+          -4.0625,
+          -109.4375
+        ],
+        [
+          -4.75,
+          -109.4375
+        ]
+      ],
+      "pattern": "slab-joint-sealant",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "slab-joint-sealant",
+      "fill": "#9a9a94"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
           -4.0,
           -11.39749132038614
         ],

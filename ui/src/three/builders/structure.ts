@@ -23,7 +23,7 @@ import {
 import {
   applyPerforatedMap, applyPerforatedUv, createStandingSeamMaterial, isPerforatedFinish,
   isStandingSeam,
-  metalPanelProfileForFinish, SEAM_PROFILE,
+  metalPanelProfileForFinish, SEAM_PROFILE, SURFACE_COATING_POLYGON_OFFSET,
 } from "../materials";
 import { applyTileUv, createTileMaterial, tileRepeatSizeM, tileStyleOrNull } from "../tileMaterial";
 import { createMarbleMaterial, isVeinedMarble, MARBLE_TILE_M } from "../marbleMaterial";
@@ -108,6 +108,9 @@ export function buildSolid(parent: THREE.Group, solid: Solid, center: PlanCenter
       : createSolidMaterial(solid, catalog, mode, palette);
   // Holes are a nordic look only; with no canvas the flat metal stays.
   if (perforated && mode === "nordic") applyPerforatedMap(material as THREE.MeshStandardMaterial);
+  // A joint's seal is tooled flush over what it caps (an isolation board's edge, a slab joint):
+  // it wins that coplanar tie, as a coating does.
+  if (SEAL_CATEGORIES.has(solid.category)) Object.assign(material, SURFACE_COATING_POLYGON_OFFSET);
   const mesh = makeSurfaceMesh(geo, woodMaterialsForGeometry(material, geo));
   if (
     solid.category === "electrical_box" ||
@@ -124,6 +127,8 @@ export function buildSolid(parent: THREE.Group, solid: Solid, center: PlanCenter
   // A grouped solid answers to its group's first solid, so the whole part picks and lights up.
   registerSelectable(parent, firstChildIndex, pickUid ?? solid.uid, "solid", picks, byUid);
 }
+
+const SEAL_CATEGORIES = new Set(["movement_joint", "sealant_joint"]);
 
 // PV module glass — mirrors "solar" in emit/gltf/palette.py `_PALETTE`.
 export const SOLAR_PANEL_COLOR = 0x1a2447;

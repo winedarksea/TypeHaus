@@ -10,6 +10,7 @@ from typehaus.model.base import Element
 from typehaus.model.doorway import DoorwayTreatment
 from typehaus.model.enums import StructuralRole
 from typehaus.model.exterior_door import ExteriorDoorInstallation
+from typehaus.model.layer_extent import SkinOverrun
 from typehaus.model.opening_size import OpeningSize
 from typehaus.model.opening_supports import OpeningFrameEndSupports
 from typehaus.model.refs import (
@@ -102,6 +103,8 @@ class Wall(Element):
     # a whole Assembly to restate one `material_ref` (see LayerMaterial in model/refs.py).
     # A tuple rather than a mapping because the editable dialect has no mapping literal.
     layer_materials: tuple[LayerMaterial, ...] = ()
+    # The rainscreen carried past an axis end (SkinOverrun in model/layer_extent.py).
+    skin_overrun: SkinOverrun | None = None
     # The published table row that answers a question about this wall, where one does.
     # Mirrors ``Door.published_span``: a manufacturer's table is a PRESCRIPTIVE read — a
     # reviewer opens the document and the question is closed — so authoring the row here
