@@ -352,6 +352,8 @@ _BOM_WAIVED_COLLECTIONS: dict[str, str] = {
     "embedded_straps": "where each placed STHD sits; the parts bill as connector rows and "
                        "their No. 4 bars under rebar",
     "plan": "the authored source, not a resolved quantity",
+    "shower_enclosures": "a shower door's swing geometry; the door bills with its fixture "
+                         "under `placeables`",
     "junctions": "derived wall-meeting topology; the framing it implies bills as members",
     "conditions": "boundary-condition keys for transition matching — an index, not material",
     "stack_edges": "assembly-change edges the detail pipeline keys on; no quantity",
