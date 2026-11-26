@@ -6,7 +6,19 @@
 from typehaus import inch
 from typehaus.model import ShelfBank, ShelfBay, ShelfProcurement
 
-BASEMENT_VANITY_SHELVES = []
+BASEMENT_VANITY_SHELVES = [
+    ShelfBank(
+        uid="BMQ51MG0TM", tag="SB-B-BATH-VAN",
+        # SEKTION 24 wall cabinet with its included stock shelf, as SB-A-STUBATH-VAN.
+        host="FX-B-BATH-LAV",
+        material_ref="cabinet-plywood",
+        thickness=inch(0.75),
+        depth=inch(14),
+        profile="S4S",
+        procurement=ShelfProcurement.INCLUDED_IN_HOST,
+        bays=(ShelfBay(width=inch(22.5), clear_height=inch(28.5), shelf_count=2),),
+    ),
+]
 
 MAIN_VANITY_SHELVES = [
     ShelfBank(

@@ -34,7 +34,7 @@ SINK_HOLDERS = {
     "FX-A-STUBATH-LAV": "FURN-A-STUBATH-HAND-TOWEL",
 }
 SHOWER_HOLDERS = {
-    "FX-B-SAUNA-SH": "FURN-B-SAUNA-BATH-TOWEL",
+    "FX-B-BATH-SH": "FURN-B-BATH-BATH-TOWEL",
     "FX-M-BATH2-SH": "FURN-M-BATH2-BATH-TOWEL",
     "FX-S-BATH1-SH": "FURN-S-BATH1-BATH-TOWEL",
     "FX-S-SUITEBATH-TUBSH": "FURN-S-SUITEBATH-BATH-TOWEL",
@@ -72,7 +72,7 @@ def test_each_sink_and_shower_has_reachable_selected_hardware(catlin_plan, catli
     model = catlin_model_ro
     objects = {o.tag: o for o in model.canvas_objects}
     assert Counter(o.type_ref for o in _hardware(model)) == {
-        HAND: 7, HAND_CH: 1, BATH: 3, BATH_CH: 2, HOOK: 1, HOOK_CH: 1}
+        HAND: 7, HAND_CH: 1, BATH: 4, BATH_CH: 2, HOOK: 1, HOOK_CH: 1}
     bathroom_rooms = {
         r.tag for r in model.rooms if any(word in r.tag for word in ("BATH", "VANITY", "SAUNA"))
     }
@@ -98,7 +98,7 @@ def test_each_sink_and_shower_has_reachable_selected_hardware(catlin_plan, catli
     for shower_tag, holder_tag in SHOWER_HOLDERS.items():
         shower, holder = objects[shower_tag], objects[holder_tag]
         assert holder.storey == shower.storey
-        assert holder.room == ("RM-B-GYM" if shower_tag == "FX-B-SAUNA-SH" else shower.room)
+        assert holder.room == shower.room
     types = {t.tag: t for t in catlin_plan.library.furniture_types}
     products = {p.tag: p for p in catlin_plan.library.products}
     assert {products[types[t].product_ref].model for t in HARDWARE} == {
@@ -161,12 +161,12 @@ def test_all_wall_posts_have_support_and_new_courses_fill_their_bays(catlin_ctx)
     findings = [
         f for f in wall_fixing_support(catlin_ctx) if any("TOWEL" in tag for tag in f.element_tags)
     ]
-    assert len(findings) == 22
+    assert len(findings) == 24
     assert all(f.result.value == "pass" for f in findings), findings
     # A post-supported bar needs no timber behind the free span at its midpoint.
     general_findings = [f for f in wall_backing_present(catlin_ctx)
                         if any("TOWEL" in tag for tag in f.element_tags)]
-    assert len(general_findings) == 18  # 15 hardware items and 3 internal pads.
+    assert len(general_findings) == 19  # 16 hardware items and 3 internal pads.
     assert all(f.result.value != "fail" for f in general_findings)
     bands = backing_bands(catlin_ctx.plan)
     emitted = []
@@ -206,7 +206,7 @@ def test_all_wall_posts_have_support_and_new_courses_fill_their_bays(catlin_ctx)
                         block.child_key,
                         peer.child_key,
                     )
-    assert len(emitted) == 13
+    assert len(emitted) == 14
     services = envelopes(catlin_ctx.model)
     for block in emitted:
         ring, low, high = member_footprint(block)
@@ -248,7 +248,7 @@ def test_takeoff_and_ifc_include_all_towel_hardware(catlin_model_ro, catlin_ifc_
     import ifcopenshell
     from ifcopenshell.util.element import get_psets
 
-    expected = {HAND: 7, HAND_CH: 1, BATH: 3, BATH_CH: 2, HOOK: 1, HOOK_CH: 1, PAD: 3}
+    expected = {HAND: 7, HAND_CH: 1, BATH: 4, BATH_CH: 2, HOOK: 1, HOOK_CH: 1, PAD: 3}
     rows = placeables_takeoff(catlin_model_ro)
     assert {t: sum(r["count"] for r in rows if r["type"] == t) for t in expected} == expected
     model = ifcopenshell.open(str(catlin_ifc_path))

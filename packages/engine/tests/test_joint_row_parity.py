@@ -144,7 +144,9 @@ def test_the_joint_counts_are_the_ones_the_house_is_known_to_have(catlin_model_r
     # Door-cut slab plates shorten one pinned run. 49 -> 43 (decision #112): the six pins under
     # the pantry partitions on SL-M-DECK's cap went with it. The eight x=18' mudsill anchors
     # moved from the pour tops to the reframed walls' slab plates, count unchanged.
-    assert joints["slab_plate_pin"] == 43
+    # 43 -> 52 (2026-11-25, basement replan): the bath band's W-B-BT-N/-N2/-W, the alcove's
+    # W-B-CL-E and the re-laid sauna/hall partitions put more non-bearing slab plate on SL-B-FLOOR.
+    assert joints["slab_plate_pin"] == 52
     # The rafters bear on the ridge plate since 2026-11-10. ST-G-SERVICE's two stringer heads were two more until
     # 2026-09-24, then hung on BM-BW-LAND-HDR on LSCZ, their own role, until 2026-10-13: they
     # seat on the stem now, on authored standoffs, and hang on nothing.

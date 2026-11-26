@@ -5,13 +5,8 @@
 from typehaus import WallBacking, inch
 
 
-BASEMENT_TP_BACKING = [
-    # Floor is 0.12 in. above frame; studs y=264/280. The south post lands on the 264 stud.
-    WallBacking(uid="TPBBLOCK01", tag="BK-B-BATH-TP", wall_ref="W-B-STR3B", face="left",
-                start=inch(26.75), length=inch(14.5), elevation=inch(23.37),
-                height=inch(5.5), profile="2x6", material_ref="spf",
-                purpose="FURN-B-BATH-TP north mounting post; south post fixes to stud"),
-]
+# FURN-B-BATH-TP is on the vanity's side since 2026-11-25 (its pad is the fixing).
+BASEMENT_TP_BACKING = []
 
 MAIN_TP_BACKING = [
     # BATH1 floor build-up is 1.0255906 in.; the north post lands on the y=304 stud.

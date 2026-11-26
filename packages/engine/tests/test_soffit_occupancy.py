@@ -103,14 +103,15 @@ def test_catlin_reports_no_soffit_conflict(soffit_findings) -> None:
 
 def test_both_soffits_are_actually_graded(soffit_findings) -> None:
     """A check that reports UNKNOWN for every soffit would pass the test above for the wrong
-    reason. Both remaining boxes carry a ``FramingSpec`` and both must come back PASS.
+    reason. The remaining box carries a ``FramingSpec`` and must come back PASS.
 
     ``SF-S-SUITE`` was a third until 2026-09-13. It held one 10x8 branch in 31 3/4" of clear
     width and was retired when ``RM-S-SUITE`` declared its ceiling open; the duct is
     ``DuctRouting.EXPOSED`` now and claims no box, so there is nothing here to grade."""
     graded = {tuple(f.element_tags): f.result for f in soffit_findings}
     assert graded.get(("SF-S-DUCT",)) is Result.PASS
-    assert graded.get(("SF-B-BATH",)) is Result.PASS
+    # SF-B-BATH retired 2026-11-25: DU-B-ERV-R-BATH is routed in the open (basement replan).
+    assert ("SF-B-BATH",) not in graded
     # SF-S-HP1, the box that held the air handler, retired 2026-11-11.
     assert ("SF-S-SUITE",) not in graded and ("SF-S-HP1",) not in graded
 

@@ -2389,6 +2389,17 @@ less; a PE reading this row should read it beside the E band. The next board up 
 > 7.3516 (the take-down's friction numerator, 102,164.0, loses W-B-BRICK's 8 psf; engine output).
 > The near line bears on both struts (313 and 321 lb); its flexure (62,147 lb·in) and shear
 > (1,345 lb) are line-solver output, as for brick. Winter: 0.264 (§15j, §15n).
+>
+> **Amendment 2026-11-25 (basement replan).** Global FS 7.3516 -> **7.3625**. Only D moved: the
+> replan re-laid the basement's framed partitions inside SL-B-FLOOR's reach, and framed walls
+> weigh 8 psf x axis x height. Walls re-laid (axis in x height in = 8 psf lines): W-B-SA-W/SA-N/SA-N2
+> 120 x 90 + 50 x 90 + 48 x 90 -> 95.38 x 90 + 98 x 90 (600.0 + 250.0 + 240.0 -> 476.9 + 490.0);
+> W-B-CS/CS3/CS2 (x 109.44) 120/46/50 -> 95.38/60.62/60 (729.6 + 279.7 + 304.0 -> 579.9 + 368.6 +
+> 364.8); W-B-HALL-W 96 -> 60 (516.3 -> 322.7); W-B-BA-E 90 -> 45.37 + new W-B-CL-E 44.62
+> (484.1 -> 244.0 + 240.0); new W-B-BT-N/N2/W (304.0 + 291.8 + 326.1). Net framed walls
+> 73,180 -> 73,786 lb = **+606 lb**; footings, slabs and concrete walls are unchanged (54,831 /
+> 43,504 / 107,640). Friction numerator 102,164.0 + 0.25 x 606 = 102,315.5; / 13,896.75 = 7.3625
+> (ratio 1.5 / 7.3625 = 0.2037). The thrust T, the line and every other row are unchanged.
 
 Hand-worked before the engine; `tests/test_thermal_break.py` reproduces it. **Supersedes §11k
 as the graded basis.** The owner's brief: a detail that does not hinge on an estimated foam

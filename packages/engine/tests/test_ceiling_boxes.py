@@ -35,8 +35,8 @@ def test_keyless_lampholders_seat_against_flat_and_sloped_boxes(catlin_model_ro)
                    if product.tag == "ED-T-LT-KEYLESS")
     tested_slopes = set()
     for item in catlin_model_ro.canvas_objects:
-        if item.type_ref != product.tag:
-            continue
+        if item.type_ref != product.tag or item.tag == "ED-B-WH-ALCOVE-LT":
+            continue  # the alcove's lampholder is wall-hosted (2026-11-25): a wall box
         box = boxes[item.tag]
         frame = item.model_frame
         assert frame is not None

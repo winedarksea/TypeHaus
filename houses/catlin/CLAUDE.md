@@ -435,8 +435,8 @@ not instruction: when it disagrees with this file or the model, it is the one th
   2026-10-22, `notes/bath2_tub_deck_finish.md`) and `FX-VANITY-48-SEKTION`
   (RM-M-BATH2's floating SEKTION vanity under a Corian or equal top, `plan/bath2_vanity_types.py`), plus
   the selected lavatory assemblies in `plan/lav_types.py`: HAVBÄCK 36 / ORRSJÖN 37
-  in the basement and kids bath, two SEKTION 30 halves below one 61 in. Corian top in
-  RM-S-VANITY, Chulton 30 in the suite, and SEKTION 24 / Corian in the attic guest bath.
+  in the kids bath, two SEKTION 30 halves below one 61 in. Corian top in
+  RM-S-VANITY, Chulton 30 in the suite, and SEKTION 24 / Corian in the attic guest bath and the basement bath.
   SUNNERSTA's own bar sink has its own type. Each declares basin, faucet and trap identity
   through its primary Product and role-tagged parts, and drain/hot/cold connection ports.
   `plan/bath_finish.py` selects chrome or brushed nickel Genta LX with `finish.bath_theme`;
@@ -513,7 +513,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 - Grade-dependent: garage + foundation, bridge's frost pads/piers, hydrant bury, sunken garden floor, nine perimeter spot elevations, both impervious surfaces. `SITE_GRADE` lives in `params/foundations.py`, repeated as a literal in `plan/site.py`; `plan/manifest.py` asserts the two agree.
 - **Garage storey datum is not the garage floor.** Walls bear on the ICF stem at `GARAGE_STEM_REVEAL` (1'-10") above grade → `garage` storey at -1'-0"; the slab pours at grade (1'-10" lower), absolute `Slab.top_elevation`.
 - **`SL-G-FLOOR` falls 1/8"/ft north to the overhead door** (decision #138, design review §8): a constant 3 1/2" pour, `top_elevation` (-2'-10") at the door line, ~2 7/8" higher at the south stem. Garage placeables seat on the floor where they stand; ceiling mounts stay on the door-line datum.
-- **RM-B-SAUNA's floor dishes 1/8"/ft to `FX-B-SAUNA-FD`** (decision #148, `SL-B-FLOOR.drain_dishes`): rim flush with the gym, 0.804" low at the drain (77 3/16" to the south rim). The rim is the pour's edge, so `FT-B-S2`'s south 11 3/4" and `FT-B-CS`'s east 6 1/2" stay level; the walls, liner foot and D-B-SAUNA threshold do not move. `PR-B-SAUNA-FD-DROP` starts at -0.804"; the pan beds level, benches set against the rim stay on it, the free step bears 0.35" low. See `notes/sauna_shower_basement_detail.md`.
+- **RM-B-SAUNA's floor dishes 1/8"/ft to `FX-B-SAUNA-FD`** (decision #148, `SL-B-FLOOR.drain_dishes`): a level rim flush with the gym, the dish only over the east aisle (x 179 1/4"..203 1/2", y 21"..90 3/4"), 0.657" low at the drain (196", 84"). The rim is the pour's edge, so `FT-B-S2`'s south 11 3/4" and `FT-B-CS`'s east 6 1/2" stay level; the decks stand on the rim. `PR-B-SAUNA-FD-DROP` starts at the dish face. See `notes/sauna_shower_basement_detail.md`.
 - Sitting on the garage floor must be explicit: `D-G-OVERHEAD` carries the plan's only negative `sill_height`; the ICF stem gaps there (open-ended `N-GF-N-DRE`/`-DRW`) and `SL-G-FLOOR` runs out to the door line. **No grade beam since 2026-09-23** — nothing bears on the opening, the header carries the roof to the piers. The open U is why every `W-GF-*` names `interior_room="RM-GARAGE"`: without a closed loop the winding falls to +1 and the stem builds inside out.
 - `D-G-SERVICE` threshold stays 0'-0" with the bridge deck (`+1'-0"` sill); the drop is five equal 6.564" risers inside (the foot derived off the falling `SL-G-FLOOR`, `foot_on`, 2.46" over the door line; decision #138), topping at the +1.2835" threshold crest (unit seated on the pan, 1/2" head gap after the 3/4" seat, 2026-11-06; MMI crest still a supplier hold) (`ST-G-SERVICE` KDAT, flush to the stem's finished face at x=6'-11 5/8"; `RL-G-SERVICE` wall-mounted on `W-G-W` on `BK-G-W-RAIL-TOP`/`-MID`/`-FOOT`). The flight rises straight to the threshold with no top landing (the door swings OUT; R311.7.6 exception, `code.R311_7_6_door_at_stair_head`), its stringer heads seated on the `W-G-S` stem (`STAIR_SEATS`); `SL-G-STEP-0` and `FS-BW-GARAGE` are both retired. **The stem does NOT gap under this door** (since 2026-09-11): `W-GF-S-DR` is full stem with its nodes pinned at x 8'-3"/11'-9" as a fossil, so `SP-GF-S-HYD` keeps its host.
 - **No guard on ST-BW-ENTRY; no posts on RL-A-FLIGHT-SKIRT (2026-11-15).** The tiers are walled and under 30", so `RL-BW-ENTRY` is only R311.7.8's rail: a postless EZ Handrail wall rail on `W-G-S` (`RAILING-EXT-ALUM-HANDRAIL`, returns on `BK-G-S-RAIL-FOOT`/`-HEAD`, the head clear of D-G-SERVICE's casing and leaf). `RL-A-FLIGHT-SKIRT` is a painted 3/4" poplar board, `mount="panel"`, `rail_count=0` (`RAILING-INT-SKIRT-PANEL`), cut level 1/8" under CEIL-RM-S-STUDY2 (`panel_top_elevation`) and running east to `RL-A-FLIGHT-GUARD`'s newel at x=27'-1 1/2". That newel stands under the study ceiling and shares no station with `RL-A-STAIR`. DESIGN-LOG, same date.
@@ -1751,11 +1751,11 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
       then x=17'-0") was continuous only by passing over the flight, 1"-17" into R311.7.2's
       6'-8". `code.R311_7_2_stair_headroom` counts runs now and the router refuses the
       flight (`resolve/stair_headroom.py`). GYM goes through the workshop (W-B-CW3, y=17'-4
-      3/4", W-B-HALL-W) to the hall's x=17'-0" lane; PLAY goes through `SF-B-BATH`, out of
-      `W-B-BA-E` south of the bath's three risers, north up the hall at x=16'-9" to y=20'-6",
+      3/4", W-B-HALL-W) to the hall's x=17'-0" lane; PLAY crosses the WH alcove (`routing=CHASE`,
+      `SF-B-BATH` retired 2026-11-25), out of `W-B-BA-E`, north up the hall at x=16'-9" to y=20'-6",
       then east into `W-B-CN2`'s 240"-256" stud bay to `REG-B-SUP2`, a sidewall valve on the
-      theater face (2026-11-10); GYM ends the same way in `W-B-CS3` over `D-B-GYM`; BATH ends
-      at a sidewall grille in `W-B-STR3B`.
+      theater face (2026-11-10); GYM runs over the bath's ceiling cavity
+      to `REG-B-SUP1` in `W-B-CS3`; BATH ends at a ceiling valve in the new bath (§10.32).
       Framed-wall crossings are clear stud bays or over a plate: nothing is bored or headed.
     - **East of x=18' everything rides `FS-M-NE`'s webs** (decision #112, no cast sleeves). The
       `W-B-N1` restraint blocking closes the four north bays (y 32'-36') at x=21'/27'/33', so
@@ -1782,8 +1782,8 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     do not land anything on `W-B-CW` — it stops being nonbearing, and the flat header with it.
     `DU-B-ERV-R-SAUNA-EXH` is at **x=1'-7"** in `W-B-CW`'s second bay since
     2026-10-31 (`-SAUNA-SUP` left it 2026-11-11, a tee off GYM; `-BENCH` tees off `-EXH`) (out of the panels' NEC 110.26(E) dedicated space) and
-    `DU-B-ERV-R-GYM` crosses OVER `D-B-GYM`'s header between two whole cripples; neither cuts
-    anything. `stud_bore` reads a member shorter than two depths as UNKNOWN (§6a), so a hole
+    `DU-B-ERV-R-GYM` passes through `W-B-BT-W`'s stud bay into the bath's ceiling cavity;
+    neither cuts anything. `stud_bore` reads a member shorter than two depths as UNKNOWN (§6a), so a hole
     in a short cripple no longer reads legal — passing BETWEEN cripples is still the thing to do.
   - **THE PLUMBING MOVED TOO (P1-P3, 2026-09-19), AND THREE NUMBERS ARE WORTH KEEPING.**
     The two basement vents stopped sharing the y=34'-6" line into the chase —
@@ -1884,12 +1884,8 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   **Three soffits were retired on 2026-09-13** — `SF-B-HALL`, `SF-B-GYM` and `SF-S-SUITE` —
   each one built only to satisfy `mep.run_in_finished_volume`, each replaced by a
   `Room.exposed_services` sentence on `RM-B-STAIR`, `RM-B-GYM` and `RM-S-SUITE` (the suite's
-  dropped 2026-11-16: nothing hangs there any more). Two soffits
-  and `SF-B-BATH` remain. **`SF-B-BATH` is load-bearing since 2026-09-22**: it carries
-  `DU-B-ERV-R-PLAY` and both basement conduits off the stair, and dropped 1 1/2" to 86 15/16"
-  (7'-2 7/8" clear) so PLAY can cross `W-B-STR2` under its top plate. It was never a
-  candidate for an `exposed_services` declaration anyway: a 92 SF lined bathroom is not a
-  gym or a service hall, and no owner has said its ceiling should be open.
+  dropped 2026-11-16: nothing hangs there any more). `SF-B-BATH` went with the old bath
+  (2026-11-25): `DU-B-ERV-R-PLAY` crosses the alcove as `routing=CHASE`.
   `DU-S-HP-SUITE` is `DuctRouting.EXPOSED` with an AUTHORED centreline (100 1/8"
   storey-relative), the bedroom side-collar idiom: without it `_derived_base_z` falls back to
   the storey datum. Since 2026-11-16 it is a 6" round that ENDS on the straight register box behind
@@ -2086,9 +2082,9 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   - **A split stud that ever reaches the top plate destroys the `W-M-LS` plate tie** — a
     pocket occupies floor to 6'-8" only, so the tie's plates run continuous over/under it and
     only its vertical edge floats.
-  - **All three pockets are Eclisse steel cassettes (pantry added 2026-10-20)**, `pocket_frame="eclisse"` on the
+  - **Both pockets are Eclisse steel cassettes (pantry added 2026-10-20)**, `pocket_frame="eclisse"` on the
     type: RO 74 1/2" against the commodity 73", so each cavity is 1 1/2" longer. EKC3680 here;
-    `D-B-BATH`'s 2x6 EKQ kit is special order, 4-9 weeks. `notes/pocket_frame_eclisse.md`.
+    `D-B-BATH` became a swing door 2026-11-25, so its 2x6 EKQ kit is gone. `notes/pocket_frame_eclisse.md`.
   - The closing pack must clear `N-M-C2`, where bearing `W-M-C3` corners in and
     `BM-M-HALL` starts. Full detail, including the 1" fastener limit:
     `notes/pocket_door_at_laundry.md`.
@@ -2188,48 +2184,48 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     `face("concrete-ext")`: the furnace room and workshop gained 4" of clear on the inside
     face, and `clear_face` (the finish face) shows it (`notes/basement_to_framed_wall_detail.md`).
 
-- **Sauna (`RM-B-SAUNA`).** Current seating is in `plan/sauna.py` with dimensions/types in
-  `plan/sauna_types.py`; construction and acceptance: `notes/sauna_seating.md` (2026-10-11).
-  The current clear box is approximately 7'-3" × 8'-10 11/16". Read the resolved polygon
-  for containment. The finished ceiling underside is **84 1/16" AFF** (raised 1" for R305.1, 2026-11-01), not the stale 90".
-  - West upper lying bench **78 × 28, 42" AFF**, with a full unobstructed surface. Independent
-    foot platform **78 3/16 × 20, 24" AFF**; south reading deck **58½ × 28, 24" AFF**;
-    access step **14 × 10, 12" AFF**. Upper headroom **42 1/16"**.
-  - Armless removable wood recliner faces east, back west, on the south deck near the window.
-    Wood/pad share a **26 × 57½"** envelope and the platform datum. Drawn at 110°; positive
-    locks 105/110/112°. Flat custom mattress **26 × 80 × 4"**, segmented linen/wool with
-    adjustable cushions. Complete-assembly hot-sauna qualification and a full-size one-hour
-    cool/dry reading trial are required before fabrication. No supplier approval is claimed.
-  - Capacity **four**: three upper, one on the south lower deck, with the recliner/pad
-    removed. Occupied seat/leg areas are shown in the note's dimensioned review.
-  - Shower/heater positions stay. US Harvia HPCS11U1H/PC110E **10.5 kW**, body 16 × 15 × 45.
-    Reading deck clears heater **10½"**, junction box **4"**; floor aisle **24½"** beside
-    step, **28"** beside reading deck. Follow the US listing and retain box/tool access.
-    A wall-attached softwood heater fence below the rock line is part of fabrication.
-  - Drain and condensate terminations remain beneath removable foot-deck panels. Both
-    condensate drops descend inside the north-wall cavity; outlets land over the grate at
-    (162, 98 3/16) and (160, 98 3/16) inches, 9 inches AFF. Inset posts
-    preserve the west exhaust; `CO-B-SAUNA-HEAD` has a flush aisle cap at **(181", 60")**.
-  - Vents: `REG-B-SUP3` is a north ceiling hatch over the upper bench since 2026-11-11 (a branch off `DU-B-ERV-R-GYM`; owner accepts leaving Harvia's inlet-near-heater guidance), `REG-B-EXH2` keeps its station (20/20 cfm since 2026-11-03, sealed door); both are
-    house-local `REG-T-SAUNA-VENT-SUP`/`-EXH`: a ProSaunas 11" x 5.2" aspen sliding vent hatch
-    on a 4" round-to-rectangular boot (`PROD-PROSAUNAS-VENT-HATCH-ASPEN`, owner 2026-10-29).
-    Wood, not plastic, at both ends; a shop-built sliding hatch is the DIY fallback.
-  - Lighting: `LR-B-SAUNA-WEST` and `LR-B-SAUNA-SOUTH` on framing rails at **16" AFF**.
-    116 11/16" of 24 V heat-rated tape = **29.17 W**; ×1.25 = **36.46 W**, within the existing
-    external 60 W driver's 80% limit. Switch remains outside; all six seating types are priced.
-  - North-wall/door constraint remains: do not move `D-B-GYM` south or sauna north wall beyond
-    10'-0" without reviewing its tee beside the opening. `W-B-CS3` has no independent footing;
-    `FT-B-CS`/`FT-B-CS2` stop beneath jamb packs, with slab under the opening.
+- **Sauna (`RM-B-SAUNA`), re-laid 2026-11-25** when it gave its north 2' to the bath:
+  clear box x 121 5/8"..210", y 9 1/4"..90 3/4" (7'-4 3/8" x 6'-9 1/2"), ceiling underside
+  **84 1/16" AFF**. Seating in `plan/sauna.py`, sizes in `plan/sauna_types.py`; construction:
+  `notes/sauna_seating.md`.
+  - Two full-depth decks against the west wall, both **80 9/16 x 28**: upper lying bench at
+    **42"**, lower deck at **24"** carrying the armless recliner and its 26 x 80 x 4" mattress
+    at its south end (feet to the window). Access step **14 x 10, 12"** at x 179 1/4"..193 1/4",
+    y 68"..78". The reading platform is catalog-only. The east aisle holds the step, the
+    floor drain and the heater (US Harvia HPCS11U1H/PC110E, 10.5 kW, SE corner, x 192..207",
+    y 12 1/2..28 1/2"). No shower: the rinse is the bath's (`FX-B-BATH-SH`).
+  - `D-B-SAUNA` is on `W-B-CS` (y 51"..75"), swinging out to the gym. `W-B-SA-N` (2x6 sauna
+    liner wall, y=95 3/8") is the bath's wet wall: its bath face carries glass-mat board, the
+    shower, WC and lav, and every drain, vent and the condensate drop rise in its bays.
+  - Condensate (`PR-B-COND`, `PR-B-COND-HP2-GYM`) drops in `W-B-SA-N`'s 198 3/4"-211 3/4" bay
+    and ends in a 9" air gap over the floor drain, which keeps its trap wet.
+  - Vents: `REG-B-SUP3` is a ceiling hatch over the heater (199 3/4", 20 1/2"), a tee off
+    `DU-B-ERV-R-GYM`; `REG-B-EXH2` low on the west wall (20/20 cfm, sealed door). Both are
+    house-local `REG-T-SAUNA-VENT-SUP`/`-EXH` (ProSaunas aspen sliding hatch on a 4" boot).
+  - Lighting: `LR-B-SAUNA-WEST`/`-SOUTH` along the lower deck's exposed edge at 16" AFF, split
+    at the recliner's head, one switch; PSU on `W-B-SA-W`.
 
-- **Bathroom.** Rotated north-south along the framed stair wall (`W-B-STR3B`/`W-B-STR2`);
-  clear **3'-4 1/2" x 7'-1 1/2"**. The shared vent and supply drops run in `W-B-STR2`
-  at x=10'-0"; `W-B-BA-E` keeps its 2x6 section and now hosts the 36" pocket door. Its
-  cavity continues south into the matching 2x6 section of `W-B-HALL-W`. `W-B-BA-N` is a
-  dry `INT_2X4_PARTITION`. Wall devices are hosted on
-  their face (`location.attachment`) and `integrity.wall_mount_on_face` grades the body.
+- **Bathroom (`RM-B-BATH`), north of the sauna since 2026-11-25.** Clear x 120 1/4"..212 3/4",
+  y 100"..153 3/4" (34.5 sf), ceiling 84 3/16" under a 12 3/4" service cavity (R305 7'-0").
+  One door, `D-B-BATH` (30" privacy swing in `W-B-BT-N2` off the hall's south end, swinging in,
+  hinged east so the leaf parks clear of the WC). On the south wet wall, west to east: a 36x36
+  curbed pan (`FX-SHOWER-36-COMBO`, valve mid-bay at x=142 1/4"), the Drake WC (15" each side),
+  a SEKTION 24 lav. All drain to one 3" `PR-B-SAUNA-DRAIN` under the wall (individual vents;
+  a wet vent would need the WC last), cleanout a floor cap in front of the lav; the head stays
+  3" west of `FT-B-CS`. Solid-surface surround `WP-B-BATH-SURR`. Mirror and VALLMORA over the
+  lav, GFCI and hand towel on `W-B-CS3`, TP on the vanity's side, shower towel bar on
+  `W-B-BT-N`, can `ED-B-BATH-CAN1` and the switch by the latch on `W-B-BT-N`. Exhaust
+  `REG-B-EXH1` is a ceiling valve on its own radial.
+
+- **Water heater alcove (`RM-B-WH-ALCOVE`, 2026-11-25).** `EQ-B-WH` stands in the old bath's
+  footprint at (138 1/2", 246 3/4"), back to `W-B-BA-N`, serviced through the 34" doorless RO
+  `AO-B-WH-ALCOVE` in `W-B-CW2` (explicit NONBEARING) from the workshop. Ducts and grilles on
+  `W-B-BA-E`'s hall face; `ED-B-WH-RC` behind the tank at 78"; a keyless light and switch on
+  `W-B-STR2`. `EQ-B-HW-HEADER` did not move. `electrical.equipment_space_lighting` is UNKNOWN
+  (no entry door).
 
 - **Hall and circulation.** The hall runs from the stair foot south, west of `W-B-CN2`, the
-  full way to the sauna's north wall. `W-B-BA-E`/`W-B-HALL-W` (6 1/2") stand on the x=14'-0"
+  full way to the bath's door (`D-B-BATH`) at y=13'-0". `W-B-BA-E`/`W-B-HALL-W` (6 1/2") stand on the x=14'-0"
   node line aligned 1" west, so their hall face (x=14'-2 1/4") is flush with `W-B-WELL`'s
   4 1/2" (2026-11-16); the 1" step is on the bath side, inside `W-B-BA-N`'s tee; part of `RM-B-STAIR`'s loop (114.8 -> 147.7 sf, one seed, no
   separate `Room`). Circulation is stair -> hall -> gym (`D-B-GYM`) -> `D-B-PLAY`, and
@@ -2237,12 +2233,11 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   concrete pour** — `prices.toml`'s `concrete-window-bucks-and-blockouts` row drives to zero
   and is kept there under the `glazed-green-brick` convention.
   - `D-B-GYM` is on the hall (not the workshop): same uid/position, 32" leaf, type
-    `DT-INT-SWING32-GLAZED` (glazed because the hall has no window of its own and borrows the
-    gym's south daylight). Keep it at **32"** — `W-B-CS3` offers 42 3/16" of framed run and a
-    36" RO would leave only 3/16" for two jamb packs.
-  - The workshop is a room (not a corridor) with `D-B-SHOP` (3'-0", in `W-B-HALL-W`,
-    `flip_swing=True`, hinged north, leaf swings west), RO centred on `D-B-GYM`'s at
-    y=12'-3 7/16". `D-B-FURN` (3'-0", widened) is the dry-fire lane's door. `W-B-CW2B`
+    `DT-INT-SWING32-GLAZED`, glazed for the gym's daylight. Since 2026-11-25 it is a 36"
+    RO with a mat reducer on `W-B-CS2`, 7" north of `N-B-C1`; `FT-B-CS2` stops short of it
+    with a 20" slab bridge (`params/foundations._START_EXTENSION`).
+  - The workshop is a room (not a corridor) with `D-B-SHOP` (3'-0", in `W-B-HALL-W`, RO
+    y 13'-7".."16'-9", leaf swings west). `D-B-FURN` (3'-0", widened) is the dry-fire lane's door. `W-B-CW2B`
     and its cased opening `O-B-HALL` no longer exist.
   - `W-M-CLN2` (upper storey) stacks on nothing: `W-B-CW2` below it overlaps by only
     6 11/16", short of the 2'-0" stacking minimum, so `integrity.stack_ambiguous` does not
@@ -2262,19 +2257,18 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     Do not re-box either run without re-reading the declaration. `PR-B-HW-SAUNA` and
     `PR-B-CW-SAUNA` run side by side, not stacked, at x=17'-4"/17'-3" — do not restack them;
     two 1/2" lines need 5/8" separation in a band only 3" deep.
-  - Lighting/outlets: three `ED-T-LT-CAN4` (mark C retired 2026-10-28) on `CKT-LT-BSMT` (off
-    backup since 2026-11-02) at x=190", y=19'-6"/15'-0"/11'-6". Keep the middle one at **15'-0"**, not 15'-6" — `PR-B-HW-SAUNA`
-    crosses 2 9/16" below the ceiling there. `ED-B-WORKSHOP-SW` sits 5" north of
-    `D-B-SHOP`'s hinge jamb — the only side with room for the box. `ED-B-HALL-RC1` is on
-    `CKT-RC-BSMT` at y=16' (NEC 210.52(H)); note `electrical.receptacle_spacing` only walks
+  - Lighting/outlets: two `ED-T-LT-CAN4` on `CKT-LT-BSMT` (off backup) at x=190",
+    y=19'-6"/15'-0" (the third, at 11'-6", is inside the bath now as `ED-B-BATH-CAN1`). Keep
+    the middle one at **15'-0"** — `PR-B-HW-SAUNA` crosses 2 9/16" below the ceiling there.
+    `ED-B-WORKSHOP-SW` (workshop face) and `ED-B-HALL-RC1` (hall face, `CKT-RC-BSMT`, NEC
+    210.52(H)) share `W-B-HALL-W`'s bay north of `D-B-SHOP`; note `electrical.receptacle_spacing` only walks
     {BEDROOM, LIVING, KITCHEN, DINING, OFFICE}, so nothing enforces it if it moves.
     `ED-B-GYM-RC1`/`RC2`/`RC8` are on the gym face of `W-B-CS`/`W-B-CS3` — verify a device's
     side by eye: `electrical.receptacle_spacing` accepts one within 0.5 m of a room's clear
     face regardless of which side it's drawn on. `EQ-B-HP2-GYM` mounts at **6'-10" AFF** on
     `W-B-CS`'s gym face over `D-B-SAUNA` (y 10 1/2"..43 3/8", owner 2026-11-14), its plate on
     `BK-B-CS-HP2-GYM` and the door's LVL header, top 3 3/8" under the gypsum (Gree's top/side
-    clearances are a field hold). Further north it is inside 440.8's 3 ft of `FX-B-SAUNA-SH`
-    (`electrical.bath_hvac_zone`); higher would top out above the 95 3/8" bound.
+    clearances are a field hold).
 
 - **ST-B2M's handrails are the owner's titanium** (`RAILING-INT-TI-HANDRAIL-42`,
   `plan/titanium_types.py`): 42 mm tube on stock 316 fittings for 42.4 mm tube, 70 mm
@@ -2292,8 +2286,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   (Leviton 9726-C, with a receptacle) light it, one per bay (2026-11-15): `ED-B-CLOSET-LT` on
   `W-B-STR3` (west), `ED-B-CLOSET-LT2` on `W-B-CN` under the lower landing (east). Both are on
   `ED-B-CLOSET-SW` outside the door and the blank-face `ED-B-CLOSET-GFCI` beside it, whose load
-  side covers the receptacles (210.8(A)(5)); no check sees a lampholder's receptacle. Plain storage: `EQ-B-WH` left it for the workshop the day it
-  arrived (2026-11-09). Its gypsum underside is derived from `ST-B2M.underside_*` (5/8"
+  side covers the receptacles (210.8(A)(5)); no check sees a lampholder's receptacle. Plain storage. Its gypsum underside is derived from `ST-B2M.underside_*` (5/8"
   Type X, taped, unpainted; `notes/stair_underside.md`).
   The flight's lights are two recessed cans over the half-landings in ST-M2S's landing
   underside (`ED-B-STAIR-LAND-CAN1`/`2`, owner 2026-11-25); the railing tape is retired.
@@ -3212,7 +3205,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 ### Water supply
 
 - **Supply is PEX-A, except copper at `EQ-B-WH`'s taps** (owner, 2026-09-26): `PR-B-HW-TRUNK`,
-  `PR-B-CW-WH` and `PR-B-CW-BATH`. `PR-B-HW-SBATH` went PEX-A on 2026-11-19 (design review §10),
+  `PR-B-CW-WH` and `PR-B-CW-BATH` (the tank in `RM-B-WH-ALCOVE` since 2026-11-25). `PR-B-HW-SBATH` went PEX-A on 2026-11-19 (design review §10),
   teeing off the copper trunk.
   UPC 604.13 keeps PEX out of the first 18" of piping on any water heater, graded by
   `mep.pex_water_heater_clearance` along the developed piping; the header's PEX branches

@@ -25,7 +25,7 @@ from typehaus.takeoff.lighting import PSU_SIZING_FACTOR
 from typehaus.takeoff.placeables import placeables_takeoff
 
 HOUSE = Path(__file__).resolve().parents[3] / "houses" / "catlin"
-BASE_TAGS = ("UPPER", "LOWER", "READING", "STEP")
+BASE_TAGS = ("UPPER", "LOWER", "STEP")
 
 
 def _object(model, suffix):
@@ -56,7 +56,7 @@ def test_platforms_fit_without_fixture_collisions(catlin_model_ro):
     fixtures = [
         o
         for o in model.canvas_objects
-        if o.tag in {"FX-B-SAUNA-SH", "EQ-B-SAUNA-HTR", "ED-B-SAUNA-JB"}
+        if o.tag in {"EQ-B-SAUNA-HTR", "ED-B-SAUNA-JB"}
     ]
     for obj in platforms + [_object(model, "RECLINER"), _object(model, "MATTRESS")]:
         assert clear.covers(Polygon(obj.footprint)), obj.tag
@@ -65,17 +65,17 @@ def test_platforms_fit_without_fixture_collisions(catlin_model_ro):
     for index, obj in enumerate(platforms):
         for other in platforms[index + 1 :]:
             assert _footprint(obj).intersection(_footprint(other)).area < 1e-8
-    upper, lower, reading, step = platforms
-    assert _footprint(upper).bounds == pytest.approx((123.25, 38.1875, 151.25, 116.1875))
-    assert 209.75 - _footprint(step).bounds[2] == pytest.approx(24.5)
-    assert 209.75 - _footprint(reading).bounds[2] == pytest.approx(28)
+    upper, lower, step = platforms
+    assert _footprint(upper).bounds == pytest.approx((123.25, 10.0, 151.25, 90.5625))
+    assert _footprint(lower).bounds == pytest.approx((151.25, 10.0, 179.25, 90.5625))
+    assert 210 - _footprint(step).bounds[2] == pytest.approx(16.75)
     heater = next(o for o in fixtures if o.tag == "EQ-B-SAUNA-HTR")
     junction = next(o for o in fixtures if o.tag == "ED-B-SAUNA-JB")
-    assert _footprint(reading).distance(_footprint(heater)) == pytest.approx(10.5)
-    assert _footprint(reading).distance(_footprint(junction)) == pytest.approx(4)
+    assert _footprint(lower).distance(_footprint(heater)) == pytest.approx(13)
+    assert _footprint(lower).distance(_footprint(junction)) == pytest.approx(6.5)
     # US HPCS11U1H listing: 1.2" side/back, 4" front, 32.5" above; 78" room minimum.
-    assert 209.75 - _footprint(heater).bounds[2] >= 1.2
-    assert _footprint(heater).bounds[1] - 9.5 >= 1.2
+    assert 210 - _footprint(heater).bounds[2] >= 1.2
+    assert _footprint(heater).bounds[1] - 9.25 >= 1.2
     ceiling = next(c for c in model.ceilings if c.room_ref == room.tag)
     assert (ceiling.z0_m - heater.body_z1_m) / M_PER_IN >= 32.5
     assert (ceiling.z0_m - _floor(model)) / M_PER_IN >= 78
@@ -88,34 +88,30 @@ def test_lying_surface_and_finished_headroom(catlin_model_ro):
     ceiling = next(c for c in model.ceilings if c.room_ref == "RM-B-SAUNA")
     assert (upper.body_z1_m - floor) / M_PER_IN == pytest.approx(42)
     assert (ceiling.z0_m - upper.body_z1_m) / M_PER_IN == pytest.approx(42.0625)  # 7'-0 1/16" face
-    assert _footprint(upper).covers(box(124.25, 43.1875, 150.25, 111.1875))  # 26 x 68
-    for tag, height in (("LOWER", 24), ("READING", 24)):
-        assert (_object(model, tag).body_z1_m - floor) / M_PER_IN == pytest.approx(height)
-    # The free-standing step bears on the dish, 0.35" under the rim at its highest corner.
+    assert _footprint(upper).covers(box(124.25, 16.28125, 150.25, 84.28125))  # 26 x 68
+    assert (_object(model, "LOWER").body_z1_m - floor) / M_PER_IN == pytest.approx(24)
+    # The free-standing step bears on the level rim: the dish is only the aisle's drain fan.
     step = _object(model, "STEP")
     assert (step.body_z1_m - step.body_z0_m) / M_PER_IN == pytest.approx(12)
-    assert (floor - step.body_z0_m) / M_PER_IN == pytest.approx(0.349, abs=0.002)
+    assert (floor - step.body_z0_m) / M_PER_IN == pytest.approx(0, abs=0.002)
 
 
-def test_four_people_include_seats_legs_and_access(catlin_model_ro):
+def test_three_people_include_seats_legs_and_access(catlin_model_ro):
+    """Design capacity is three since the 2026-11-25 re-lay: each upper bather's feet take the
+    lower deck's back 20", so a fourth seat there overlaps them (notes/sauna_seating.md)."""
     model = catlin_model_ro
-    upper, lower, reading = (
-        _footprint(_object(model, tag)) for tag in ("UPPER", "LOWER", "READING")
-    )
+    upper, lower = (_footprint(_object(model, tag)) for tag in ("UPPER", "LOWER"))
+    heater = _footprint(next(o for o in model.canvas_objects if o.tag == "EQ-B-SAUNA-HTR"))
     envelopes = []
-    for south in (38.1875, 64.1875, 90.1875):
+    for south in (10.0, 36.0, 62.0):
         seat, feet = box(133.25, south, 151.25, south + 26), box(151.25, south, 171.25, south + 26)
         assert upper.buffer(1e-8).covers(seat)
         assert lower.buffer(1e-8).covers(feet)
         envelopes.append(seat.union(feet))
-    # Remove recliner/pad: fourth bather sits below, at the west end of the south deck.
-    seat, feet = box(123.75, 11, 145.75, 37), box(145.75, 11, 167.75, 37)
-    assert reading.covers(seat.union(feet))
-    envelopes.append(seat.union(feet))
     for index, occupied in enumerate(envelopes):
         for other in envelopes[index + 1 :]:
             assert occupied.intersection(other).area == 0
-        assert occupied.intersection(box(185.25, 38, 209.75, 80.1875)).area == 0
+        assert occupied.intersection(heater.buffer(7)).area == 0
 
 
 def test_removable_decks_preserve_drain_and_exhaust(catlin_model_ro):
@@ -136,10 +132,12 @@ def test_removable_decks_preserve_drain_and_exhaust(catlin_model_ro):
                 if z0 < fixture.body_z1_m and z1 > fixture.body_z0_m:
                     assert frame.intersection(Polygon(fixture.footprint)).area < 1e-10
     drain = next(o for o in protected if o.tag == "FX-B-SAUNA-FD")
-    assert _footprint(_object(model, "LOWER")).covers(_footprint(drain))
-    # The head cleanout left the sauna floor on 2026-11-10: a wall panel in the hall face.
+    # The drain sits in the aisle's NE corner, clear of both decks and the step.
+    for suffix in BASE_TAGS:
+        assert _footprint(_object(model, suffix)).intersection(_footprint(drain)).area < 1e-8
+    # The head cleanout is a flush floor cap in the bath, in front of the lav (2026-11-25).
     cleanout = next(c for c in model.drain_cleanouts if c.tag == "CO-B-SAUNA-HEAD")
-    assert cleanout.access == "wall" and cleanout.wall_ref == "W-B-SA-N2"
+    assert cleanout.access == "floor" and cleanout.wall_ref is None
     extension = next(s for s in model.solids if s.tag == "CO-B-SAUNA-HEAD-EXT")
     assert extension.sweep.path[-1] == pytest.approx((*cleanout.cap_position, cleanout.cap_z_m))
 
@@ -217,8 +215,8 @@ def test_all_wood_members_connect_to_the_support_frame(catlin_model_ro):
 def test_recliner_and_thick_pad_share_profile_and_mount(catlin_model_ro):
     model = catlin_model_ro
     wood, pad = (_object(model, tag) for tag in ("RECLINER", "MATTRESS"))
-    assert wood.position == pad.position and wood.rotation_degrees == pad.rotation_degrees == 90
-    assert wood.body_z0_m == pad.body_z0_m == pytest.approx(_object(model, "READING").body_z1_m)
+    assert wood.position == pad.position and wood.rotation_degrees == pad.rotation_degrees == 0
+    assert wood.body_z0_m == pad.body_z0_m == pytest.approx(_object(model, "LOWER").body_z1_m)
     assert BACK_LENGTH_IN + SEAT_LENGTH_IN + LEG_LENGTH_IN == 80
     assert MATTRESS_THICKNESS_IN == 4
     for angle in LOCKING_BACK_ANGLES_DEG:
@@ -267,13 +265,14 @@ def test_recliner_and_thick_pad_share_profile_and_mount(catlin_model_ro):
         projection = MultiPoint([(x, y) for x, y, _ in part["mesh"]["positions"]]).convex_hull
         assert Polygon(stroke["points"]).symmetric_difference(projection).area < 1e-10
     for obj in (wood, pad):
-        assert _footprint(_object(model, "READING")).covers(_footprint(obj))
+        assert _footprint(_object(model, "LOWER")).covers(_footprint(obj))
 
 
 def test_sections_cut_placed_recliner_and_mattress(catlin_model_ro):
     model = catlin_model_ro
-    nodes = sauna_benches(model, "x", 24 * M_PER_IN)
-    for suffix in ("READING", "RECLINER", "MATTRESS"):
+    # The recliner lies along y now, so the lengthwise cut is x=165 through its centre.
+    nodes = sauna_benches(model, "y", 165 * M_PER_IN)
+    for suffix in ("LOWER", "RECLINER", "MATTRESS"):
         obj = _object(model, suffix)
         cut = [n for n in nodes if n.node == "polyline" and n.uid == obj.uid]
         assert cut
@@ -284,22 +283,20 @@ def test_sections_cut_placed_recliner_and_mattress(catlin_model_ro):
         n for n in nodes if n.node == "polyline" and n.tag == "detail-component:sauna-mattress"
     ]
     assert any(len({round(z, 6) for _, z in n.points}) >= 4 for n in pad_nodes)
-    assert sauna_benches(model, "x", 200 * M_PER_IN) == []
+    assert sauna_benches(model, "y", 200 * M_PER_IN) == []
 
 
 def test_underbench_tape_is_attached_and_driver_has_capacity(catlin_model_ro):
     model = catlin_model_ro
     runs = [r for r in model.light_runs if r.room == "RM-B-SAUNA"]
-    edge = _footprint(_object(model, "LOWER")).boundary.union(
-        _footprint(_object(model, "READING")).boundary
-    )
+    edge = _footprint(_object(model, "LOWER")).boundary
     for run in runs:
         assert (run.z_m - _floor(model)) / M_PER_IN == pytest.approx(16)
         for a, b in zip(run.path, run.path[1:], strict=False):
             midpoint = Point((a[0] + b[0]) / (2 * M_PER_IN), (a[1] + b[1]) / (2 * M_PER_IN))
             assert edge.distance(midpoint) < 1e-7
             attached = False
-            for suffix in ("LOWER", "READING"):
+            for suffix in ("LOWER",):
                 obj = _object(model, suffix)
                 for part in _parts(model, obj):
                     center, size = part["center"], part["size"]
@@ -324,7 +321,7 @@ def test_underbench_tape_is_attached_and_driver_has_capacity(catlin_model_ro):
         assert run.psu_ref == "ED-B-SAUNA-LT-PSU"
     tape_types = {t.tag: t for t in model.plan.library.electrical_device_types}
     watts = sum(r.length_m / M_PER_IN / 12 * tape_types[r.type_ref].watts_per_ft for r in runs)
-    assert watts == pytest.approx(29.171875)
+    assert watts == pytest.approx(20.140625)  # 80 9/16\" of 3 W/ft tape
     driver = next(
         t for t in model.plan.library.electrical_device_types if t.tag == "ED-T-LT-PSU-60"
     )
@@ -339,7 +336,10 @@ def test_all_custom_seating_is_counted_and_priced_once(catlin_model_ro, catlin_p
     rows = {r["type"]: r for r in placeables_takeoff(catlin_model_ro)}
     prices = load_prices(HOUSE)
     for tag in types:
-        assert rows[tag]["count"] == 1
+        # The reading platform is catalog-only (0 ea) since 2026-11-25.
+        assert rows.get(tag, {"count": 0})["count"] == (
+            0 if tag == "FT-CATLIN-SAUNA-READING-58" else 1
+        )
         assert tag in prices.placeables
 
 
@@ -351,7 +351,10 @@ def test_xenio_controls_are_outside_hot_room_and_clear_of_existing_devices(catli
     sauna = next(r for r in model.rooms if r.tag == "RM-B-SAUNA")
     prices = load_prices(HOUSE)
     rows = {r["type"]: r for r in placeables_takeoff(model)}
-    for tag, base_inches in (("ED-B-SAUNA-CONTROL", 56), ("ED-B-SAUNA-POWER", 60)):
+    for tag, base_inches, wall in (
+        ("ED-B-SAUNA-CONTROL", 56, "W-B-CS"),
+        ("ED-B-SAUNA-POWER", 60, "W-B-CS3"),
+    ):
         placed, element = objects[tag], elements[tag]
         footprint = Polygon(placed.footprint)
         assert Polygon(gym.clear_face).buffer(1e-6).covers(footprint)
@@ -360,7 +363,7 @@ def test_xenio_controls_are_outside_hot_room_and_clear_of_existing_devices(catli
             base_inches * M_PER_IN
         )
         assert element.room == "RM-B-GYM"
-        assert element.location.attachment.wall_ref == "W-B-CS"
+        assert element.location.attachment.wall_ref == wall
         assert element.location.attachment.face == "left"
         assert not element.mount.recessed_into_host_surface
         # Check full bodies, including door and towel bar, rather than plan rectangles alone.

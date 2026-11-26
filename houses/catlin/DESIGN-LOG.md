@@ -1,3 +1,36 @@
+## Basement replan: one bath north of the sauna, sauna re-laid, water heater in an alcove (2026-11-25, owner)
+
+The owner wanted one bathroom instead of a bath plus a sauna rinse, easy to build, costing no
+more than the old detail. `RM-B-BATH` moved into a 2' band north of the sauna (one 32" swing
+door off the hall, owner: hall door only). The sauna kept its heater, door and floor drain
+(owner: one drain with a small dish) and gave up its shower, tile splash, Durock and valve
+pocket. All of the bath's fixtures stand on one wet wall, `W-B-SA-N`, and drain to one 3"
+branch with individual vents. A bathroom-group wet vent was the plan, but it is rejected:
+the WC must join last and the shower is west of it, and a floor drain isn't a bath-group
+fixture. The shower is the 36x36 curbed combo, which fits between the west wall and the WC's
+15" side clearance, so the neo-angle option wasn't needed. The water heater moved into the
+old bath's footprint, an alcove with a doorless 34" RO from the workshop.
+
+- **Sauna seating.** Two 80 9/16 x 28 decks replace the 78" bench, the 20" foot platform and
+  the reading deck. The recliner moves onto the lower deck. Design capacity drops from four to
+  three seated: each upper bather's feet take the lower deck's back 20", so a fourth seat
+  overlaps them. Four fit only shoulder-to-shoulder on the upper bench, at ~20" each.
+- **Dish.** It now covers only the east aisle, 0.657" low at the drain (0.804" before).
+  `floor_fall_at` read a dish at the room centroid, which a dish smaller than its room
+  misses, leaving the drain body floating. It now reads the piece under the point.
+- **Footing.** `FT-B-CS` runs north to y=171 under `W-B-CS3` and the gym door's packs, and
+  `FT-B-CS2` stops short of `D-B-GYM` with a 20" slab bridge. The 3" branch head stays 3"
+  west of the footing, inside its 45° line, so its cleanout is a floor cap in front of the lav
+  rather than a wall panel (a 3" cap needs 24" clear).
+- **Cost (ablation against main, `haus takeoff`).** Net is $1,002-$3,047 lower, and the total
+  $1,052-$3,294 lower. The new solid-surface surround (~39 SF plus cap, +$1,200-$1,800) is
+  more than paid for by the decks, the pocket door and its EKQ kit, and the HAVBÄCK. The
+  largest single saving is a re-read, not a measured change: the sauna splash was the house's
+  only wall tile, so `finish-wall-tile-material` goes to $0 and the tile-backer lump halves to
+  BATH2's floor. Without those two the branch is ~$900-$1,000 more.
+- Open (not graded): the condensate tail in the sauna's NE corner runs ~14" over the floor at
+  9" to the drain. `electrical.equipment_space_lighting` is UNKNOWN for the doorless alcove.
+
 ## Basement stair: the railing tape goes, two landing cans come in (2026-11-25, owner)
 
 `LR-B-STAIR-RAIL` lay level at 34" off the slab, which put it in the under-stair closet and

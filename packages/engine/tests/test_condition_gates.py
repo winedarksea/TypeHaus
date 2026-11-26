@@ -386,7 +386,16 @@ def test_catlin_assembly_change_noise_is_gone(catlin_model_ro):
         # shorted the acoustic wall by one leaf.
         "assembly_change:INT_2X4_PARTITION_HALF|INT_2X4_RC_HALF",
         "assembly_change:INT_2X4_PARTITION_HALF|INT_2X6_BRG_HALF|PLANT_INT_2X4_HUMID|PLANT_INT_2X6_BRG_HUMID",
+        # W-B-CL-E (the under-stair closet's hall face, 2x6 plumbing section) meets the 2x4
+        # W-B-WELL-HEAD stub on the hall line. It replaces the old W-B-HALL-W|W-B-BA-E
+        # `INT_2X6_PLUMBING_HALF|INT_2X6_STAGGERED_PLUMBING_HALF` key: W-B-BA-E is the
+        # alcove's wall now and is not a stagger (2026-11-25 replan).
+        "assembly_change:INT_2X4_PARTITION_HALF|INT_2X6_PLUMBING_HALF",
+        # W-M-STOS/-STOS2, the main storey's staggered wet wall against the plain partition.
         "assembly_change:INT_2X4_PARTITION_HALF|INT_2X6_STAGGERED_PLUMBING_HALF",
+        # (2026-11-25 replan) W-B-BT-W (bath west, 2x4) meets W-B-SA-W (the
+        # sauna's 2x6 liner wall) collinear at x=118": the sauna wall's construction starts.
+        "assembly_change:INT_2X4_PARTITION_HALF|SAUNA_2X6",
         # N-B-WELL-HEAD: the framed stub under the deck (W-B-WELL-HEAD, framed 2026-11-20)
         # hands off to W-B-WELL's stair-framed faces at the opening edge.
         "assembly_change:INT_2X4_PARTITION_HALF|STAIRWELL_PARTITION_4H",
@@ -417,8 +426,6 @@ def test_catlin_assembly_change_noise_is_gone(catlin_model_ro):
         # a key. W-S-BD-N1B is a BEARING plumbing wall (continuous studs, wet_wall_bearing)
         # and W-S-BD-N the staggered wet wall it meets.
         "assembly_change:INT_2X6_BRG_PLUMBING_HALF|INT_2X6_STAGGERED_PLUMBING_HALF",
-        # W-B-HALL-W's continuous 2x6 plumbing section hands off to W-B-BA-E's stagger.
-        "assembly_change:INT_2X6_PLUMBING_HALF|INT_2X6_STAGGERED_PLUMBING_HALF",
         # N-B-ESS-SE. It was a FOUR-assembly key for one afternoon on 2026-09-05 — the two
         # partitions arriving here, INT_ESS_CLOSET_STEEL from the west and W-B-CL-N's plain
         # INT_2X4_PARTITION leaving east, joined the stair wall's own split. **W-B-CL-N is

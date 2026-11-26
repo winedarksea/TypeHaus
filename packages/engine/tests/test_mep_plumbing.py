@@ -365,19 +365,20 @@ def test_basement_slab_fixtures_drain_through_their_own_slab_stub_ups(catlin_mod
     slab — so the penetration is authored where the trap actually drops, not projected onto
     a wall centerline the way a wall-drained lavatory is.
 
-    Four slab fixtures in the basement — the stair-foot bathroom and the sauna's shower
-    end — and each of them owns a stub.
+    Four slab fixtures in the basement — RM-B-BATH's three and the sauna's floor drain —
+    and each of them owns a stub.
     """
-    slab_fixtures = ("FX-B-BATH-WC", "FX-B-BATH-LAV", "FX-B-SAUNA-SH", "FX-B-SAUNA-FD")
+    slab_fixtures = ("FX-B-BATH-WC", "FX-B-BATH-LAV", "FX-B-BATH-SH", "FX-B-SAUNA-FD")
     for tag in slab_fixtures:
         sleeve = next(s for s in catlin_model.sleeves if s.serves_fixture == tag)
         fixture = catlin_model.plan.by_tag(tag)
         assert sleeve.host_slab == "SL-B-FLOOR", tag
         # The convention only needs an authored `drain_position` where the trap is not under
         # the fixture: a closet flange, a shower pan's outlet and a floor drain's body all are.
-        # The WC's flange is its DRAIN port, 12" off the wall rather than under the centre.
-        expected = ((12 * 12 * 0.0254, 224.375 * 0.0254) if tag == "FX-B-BATH-LAV"
-                    else (12 * 12 * 0.0254, 291.8125 * 0.0254) if tag == "FX-B-BATH-WC"
+        # The WC's stub is its closet bend, 3" short of the flange; the lav's drop is in
+        # W-B-SA-N under its sanitary tee, off the fixture.
+        expected = ((200.5 * 0.0254, 96.75 * 0.0254) if tag == "FX-B-BATH-LAV"
+                    else (171.25 * 0.0254, 112 * 0.0254) if tag == "FX-B-BATH-WC"
                     else (fixture.drain_position or fixture.position).xy_m)
         assert sleeve.expected_center == pytest.approx(expected), tag
         assert sleeve.offset_m == pytest.approx(0.0, abs=1e-9), tag
@@ -760,14 +761,14 @@ def test_the_wall_exit_leaves_from_the_jogged_station_not_the_chase():
 
 def test_trap_arms_are_walked_in_3d_to_a_vent_that_meets_the_drain(catlin_model):
     """C6-E7: `mep.trap_arm_length` walks the drain from the trap to the first vent tee
-    (or a wet vent that grades legal under 908). The basement WC was the reviewer's case: the
-    utility sink, 116" down the drain, is no legal wet vent (houses/catlin/notes/
-    wet_vent_basis.md), so it got its own tee 70" from the flange, against 72"."""
+    (or a wet vent that grades legal under 908). The basement WC was the reviewer's case; since
+    2026-11-25 it has its own tee 2 1/4" past its arm's join, 26" from the flange, against
+    72" (houses/catlin/notes/wet_vent_basis.md)."""
     report = run_from_model(catlin_model, [], tier=Tier.CODE, only="mep.trap_arm_length")
     by = {f.element_tags[0]: f for f in report.findings}
     assert by["FX-A-STUBATH-WC"].result.value == "pass"  # its riser, plan/mep_vent_tees.py
     assert by["FX-B-BATH-WC"].result.value == "pass"
-    assert 'develops 70"' in by["FX-B-BATH-WC"].message
+    assert 'develops 26"' in by["FX-B-BATH-WC"].message
     # Its vent tee since 2026-11-05: the arm crosses joist 13's web to W-M-BA2E2.
     assert by["FX-M-BATH2-TUB"].result.value == "pass"
 

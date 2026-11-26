@@ -60,8 +60,8 @@ def test_mounting_positions_are_referenced_to_actual_supports(catlin_model_ro):
     # BATH2's Carlyle II is TOTO's published 28 5/16" deep (geometry review 2026-10-31,
     # I2-008), not the 30" envelope; the TOTO tanks stand 3/4" (Drake 13/16") off the wall
     # since 2026-11-06, so the floor bowls' fronts come that much closer to the holders.
-    for room, y, gap in zip(ROOMS[:3], (267.4375, 300.5, 226.74), (7.1875, 8, 8.9375),
-                            strict=True):
+    # RM-B-BATH's holder is on the vanity's west side now (2026-11-25), checked below.
+    for room, y, gap in zip(ROOMS[1:3], (300.5, 226.74), (8, 8.9375), strict=True):
         holder = next(obj for obj in _holders(catlin_model_ro) if obj.room == room)
         toilet = next(obj for obj in objects.values()
                       if obj.room == room and obj.tag.endswith("-WC"))
@@ -71,7 +71,8 @@ def test_mounting_positions_are_referenced_to_actual_supports(catlin_model_ro):
         assert distance == pytest.approx(gap)
     # 4 1/2" east with the chase wall since the tub end was furred (2026-11-08).
     assert objects["FURN-S-BATH1-TP"].position[0] / IN == pytest.approx(31.5)
-    for tag, y in (("FURN-S-SUITEBATH-TP", 248.25), ("FURN-A-STUBATH-TP", 253)):
+    for tag, y in (("FURN-B-BATH-TP", 112.625), ("FURN-S-SUITEBATH-TP", 248.25),
+                   ("FURN-A-STUBATH-TP", 253)):
         holder = objects[tag]
         vanity = objects[holder.host_fixture_ref]
         assert holder.position[1] / IN == pytest.approx(y)
@@ -82,7 +83,7 @@ def test_mounting_positions_are_referenced_to_actual_supports(catlin_model_ro):
 def test_both_posts_have_exact_support_and_blocks_fill_stud_bays(catlin_ctx):
     findings = [f for f in wall_fixing_support(catlin_ctx)
                 if any(tag.endswith("-TP") for tag in f.element_tags)]
-    assert len(findings) == 8
+    assert len(findings) == 6
     assert all(f.result.value == "pass" for f in findings)
     bands = backing_bands(catlin_ctx.plan)
     count = 0
@@ -97,7 +98,7 @@ def test_both_posts_have_exact_support_and_blocks_fill_stud_bays(catlin_ctx):
             assert band.profile == "2x6" and band.material_ref == "spf"
             centre = wall.base_ref_z_m + band.elevation_m + band.height_m / 2
             assert centre == pytest.approx(holder.z_m + 0.67 * IN)
-    assert count == 5
+    assert count == 4
 
 
 def test_loaded_roll_and_upward_pivot_clear_bodies_and_door_swings(catlin_model_ro):
@@ -129,7 +130,7 @@ def test_panel_is_raised_and_cabinet_pads_cover_both_post_stations(catlin_plan, 
     assert catlin_plan.by_tag("BK-S-CH-S-AP").elevation.inches == pytest.approx(34)
     assert objects[panel.tag].body_z0_m > objects["FURN-S-BATH1-TP"].z_m + 8.11 * IN
     pads = [obj for obj in objects.values() if obj.type_ref == "FT-TP-CABINET-BACKING-12"]
-    assert len(pads) == 2
+    assert len(pads) == 3
     for pad in pads:
         holder = objects[pad.tag.removesuffix("-PAD")]
         vanity = objects[pad.host_fixture_ref]
@@ -157,7 +158,7 @@ def test_new_blocks_do_not_intersect_routed_services(catlin_model_ro):
         indices = {index for index, band in enumerate(ordered) if "-TP" in band.tag}
         blocks.extend(member for member in wall.members if any(
             member.child_key.startswith(f"backing-{index}-") for index in indices))
-    assert len(blocks) == 5
+    assert len(blocks) == 4
     sections = run_sections(model)
     for member in blocks:
         outline, bottom, top = member_footprint(member)
@@ -183,7 +184,7 @@ def test_new_blocks_do_not_intersect_routed_services(catlin_model_ro):
 def test_holders_and_pads_are_counted_and_keep_host_in_model_json(catlin_model_ro):
     rows = placeables_takeoff(catlin_model_ro)
     assert sum(row["count"] for row in rows if row["type"] in {"FT-MOEN-ALIGN-TP", "FT-MOEN-ALIGN-TP-CH"}) == 6
-    assert sum(row["count"] for row in rows if row["type"] == "FT-TP-CABINET-BACKING-12") == 2
+    assert sum(row["count"] for row in rows if row["type"] == "FT-TP-CABINET-BACKING-12") == 3
     payload = model_to_dict(catlin_model_ro)
     holders = [obj for obj in payload["canvas_objects"] if obj["type"] in {"FT-MOEN-ALIGN-TP", "FT-MOEN-ALIGN-TP-CH"}]
     assert len(holders) == 6

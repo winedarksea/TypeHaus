@@ -438,7 +438,9 @@ def test_the_washtower_is_blocked_at_its_own_station_and_gets_no_second_sister()
     stations = _blocks_by_station(floor)
     station = min(stations, key=lambda x: abs(x - laundry_x))
     assert abs(station - laundry_x) < 13.5, "no blocking station under the WashTower"
-    blocks = stations[station]
+    # A partition's own block (`partition-block-<wall>`, here W-B-BT-N's at y~152", 2026-11-25)
+    # shares the x line by coincidence; it is the wall's, not the reinforcement's.
+    blocks = [m for m in stations[station] if not m.child_key.startswith("partition-block-")]
     assert len(blocks) == 2, "one block to the joist line on each side, no more"
     assert len([m for m in floor.members if m.category == "sister_joist"]) == 1
 

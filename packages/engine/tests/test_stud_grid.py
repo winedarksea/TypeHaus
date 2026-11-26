@@ -45,7 +45,7 @@ def test_a_staggered_wall_is_framed_on_half_its_authored_spacing(catlin_model):
 
 def test_it_is_dormant_on_windows_and_live_on_doors(catlin_model):
     """Why it is fixed *before* the door check exists. No catlin window sits on a staggered
-    wall, so the window check never saw the disagreement; the two remaining doors do."""
+    wall, so the window check never saw the disagreement; the one remaining door does."""
     on_staggered = {"window": [], "door": []}
     for opening in catlin_model.openings:
         wall = catlin_model.wall(opening.host_wall)
@@ -57,7 +57,8 @@ def test_it_is_dormant_on_windows_and_live_on_doors(catlin_model):
     assert on_staggered["window"] == []
     # D-S-SUITEBATH and D-M-BATH1 left this list when their hosts became plain 2x4
     # partitions. Neither wall has a plumbing assembly that needs staggered framing now.
-    assert sorted(on_staggered["door"]) == ["D-B-BATH", "D-B-PLAY"]
+    # D-B-BATH left it (2026-11-25): the basement replan moved it onto W-B-BT-N2, not staggered.
+    assert sorted(on_staggered["door"]) == ["D-B-PLAY"]
 
 
 def test_a_plain_wall_keeps_its_authored_module(catlin_model):

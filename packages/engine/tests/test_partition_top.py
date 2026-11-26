@@ -46,7 +46,7 @@ _ATTIC = ("W-A-BA-E", "W-A-BATH-S", "W-A-GC-S", "W-A-HALL-S", "W-A-SN", "W-A-STU
 #: Three of them sit inside ``platform._MAX_BAND_M``, so that guard does not save them.
 #: (``W-M-FIRE-STUB`` became ``-STUB-S``/``-M``/``-N`` on 2026-09-19 — three 12" piers with
 #: the joist pockets as gaps between them. Same wythe, same z band, three tags.)
-_NOT_FULL_HEIGHT = ("W-B-SA-N", "W-B-SA-N2", "W-B-SA-W", "W-M-TUBDK-S", "W-M-TUBDK-W",
+_NOT_FULL_HEIGHT = ("W-B-SA-N", "W-B-SA-W", "W-M-TUBDK-S", "W-M-TUBDK-W",
                     "W-M-FIRE-STUB-S", "W-M-FIRE-STUB-M", "W-M-FIRE-STUB-N",
                     "W-BW-SCREEN-SKIRT")
 
@@ -144,7 +144,8 @@ def test_the_gate_answers_the_same_before_and_after_the_pass(catlin_model_ro) ->
     """Partitions, including the four new study return/rear segments; W-M-WELL and
     W-B-WELL left, standing in their wells to the floor above; W-M-HS3/-HS4 left as BEARING (#116);
     W-S-BD-N1B joined as NONBEARING (owner, 2026-11-06); W-S-SBF, the suite tub's furred
-    plumbing end (2026-11-08); W-S-CLN-S, full height once SF-S-HP1 retired (2026-11-11): 62.
+    plumbing end (2026-11-08); W-S-CLN-S, full height once SF-S-HP1 retired (2026-11-11);
+    the basement replan's W-B-BT-N/-N2/-W and W-B-CL-E (2026-11-25): 66.
 
     Not a tautology: the pass MOVES the plate it selects on, so a full-height tolerance
     measured only upward would drop ``W-B-CE`` — whose plate lands 1-11/16" below its
@@ -154,7 +155,7 @@ def test_the_gate_answers_the_same_before_and_after_the_pass(catlin_model_ro) ->
     refs = bearing_ref_tags(catlin_model_ro.plan)
     tags = [w.tag for w in catlin_model_ro.walls
             if takes_a_deflection_gap(catlin_model_ro, w, refs)]
-    assert len(tags) == 62
+    assert len(tags) == 66
     assert "W-B-CE" in tags
 
 
@@ -226,10 +227,13 @@ def test_the_three_count_rules_are_three_rows(sdpw_rows) -> None:
     # 110 -> 108 (2026-11-20): FO-M-ERV-OA's north pack stops at x=55", short of W-B-ESS-W.
     # 108 -> 109 (345438a75, 2026-11-22): FS-S-WEST's new north LSL edge rim; W-M-MECH-E's
     # axis runs to the north wall's line and crosses it, as W-B-CE's does its rim (#112).
+    # 109/12/72 -> 119/14/73 (2026-11-25, basement replan): the bath band's W-B-BT-N/-N2/-W and
+    # the alcove's W-B-CL-E are new partitions under the main-floor joists, and the reshaped
+    # W-B-BA-E now has wood over it (billed, no longer refused).
     assert counts == {
-        "partition top plate, perpendicular framing above": 109,
-        "partition top plate, under a parallel member": 12,
-        "partition top plate, blocking between parallel members": 72,
+        "partition top plate, perpendicular framing above": 119,
+        "partition top plate, under a parallel member": 14,
+        "partition top plate, blocking between parallel members": 73,
     }
 
 
@@ -251,8 +255,10 @@ def test_a_partition_under_a_sip_soffit_is_refused_and_says_so(sdpw_rows) -> Non
     assert all(row["count"] for row in sdpw_rows), "no row here may be an empty order line"
     for row in sdpw_rows:
         # W-B-CE left this list with SL-M-DECK (decision #112): it is under FS-M-NE now,
-        # and W-B-WELL-HEAD when it framed its own top plate (2026-11-20).
-        for tag in ("W-B-BA-E",):
+        # and W-B-WELL-HEAD when it framed its own top plate (2026-11-20). W-B-BA-E left it
+        # with the basement replan (2026-11-25): wood now stands over it. The attic's SN-ER
+        # (no wood at all, under a SIP soffit) is the refusal that remains.
+        for tag in ("W-A-SN-ER",):
             assert tag in row["basis"], f"{row['scope']} does not name {tag}"
 
 

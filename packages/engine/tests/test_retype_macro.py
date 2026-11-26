@@ -78,10 +78,10 @@ def test_retype_warns_about_the_cast_sleeve_that_serves_the_fixture(catlin_plan)
     hole is a decision, not a detail. Read on a *basement* shower — the main floor's cast
     sleeves went with the deck overhaul (its ceiling is I-joists over two thirds of the
     floor now), so FX-M-BATH2-SH has none to warn about."""
-    result = retype_placeable(catlin_plan, "basement", tag="FX-B-SAUNA-SH",
+    result = retype_placeable(catlin_plan, "basement", tag="FX-B-BATH-SH",
                               type_ref="FX-TUBSHOWER-60")
     text = "\n".join(result.warnings)
-    assert "SP-B-SAUNA-SH" in text
+    assert "SP-B-BATH-SH" in text
 
 
 def test_same_footprint_retype_moves_nothing(catlin_plan):

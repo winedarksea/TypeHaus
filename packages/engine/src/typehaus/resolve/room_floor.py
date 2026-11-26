@@ -21,7 +21,7 @@ rather than lifting the ceiling.
 
 from __future__ import annotations
 
-from shapely.geometry import Polygon
+from shapely.geometry import Point, Polygon
 
 from typehaus.resolve.model import ResolvedModel, ResolvedRoom
 from typehaus.resolve.slab_clip import floor_plan
@@ -109,13 +109,21 @@ def floor_fall_at(model: ResolvedModel, room: ResolvedRoom, x: float, y: float,
     centroid = Polygon(room.clear_face).centroid
     wall_z = next((w.base_ref_z_m for w in model.walls if w.storey == room.storey), 0.0)
     best = _room_slab(model, centroid, wall_z)
-    if best is None or not best.lifts:
+    if best is None:
+        return 0.0
+    datum = _plane_lift(best, centroid)
+    if best.dish is None:
+        # A dish smaller than its room: the centroid reads the rim, so read the point's piece.
+        local = _room_slab(model, Point(x, y), wall_z)
+        if local is not None and local.dish is not None:
+            best = local
+    if not best.lifts:
         return 0.0
     here = 0.0 if frame_hung else best.lift_at(x, y)
     if under and best.dish is not None and not frame_hung:
         reach = Polygon(under).buffer(_RIM_SHIM_M, join_style=2).exterior.coords
         here = max(here, *(best.lift_at(px, py) for px, py in reach))
-    return here - _plane_lift(best, centroid)
+    return here - datum
 
 
 def room_finished_floor_elevation(model: ResolvedModel, room: ResolvedRoom) -> float:

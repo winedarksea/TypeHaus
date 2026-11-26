@@ -184,7 +184,9 @@ def test_catlin_declares_its_two_rooms(catlin_model_ro) -> None:
     assert "PR-B-COND" in passes["RM-B-GYM"]
     assert "DU-B-ERV-R-GYM" not in passes["RM-B-GYM"]
     assert "the condensate line crossing it" in passes["RM-B-GYM"]
-    # Where it went. The hall carries three ERV branches and the sauna vent since D3.
-    assert "DU-B-ERV-R-GYM" in passes["RM-B-STAIR"]
+    # Where it went. The hall carries ERV branches and the sauna vent since D3; the gym's
+    # branch left it in the 2026-11-25 bath replan, whose own (-R-BATH) crosses it now.
+    assert "DU-B-ERV-R-BATH" in passes["RM-B-STAIR"]
+    assert "DU-B-ERV-R-GYM" not in passes["RM-B-STAIR"]
     assert "DU-B-ERV-R-PLAY" in passes["RM-B-STAIR"]
     assert "RM-S-SUITE" not in passes

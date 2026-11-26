@@ -98,7 +98,7 @@ def test_a_regressed_tie_in_makes_the_rollup_shrink(catlin_plan, catlin_model_ro
     model = copy.copy(catlin_model_ro)
     runs = list(model.pipe_runs)
     index, child = next((i, r) for i, r in enumerate(runs)
-                        if r.tag == "PR-B-BATH-DRAIN")
+                        if r.tag == "PR-B-SAUNA-DRAIN")
     sunk = copy.copy(child)
     # 6" under the main it joins — well past the 1" the load rollup tolerates.
     object.__setattr__(sunk, "z_m", [*child.z_m[:-1], child.z_m[-1] - 6 * M_PER_IN])
@@ -113,7 +113,7 @@ def test_a_regressed_tie_in_makes_the_rollup_shrink(catlin_plan, catlin_model_ro
 
     findings = drain_tie_in(check_context(plan=catlin_plan, model=model))
     fail = next(f for f in findings
-                if "PR-B-BATH-DRAIN" in f.element_tags and f.result is Result.FAIL)
+                if "PR-B-SAUNA-DRAIN" in f.element_tags and f.result is Result.FAIL)
     assert fail.severity is Severity.ERROR
     assert "BELOW its centreline" in fail.message
     assert "mep.pipe_sizing" in fail.message
@@ -130,7 +130,7 @@ def test_an_accepted_but_low_entry_is_an_advisory_fail(
 
     model = copy.copy(catlin_model_ro)
     runs = list(model.pipe_runs)
-    index, child = next((i, r) for i, r in enumerate(runs) if r.tag == "PR-B-BATH-DRAIN")
+    index, child = next((i, r) for i, r in enumerate(runs) if r.tag == "PR-B-SAUNA-DRAIN")
     arrival = next(t.drop_m for t in drain_tie_in_records(_drains(catlin_model_ro))
                    if t.child == child.tag)
     sunk = copy.copy(child)
@@ -140,9 +140,9 @@ def test_an_accepted_but_low_entry_is_an_advisory_fail(
     runs[index] = sunk
     object.__setattr__(model, "pipe_runs", tuple(runs))
 
-    assert "PR-B-BATH-DRAIN" in drain_tie_ins(_drains(model)), "must still tie in"
+    assert "PR-B-SAUNA-DRAIN" in drain_tie_ins(_drains(model)), "must still tie in"
     findings = drain_tie_in(check_context(plan=catlin_plan, model=model))
-    finding = next(f for f in findings if f.element_tags[0] == "PR-B-BATH-DRAIN")
+    finding = next(f for f in findings if f.element_tags[0] == "PR-B-SAUNA-DRAIN")
     assert finding.result is Result.FAIL
     assert finding.severity is Severity.WARN
     assert "below its centreline" in finding.message

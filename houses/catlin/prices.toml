@@ -1235,7 +1235,7 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 "PROD-CATLIN-OAK-REDUCER" = { low = 25, high = 70 }  # 3 ea — 5/4 saddle D-M-BED2, 3/4 reducer D-A-HALVES, nosing D-A-STUDY (owner-stock oak at the low end)
 "PROD-SCHLUTER-SCHIENE" = { low = 15, high = 35 }  # 2 ea — S-SUITEBATH, S-BATH1
 "PROD-CATLIN-SOLID-SURFACE-REDUCER" = { low = 40, high = 120 }  # 1 ea — S-PLANT, fabricator offcut
-"PROD-RUBBER-REDUCER" = { low = 10, high = 30 }  # 4 ea — B-PLAY, B-SAUNA, B-BATH, A-POCKET (1/8" vinyl edge)
+"PROD-RUBBER-REDUCER" = { low = 10, high = 30 }  # 4 ea — B-SAUNA, B-GYM, B-BATH, A-POCKET (1/8" vinyl edge)
 # ZMAX (G185) LUS where the carrier is preservative-treated (IRC R317.3.1): the breezeway's
 # treated beams, and the balcony centre glulam. Sized by the engine off the joist; ~25% over G90.
 "LUS28Z" = { low = 2.5, high = 7.5 }  # 2 ea authored — CN-BW-HGR-SCS-S/-N, BM-BW-SCSILL off the canopy columns (2026-10-31) — plus whatever the engine derives off a 2x8 into treated stock
@@ -1310,9 +1310,9 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 "S-5-S" = { low = 6, high = 10 }  # 0 ea — retired: Image II is 1" nail strip, not snap-lock
 # Eclisse steel cassettes since 2026-10-09 (notes/pocket_frame_eclisse.md). EKC3680 listed
 # $341.94 (Home Depot) to $465 (Ferguson). The 2x6 (EKQ series) has no 80" retail listing:
-# 30x84 is $695 at Ferguson, special order, 4-9 weeks, so order D-B-BATH's early.
+# 30x84 is $695 at Ferguson, special order, 4-9 weeks.
 "EKC3680" = { low = 340, high = 470 }  # 2 ea: D-M-LAUN, D-M-PANTRY
-"POCKET-FRAME-ECLISSE-2X6" = { low = 600, high = 750 }  # D-B-BATH
+"POCKET-FRAME-ECLISSE-2X6" = { low = 600, high = 750 }  # 0 ea since 2026-11-25 (D-B-BATH went swing); kept priced
 # The Johnson kits these replaced, kept priced.
 "153068PF" = { low = 125, high = 220 }  # 0 ea; listed at $149 (homesteadhardware.com)
 "15603068" = { low = 275, high = 400 }  # 0 ea; 1560 listed at $299 (doorclearancecenter.com)
@@ -3594,10 +3594,10 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 # IKEA US 396.344.35 ($509, 2026-11-21) split into cabinet ($299), basin ($170) and trap ($40).
 # Two BAGGANÄS pulls per HAVBÄCK bill on the shared kitchen hardware row.
 "FX-HAVBACK-36" = { material = 299, labour = { low = 240, high = 560 } }
-"FX-HAVBACK-36-SS" = { material = 299, labour = { low = 240, high = 560 } }
+"FX-HAVBACK-36-SS" = { material = 299, labour = { low = 240, high = 560 } }  # 0 ea since 2026-11-25 (RM-B-BATH took a SEKTION 24)
 "FX-CHULTON-30" = { material = { low = 600, high = 1000 }, labour = { low = 220, high = 510 } } # allowance; top/bowl included
 "FX-VANITY-30-SEKTION" = { material = { low = 304, high = 360 }, labour = { low = 220, high = 510 } }  # $304 cabinet + ledger; rail itemized
-"FX-VANITY-24-SEKTION-SS" = { material = { low = 260, high = 320 }, labour = { low = 200, high = 470 } }  # $260 cabinet + ledger; rail itemized
+"FX-VANITY-24-SEKTION-SS" = { material = { low = 260, high = 320 }, labour = { low = 200, high = 470 } }  # 2 ea (attic, basement); $260 cabinet + ledger; rail itemized
 "FX-SUNNERSTA-BAR-SINK" = { material = 0, labour = { low = 100, high = 200 } } # sink included in kitchenette
 "PROD-IKEA-ORRSJON-37" = { material = 170, labour = { low = 80, high = 140 } }
 "PROD-IKEA-RANNILEN" = { material = 40, labour = { low = 40, high = 80 } }
@@ -3707,7 +3707,7 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 # Delta. ** The risk is stock, not money: Delta is thinning its stainless SHOWERING line and
 # several sibling SKUs came back discontinued. If -SS has gone, the substitute is Moen Spot
 # Resist Brushed Nickel throughout at roughly the same band.
-"FX-SHOWER-36-COMBO" = { material = { low = 450, high = 1200 }, labour = { low = 220, high = 510 } }  # 1 ea — RM-B-SAUNA only; RM-A-STUBATH went neo-angle 2026-09-09
+"FX-SHOWER-36-COMBO" = { material = { low = 450, high = 1200 }, labour = { low = 220, high = 510 } }  # 1 ea — RM-B-BATH (the sauna's rinse until 2026-11-25); RM-A-STUBATH went neo-angle 2026-09-09
 # RM-A-STUBATH's neo-angle. Same valve, trim and head as the row above — what the premium
 # buys is the base and the enclosure: a five-sided receptor is a lower-volume moulding and a
 # three-panel pivot enclosure is three pieces of glass and two hinged joints against one
@@ -4523,7 +4523,7 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 # The sauna CEILING's boards since 2026-10-16: owner aspen (willow until 2026-10-18), the wall
 # liner's own rate below until the owner says otherwise.
 "catlin-sauna-ceiling-shiplap" = { material = { low = 3.6, high = 7.2 }, labour = { low = 6, high = 11 } }  # the ceiling, split out of the row below
-"catlin-sauna-shiplap" = { material = { low = 3.6, high = 7.2 }, labour = { low = 6, high = 11 } }  # walls only since 2026-10-16, and net of the 45 SF tile splash behind the shower since 2026-10-18 (321.7 SF included 64.9 SF ceiling until then) — retagged from `sauna-tg` 2026-08-28, then `sauna-shiplap` -> `catlin-sauna-shiplap` when it went house-local (T&G -> shiplap). Same species, same 5/4 stock, same $/SF band: the profile changes the mill's face-width yield, not the installed rate. 2026-10-16: 5/4 -> 4/4, material x0.8 for the board feet
+"catlin-sauna-shiplap" = { material = { low = 3.6, high = 7.2 }, labour = { low = 6, high = 11 } }  # walls only since 2026-10-16; full height again since the 2026-11-25 re-lay took the shower and its tile splash out (321.7 SF included 64.9 SF ceiling until then) — retagged from `sauna-tg` 2026-08-28, then `sauna-shiplap` -> `catlin-sauna-shiplap` when it went house-local (T&G -> shiplap). Same species, same 5/4 stock, same $/SF band: the profile changes the mill's face-width yield, not the installed rate. 2026-10-16: 5/4 -> 4/4, material x0.8 for the board feet
 # ** THE BIGGEST LINE IN THE HOUSE, and as of 2026-08-20 it is FOUR lines. ** One
 # `standing-seam` row used to carry all 6,322 SF at one rate. That was wrong in a specific,
 # expensive way: it billed the whole house at the mechanically-seamed roof's labour, and
@@ -6103,7 +6103,7 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 # D-S-BATH1: solid-core plus a kerf-in seal set and a door-bottom sweep ($40-90).
 "DT-INT-SWING30-PRIV-SOLID" = { material = { low = 340, high = 640 }, labour = { low = 140, high = 280 } }  # 1 ea
 "DT-INT-SWING32" = { material = { low = 155, high = 180 }, labour = { low = 115, high = 240 } }  # 2 ea, D-M-MUD, D-M-BED (hollow passage)
-"DT-INT-SWING32-PRIV" = { material = { low = 155, high = 180 }, labour = { low = 115, high = 240 } }  # 2 ea, D-M-BATH2, D-A-HALVES
+"DT-INT-SWING32-PRIV" = { material = { low = 155, high = 180 }, labour = { low = 115, high = 240 } }  # 3 ea, D-M-BATH2, D-A-HALVES, D-B-BATH (2026-11-25)
 "DT-INT-SWING32-PRIV-SOLID" = { material = { low = 300, high = 550 }, labour = { low = 115, high = 240 } }  # 1 ea, D-M-BATH1
 # D-S-SUITE (2026-11-09): off DT-INT-SWING30-PRIV-SOLID, solid core plus kerf seal and sweep.
 "DT-INT-SWING32-PRIV-SOLID-SEALED" = { material = { low = 345, high = 650 }, labour = { low = 140, high = 280 } }  # 1 ea
@@ -6127,7 +6127,7 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 # includes setting the frame before drywall and hanging and adjusting each leaf. The Eclisse
 # cassette arrives assembled, so the setting half sits nearer the low end.
 "DT-POCKET-INT-36" = { material = { low = 175, high = 590 }, labour = { low = 260, high = 560 } }  # 2 ea (D-M-PANTRY, D-M-LAUN), slab and installation; frame kits above
-"DT-POCKET-INT-36-PRIV" = { material = { low = 175, high = 590 }, labour = { low = 260, high = 560 } }  # 1 ea, D-B-BATH; its lock bills in [allowances]
+"DT-POCKET-INT-36-PRIV" = { material = { low = 175, high = 590 }, labour = { low = 260, high = 560 } }  # 0 ea since 2026-11-25 (D-B-BATH is a 32" swing); kept priced
 # D-M-MUDC (2026-11-20): Johnson 138F482D set (track, 1120 hangers, 2135 guide, #30 pulls;
 # ~$100-200 retail) + two 24x80 flush HC slabs (Steves J62H1FADLC99, ~$60-90 ea). Estimate,
 # not quoted; casing bills in [interior_trim].
@@ -8479,10 +8479,10 @@ finish-floor-prep-and-self-levelling = { low = 0.80, high = 2.09, unit = "SF", d
 #     neither takes a membrane since 2026-11-05, and both bill on their own fixture rows
 #     (FX-SHOWER-36-THERMO-COMBO, -NEO-COMBO), not here. Both lit niches are gone.
 # What is left, and why this cannot go to zero: RM-M-BATH2's 39.5 SF of tiled floor over
-# FH-M-BATH2 and RM-B-SAUNA's 45 SF of splash tile. Halving the
-# lump is a defensible reading of that residue; it is not an arithmetic result, and the next
-# person to touch it should re-argue it rather than trust it.
-finish-tile-backer-and-waterproofing = { low = 2000, high = 4500 }
+# FH-M-BATH2. RM-B-SAUNA's 45 SF of splash tile went with its shower (2026-11-25), so the
+# lump halved again, $2,000-4,500 -> $1,000-2,250: a judgement on the residue, not an
+# arithmetic result; re-argue it rather than trust it.
+finish-tile-backer-and-waterproofing = { low = 1000, high = 2250 }
 # Commodity door hardware allowance: $84-306 per set, retained at the researched rate.
 # The door product/install rows and separately authored hardware sets are separate scopes.
 # D-M-ENTRY and the three French pairs now bill their specified products in [hardware];
@@ -8537,7 +8537,8 @@ plumbing-faucets-and-tub-filler = { low = 1210, high = 1990 }
 # Bronx White at $5.95/SF) plus the 2x2 pan mosaic at $15.28/SF, so that the product choice
 # reaches the bill; the setting labour and the waterproofing stay in that row and are NOT
 # duplicated here. ** Read the two together before concluding what tile costs. **
-finish-wall-tile-material = { low = 900, high = 1800 }
+# 0 since 2026-11-25: the sauna splash was the house's only wall tile; kept as the row.
+finish-wall-tile-material = { low = 0, high = 0 }
 # ** DOOR HARDWARE BY FUNCTION (owner, 2026-11-03). ** Kwikset Halifax Square, satin nickel
 # 15 (US15 = 619; US15A is ANTIQUE nickel, a different colour), house-wide; Schlage Latitude
 # 619 is the fallback. Hinges in the same finish and lot. Each row is the set, the US15 hinge

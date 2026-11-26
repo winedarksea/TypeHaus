@@ -108,7 +108,8 @@ def test_bath2_vent_grades_through_both_branches(
 
 def test_four_runs_clear_the_house_grade(catlin_model_ro) -> None:
     """Every vent clears 1/8 inch/ft but the attic bar's header, which MN 905.3's rim line and
-    the stack tee pin to ~0.1 (2026-11-05)."""
+    the stack tee pin to ~0.1 (2026-11-05), and RM-B-BATH's lav header (0.041, its 1/4" rise
+    over W-B-SA-N's plates, 2026-11-25). The bath's WC and floor-drain vents are plumb stubs."""
     findings = _margin(catlin_model_ro)
     assert _MIN_VENT_GRADE_IN_PER_FT == 0.125
     plain = [f for f in findings if not f.message.startswith("ADVISORY — ")]
@@ -116,13 +117,13 @@ def test_four_runs_clear_the_house_grade(catlin_model_ro) -> None:
         "PR-B-BATH-VENT", "PR-M-KITCH-LOCAL-VENT",
         "PR-A-STUBATH-LAV-REVENT", "PR-M-BATH2-LAV-VENT", "PR-A-STUBATH-SH-VENT",
         "PR-A-STUBATH-WC-VENT", "PR-S-VANITY-VENT", "PR-S-BATH1-LAV-VENT",
-        "PR-B-BATH-LAV-VENT", "PR-B-BATH-WC-VENT", "PR-B-SAUNA-FD-VENT",
         "PR-S-SUITEBATH-WC-VENT", "PR-S-SUITEBATH-LAV-VENT", "PR-S-SUITEBATH-TUB-VENT",
         "PR-S-BATH1-WC-VENT", "PR-S-BATH1-SH-VENT",
         "PR-A-STUBATH-SH-TEE"}
     assert '1.518"/ft' in _for(findings, "PR-B-BATH-VENT").message
     assert '0.097"/ft' in _for(findings, "PR-A-STUBATH-VENT").message
     assert _for(findings, "PR-A-BAR-VENT").message.startswith("ADVISORY — ")
+    assert _for(findings, "PR-B-BATH-LAV-VENT").message.startswith("ADVISORY — ")
     assert all(f.result is Result.PASS for f in findings), "advisory never FAILs"
 
 

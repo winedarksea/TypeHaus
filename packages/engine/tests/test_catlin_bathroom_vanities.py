@@ -25,10 +25,9 @@ IN = 0.0254
 
 # tag -> (type_ref, storey, backing wall, which face of it the cabinet stands on)
 VANITIES = {
-    # The basement bath rotated north-south on 2026-09-05, so its 36" vanity turned with it:
-    # it runs ACROSS the room's south end now, backing W-B-CW2's north face, where it used to
-    # stand along the east wall against W-B-CN2's 12" pour.
-    "FX-B-BATH-LAV": ("FX-HAVBACK-36-SS", "basement", "W-B-CW2", "+y"),
+    # The basement bath moved north of the sauna on 2026-11-25: its 24" SEKTION backs
+    # W-B-SA-N's bath face at the room's east end, facing the door.
+    "FX-B-BATH-LAV": ("FX-VANITY-24-SEKTION-SS", "basement", "W-B-SA-N", "+y"),
     "FX-M-BATH1-LAV": ("FX-DURAVIT-DCODE-070545", "main", "W-M-HS1", "+y"),
     "FX-S-BATH1-LAV": ("FX-HAVBACK-36", "second", "W-S-BA-E1B", "-x"),
     "FX-S-SUITEBATH-LAV": ("FX-CHULTON-30", "second", "W-S-SN3", "-y"),
@@ -191,17 +190,19 @@ def test_the_hall_bath_vanity_clears_the_east_hinged_door_and_tub_return(catlin_
     assert not any(b.host == "FX-S-BATH1-LAV" for b in model.shelf_banks)
 
 
-def test_the_basement_vanity_is_shallow_and_clears_the_pocket_door(catlin_model_ro):
-    """The 18" cabinet fits the narrow room and the bathroom door has no sweep."""
+def test_the_basement_vanity_is_shallow_and_clears_the_swing_door(catlin_model_ro):
+    """The 18" cabinet stands clear of the 32" swing door's arc (a pocket door until 2026-11-25)."""
     model = catlin_model_ro
     x0, x1, y0, y1 = _bbox(_obj(model, "FX-B-BATH-LAV"))
-    assert round(y1 - y0, 2) == 21.75
-    assert round(x1 - x0, 2) == 37.0
+    assert round(y1 - y0, 2) == 18.0
+    assert round(x1 - x0, 2) == 24.0
 
     door = next(o for o in model.openings if o.tag == "D-B-BATH")
-    assert door.type_ref == "DT-POCKET-INT-36-PRIV"
-    assert not door.swing_clearance
-    assert door.pocket_sign == 1
+    assert door.type_ref == "DT-INT-SWING32-PRIV"
+    swing = Polygon(door.swing_clearance)
+    top = Polygon(_obj(model, "FX-B-BATH-LAV").footprint)
+    assert not top.intersects(swing)
+    assert top.distance(swing) / IN == pytest.approx(6)
 
 
 def test_the_alcove_is_two_bowls_at_exactly_the_code_minimum_spacing(catlin_model_ro):
@@ -241,7 +242,7 @@ def test_every_vanity_carries_its_own_shelf(catlin_model_ro):
     vanities = [el for el in plan.all_elements() if type(el).__name__ == "Fixture"
                 and (el.type_ref or "").startswith("FX-VANITY-")]
     assert {"FX-S-VANITY-LAV1", "FX-S-VANITY-LAV2", "FX-A-STUBATH-LAV",
-            "FX-M-BATH2-SINK"} == {v.tag for v in vanities}
+            "FX-M-BATH2-SINK", "FX-B-BATH-LAV"} == {v.tag for v in vanities}
     for fixture in vanities:
         banks = [b for b in model.shelf_banks if b.host == fixture.tag]
         assert len(banks) == 1, f"{fixture.tag} has {len(banks)} shelf banks, wants one"
@@ -385,7 +386,9 @@ def test_every_selected_lavatory_has_parts_ports_and_a_connected_exact_setout(ca
             Service.DRAIN, Service.WATER_HOT, Service.WATER_COLD}
         assert {part.role for part in fixture_type.parts} >= {"faucet", "trap"}
         assert fixture_type.product_ref
-        if tag in {"FX-B-BATH-LAV", "FX-S-BATH1-LAV"}:
+        if tag == "FX-B-BATH-LAV":
+            assert catlin_plan.library.product(fixture_type.product_ref).sku == "594.645.35"
+        if tag == "FX-S-BATH1-LAV":
             cabinet = catlin_plan.library.product(fixture_type.product_ref)
             assert cabinet.sku == "305.740.11"
             pull, = (part for part in fixture_type.parts if part.role == "pull")

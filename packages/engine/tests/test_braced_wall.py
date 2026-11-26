@@ -118,7 +118,7 @@ def test_a_line_is_classified_by_what_it_is_measured_to_be(catlin_model_ro):
              for line in braced_wall_lines(catlin_model_ro, storey)}
     assert kinds[("attic", "BWL-W-A-E1")] == KIND_PLATE
     assert kinds[("attic", "BWL-W-A-N1")] == KIND_GABLE_END
-    assert kinds[("basement", "BWL-W-B-SA-W")] == KIND_INTERIOR
+    assert kinds[("basement", "BWL-W-B-SA-N")] == KIND_INTERIOR
     assert kinds[("entry-low", "BWL-W-BW-SCREEN")] == KIND_ENGINEERED
     assert kinds[("main", "BWL-W-A-E1")] == KIND_BRACED
 

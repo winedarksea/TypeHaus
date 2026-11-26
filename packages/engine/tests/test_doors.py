@@ -741,24 +741,26 @@ def test_a_pocket_stops_at_a_corner_and_at_an_assembly_change():
         assert [segment.wall_tag for segment in segments] == ["W-A"]
 
 
-def test_catlin_bath_pocket_crosses_into_the_matching_section(catlin_model_ro):
-    """The bathroom and hall use different stud layouts inside the same 2x6 wall section."""
+def test_catlin_laundry_pocket_crosses_into_the_matching_section(catlin_model_ro):
+    """D-M-LAUN's pocket runs past the end of W-M-HS3 into W-M-HS4 and still frames.
+
+    D-B-BATH was the 2x6 pocket (W-B-BA-E into W-B-HALL-W) until the 2026-11-25 basement
+    replan made it a swing door; the laundry is the pocket left that crosses a wall.
+    """
     from typehaus.takeoff.doors import door_hardware_rows
 
     model = catlin_model_ro
-    bath = next(op for op in model.openings if op.tag == "D-B-BATH")
     laundry = next(op for op in model.openings if op.tag == "D-M-LAUN")
-    assert (bath.type_ref, laundry.type_ref) == ("DT-POCKET-INT-36-PRIV", "DT-POCKET-INT-36")
-    assert bath.pocket_sign == 1 and not bath.swing_clearance
-    segments, shortfall = pocket_segments(model.plan, model, bath)
+    assert laundry.type_ref == "DT-POCKET-INT-36"
+    segments, shortfall = pocket_segments(model.plan, model, laundry)
     assert shortfall == pytest.approx(0)
-    assert [segment.wall_tag for segment in segments] == ["W-B-BA-E", "W-B-HALL-W"]
-    splits = [member for member in model.wall("W-B-BA-E").members
+    assert [segment.wall_tag for segment in segments] == ["W-M-HS3", "W-M-HS4"]
+    splits = [member for member in model.wall("W-M-HS3").members
               if member.child_key.startswith("pocketsplit-")]
-    assert splits and {member.profile for member in splits} == {"2-1x6"}
+    assert splits and {member.profile for member in splits} == {"2-1x4"}
     frames = {row["part_number"]: row for row in door_hardware_rows(model)}
     assert frames["EKC3680"]["count"] == 2  # D-M-LAUN and D-M-PANTRY, 2x4
-    assert frames["POCKET-FRAME-ECLISSE-2X6"]["count"] == 1  # D-B-BATH
+    assert "POCKET-FRAME-ECLISSE-2X6" not in frames  # no 2x6 pocket left in the house
 
 
 def test_catlin_murphy_door_keeps_published_dimensions_and_hinge_clearance(catlin_model_ro):

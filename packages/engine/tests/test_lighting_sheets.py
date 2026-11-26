@@ -82,9 +82,19 @@ def test_light_runs_are_drawn_with_their_length(catlin_model):
 def test_light_run_ticks_mark_every_end_cap_and_corner(catlin_model):
     """A short cross-hatch at every fitting a straight length of channel cannot be on its
     own: two end caps (path endpoints) plus one per interior vertex where it turns."""
-    # The hall cove's legs went straight 2026-11-09; the sauna's rail is the run that turns.
-    run = next(r for r in catlin_model.light_runs if len(r.path) > 2)
-    scene = build_lighting_plan(catlin_model, run.storey)
+    # No catlin run turns since the sauna's rail went straight (2026-11-25), so one is given
+    # a corner on a copy of the model's run list (restored below).
+    from dataclasses import replace
+    runs = catlin_model.light_runs
+    index, base = next((i, r) for i, r in enumerate(runs) if r.storey == "basement")
+    (ax, ay), (bx, by) = base.path[0], base.path[-1]
+    corner = ((ax + bx) / 2 + (by - ay) * 0.25, (ay + by) / 2 - (bx - ax) * 0.25)
+    run = replace(base, path=(base.path[0], corner, base.path[-1]), z_path_m=())
+    runs[index] = run
+    try:
+        scene = build_lighting_plan(catlin_model, run.storey)
+    finally:
+        runs[index] = base
     cove_polylines = [node for node in scene.nodes
                       if isinstance(node, Polyline) and node.layer == "E-LITE-COVE"]
     # One 2-point polyline per path vertex is a tick; the run itself is the one polyline

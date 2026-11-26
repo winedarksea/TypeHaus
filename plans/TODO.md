@@ -138,9 +138,6 @@ branch overlaps, ERV trunk/flex/ERV-R-BATH refusals, wall-hung port stub, WC arm
   It is drawn on the W/E lot lines for now (`houses/catlin/plan/site.py`); ask St Paul DSI at permit.
 - **Cavity "canary" RH sensors** wanted in a south and west stud bay (no liner redundancy
   otherwise); no sensor element kind exists. (desired but not as explicitly modeled)
- - **`SF-B-BATH` stays, and not for want of numbers** — its three runs clear the 6'-8"
-   headroom line by ~7 1/2" and a declaration on `RM-B-BATH` would pass. Nobody has decided a
-   bathroom ceiling should be open. That is a design question, not a cleanup.
 - Porch datum (2026-11-15): the court's north line is `W-B-BRICK`'s south face less a stated 3/8" (`_COURT_SETBACK_IN`), -10" as before; `gap_to_house_in` is gone and the cladding gap is 3.25". Closing the 3/8" (deck to the brick) is an owner decision, not taken.
 - Figure out a space for a cat litter box. Options: either a cat door on the current vanity planned (no change) or a wall mounted sink leaving space for a self emptying litter box.
 - A reviewer suggested 1/2" drywall as the standard otherwise, with cheaper end 'abuse' resistant drywall 1/2" for major Hallways, Kids' Rooms, Stairwells. Some options: 1/2" Type C, Paper-Faced 1/2" AR (e.g., Gold Bond Hi-Abuse or USG Sheetrock AR), LP SmartSide 38 Series Panel 7/16" (Sidings Used Indoors), 1/2" MDF (4x8 Sheets with V-Groove or Batten Strips), 1/2" MDO (Medium Density Overlay) Plywood
@@ -183,11 +180,6 @@ branch overlaps, ERV trunk/flex/ERV-R-BATH refusals, wall-hung port stub, WC arm
 - Consider 1/2" advantech for walls sheathing, maybe 1/2" osb and tape the seams
 - Pg 288 of the book has a roof eave detail where the roof and drip flashing alone extend out about an inch (no metal or sheathing).
 - Fixture connections (stations applied 2026-11-07, `houses/catlin/plan/wet_ports.py`). Still open:
-  - [ ] Sauna wet-wall release: 1/2" Durock replaces shiplap under the tiled spans, with
-    packing, a local valve pocket and Delta's 2 3/4" stringer setback. **BLOCKED** pending
-    documented temperature compatibility of the complete waterproofing, tape, mortar,
-    collars and sealants, and the sealed foil/pan-liner transitions. Durock suitability
-    alone is not system approval.
   - APPL-LG-DISHWASHER: a Product and price row for the 48" braided 3/8" supply its `hose_length` assumes.
   - The floor-fed WC stops (FX-M-BATH2-WC, FX-S-BATH1-WC) are house setout, APPROXIMATE.
   - The washer's real valves are mid-run tees, which the endpoint grade cannot see.
@@ -223,8 +215,6 @@ branch overlaps, ERV trunk/flex/ERV-R-BATH refusals, wall-hung port stub, WC arm
 - Attic suite simplified to unfinished space. Done 2026-11-11: the bedroom count (RM-A-STUDIO is `Occupancy.HOBBY`, a craft room, so R403.5 drops 15 cfm) and a finished-area report that already leaves out RM-A-EAST-UNFIN and RM-A-POCKET (4,021 sf finished vs 4,898 CFA). Still open, if wanted: take the suite itself out of the finished area (leaving just the small attic study), although likely still keeping an ERV terminal of some sort in the attic suite, and likely still basic rough in stubs for plumbing so we can realize this design later. We would still want to keep the current products used for it in the library, and a clear set of notes so we could swap these items into the design easily.
 - Try to keep most interior doors as 1/2" factory undercut or privacy doors where decided
 - Door residue: the steel and sauna slabs are modelled cut down 1/8" (the steel may need ordering to size); the library interior types and the plan door symbol still use the 45 mm schematic leaf.
-- Shower in sauna?
-- Layout of sauna (move heater, erv, shower)
 - AD-SG-COURT connection: resolve the bottom-drop adapter/product; the named [NDS 1200](https://www.adspipe.com/nds/products/drainage/catch-basins-and-grates/square-catch-basins/1200-12-in-square-catch-basin-drain-with-2-openings) has lateral outlets. Geometry remains representative, within the authored nominal envelope.
 - ED-M-FIRE-RC: measure the delivered RACO 862 handy-box cover. It must be no wider than the pocket's 2 3/8" strip (nominal 2 5/16"; Hubbell's table reads 2.425").
 - Should the A35Z onto concrete from the joists actually be HGAM10 or something else?

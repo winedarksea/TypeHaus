@@ -69,6 +69,10 @@ _LP_TAGS = (*_FOOT, *_STEM)        # the LP default's four
 # SL-S-KNEE-CAP -23.2 lb (SL-A-HP1-PLATFORM, the attic AH's, never enters); W-S-CLN-S full
 # height, +20.75" x ~46" at 8 psf = +53.5 lb. D 280,477.2 -> 280,019.6 (free body, 2026-11-11):
 # (70,004.9 + 32,375.0) / 27,315.75 = 3.7480; basis 8 102,379.9 / 43,656.2 = 2.3451.
+# 2026-11-25 (basement replan): framed partitions re-laid, +605.1 lb of 8 psf wall in the reach
+# (note §11l amendment); brick-variant D 280,160.8 -> 280,766.0 (the 280,160.8 was already in
+# the basis-8 row below, 141 lb over the line above). Friction 70,191.5: (70,191.5 + 32,375.0) /
+# 27,315.75 = 3.7549; basis 8 102,566.5 / 46,348.0 = 2.2130.
 # 2026-11-04 (veneer note §6k, free body §11o): W-SG-BRKBM's board and TB-SG-W1/E1 moved onto
 # one plane flush on the house strips, -4..-6", and the footing boards went 2.5" -> 2".
 #   * court run off that plane: 328.0 − 5.0 = 323.0" (the stems stay at 322.565");
@@ -82,7 +86,7 @@ _PATH = {
     "house slab-edge bearing": (22_155.0, 151_200.0, 0.1465),
     "house slab-edge sustained load": (22_155.0, 50_394.96, 0.4396),
     "house slab strut compression": (14.6528, 2_040.0, 0.00718),
-    "house global sliding": (1.5, 3.7480, 0.4002),
+    "house global sliding": (1.5, 3.75485, 0.39948),
     "house far-wall soil bearing": (61_342.1, 153_355.2, 0.4000),
     "court sliding under break thrust": (0.0, 112_969.1, 0.0),
 }
@@ -135,7 +139,7 @@ _PATH_8 = {
     "house slab-edge bearing": (44_695.2, 151_200.0, 0.29560),
     "house slab-edge sustained load": (44_695.2, 50_394.96, 0.88690),
     "house slab strut compression": (29.5603, 2_040.0, 0.01449),
-    "house global sliding": (1.5, 2.209703, 0.67882),
+    "house global sliding": (1.5, 2.212967, 0.67782),
     "house far-wall soil bearing": (61_342.1, 153_355.2, 0.4000),
     # Net thrust less the retained soil is NEGATIVE, so the row is a force, not an FS.
     "court sliding under break thrust": (0.0, 112_969.1, 0.0),
@@ -189,7 +193,9 @@ _NOTE_RUN_IN = 323.0
 #   * ΣA = 2 x 672 + 2 x 1,313.25 = 3,970.5 in², T = 3.5 x 3,970.5 = 13,896.75 lb;
 #   * line = 13,896.75 − 2 x 2,580.375 = 8,736 lb; strut 8,736 / 1,512 = 5.778 psi;
 #   * global: the model's friction + at-rest 102,164.0 (W-B-BRICK's 8 psf is no longer house
-#     D) / 13,896.75 = 7.3516;
+#     D) / 13,896.75 = 7.3516; the 2026-11-25 basement replan re-laid the framed partitions
+#     (+606 lb of 8 psf wall in the zone, +151.5 lb of friction at mu 0.25) = 102,315.5 /
+#     13,896.75 = 7.3625 (note §11l);
 #   * winter: W-SG-BRKBM's 3,994 leaves the body, (129,306 − 3,994) / 2 = 62,656 lb;
 #   * the near-line rows are the line solver's: with only the side lines' point loads the
 #     ends push onto both struts (313 / 321 lb), where brick's mid-span board lifted them.
@@ -197,7 +203,7 @@ _PATH_LP = {
     "house slab-edge bearing": (8_736.0, 151_200.0, 0.057778),
     "house slab-edge sustained load": (8_736.0, 50_394.96, 0.17335),
     "house slab strut compression": (5.77778, 2_040.0, 0.002832),
-    "house global sliding": (1.5, 7.351644, 0.20404),
+    "house global sliding": (1.5, 7.362530, 0.20373),
     "house far-wall soil bearing": (61_342.1, 153_355.2, 0.4000),
     "court sliding under break thrust": (0.0, 112_969.1, 0.0),
 }

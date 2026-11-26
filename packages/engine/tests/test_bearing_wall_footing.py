@@ -1,9 +1,10 @@
 """``structural.bearing_wall_footing``: a framed bearing wall on a slab stands on footings.
 
-The case that motivated it is catlin's W-B-CS3 — 46" of framed x=18' bearing wall between the
-sauna and the W-B-CS2 pour, carrying FS-M-WEST/EAST, standing on the 3 1/2" slab with no
-footing and no finding. The fix lengthens FT-B-CS north and FT-B-CS2 south past D-B-GYM's jamb
-packs by the footing depth (params/foundations.py); the opening itself stays unfooted.
+The case that motivated it is catlin's W-B-CS3 — 60 5/8" of framed x=18' bearing wall between
+the sauna and the hall's south end, carrying FS-M-WEST/EAST, which stood on the 3 1/2" slab with
+no footing and no finding. The fix runs FT-B-CS north under it and past D-B-GYM's south jamb
+pack (on W-B-CS2) by the footing depth; FT-B-CS2 starts 8" short of the north pack
+(params/foundations.py). The opening itself stays unfooted.
 """
 
 from __future__ import annotations
@@ -32,39 +33,44 @@ def _y_extent_in(model, tag):
 def test_the_gym_door_wall_stands_on_its_neighbours_footings(catlin_findings) -> None:
     finding = catlin_findings["W-B-CS3"]
     assert finding.result is Result.PASS, finding.message
-    assert "FT-B-CS" in finding.element_tags and "FT-B-CS2" in finding.element_tags
+    assert "FT-B-CS" in finding.element_tags
+    # D-B-GYM's south pack (W-B-CS2) stands on the same strip, past the opening's edge.
+    assert "FT-B-CS" in catlin_findings["W-B-CS2"].element_tags
 
 
 def test_the_strips_reach_past_the_jamb_packs_and_leave_the_opening_bare(catlin_ctx) -> None:
-    # Jamb packs at y 124 7/16"..127 7/16" and 163 7/16"..166 7/16", + T = 8" each way.
-    assert _y_extent_in(catlin_ctx.model, "FT-B-CS") == (0.0, 135.4375)
-    assert _y_extent_in(catlin_ctx.model, "FT-B-CS2") == (155.4375, 216.0)
+    # D-B-GYM's opening is y 163"..199"; jamb packs at 158 1/2"..163" and 199"..203 1/2", + T = 8".
+    assert _y_extent_in(catlin_ctx.model, "FT-B-CS") == (0.0, 171.0)
+    assert _y_extent_in(catlin_ctx.model, "FT-B-CS2") == (191.0, 216.0)
     # The bedding (and its drain tile) follow the footing's own outline.
     bed = next(b for b in catlin_ctx.model.footing_beddings if b.tag == "FB-B-CS")
-    assert round(max(p[1] for p in bed.outline) / _IN, 4) == 135.4375
+    assert round(max(p[1] for p in bed.outline) / _IN, 4) == 171.0
 
 
-def test_without_the_extensions_it_fails_on_every_jamb_member(catlin_plan) -> None:
+def test_without_the_extension_it_fails_on_every_bearing_member(catlin_plan) -> None:
     from _helpers import CATLIN
 
     from typehaus.checks.run import build_context
 
     ctx, _ = build_context(catlin_plan, CATLIN)
     walls = {w.tag: w for w in ctx.model.walls}
-    for tag, wall in (("FT-B-CS", "W-B-CS"), ("FT-B-CS2", "W-B-CS2")):
-        index = next(i for i, s in enumerate(ctx.model.solids) if s.tag == tag)
-        solid = ctx.model.solids[index]
-        (_, y0), (_, y1) = walls[wall].axis
-        xs = [p[0] for p in solid.outline]
-        lo, hi = sorted((y0, y1))
-        outline = [(min(xs), lo), (max(xs), lo), (max(xs), hi), (min(xs), hi)]
-        ctx.model.solids[index] = replace(solid, outline=outline)
-    finding = next(f for f in bearing_wall_footing(ctx) if f.element_tags[0] == "W-B-CS3")
+    index = next(i for i, s in enumerate(ctx.model.solids) if s.tag == "FT-B-CS")
+    solid = ctx.model.solids[index]
+    (_, y0), (_, y1) = walls["W-B-CS"].axis       # FT-B-CS cut back to its own wall
+    xs = [p[0] for p in solid.outline]
+    lo, hi = sorted((y0, y1))
+    ctx.model.solids[index] = replace(
+        solid, outline=[(min(xs), lo), (max(xs), lo), (max(xs), hi), (min(xs), hi)])
+    found = {f.element_tags[0]: f for f in bearing_wall_footing(ctx) if f.element_tags}
+    finding = found["W-B-CS3"]
     assert finding.result is Result.FAIL
-    # D-B-GYM's two jacks a side; its north king stands past W-B-CS3's end, on FT-B-CS2.
-    assert "5 of 6 bearing points" in finding.message
-    for key in ("jack-0-l1", "jack-0-l0", "jack-0-r0", "jack-0-r1", "king-0-r0"):
-        assert key in finding.message
+    assert "4 of 4 bearing points" in finding.message
+    # D-B-GYM's south king and two jacks stand in the gap between the strips.
+    gym = found["W-B-CS2"]
+    assert gym.result is Result.FAIL
+    assert "3 of 7 bearing points" in gym.message
+    for key in ("king-0-l0", "jack-0-l1", "jack-0-l0"):
+        assert key in gym.message
 
 
 def test_catlin_reports_every_framed_bearing_wall_on_the_slab(catlin_findings) -> None:

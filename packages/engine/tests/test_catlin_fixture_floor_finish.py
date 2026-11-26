@@ -11,7 +11,7 @@ from typehaus.resolve.walking_surface import room_finish_at
 from typehaus.takeoff.finishes import floor_finish_rows
 
 _BATHING_FIXTURES = {
-    "FX-B-SAUNA-SH": ("RM-B-SAUNA", -109.4375),
+    "FX-B-BATH-SH": ("RM-B-BATH", -109.4375),
     "FX-M-BATH2-SH": ("RM-M-BATH2", 0.75),
     "FX-M-BATH2-TUB": ("RM-M-BATH2", 1.75),
     "FX-S-BATH1-SH": ("RM-S-BATH1", 120.75),
@@ -34,16 +34,9 @@ def test_installed_base_has_no_covering_and_correct_bearing_plane(catlin_model_r
     exclusion = _geometry(room.floor_finish_exclusions)
     assert exclusion.covers(Polygon(placed.footprint).centroid)
     assert placed.z_m / 0.0254 == pytest.approx(elevation_in)
-    coating = room_tag == "RM-B-SAUNA"
-    if coating:
-        # The sealed slab stops at D-B-SAUNA's rubber mat reducer (doorway_transitions.py),
-        # under the leaf: its stated 1 3/4" slab replaced the 45 mm schematic (b90360591).
-        assert room.field_area_m2 == pytest.approx(66.16893 / 10.7639104, abs=1e-6)
-    else:
-        assert field.intersection(exclusion).area < 1e-10
-        assert field.intersection(Polygon(placed.footprint)).area < 1e-10
-    assert room_finish_at(model, placed.storey, placed.position)[1] == (
-        "sealed-concrete" if coating else None)
+    assert field.intersection(exclusion).area < 1e-10
+    assert field.intersection(Polygon(placed.footprint)).area < 1e-10
+    assert room_finish_at(model, placed.storey, placed.position)[1] is None
 
 
 def test_tub_deck_cutout_and_aprons_do_not_restore_tile(catlin_model_ro):

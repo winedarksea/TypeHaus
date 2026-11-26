@@ -234,18 +234,19 @@ def test_building_drain_leaves_under_the_footing_not_through_the_wall(catlin_mod
 def test_the_basement_slab_fixtures_drain_by_gravity(catlin_model):
     """The basement's slab fixtures stand *on* the slab, so they can only drain if the main
     runs below them; before the re-route the main hung 6'-6" overhead and none of these
-    runs could be authored at all. Covers the stair-foot bathroom's branch and the sauna
-    shower end's.
+    runs could be authored at all. Covers the one 3" branch the bath group and the sauna
+    floor drain share (2026-11-25).
     """
     slab = next(s for s in catlin_model.solids if s.tag == "SL-B-FLOOR")
     main = next(r for r in catlin_model.pipe_runs if r.tag == "PR-B-MAIN-DRAIN")
     branches = {
-        # branch tag: (fixtures it carries, the vent branch that serves them)
-        # The WC's branch is its own since 2026-11-10 (the lav rides PR-B-USINK-DRAIN).
-        "PR-B-BATH-DRAIN": (("FX-B-BATH-WC",), "PR-B-BATH-WC-VENT"),
-        "PR-B-SAUNA-DRAIN": (("FX-B-SAUNA-SH", "FX-B-SAUNA-FD"), "PR-B-SAUNA-VENT"),
+        # branch tag: (fixtures it carries, the vent branch that serves each)
+        "PR-B-SAUNA-DRAIN": (
+            ("FX-B-BATH-WC", "FX-B-BATH-SH", "FX-B-BATH-LAV", "FX-B-SAUNA-FD"),
+            ("PR-B-BATH-WC-VENT", "PR-B-SAUNA-VENT", "PR-B-BATH-LAV-VENT",
+             "PR-B-SAUNA-FD-VENT")),
     }
-    for arm_tag, (fixtures, vent_tag) in branches.items():
+    for arm_tag, (fixtures, vent_tags) in branches.items():
         arm = next(r for r in catlin_model.pipe_runs if r.tag == arm_tag)
         assert set(fixtures) <= set(arm.serves), arm_tag
         # Each ties onto the main's under-slab leg (its last segments, past the drop's offset),
@@ -257,8 +258,9 @@ def test_the_basement_slab_fixtures_drain_by_gravity(catlin_model):
         # Buried, not cast into the slab.
         assert max(arm.z_m[1:]) + arm.diameter_m / 2.0 <= slab.z0_m, arm_tag
         # And each is vented, which needed the drain to exist first.
-        vent = next(r for r in catlin_model.pipe_runs if r.tag == vent_tag)
-        assert set(fixtures) <= set(vent.serves), vent_tag
+        for fixture, vent_tag in zip(fixtures, vent_tags, strict=True):
+            vent = next(r for r in catlin_model.pipe_runs if r.tag == vent_tag)
+            assert fixture in vent.serves, vent_tag
 
 
 # `drain_tie_ins`/`accumulated_serves` derive the topology with this; import the one
@@ -300,7 +302,7 @@ def test_drain_loads_roll_up_through_the_routed_geometry(catlin_model):
     main = acc["PR-B-MAIN-DRAIN"]
     # Union by fixture tag — a fixture listed on both its branch and the main counts once.
     assert len(main) == len(set(main))
-    for fx in ("FX-B-BATH-WC", "FX-B-SAUNA-SH", "FX-B-SAUNA-FD", "FX-B-BATH-LAV"):
+    for fx in ("FX-B-BATH-WC", "FX-B-BATH-SH", "FX-B-SAUNA-FD", "FX-B-BATH-LAV"):
         assert fx in main, fx
     load, unresolved = branch_load(main, units, "drain")
     assert not unresolved

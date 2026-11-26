@@ -1009,9 +1009,9 @@ OPENINGS = [
                      capacity_plf=3632.0,
                      min_bearing_in=1.9,
                      condition="read as a load table, not a header-type column: the guide's header columns stop at Roof + 2 Floors and this stack carries three floors; span is centre to centre of supports, read at the next tabulated span with no interpolation; Total Load limited by shear, moment or L/240, in addition to the beam's own weight, at 100% duration and compared with the governing ASD combination; 1.9\" of end bearing is the row's at its full 3632 plf, against 3\" on 2 jacks across the full 5-1/4\" width; lateral support assumed at each support and along the compression edge (plates and head cripples over it); dry use; uniform load only; see notes/header_spans_r602_7.md section 5b")),
-    # The bath's door (2026-11-25): a 30" privacy swing in W-B-BT-N2 off the hall's south
+    # The bath's door (2026-11-25): a 32" privacy swing in W-B-BT-N2 off the hall's south
     # end, swinging in and hinged east so the leaf parks clear of the WC.
-    Door(uid="CBD207AAAA", tag="D-B-BATH", host="W-B-BT-N2", type_ref="DT-INT-SWING30-PRIV",
+    Door(uid="CBD207AAAA", tag="D-B-BATH", host="W-B-BT-N2", type_ref="DT-INT-SWING32-PRIV",
          position=from_node("N-B-HALL-S", inch(6.5)), flip_swing=True,
          header_spec="flat 2x4 nonbearing", doorway=D_B_BATH_VINYL_REDUCER),
     # ESS closet door: a cheap 24x80 steel leaf with a small tempered vision lite in a KD

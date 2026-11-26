@@ -54,7 +54,9 @@ def test_the_engine_default_is_a_sixteenth(catlin_plan, catlin_model_ro) -> None
     # 307.2.1 floor + 1/4 ADVISORY, taking PR-B-COND and PR-M-COND-HEADS off the list.
     # 2026-11-09: PR-M-S-SUITE-DRAIN's new legs past EQ-B-WH run at ~0.27"/ft.
     # 2026-11-10: PR-S-VANITY-LAV2-ARM's cabinet leg to its 2" junction, 0.306"/ft.
-    assert len(fails) == 23
+    # 2026-11-25 (basement replan): PR-B-BATH-DRAIN retired and the WC's own arm now falls
+    # 0.315"/ft, so two left the list; PR-B-SAUNA-DRAIN (the one 3" branch) stays at 1/4.
+    assert len(fails) == 21
     assert all(f.severity is Severity.WARN for f in fails), "ADVISORY, not a permit blocker"
 
 
@@ -84,13 +86,13 @@ def test_the_margin_prints_on_pass_too(catlin_plan, catlin_model_ro) -> None:
     assert '+0.010"/ft over' in suite.message
 
 
-def test_pr_b_bath_drain_is_the_run_bld05_was_reaching_for(
+def test_pr_b_sauna_drain_is_the_run_bld05_was_reaching_for(
         catlin_plan, catlin_model_ro) -> None:
     """Exactly the code minimum, zero in hand, buried under a slab — the run BLD-05 actually
     named. The suite WC it was contrasted with is thin too since 2026-10-26, but not zero.
-    Since 2026-11-10 the 1/4"/ft part is the WC's own arm, PR-B-BATH-WC-DRAIN."""
+    Since 2026-11-25 the 1/4"/ft part is the bath group's one 3" branch, PR-B-SAUNA-DRAIN."""
     findings = _run(catlin_plan, catlin_model_ro)
-    assert _margin_of(findings, "PR-B-BATH-WC-DRAIN") == pytest.approx(0.0, abs=1e-9)
+    assert _margin_of(findings, "PR-B-SAUNA-DRAIN") == pytest.approx(0.0, abs=1e-9)
     assert _margin_of(findings, "PR-M-S-SUITE-WC-DRAIN") == pytest.approx(0.010, abs=1e-9)
 
 
@@ -126,14 +128,14 @@ def test_a_run_below_the_minimum_is_left_to_drain_slope(
 
     model = copy.copy(catlin_model_ro)
     runs = list(model.pipe_runs)
-    index, child = next((i, r) for i, r in enumerate(runs) if r.tag == "PR-B-BATH-DRAIN")
+    index, child = next((i, r) for i, r in enumerate(runs) if r.tag == "PR-B-SAUNA-DRAIN")
     flat = copy.copy(child)
     object.__setattr__(flat, "z_m", [*child.z_m[:-1], child.z_m[-2] - 0.001 * M_PER_IN])
     runs[index] = flat
     object.__setattr__(model, "pipe_runs", tuple(runs))
 
     findings = _run(catlin_plan, model)
-    assert not [f for f in findings if "PR-B-BATH-DRAIN" in f.element_tags]
+    assert not [f for f in findings if "PR-B-SAUNA-DRAIN" in f.element_tags]
 
 
 def test_no_drains_is_not_applicable_and_no_gradeable_segment_is_unknown(

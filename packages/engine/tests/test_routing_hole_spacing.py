@@ -2,10 +2,10 @@
 laid earlier in the campaign (``routing/holes``), and a bearing-line box's window.
 
 ``houses/catlin/notes/framing_bore_limits.md`` §11: ESR-1153 Table A fn 1, clear distance
-between holes >= 2 x the largest hole, the drilled hole OD + 1/4". ``PR-B-CW-SAUNA`` (1/2"
-PEX, hole 0.875") crosses FS-M-WEST at x = 206.5"; a second 1/2" line needs 2 x 0.875 =
-1.75" clear, i.e. 1.75 + 0.875 = 2.625" centre to centre. Both probes sit outside the 6"
-support zone (213.25 - 205.0 - 0.4375 = 7.81"), so only the spacing differs.
+between holes >= 2 x the largest hole, the drilled hole OD + 1/4". ``PR-B-CW-SAUNA`` (3/4"
+PEX since 2026-11-25, hole 1.125") crosses FS-M-WEST at x = 206.5"; a 1/2" line (hole 0.875")
+needs 2 x 1.125 = 2.25" clear, i.e. 2.25 + 1.0 = 3.25" centre to centre. Both probes sit
+outside the 6" support zone (213.25 - 205.0 - 0.4375 = 7.81"), so only the spacing differs.
 
 FS-M-NE: ``PR-B-CW-TRUNK`` passes D pocket D11 of joist-0-009-0 (y = 300") at x = 357.6",
 z = -8.8"; the triangle holds (360", -6") too, and takes one run (``mep.open_web_panel``).
@@ -42,8 +42,8 @@ def _sauna_joist(model, **kw):
 def test_a_hole_too_near_an_authored_one_is_refused(catlin_model_ro):
     floor, i = _sauna_joist(catlin_model_ro)
     station = 206.5 * M_PER_IN
-    assert not _ijoist_bores_ok(floor, [i], station - 1.5 * M_PER_IN, PEX_HALF_OD_M)  # 0.625"
-    assert _ijoist_bores_ok(floor, [i], station - 3.0 * M_PER_IN, PEX_HALF_OD_M)  # 2.125"
+    assert not _ijoist_bores_ok(floor, [i], station - 1.5 * M_PER_IN, PEX_HALF_OD_M)  # 0.5"
+    assert _ijoist_bores_ok(floor, [i], station - 3.5 * M_PER_IN, PEX_HALF_OD_M)  # 2.5"
 
 
 def test_a_run_being_replaced_is_no_neighbour(catlin_model_ro):
@@ -102,8 +102,8 @@ def test_a_bearing_box_passes_only_its_window(catlin_model_ro):
 
 
 def _sibling_edges(model):
-    """Two 1/2" PEX lanes across the sauna joist, 2.5" and 2.7" off its x = 206.5" hole
-    (§14: 2.625" centres needed); the sibling is ``PR-B-CW-SAUNA`` as a laid line."""
+    """Two 1/2" PEX lanes across the sauna joist, 3.0" and 3.5" off its x = 206.5" hole
+    (§14: 3.25" centres needed); the sibling is ``PR-B-CW-SAUNA`` as a laid line."""
     laid = [line for line in run_lines(model, frozenset()) if line[0] == "PR-B-CW-SAUNA"]
     pen = Penetrations(model, (190 * M_PER_IN, 0.0, 215 * M_PER_IN, 430 * M_PER_IN),
                        PEX_HALF_OD_M / 2.0, touch=frozenset({"PR-B-CW-SAUNA"}))
@@ -115,7 +115,7 @@ def _sibling_edges(model):
                                      _holes_on(laid, floor, j)))
     z = (z0 + z1) / 2.0
     nodes = [SimpleNamespace(x=x * M_PER_IN, y=at + dy, z=z)
-             for x in (204.0, 203.8) for dy in (-4 * M_PER_IN, 4 * M_PER_IN)]
+             for x in (203.5, 203.0) for dy in (-4 * M_PER_IN, 4 * M_PER_IN)]
     return pen, laid, SimpleNamespace(nodes=nodes), (z0, z1)
 
 
@@ -129,8 +129,8 @@ def test_a_sibling_laid_later_in_the_group_is_a_neighbour_per_search(catlin_mode
     pen, laid, graph, band = _sibling_edges(catlin_model_ro)
     obstacles = spacing_obstacles(SimpleNamespace(members=pen, plan_band=band), graph, laid)
     near, far = obstacles(0, 1), obstacles(2, 3)
-    assert len(near) == 1 and "PR-B-CW-SAUNA" in near[0][4]  # 1.625" clear < 1.75"
-    assert near[0][2:4] == band and far == []  # 1.825" clear passes
+    assert len(near) == 1 and "PR-B-CW-SAUNA" in near[0][4]  # 2.0" clear < 2.25"
+    assert near[0][2:4] == band and far == []  # 2.5" clear passes
     assert obstacles(1, 0)[0][:2] == near[0][:2]  # t = 1/2 either way
     assert spacing_obstacles(SimpleNamespace(members=pen, plan_band=band), graph, [])(0, 1) == []
 

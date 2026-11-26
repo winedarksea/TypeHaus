@@ -288,7 +288,10 @@ def test_an_undriven_allowance_can_never_report_an_overlap(tmp_path) -> None:
 #: west-side replan retired ``D-B-NE`` and moved ``D-B-GYM`` onto framed ``W-B-CS3``, so
 #: catlin has no opening left whose host wall's STRUCTURE layer is concrete.
 # The sunken-garden door seat now requires one formed concrete blockout (2026-10-26).
-_DRIVES_TO_ZERO: set[str] = set()
+#
+# ``finish-door-hardware-pocket-privacy`` joined on 2026-11-25: D-B-BATH, the one pocket
+# privacy door, became a 30" swing door in the bath replan.
+_DRIVES_TO_ZERO: set[str] = {"finish-door-hardware-pocket-privacy"}
 
 
 def test_catlin_drives_most_of_its_allowance_block(catlin_model, catlin_areas) -> None:

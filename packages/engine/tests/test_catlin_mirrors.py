@@ -12,7 +12,7 @@ from typehaus.model.placeable_symbols import model_parts
 
 IN = 0.0254
 MIRRORS = {
-    "FURN-B-BATH-MIRROR": ("FT-MIRROR-KOHLER-26052-BNL", "FX-B-BATH-LAV", 38),
+    "FURN-B-BATH-MIRROR": ("FT-MIRROR-KOHLER-26052-BNL", "FX-B-BATH-LAV", 35.75),
     "FURN-M-BATH1-MIRROR": ("FT-MIRROR-KOHLER-30638-CPL", "FX-M-BATH1-LAV", 42),
     "FURN-S-BATH1-MIRROR": ("FT-MIRROR-KOHLER-26050-BNL", "FX-S-BATH1-LAV", 44),
     "FURN-S-VANITY-MIRROR1": ("FT-MIRROR-KOHLER-30638-BLL", "FX-S-VANITY-LAV1", 42),
@@ -132,7 +132,7 @@ def test_actual_mounting_rails_and_boxes_have_backing(catlin_plan):
         band = backing[tag]
         assert band.elevation.meters < (74 - 9.1875) * IN
         assert band.elevation.meters + band.height.meters > (74 - 9.1875 + 2) * IN
-    for tag in ("BK-B-CW2-MIRROR-LIGHT", "BK-M-HS1-MIRROR-LIGHT",
+    for tag in ("BK-B-SAN-MIRROR-LIGHT", "BK-M-HS1-MIRROR-LIGHT",
                 "BK-S-BA-E1B-MIRROR-LIGHT",
                 "BK-S-SN3-MIRROR-LIGHT"):
         assert tag in backing

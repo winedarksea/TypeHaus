@@ -101,11 +101,11 @@ def test_drain_followers_are_carried_impacts(catlin_plan):
     # Ports now move the unpinned lavatory connection and its nearby sleeve together.
     assert any(i.kind == "carried" and i.tag == "SP-B-BATH-LAV" for i in pinned.impacts)
     assert any(i.kind == "needs_review" for i in pinned.impacts)
-    assert any("W-B-STR2" in warning for warning in pinned.warnings)
+    assert any("W-B-SA-N" in warning for warning in pinned.warnings)
 
 
 def test_delete_placeable_refuses_served_fixture(catlin_plan, starter_plan):
-    with pytest.raises(MacroError, match="PR-B-BATH-DRAIN"):
+    with pytest.raises(MacroError, match="PR-B-BATH-WC-DRAIN"):
         delete_placeable(catlin_plan, "basement", tag="FX-B-BATH-WC")
     result = delete_placeable(starter_plan, "main", tag="ED-Main-RC1")
     assert [(op.op, op.tag) for op in result.ops] == [("delete", "ED-Main-RC1")]

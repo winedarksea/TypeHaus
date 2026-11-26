@@ -167,19 +167,19 @@ def test_a_band_sits_on_its_room_side_of_the_wall(bands, catlin_model):
 def test_a_replacing_band_occupies_the_finish_it_replaces(bands):
     """``replaces_wall_finish`` sits IN the wall's finish depth; an added band stands proud.
 
-    The sauna splash replaces the basswood liner over two 3' stretches; the study wainscot is
+    The bath surround replaces the gypsum over two 3' stretches; the study wainscot is
     laid over a finished wall. Drawing both the same way puts one of them in the wrong place —
-    a floating tile field, or a wainscot buried in the drywall.
+    a floating panel, or a wainscot buried in the drywall.
     """
-    splash = [b for b in bands if b.tag == "WP-B-SAUNA-SPLASH"]
+    surround = [b for b in bands if b.tag == "WP-B-BATH-SURR"]
     wainscot = [b for b in bands if b.tag == "WP-M-STUDY-WAINSCOT"]
-    assert splash and wainscot, "catlin authors both a replacing and an added band"
-    assert all(b.replaces_wall_finish for b in splash)
+    assert surround and wainscot, "catlin authors both a replacing and an added band"
+    assert all(b.replaces_wall_finish for b in surround)
     assert not any(b.replaces_wall_finish for b in wainscot)
 
 
 def test_band_thickness_comes_from_the_material_stock(bands):
-    """4/4 walnut draws 3/4" — nominal stock, dressed. Tile has no stock and takes the default.
+    """4/4 walnut draws 3/4" — nominal stock, dressed. A cast panel states its own thickness.
 
     ``stock_bf_per_sqft`` is board feet per square foot on nominal thickness, so it doubles as
     the nominal inches; stock under 2" dresses 1/4" thinner.
@@ -188,9 +188,9 @@ def test_band_thickness_comes_from_the_material_stock(bands):
         if band.tag == "WP-M-STUDY-WAINSCOT":
             assert band.thickness_m == pytest.approx(0.75 * _IN, abs=1e-6), \
                 "4/4 walnut wainscot draws at its dressed 3/4in"
-        if band.tag == "WP-B-SAUNA-SPLASH":
+        if band.tag == "WP-B-BATH-SURR":
             assert band.thickness_m == pytest.approx(0.25 * _IN, abs=1e-6), \
-                "tile and setting bed have an explicit thickness"
+                "the solid-surface panel has an explicit thickness"
 
 
 def test_the_catlin_bands_are_the_ten_authored_ones(bands, catlin_model):
@@ -198,8 +198,8 @@ def test_the_catlin_bands_are_the_ten_authored_ones(bands, catlin_model):
     by_tag: dict[str, list] = {}
     for band in bands:
         by_tag.setdefault(band.tag, []).append(band)
-    assert set(by_tag) == {"WP-B-SAUNA-SPLASH", "WP-M-STUDY-WAINSCOT", "WP-M-STUDY-FELT",
-                           "WP-B-SAUNA-SPLASH-substrate-0", "WP-B-SAUNA-SPLASH-substrate-1",
+    assert set(by_tag) == {"WP-B-BATH-SURR", "WP-B-BATH-SURR-CAP", "WP-M-STUDY-WAINSCOT",
+                           "WP-M-STUDY-FELT",
                            "WP-M-BATH2-SURR", "WP-M-BATH2-SURR-CAP", "WP-S-SUITE-HEADBOARD",
                            "WP-A-STUBATH-SURR",
                            "WP-M-MUDROOM-SHIPLAP", "WP-M-KIT-BACKSPLASH",
@@ -217,11 +217,15 @@ def test_the_catlin_bands_are_the_ten_authored_ones(bands, catlin_model):
         assert band.z0_m == pytest.approx((1.0255906 + 3.5) * _IN, abs=1e-6)
         assert band.z1_m == pytest.approx(72 * _IN, abs=1e-6)
         assert band.thickness_m == pytest.approx(0.75 * _IN, abs=1e-6)
-    # Two 3' spans on two walls of the shower corner, full 7'-6" liner height.
-    assert len(by_tag["WP-B-SAUNA-SPLASH"]) == 2
-    for band in by_tag["WP-B-SAUNA-SPLASH"]:
+    # RM-B-BATH's shower surround (2026-11-25): two 3' spans on the pan's closed sides,
+    # pan top (+2") to 80", capped by a 3 7/8" strip.
+    assert {b.wall_tag for b in by_tag["WP-B-BATH-SURR"]} == {"W-B-SA-N", "W-B-BT-W"}
+    for band in by_tag["WP-B-BATH-SURR"]:
         assert band.run_m == pytest.approx(3 * 12 * _IN, abs=1e-6)
-        assert band.z1_m - band.z0_m == pytest.approx(90 * _IN, abs=1e-3)
+        assert band.z1_m - band.z0_m == pytest.approx(78 * _IN, abs=1e-3)
+        assert band.replaces_wall_finish
+    for cap in by_tag["WP-B-BATH-SURR-CAP"]:
+        assert cap.z1_m - cap.z0_m == pytest.approx(3.875 * _IN, abs=1e-3)
     # North walnut is replaced by the upholstered bench; exposed returns remain.
     assert {b.wall_tag for b in by_tag["WP-M-STUDY-WAINSCOT"]} == {
         "W-M-C3", "W-M-LS", "W-M-CLN2"}
@@ -306,11 +310,11 @@ def test_the_catlin_bands_are_the_ten_authored_ones(bands, catlin_model):
 def test_the_bands_still_bill_what_they_billed(bands):
     """Removing the north walnut reduces both its drawn and ordered area."""
     walnut = sum(b.area_m2 for b in bands if b.tag == "WP-M-STUDY-WAINSCOT") * _M2_TO_FT2
-    tile = sum(b.area_m2 for b in bands if b.tag == "WP-B-SAUNA-SPLASH") * _M2_TO_FT2
+    surround = sum(b.area_m2 for b in bands if b.tag == "WP-B-BATH-SURR") * _M2_TO_FT2
     # Runs end on finish faces; 27.82 (27.80 before paint took no depth), D-M-STUDY's derived RO is 2 1/4"
     # wider across the 36" band.
     assert walnut == pytest.approx(27.816, abs=0.005)
-    assert tile == pytest.approx(45.0, abs=0.5)
+    assert surround == pytest.approx(39.0, abs=0.5)  # two 3'-0" x 78" bands
 
 
 # --- a band stops at the ceiling, not at the platform lift --------------------------------

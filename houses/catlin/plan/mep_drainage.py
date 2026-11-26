@@ -563,16 +563,16 @@ SECOND_BRANCH_DRAINS = [
 # RM-B-GYM's air 8" under the finished ceiling — `mep.run_in_finished_volume`. The drop is
 # already inside RM-B-SAUNA, whose ceiling is 14" lower than the rest of the basement's, so
 # everything above -2'-2 5/8" there is in a service void nobody sees. The run now stays in
-# it: straight north on x=17'-6" to PR-B-COND's y=9'-0" leg, tying in on the trunk instead
-# of at its head. 2" clear of PR-B-CW-SAUNA (x=17'-4") and 3" from PR-B-SAUNA-VENT
+# it: straight north on x=17'-6" into W-B-SA-N, tying onto PR-B-COND's y=8'-1 1/2" leg there
+# (2026-11-25). 2" clear of PR-B-CW-SAUNA (x=17'-4") and 3" from PR-B-SAUNA-VENT
 # (x=17'-3"), and it crosses nothing else — DU-B-ERV-R-GYM is at y=10'-6 5/8", north of the tie.
 CONDENSATE_MAIN = [
     PipeRun(uid="CMPC02AAAA", tag="PR-M-COND-HEADS", system=PipeSystem.DRAIN, sanitary=False,
-            path=(pt(ft(17, 6), ft(1)), pt(ft(17, 6), ft(1)), pt(ft(17, 6), ft(9))),
+            path=(pt(ft(17, 6), ft(1)), pt(ft(17, 6), ft(1)), pt(ft(17, 6), inch(97.5))),
             diameter=inch(0.75), material="pvc",
-            # 0.3"/ft over the 8'-0" north leg, landing on PR-B-COND's interpolated
-            # -1'-8.41" invert at x=17'-6" (raised 0.45" with its 0.26"/ft grade, 2026-11-01).
-            elevations=(ft(2, 6), inch(-18.0055), inch(-20.4055))),
+            # 0.3"/ft over the 7'-1 1/2" north leg, landing in W-B-SA-N on PR-B-COND's y=97.5"
+            # leg at its interpolated 85.37" AFF (2026-11-25).
+            elevations=(ft(2, 6), inch(-21.92), inch(-24.06))),
 ]
 
 # Terminates over FX-B-SAUNA-FD, owner's call — a condensate air gap wants a trapped

@@ -5,7 +5,7 @@ inverts off it is twelve chances to get the arithmetic wrong and no way for the 
 what it meant — which is how the reference house ended up with runs whose comments declared
 "a uniform 0.3"/ft" against numbers that were 0.2941 and 0.3013 on adjacent legs.
 
-Three runs in catlin were converted (PR-B-BATH-WC-DRAIN, PR-B-SAUNA-DRAIN, PR-B-COND); their
+Two runs in catlin were converted (PR-B-SAUNA-DRAIN, PR-B-COND); their
 inverts are pinned below so the conversion is provably not a silent geometry change.
 """
 
@@ -144,7 +144,7 @@ def test_a_solved_endpoint_does_not_argue_with_the_field_it_came_from() -> None:
 # --- the catlin conversion is not a geometry change --------------------------------------
 
 #: Inverts as they resolve, in PROJECT-FRAME feet (the resolved IR carries absolute
-#: elevations; the source authors them storey-relative). All three are solved from an
+#: elevations; the source authors them storey-relative). Both are solved from an
 #: authored grade plus authored endpoints, which is what the conversion these numbers were
 #: first pinned for bought.
 #:
@@ -192,26 +192,26 @@ def test_a_solved_endpoint_does_not_argue_with_the_field_it_came_from() -> None:
 #: 2026-11-10 (no slab turn cleanouts): the WC's solved part is its own arm, PR-B-BATH-WC-DRAIN
 #: (south and a 1/8 bend to the W-B-STR2 line); PR-B-BATH-DRAIN beyond it is two authored
 #: inverts. The sauna reaches W-B-SA-N on a 1/8 bend and ties at the stack's base: 0.414.
+#:
+#: 2026-11-25 (basement replan, bath north of the sauna): PR-B-BATH-WC-DRAIN is now a 3-point
+#: authored-inverts arm with no grade (dropped here). PR-B-SAUNA-DRAIN is the one 3" branch
+#: for the bath group: head -9", corner solved at 0.25 and the last leg takes the rest to
+#: its authored -14 3/4" tie (0.274). PR-B-COND leaves W-B-CS3 on authored 88.9" / 85.5" /
+#: 85.33" inverts and runs west under W-B-SA-N: legs 1 and 5 take 0.272 and 0.386.
 _PINNED_FT = {
-    "PR-B-COND": [-1.45313, -1.64813, -1.68965, -1.78715, -1.81141, -8.32135, -8.36979],
-    "PR-B-BATH-WC-DRAIN": [-9.11979, -9.83229, -9.88151, -9.93646],
-    "PR-B-SAUNA-DRAIN": [-8.95312, -9.83479, -9.89172, -10.11145, -10.34896],
+    "PR-B-COND": [-1.45313, -1.64813, -1.71146, -1.99479, -2.00896, -8.32135, -8.36979],
+    "PR-B-SAUNA-DRAIN": [-9.86979, -10.14497, -10.34896],
 }
 
-#: The grade each of the three declares in its own comment. PR-B-BATH-DRAIN went to
-#: 1/4"/ft — ch. 4714 (UPC) 708.0's minimum at every size, and `mep.drain_slope`'s
-#: 1/8"/ft floor — when the rotated bathroom put its water closet 4'-1 5/8" further from the
-#: main: at 0.3"/ft the extra run ate the 5.7" of crown the 4" line has under the slab and
-#: the branch arrived below its invert.
+#: The grade each declares in its own comment (1/4"/ft is ch. 4714 (UPC) 708.0's minimum).
 _GRADE_IN_PER_FT = {
     "PR-B-COND": 0.26,
-    "PR-B-BATH-WC-DRAIN": 0.25,
     "PR-B-SAUNA-DRAIN": 0.25,
 }
-#: PR-B-COND's authored under-bench leg kept its 0.3"/ft when the run went to 0.26; the bath
-#: and sauna last legs fall to their authored tie inverts.
-_LEG_GRADE = {("PR-B-COND", 5): 0.3, ("PR-B-BATH-WC-DRAIN", 2): 0.261,
-              ("PR-B-SAUNA-DRAIN", 3): 0.414}
+#: Legs that land on an authored invert fall at the difference: COND's W-B-CS3 leg and its
+#: short diagonal drop to the air gap; the sauna branch's last leg to its tie.
+_LEG_GRADE = {("PR-B-COND", 1): 0.272, ("PR-B-COND", 5): 0.386,
+              ("PR-B-SAUNA-DRAIN", 1): 0.274}
 
 
 @pytest.mark.parametrize("tag", sorted(_PINNED_FT))

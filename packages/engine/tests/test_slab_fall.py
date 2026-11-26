@@ -152,13 +152,13 @@ def test_the_dish_mesh_top_follows_the_surface() -> None:
 
 
 def test_catlin_sauna_floor_dishes_to_its_drain(catlin_model_ro) -> None:
-    """Hand number: 1/8"/ft x 77 3/16" (drain to the south rim, FT-B-S2's edge) = 0.804"."""
+    """Hand number: 1/8"/ft x 63" (drain y=84" to the south rim at y=21", FT-B-S2's edge) = 0.656"."""
     model = catlin_model_ro
     slab = next(s for s in model.solids if s.uid == "CBS501AAAA")
     piece = next(s for s in model.solids if s.uid == "CBS501AAAA-dish-0")
     drain = next(o for o in model.canvas_objects if o.tag == "FX-B-SAUNA-FD")
-    assert (slab.z1_m - piece.top_at(*drain.position)) / _IN == pytest.approx(0.804, abs=1e-3)
-    assert (slab.z1_m - drain.z_m) / _IN == pytest.approx(0.804, abs=1e-3)
+    assert (slab.z1_m - piece.top_at(*drain.position)) / _IN == pytest.approx(0.656, abs=1e-3)
+    assert (slab.z1_m - drain.z_m) / _IN == pytest.approx(0.656, abs=1e-3)
     # The rim, D-B-SAUNA's side included, stays flush with the gym.
     ring = piece.dish.ring
     for (ax, ay), (bx, by) in zip(ring, ring[1:] + ring[:1], strict=True):

@@ -64,7 +64,7 @@ def _liner_net_ft2(catlin_model, wall, material_ref="catlin-sauna-shiplap") -> f
     return area * _M2_TO_FT2
 
 
-# --- the sauna liner and its tile splash ---------------------------------------------------
+# --- the sauna liner ---------------------------------------------------
 
 def test_the_sauna_liner_bills_net_of_the_shower_splash(catlin_model, bom):
     """The basswood order covers the walls, less tile; the ceiling is aspen (below)."""
@@ -87,18 +87,11 @@ def test_the_sauna_liner_bills_net_of_the_shower_splash(catlin_model, bom):
     # north face split at N-B-HALL-S so the new hall's west partition could tee onto a shared
     # node instead of dying mid-wall; same assembly, same 7'-6" top, same `interior_room`. The
     # liner did not gain a FACE, only a seam, so the recomputed area below is the check that
-    # matters and it does not move.
-    assert {w.tag for w in liner_walls} == {"W-B-SA-W", "W-B-SA-N", "W-B-SA-N2", "W-B-CS",
+    # matters and it does not move. **W-B-SA-N2 left the set on 2026-11-25**: the bath took the
+    # sauna's north 2', and the wall past W-B-SA-N is the hall's.
+    assert {w.tag for w in liner_walls} == {"W-B-SA-W", "W-B-SA-N", "W-B-CS",
                                             "W-B-S2", "W-B-S2-FR"}
     gross = sum(_liner_net_ft2(catlin_model, w) for w in liner_walls)
-    # Filtered by TAG since 2026-09-02, not just by ``replaces_wall_finish``: RM-M-BATH2's
-    # WP-M-BATH2-SURR is the house's second finish-replacing band, and it replaces gypsum on
-    # the main storey, not basswood down here. Summing every such band was only ever right
-    # while there was one.
-    splash = sum(p.area_m2 for p in catlin_model.panelings
-                 if p.replaces_wall_finish
-                 and p.tag == "WP-B-SAUNA-SPLASH") * _M2_TO_FT2
-    assert splash == pytest.approx(2 * 3.0 * 7.5, rel=1e-3)  # two 3' bands x 7'-6"
     sauna = next(room for room in catlin_model.rooms if room.tag == "RM-B-SAUNA")
     assert float(basswood["net_area_sqft"]) == pytest.approx(gross, abs=0.05)
     ceiling = next(row for row in rows if row["material"] == "catlin-sauna-ceiling-shiplap")
@@ -117,11 +110,8 @@ def test_the_sauna_liner_bills_net_of_the_shower_splash(catlin_model, bom):
     assert float(basswood["board_feet"]) == pytest.approx(
         float(basswood["order_area_sqft"]) * 1.1, abs=0.06)
 
-    tile = next(row for row in rows if row["material"] == "tile")
-    assert tile["kind"] == "override"
-    assert float(tile["net_area_sqft"]) == pytest.approx(45.0, abs=0.05)
-    assert float(tile["waste_pct"]) == 15.0
-    assert float(tile["order_area_sqft"]) == 52.0
+    # The sauna's tile splash retired with its shower (2026-11-25): no tile row, no deduction.
+    assert not any(row["material"] == "tile" for row in rows)
 
 
 def test_the_bath2_shower_surround_bills_as_its_own_override(bom):
@@ -143,9 +133,10 @@ def test_the_bath2_shower_surround_bills_as_its_own_override(bom):
     is not a board), and so is ``stock_bf_per_sqft`` — so no board-foot column, and the band
     draws at the 1/2" default, which is the panel's actual thickness.
     """
-    # Solid surface 47.9 sf net since the 96" panel stops on its base (2026-11-01; 52.9 to
-    # the ceiling): D-M-BATH2's derived RO still takes the west 1/4" up to its head.
-    expected = {"acrylic-shower-panel": (37.8, 42.0), "solid-surface-panel": (47.9, 53.0)}
+    # Solid surface: BATH2's 47.9 sf net since the 96" panel stops on its base (2026-11-01;
+    # D-M-BATH2's derived RO still takes the west 1/4" up to its head), plus RM-B-BATH's
+    # surround (2026-11-25): two 3'-0" x 78" bands, 39.0 sf.
+    expected = {"acrylic-shower-panel": (37.8, 42.0), "solid-surface-panel": (86.9, 96.0)}
     for material, (net, ordered) in expected.items():
         row = next(r for r in bom["wood_surfaces"] if r["material"] == material)
         assert row["kind"] == "override"
@@ -173,19 +164,18 @@ def test_envelope_layers_nets_the_splash(catlin_model, bom):
     assert billed == pytest.approx(gross, abs=0.1)
     basswood = next(row for row in bom["wood_surfaces"]
                     if row["material"] == "catlin-sauna-shiplap")
-    assert billed == pytest.approx(float(basswood["net_area_sqft"]), abs=0.1)
+    # Each envelope row rounds to 0.1 on its own (4.7 + 199.6), so the sum can sit 0.1 off the row.
+    assert billed == pytest.approx(float(basswood["net_area_sqft"]), abs=0.11)
 
 
 def test_a_replacing_band_nets_only_the_finish_on_its_own_face(catlin_model):
-    """The splash takes the shiplap off the sauna face and leaves the liner's furring and
-    foil, and the gym face's gypsum, alone; a bath surround takes its face's gypsum, except a
-    glass-mat backer, which it is glued to (BATH2, #27)."""
+    """A bath surround takes its face's gypsum, except a glass-mat backer, which it is glued
+    to (BATH2, #27); the sauna liner and the gym face are left alone (the sauna's tile splash
+    retired on 2026-11-25)."""
     replaced = replaced_finish_m2(catlin_model)
-    # Sauna substrate replacement cuts the resolved wood regions directly: deducting
-    # the splash again here would under-order the liner by another 45 square feet.
     assert not {layer for wall, layer in replaced if wall in ("W-B-CS", "W-B-SA-N2")}
-    assert all(p.finish_replaced_in_geometry for p in catlin_model.panelings
-               if p.tag == "WP-B-SAUNA-SPLASH")
+    bath = {p.wall_tag for p in catlin_model.panelings if p.tag == "WP-B-BATH-SURR"}
+    assert bath and all(any(w == wall for w, _ in replaced) for wall in bath), "paint nets"
     stubath = {p.wall_tag for p in catlin_model.panelings if p.tag == "WP-A-STUBATH-SURR"}
     bath2 = {p.wall_tag for p in catlin_model.panelings if p.tag == "WP-M-BATH2-SURR"}
     assert {w for w, layer in replaced if layer.startswith("gwb") and w in stubath | bath2} == (

@@ -275,6 +275,8 @@ def test_an_unsplit_banded_layer_keeps_its_globalid(catlin_model_ro, catlin_ifc)
     (an authored-band coat is an IfcCovering instead, ``emit/ifc/wall_coatings``).
     74 since ``LayerMaterial.extent``: each AR-below/plain-above gypsum face is two parts
     (``resolve/layer_material_extent.py``), and a split pair is never in the body prism.
+    75 since the 2026-11-25 basement replan: W-B-BA-N and W-B-SA-N2 left, W-B-BA-E and the new
+    W-B-CL-E took AR-below/plain-above pairs, and W-B-WELL-HEAD's gypsum no longer splits at a tee.
 
     A GlobalId is an identity a federated model and its issue log hold onto. Re-keying a
     part that still means exactly what it meant before would break those references for
@@ -288,7 +290,7 @@ def test_an_unsplit_banded_layer_keeps_its_globalid(catlin_model_ro, catlin_ifc)
                if f"{w.tag}:{ly.name}" in parts]
     untouched = [(w, ly) for w, ly in unsplit
                  if not (ly.slot or "").startswith("service-region:")]
-    assert len(untouched) == 74, "unaffected banded layers retain their identity"
+    assert len(untouched) == 75, "unaffected banded layers retain their identity"
     for wall, layer in unsplit:
         assert parts[f"{wall.tag}:{layer.name}"] == derive_child_guid(
             project_uuid, "wall-parts", f"{wall.uid}/{layer.name}")

@@ -182,7 +182,8 @@ drain_stack_required_structure_in = 5.5
 # `mep.drain_slope_margin` asks a drain to hold some grade IN HAND over the code minimum,
 # because a rigid standoff is stepped about an inch every four feet and the plumber's
 # tolerance runs one way — toward more pitch. The engine's default is 1/16"/ft. Twelve
-# catlin runs are under it and the tightest, PR-B-BATH-DRAIN, is at EXACTLY 1/4"/ft with
+# catlin runs are under it and the tightest, PR-B-SAUNA-DRAIN (the bath branch since
+# 2026-11-25), is at EXACTLY 1/4"/ft with
 # nothing in hand at all.
 #
 # It cannot be bought. SP-B-SEWER-EXIT's invert is CAST, under FT-B-N4 since the sewer went
@@ -423,8 +424,8 @@ suppress = [
   "structural.door_framing_module:D-S-BALCONY",
   # Owner 2026-10-29: D-M-PORCH re-centred under D-S-BALCONY; the mirror beats the module.
   "structural.door_framing_module:D-M-PORCH",
-  # Owner 2026-10-29: D-B-PLAY stays visually centred on W-B-CE and D-B-SHOP on D-B-GYM's
-  # line; one extra stud each beats moving them.
+  # Owner 2026-10-29: D-B-PLAY stays visually centred on W-B-CE; one extra stud beats moving
+  # it. D-B-SHOP (moved 2026-11-25): at 38" in W-B-HALL-W's 60" no station fixes it.
   "structural.door_framing_module:D-B-PLAY",
   "structural.door_framing_module:D-B-SHOP",
 
@@ -432,8 +433,8 @@ suppress = [
   # Owner accepts (2026-09-26): each of these cuts one stud more than a module-true station
   # would, and on each the wall is too short for ANY station to fix it — only re-phasing the
   # wall's grid could. One extra stud per door is cheaper than re-phasing a short partition
-  # (or, for D-M-ENTRY and D-B-GYM, a layout line other walls share).
-  "structural.door_framing_module:D-B-GYM",
+  # (or, for D-M-ENTRY, a layout line other walls share). D-B-GYM left 2026-11-25: it is a
+  # cased RO on W-B-CS2 now.
   "structural.door_framing_module:D-M-ENTRY",
   "structural.door_framing_module:D-S-STUDY2",
   # D-S-NCLOSET left this list on 2026-10-29: slid 2 1/4" west, it cuts no extra stud.
