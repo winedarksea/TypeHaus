@@ -3517,9 +3517,9 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 # plan/sauna_types.py reach `haus millwork`). The frame is bought Douglas fir since
 # 2026-10-18. The material bands below still assume all-bought lumber: owner to revise the
 # slat share down.
-"FT-CATLIN-SAUNA-UPPER-78" = { material = { low = 300, high = 1100 }, labour = { low = 250, high = 850 } }
-"FT-CATLIN-SAUNA-LOWER-78" = { material = { low = 250, high = 900 }, labour = { low = 200, high = 600 } }
-"FT-CATLIN-SAUNA-READING-58" = { material = { low = 220, high = 800 }, labour = { low = 180, high = 550 } }
+"FT-CATLIN-SAUNA-UPPER-81" = { material = { low = 300, high = 1100 }, labour = { low = 250, high = 850 } }
+"FT-CATLIN-SAUNA-LOWER-81" = { material = { low = 300, high = 1100 }, labour = { low = 250, high = 850 } }  # 28" deep since 2026-11-25, the upper bench's size
+"FT-CATLIN-SAUNA-READING-58" = { material = { low = 220, high = 800 }, labour = { low = 180, high = 550 } }  # 0 ea since 2026-11-25; the recliner sits on the lower deck
 "FT-CATLIN-SAUNA-STEP" = { material = { low = 50, high = 180 }, labour = { low = 80, high = 220 } }
 "FT-CATLIN-SAUNA-RECLINER" = { material = { low = 350, high = 1100 }, labour = { low = 300, high = 1000 } }
 # Custom 4" linen/wool mattress includes flexible sections, cover, ties and two bolsters.

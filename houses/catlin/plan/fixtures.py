@@ -40,8 +40,10 @@ BASEMENT_FIXTURES = (
     Fixture(uid="CBQ802AAAA", tag="FX-B-SAUNA-SH", type_ref="FX-SHOWER-36-COMBO",
             room="RM-B-SAUNA", position=pt(inch(191.75), inch(98.1875)),
             wall_ref="W-B-CS", drain_position=pt(inch(191.75), inch(98.1875))),
+    # The aisle's NE corner against the bath partition (2026-11-25), where PR-B-COND's air
+    # gap drops in that wall and keeps the trap wet.
     Fixture(uid="CBQ803AAAA", tag="FX-B-SAUNA-FD", type_ref="FX-FLOOR-DRAIN",
-            room="RM-B-SAUNA", position=pt(ft(13, 6), inch(98.1875)),
+            room="RM-B-SAUNA", position=pt(inch(196), inch(84)),
             wall_ref="W-B-CS"),
     # **RM-B-BATH rotated north-south on 2026-09-05** and is **3'-4 1/2" x 7'-1 1/2"**
     # between finish faces (x 10'-3 1/4"..13'-7 3/4" off W-B-STR2/W-B-STR3B and W-B-BA-E,

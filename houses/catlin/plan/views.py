@@ -103,18 +103,15 @@ DETAIL_SLICES = [
          dimensions=(
              _z("W-A-C2M:top", "RF-HOUSE:top", inch(232), "{} plate to fin. ridge"),),
          crop=(pt(ft(10), ft(26)), pt(ft(26), ft(33)))),
-    # Sauna room section — transverse cut across the sauna at y=6'. The room rotated onto
-    # the garden wall on 2026-09-05 and is now 12'-2" east-west (x 5'-3 13/16"..17'-5 3/4"),
-    # so the crop widens to x 4'-0"..19'-6" to keep both liner faces in the frame. y=6' is
-    # still clean interior: D-B-SAUNA is on the east wall now (y 2'-10"..4'-10") and this
-    # cut runs north of it.
+    # Sauna room section — transverse cut at y=6'-0" (2026-11-25), x 8'-0"..19'-6": through
+    # both decks north of the recliner, the step and D-B-SAUNA (RO y 4'-2"..6'-4").
     # This documentation-only crop reaches the floor slab, so the sauna liner base, slab
     # thermal break and room-scale vocabulary (two-tier benches, heater clearance, floor
     # slope to drain, hung drop ceiling below the main-floor deck) all render. The crop runs
     # floor-to-ceiling: z from ~9" below the floor up past the deck underside.
     Slice(uid="CVD905AAAA", tag="SL-D-SAUNA", kind=SliceKind.DETAIL,
          title="Sauna room section",
-         cut_origin=pt(ft(14), ft(6)), cut_direction="x",
+         cut_origin=pt(ft(14), inch(72)), cut_direction="x",
          dimensions=_chain("z", ("storey:basement", "FURN-B-SAUNA-STEP:top",
                                   "FURN-B-SAUNA-LOWER:top", "FURN-B-SAUNA-UPPER:top",
                                   "CEIL-RM-B-SAUNA:bottom"), inch(196)) + (
@@ -127,15 +124,15 @@ DETAIL_SLICES = [
                 "FURN-B-SAUNA-STEP:top", offset=inch(3))),
          crop=(pt(ft(8), inch(-116)), pt(ft(19, 6), inch(6))),
          exaggeration=ExaggerationSpec(min_draw_thickness=inch(1))),
-    # Through the reading platform and heater: the back points west, feet east.
+    # Through the recliner on the lower deck and the heater: back north, feet south.
     Slice(uid="RP18WM2C5X", tag="SL-D-SAUNA-READING", kind=SliceKind.DETAIL,
          title="Sauna window-side reading recliner",
          cut_origin=pt(ft(14), inch(24)), cut_direction="x",
          dimensions=(
-             _z("storey:basement", "FURN-B-SAUNA-READING:top", inch(187), "{} deck"),
+             _z("storey:basement", "FURN-B-SAUNA-LOWER:top", inch(187), "{} deck"),
              _z("EQ-B-SAUNA-HTR:top", "CEIL-RM-B-SAUNA:bottom", inch(204),
                 "{} htr to clg"),
-             _u("FURN-B-SAUNA-READING:right", "EQ-B-SAUNA-HTR:left",
+             _u("FURN-B-SAUNA-LOWER:right", "EQ-B-SAUNA-HTR:left",
                 "EQ-B-SAUNA-HTR:top", "{} to htr", inch(-10))),
          crop=(pt(ft(9, 6), inch(-116)), pt(ft(19, 6), inch(6))),
          exaggeration=ExaggerationSpec(min_draw_thickness=inch(1))),

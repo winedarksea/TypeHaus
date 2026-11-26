@@ -400,7 +400,7 @@ BASEMENT_EQUIPMENT = [
                   wall_ref="W-B-CS", face="left", distance_from_start=inch(68.4375),
                   normal_gap=inch(0), rotation_offset=deg(-180)))),
     # Existing US PC110E remains on the east liner. Resolved body (type dimensions govern):
-    # x192.25..207.25, y12.5..28.5, 45" tall. Reading deck ends at x181.75: 10.5" gap.
+    # x192.25..207.25, y12.5..28.5, 45" tall. Lower deck ends at x179.25: 13" gap.
     # US manual Figure 5 and the fence/service requirements: notes/sauna_seating.md.
     Equipment(uid="CEE020AAAA", tag="EQ-B-SAUNA-HTR", kind=EquipmentKind.SAUNA_HEATER,
               position=pt(inch(199.75), inch(20.5)), footprint=(inch(18), inch(16)),

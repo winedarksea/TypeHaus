@@ -1326,13 +1326,13 @@ SLABS = [
          outline=(pt(ft(0), ft(0)), pt(ft(36), ft(0)), pt(ft(36), ft(36)),
                   pt(ft(0), ft(36))),
          thickness=inch(3.5), assembly="SLAB_FLOOR",
-         # RM-B-SAUNA's floor dishes to FX-B-SAUNA-FD at 1/8"/ft min, rim flush with the gym
-         # (decision #148). The rim is the pour's edge: FT-B-S2 (south 11 3/4") and FT-B-CS
-         # (east 6 1/2") are cast first, flush and flat, so their strips stay level.
+         # RM-B-SAUNA's aisle dishes to FX-B-SAUNA-FD at 1/8"/ft min, rim flush with the gym
+         # (decision #148); the decks stand on flat floor west of x=179 1/4" (2026-11-25).
+         # FT-B-S2 (south 11 3/4") and FT-B-CS (east 6 1/2") are cast first, flush and flat.
          drain_dishes=(DrainDish(drain_ref="FX-B-SAUNA-FD",
-                                 outline=(pt(inch(122.5), inch(21)), pt(inch(203.5), inch(21)),
-                                          pt(inch(203.5), inch(116.375)),
-                                          pt(inch(122.5), inch(116.375))),
+                                 outline=(pt(inch(179.25), inch(21)), pt(inch(203.5), inch(21)),
+                                          pt(inch(203.5), inch(90.75)),
+                                          pt(inch(179.25), inch(90.75))),
                                  rate_in_per_ft=0.125),),
          # FOAMULAR 1000, stated (free body §11j-§11k): the court's thrust crosses this slab to
          # the north footings; the sheet's 1/3 dead-load rule grades 0.885. Spelled out to

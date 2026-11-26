@@ -223,9 +223,9 @@ BASEMENT_LIGHTING = [
     # RETIRED, never to be reused ** (the SGS503AAAA precedent). Why, in full:
     # DESIGN-LOG.md, "Basement".
     #
-    # Open-frame rails at 16" AFF keep the 90 C tape low, independent of the new
-    # 24" platform tops. WEST is the long foot deck; SOUTH follows only the reading
-    # platform's exposed north/east edges. Neither path spans unsupported open floor.
+    # Open-frame rails at 16" AFF keep the 90 C tape low, under the 24" lower deck's one
+    # exposed (east) edge, split at the recliner's head (2026-11-25): WEST north of it,
+    # SOUTH beside the recliner. Neither path spans unsupported open floor.
     LightRun(uid="CH9EBHV9B6", tag="LR-B-SAUNA-WEST", type_ref="ED-T-LT-STRIP24-SAUNA",
              path=WEST_LIGHT_PATH,
              room="RM-B-SAUNA", psu_ref="ED-B-SAUNA-LT-PSU",
@@ -238,26 +238,23 @@ BASEMENT_LIGHTING = [
              mount=Mount(kind=MountKind.WALL, elevation=inch(LIGHT_RAIL_HEIGHT_IN))),
     # No `circuit=` on either run: a 24V run carries none, its PSU does.
     #
-    # ** THE PSU SIZE IS THE BINDING CONSTRAINT. ** 9'-8 11/16" at 3 W/ft x1.25 is 36.5 W,
-    # 61% of the PSU-60. Off the backup tier since 2026-11-02 (CKT-LT-BSMT), so the old
-    # reason not to oversize it (a PSU sums at its RATING on a backup circuit) is gone.
+    # The PSU: 6'-8 9/16" at 3 W/ft x1.25 is 25.2 W, 42% of the PSU-60 (2026-11-25).
     #
-    # On the workshop face of W-B-SA-N (y=10'-3 13/16"), not in the sauna: x=10'-0" keeps the
-    # 7.4" box clear of W-B-SA-W's corner and the sauna's north service strip; 48" AFF keeps the
-    # driver accessible and ventilated. It draws at the -J box's published 7.40 x 3.74 x
-    # 1.59 in, flat on the wall. One 24V Class 2 pair crosses
-    # W-B-SA-N's foil-faced polyiso through a gasketed grommet, sealed both faces.
+    # On the workshop face of W-B-SA-W (y=7'-1", 2026-11-25; it was on W-B-SA-N, which faces
+    # the bath now), not in the sauna; 48" AFF keeps the driver accessible and ventilated.
+    # It draws at the -J box's published 7.40 x 3.74 x 1.59 in, flat on the wall. One 24V
+    # Class 2 pair crosses W-B-SA-W's foil-faced polyiso through a gasketed grommet.
     ElectricalDevice(uid="392P1PBQF7", tag="ED-B-SAUNA-LT-PSU", kind=DeviceKind.LED_DRIVER,
                      type_ref="ED-T-LT-PSU-60",
                      circuit="CKT-LT-BSMT", room="RM-B-WORKSHOP",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-B-SA-N", face="left", distance_from_start=inch(2),
+                         wall_ref="W-B-SA-W", face="left", distance_from_start=inch(85),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     # The control is OUTSIDE the hot room — a wall switch is rated to 40 C ambient and a
     # sauna is not, which is why an integral-switch J1 could never stand inside. On W-B-CS's
-    # GYM face, 4 3/8" north of D-B-SAUNA's north jamb, so it is the switch you reach on the
-    # way in; `room` is RM-B-GYM because the device is in the gym.
+    # GYM face, north of D-B-SAUNA's latch jamb, so it is the switch you reach on the way in;
+    # `room` is RM-B-GYM because the device is in the gym.
     # ** A DIMMER, TO KEEP THE DIMMING MARK V HAD: ED-T-LUT-DIVA-ELV (DVELV-300P, on Diode
     # LED's OMNIDRIVE X list), a reverse-phase ELV control. NEVER a TRIAC DVCL-153P (the theatre's):
     # that mis-pairing is the commonest cause of tape flicker. **
