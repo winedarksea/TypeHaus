@@ -39,7 +39,7 @@ REGISTERS_BASEMENT = [
             type_ref="REG-T-ERV-VALVE-SUP-WALL", design_cfm=REG_B_SUP1,
             mount=Mount(kind=MountKind.WALL, elevation=inch(86.84375)),
             location=Location(attachment=WallAttachment(
-                wall_ref="W-B-CS3", face="left", distance_from_start=inch(6),
+                wall_ref="W-B-CS2", face="right", distance_from_start=inch(4),
                 normal_gap=inch(0), rotation_offset=deg(-180)))),
     # RM-B-PLAY-N is 324 sf of windowless habitable MEDIA space, legal only under R303.1
     # Exception 1, whose second half requires outdoor air supplied to *the room* — an

@@ -397,7 +397,7 @@ BASEMENT_EQUIPMENT = [
               zone_rooms=("RM-B-GYM", "RM-B-PLAY-N", "RM-B-STAIR", "RM-B-WORKSHOP",
                           "RM-B-SAUNA", "RM-B-FURNACE", "RM-B-BATH", "RM-B-ESS"),
               location=Location(attachment=WallAttachment(
-                  wall_ref="W-B-CS", face="left", distance_from_start=inch(93.0625),
+                  wall_ref="W-B-CS", face="left", distance_from_start=inch(68.4375),
                   normal_gap=inch(0), rotation_offset=deg(-180)))),
     # Existing US PC110E remains on the east liner. Resolved body (type dimensions govern):
     # x192.25..207.25, y12.5..28.5, 45" tall. Reading deck ends at x181.75: 10.5" gap.
@@ -406,22 +406,22 @@ BASEMENT_EQUIPMENT = [
               position=pt(inch(199.75), inch(20.5)), footprint=(inch(18), inch(16)),
               room="RM-B-SAUNA", type_ref="EQ-T-SAUNA-HEATER", rotation=deg(270),
               circuit="CKT-SAUNA"),
-    # Dry gym face beside D-B-SAUNA, directly above the light dimmer. The panel's
-    # data cable terminates at the separate power unit; it has no branch circuit.
+    # Dry gym face on D-B-SAUNA's latch side (y=7'-2", 2026-11-25), directly above the light
+    # dimmer. The panel's data cable terminates at the power unit; no branch circuit.
     ElectricalDevice(uid="CSACTR0001", tag="ED-B-SAUNA-CONTROL", kind=DeviceKind.SWITCH,
                      type_ref="ED-T-SAUNA-CONTROL", room="RM-B-GYM",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(56)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-B-CS", face="left", distance_from_start=inch(52.625),
+                         wall_ref="W-B-CS", face="left", distance_from_start=inch(9.375),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
-    # Same dry face, north of the panel and above the towel bar. Surface mounting
+    # Same dry face, on W-B-CS3 north of the panel and above the towel bar. Surface mounting
     # preserves the power unit's cooling; do not recess it into the sauna partition.
     ElectricalDevice(uid="CSAPWR0001", tag="ED-B-SAUNA-POWER", kind=DeviceKind.JUNCTION_BOX,
                      type_ref="ED-T-SAUNA-POWER", room="RM-B-GYM", circuit="CKT-SAUNA",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(60)),
                      controlled_by=("ED-B-SAUNA-CONTROL",),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-B-CS", face="left", distance_from_start=inch(12),
+                         wall_ref="W-B-CS3", face="left", distance_from_start=inch(36),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
 ]
 
@@ -1912,14 +1912,14 @@ NEC_FILL_BASEMENT = [
                      circuit="CKT-RC-BSMT", room="RM-B-GYM",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-B-CS", face="left", distance_from_start=inch(102.125),
+                         wall_ref="W-B-CS", face="left", distance_from_start=inch(77.5),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
     ElectricalDevice(uid="NEC002AAAA", tag="ED-B-GYM-RC2", kind=DeviceKind.RECEPTACLE,
                      type_ref="ED-T-LEV-DUPLEX-20",
                      circuit="CKT-RC-BSMT", room="RM-B-GYM",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-B-CS", face="left", distance_from_start=inch(52.625),
+                         wall_ref="W-B-CS", face="left", distance_from_start=inch(9.375),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
     # RC8 is on W-B-CS's north end (2026-11-16), box against the y=9'-4" stud: on W-B-CS3 it
     # straddled the two walls' seam at y=10'-0" and its plate ran 0.6" past that wall's end.
@@ -1928,7 +1928,7 @@ NEC_FILL_BASEMENT = [
                      circuit="CKT-RC-BSMT", room="RM-B-GYM",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-B-CS", face="left", distance_from_start=inch(6.125),
+                         wall_ref="W-B-CS3", face="left", distance_from_start=inch(42.125),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
     # RC3/RC4 are on the gym side of W-B-CE, a 6 3/4" staggered partition on the y=18'-0"
     # centreline: gym face at 17'-8 5/8", play face at 18'-3 3/8". y=17'-7.615" is the gym

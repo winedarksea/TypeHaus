@@ -20,8 +20,8 @@ BASEMENT_TOWEL_ACCESSORIES = [
             )
         ),
     ),
-    # Dry side of the sauna wall, just north of its outward-opening door. Inside, the
-    # shower, heater and benches leave no useful dry bar location or hanging drop.
+    # Gym face of W-B-CS3, north of the sauna door (2026-11-25). Inside, the heater and
+    # benches leave no useful dry bar location or hanging drop.
     Furniture(
         uid="TWBBATH001",
         tag="FURN-B-SAUNA-BATH-TOWEL",
@@ -30,7 +30,7 @@ BASEMENT_TOWEL_ACCESSORIES = [
         mount=Mount(kind=MountKind.WALL, elevation=inch(53.33)),
         location=Location(
             attachment=WallAttachment(
-                wall_ref="W-B-CS",
+                wall_ref="W-B-CS3",
                 face="left",
                 distance_from_start=inch(31.5),
                 rotation_offset=deg(-180),

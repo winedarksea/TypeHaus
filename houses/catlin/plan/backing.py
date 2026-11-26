@@ -308,11 +308,11 @@ MAIN_BACKING = [
                 start=inch(5.34375), length=inch(34.25),
                 elevation=inch(91), height=inch(7.25), profile="2x8",
                 material_ref="spf", purpose="EQ-M-HP2-LIVING mounting plate"),
-    # The gym head's plate on W-B-CS (2026-11-14), 2x8 at the head's bottom in the two bays
-    # south of D-B-SAUNA (corner stud to king, cut at y=1'-4"); over the door the LVL header
-    # takes the plate's screws. Retagged in place (was BK-B-S3FR-HP2-GYM).
+    # The gym head's plate on W-B-CS (2026-11-14), 2x8 at the head's bottom from the corner
+    # pack to D-B-SAUNA's south king (moved north 2026-11-25). Retagged in place (was
+    # BK-B-S3FR-HP2-GYM).
     WallBacking(uid="CN23B6178E", tag="BK-B-CS-HP2-GYM", wall_ref="W-B-CS", face="left",
-                start=inch(89.05), length=inch(23.45),
+                start=inch(49.875), length=inch(38),
                 elevation=inch(82.75), height=inch(7.25), profile="2x8",
                 material_ref="spf", purpose="EQ-B-HP2-GYM mounting plate"),
     # HP3's east end screws to D-M-ENTRY's jamb blocks in the last bay.

@@ -279,19 +279,17 @@ _FRAMED_WALLS = {"W-B-CS", "W-B-CS2", "W-B-CN", "W-B-CN2", "W-B-STR", "W-B-STR3"
                  "W-B-STR3B"}
 
 
-# ** W-B-CS3 (framed, y 10'-0"..13'-10") HAS NO FOOTING OF ITS OWN, AND NEEDS NONE. **
-# D-B-GYM's header carries its run to two jamb packs (king + jack, resolved at y
-# 124 7/16"..127 7/16" and 163 7/16"..166 7/16"), so the neighbouring strips run past each
-# pack by T = 8": the 45° spread through the footing depth, and R403.1.1's maximum
-# projection. They end at y 135 7/16" and 155 7/16"; the 20" under the opening stays slab.
-# Both walls START at the gap (W-B-CS at y=10'-0", W-B-CS2 at 13'-10").
-# `structural.bearing_wall_footing` FAILs if the door or its packs move off these.
+# ** x=18' SOUTH OF y=18' (2026-11-25). ** W-B-CS3 (y 7'-11 3/8"..13'-0") is solid bath wall
+# now, so FT-B-CS runs on north under it and past D-B-GYM's south jamb pack (W-B-CS2, y
+# ~158 1/2"..163") by T = 8", to y=171. FT-B-CS2 starts 8" short of the north pack (y 191).
+# The 20" under the opening stays slab: a continuous strip would cut SL-B-FLOOR in two
+# (`integrity.slab_clip`). `structural.bearing_wall_footing` FAILs if the packs move.
 #
 # **S1 AND S4 ARE SHORTENED TO THEIR DEEP-BED PIECES** (-56" = the 4'-8" split of 2026-09-05,
 # 46" clear of the court rim): the 34" bed under them digs past the lot line at x=0 / x=432
 # (EX-HOUSE, `integrity.excavation`), so the strip's outer 56" is a second footing on the
 # ordinary 7" bed (`_SPLIT_FOOTINGS` below), one pour, joined at the bed step.
-_START_EXTENSION = {"W-B-CS": inch(15.4375), "W-B-CS2": inch(10.5625), "W-B-S1": inch(-56)}
+_START_EXTENSION = {"W-B-CS": inch(75.625), "W-B-CS2": inch(-35), "W-B-S1": inch(-56)}
 _END_EXTENSION = {"W-B-S4": inch(-56)}
 
 

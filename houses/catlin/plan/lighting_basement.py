@@ -266,7 +266,7 @@ BASEMENT_LIGHTING = [
                      circuit="CKT-LT-BSMT", room="RM-B-GYM",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-B-CS", face="left", distance_from_start=inch(52.625),
+                         wall_ref="W-B-CS", face="left", distance_from_start=inch(9.375),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
 
     # RM-B-FURNACE: three Q1 strips on one 3-way pair, one kind, circuit and switch group

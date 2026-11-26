@@ -6,7 +6,8 @@
 # directly under the framed wall's 4" polyiso+EPS (#43 control-layer continuity) — which
 # is also why thinning the pour moves only the INSIDE face.
 from ..ar_gypsum_band import AR_LOWER_BAND_ON_SLAB
-from ..doorway_transitions import D_B_BATH_VINYL_REDUCER, D_B_PLAY_MAT_ZBAR, D_B_SAUNA_MAT_REDUCER
+from ..doorway_transitions import (D_B_BATH_VINYL_REDUCER, D_B_GYM_MAT_REDUCER, D_B_PLAY_MAT_ZBAR,
+                                    D_B_SAUNA_MAT_REDUCER)
 from typehaus import (
     Alarm,
     AlarmKind,
@@ -24,8 +25,6 @@ from typehaus import (
     Node,
     Occupancy,
     Pad,
-    PanelingSpan,
-    PanelingSubstrate,
     PublishedSpan,
     ReinforcementSpec,
     Room,
@@ -33,10 +32,8 @@ from typehaus import (
     SkinOverrun,
     Slab,
     SlabThermalBreak,
-    Soffit,
     StructuralRole,
     Wall,
-    WallPaneling,
     Window,
     face,
     from_node,
@@ -165,41 +162,22 @@ NODES = [
     Node(uid="CBN010AAAA", tag="N-B-W1", position=pt(ft(0), ft(18))),
     # Interior grid + stair + sauna
     Node(uid="CBN011AAAA", tag="N-B-C", position=pt(ft(18), ft(18))),
-    Node(uid="CBN012AAAA", tag="N-B-C1", position=pt(ft(18), ft(13, 10))),
+    # y=13'-0" since 2026-11-25: the bath's north line, under main's N-M-C1, so W-B-CS2 and
+    # W-M-C2 start on one station.
+    Node(uid="CBN012AAAA", tag="N-B-C1", position=pt(ft(18), ft(13))),
     # The stair shaft runs the full north-row depth and lands on the center wall, so its
     # west wall tees into it rather than dying in the middle of the furnace room.
     Node(uid="CBN013AAAA", tag="N-B-STR", position=pt(ft(10), ft(18))),
-    # Sauna box, rotated onto the south (garden) wall 2026-09-05: long axis east-west,
-    # y 0'-0"..10'-0", entered from the gym instead of the workshop. N-B-SA1 (the old NW
-    # corner at 8'-10", 13'-10") is gone with the north-south box.
-    #
-    # ** THE NORTH LINE WENT 9'-5" -> 10'-0" ON 2026-09-05 (round three), AND D-B-GYM IS
-    # WHAT STOPS IT THERE. ** The room wanted the depth and the heater had room for it —
-    # 555 cf against EQ-T-SAUNA-HEATER's 600 cf rating (plan/electrical.py) — but the east
-    # end of this line has to land on W-B-CS3, the 4'-5" of framed x=18' wall between the
-    # sauna and the y=13'-10" pour, and D-B-GYM is in it. The door's rough opening starts at
-    # y=10'-11 7/16", so at 10'-0" this wall's north face (10'-3 13/16") leaves 7 5/8" of
-    # wall for the jamb pack; every inch further north is an inch off that.
-    # **The coupling runs the other way too: if D-B-GYM ever goes back south, this wall has
-    # to come south with it.** Nothing grades a tee wall landing beside an opening — no
-    # check fired at 10'-6", where the two overlap outright — so this is the only place the
-    # constraint is written down.
-    #
-    # The other two limits, neither of them binding at 10'-0": PR-B-SAUNA-VENT crosses the
-    # workshop west at y=10'-6", 2 3/16" clear of the north face; and W-M-BDN1 sits at
-    # y=13'-0" on the storey above, which `resolve/platform._platform_above` would read as
-    # one wall line within half the two thicknesses.
-    #
-    # **Shortened east to x=8'-10" on 2026-09-05 (round two).** The west wall used to stand
-    # at 4'-8", which put the sauna's south face across two substrates — the buried 8" pour
-    # and the garden curb — and forced W-B-S1B, a 3'-10" third segment carrying a liner
-    # variant of the pour whose inboard face did not line up with the curb's. Landing the
-    # west wall on N-B-S1 instead puts the whole south face on W-B-S2, deletes W-B-S1B and
-    # SAUNA_LINER_ON_BASEMENT_8 with it, returns FT-B-S1 to one unsplit strip, and hands the
-    # workshop's west bay the four feet it gives up. The room is ~8'-3 7/8" x 8'-2" clear,
-    # which is what EQ-T-SAUNA-HEATER's 9 kW was always sized for (see electrical.py).
-    Node(uid="XTVNH0A54T", tag="N-B-SA-NW", position=pt(ft(9, 10), ft(10))),
-    Node(uid="HN7GXN3ZM8", tag="N-B-SA-NE", position=pt(ft(18), ft(10))),
+    # ** BASEMENT REPLAN 2026-11-25: the sauna gives its north 2'-0 5/8" to a bathroom. **
+    # The partition axis is y=7'-11 3/8": SAUNA_2X6 centred there leaves the sauna 81 1/2"
+    # clear (south liner face y=9 1/4") and the bath 53 3/4" to W-B-BT-N (y=13'-0"), what
+    # the WC's 15"/24" clearances need. The 2026-09-05 rounds (rotation onto the garden
+    # wall, west wall on N-B-S1) stand; DESIGN-LOG has them. The bath band takes the old
+    # D-B-GYM coupling with it: the door is on W-B-CS2 now, north of the bath.
+    Node(uid="XTVNH0A54T", tag="N-B-SA-NW", position=pt(ft(9, 10), inch(95.375))),
+    Node(uid="HN7GXN3ZM8", tag="N-B-SA-NE", position=pt(ft(18), inch(95.375))),
+    # The bath's NW corner: W-B-BT-W meets W-B-BT-N.
+    Node(uid="13TW58SQ3X", tag="N-B-BT-NW", position=pt(ft(9, 10), ft(13))),
     # Stair-foot bathroom's north partition (2026-07-30), spanning the shaft's full 7'-0"
     # clear width so it tees into both concrete walls' node lines (x=10', x=18"). y=21'-9 3/8"
     # is back-calculated: 3'-0" clear off W-B-CW2's north face (18'-6") plus half of
@@ -231,13 +209,13 @@ NODES = [
     # FO-M-STAIR's south edge on the same line: W-B-WELL rises through the hole north of it.
     Node(uid="HATJTCSNNE", tag="N-B-WELL-HEAD", position=pt(inch(168), ft(26, 0.375))),
     Node(uid="R1KFP0S4NQ", tag="N-B-BA-SE", position=pt(inch(168), ft(18))),
-    # ** THE HALL'S SOUTH END, NEW 2026-09-07. ** The 2026-09-05 hall stopped at the y=18'
-    # line and crossed into the workshop through a cased opening, which made the workshop a
-    # corridor. The hall runs the rest of the way south now — from N-B-BA-SE to the sauna's
-    # north wall — on the SAME x=14'-0" node line as the one above, so W-B-BA-E, W-B-WELL
-    # and W-B-HALL-W share one hall face from y=10' to the landing. This node splits W-B-SA-N so the new partition tees into it rather than dying
-    # in the middle of a wall.
-    Node(uid="XE20Z4ZSS6", tag="N-B-HALL-S", position=pt(inch(168), ft(10))),
+    # The hall's south end (2026-09-07; y=13'-0" since 2026-11-25): on the x=14'-0" line, so
+    # W-B-BA-E, W-B-WELL and W-B-HALL-W share one hall face. It splits the bath's north
+    # wall (W-B-BT-N / -N2) so the hall partition tees into it.
+    Node(uid="XE20Z4ZSS6", tag="N-B-HALL-S", position=pt(inch(168), ft(13))),
+    # W-B-BA-N's east end since 2026-11-25: it splits the hall's west partition into the
+    # under-stair closet's face (W-B-CL-E) and the water-heater alcove's (W-B-BA-E).
+    Node(uid="S0NE2RPZXQ", tag="N-B-WH-NE", position=pt(inch(168), ft(21, 9.375))),
     # W-B-CW's east end. Keep the split so the ESS partition tees into the south wall here;
     # W-B-CW3 now continues W-B-CW's assembly at the same 2x4 stud depth. Its uid is unchanged.
     Node(uid="CBN017AAAA", tag="N-B-CW-E", position=pt(ft(6, 9), ft(18))),
@@ -647,13 +625,11 @@ WALLS = [
          alignment=face("stud-ext", offset=inch(-2.75)),
          interior_room="RM-B-SAUNA",
          structural_role=StructuralRole.BEARING),
-    # The x=18' line north of the rotated sauna, y 10'-0"..13'-10": the same 2x6 bearing
-    # wall with no liner on it, because the room behind it is the workshop now. It is the
-    # segment D-B-GYM moved onto — a framed host in place of the 12" pour it used to be
-    # formed through — which is the whole point of the rotation.
+    # The x=18' line north of the sauna, y 7'-11 3/8"..13'-0": the bath's east wall since
+    # 2026-11-25 (no opening; D-B-GYM moved north onto W-B-CS2). FT-B-CS runs on under it.
     Wall(uid="NJ21M7MF6R", tag="W-B-CS3", start_node="N-B-C1",
          end_node="N-B-SA-NE", assembly="INT_2X6_BRG_HALF_DFL",
-         layer_materials=(LayerMaterial(layer="gwb-b", material="gwb-ar", extent=AR_LOWER_BAND_ON_SLAB),), top=ft(8),
+         layer_materials=(LayerMaterial(layer="gwb-b", material="gwb-mr"),), top=ft(8),
          alignment=face("stud-ext", offset=inch(-2.75)),
          structural_role=StructuralRole.BEARING),
     # ** THE REST OF THE x=18' LINE IS FRAMED TOO (2026-11-01, decision #112). ** W-B-CS2,
@@ -725,8 +701,8 @@ WALLS = [
     # Nothing runs in this one and nothing bears on it — a plain 2x4 partition. Keep the
     # tag: W-M-CLN and W-M-CLN2 name it in `stacks_on`.
     Wall(uid="CBW119AAAA", tag="W-B-CW2", start_node="N-B-STR",
-         end_node="N-B-BA-SE", assembly="INT_2X4_PARTITION_HALF",
-         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-mr"),), top=ft(8)),
+         end_node="N-B-BA-SE", assembly="INT_2X4_PARTITION_HALF", top=ft(8),
+         structural_role=StructuralRole.NONBEARING),
     # ** W-B-CW2B IS GONE (2026-09-07) AND THE MERGE IT USED TO PREVENT IS THE POINT. **
     # It was the last 4'-1 5/16" of the y=18' line, carrying O-B-HALL, the cased opening
     # the hall crossed to reach the workshop. The note here used to say the wall had to
@@ -853,27 +829,30 @@ WALLS = [
          # before the liner went 1" -> 3/4" (2026-10-16).
          alignment=face("center", offset=inch(-0.125)),
          interior_room="RM-B-SAUNA"),
-    # The sauna's cold north face, x 8'-10"..18'-0" at y=10'-0" since 2026-09-05 round
-    # three (9'-5" between the shrink and that; see the node block for what fixes 10'-0").
-    # It used to sit on y=13'-10", where W-M-BDN1 at y=13'-4" fell inside
-    # `resolve/platform.py`'s same-wall-line tolerance and topped it out at the deck instead
-    # of its authored 7'-6"; that partition moved to 13'-0" then and this wall still stands
-    # three feet clear of it.
-    #
-    # ** SPLIT AT N-B-HALL-S ON 2026-09-07 ** so the hall's west partition tees onto a
-    # shared node instead of dying mid-wall. W-B-SA-N keeps its tag and uid and the west
-    # 5'-0 11/16"; W-B-SA-N2 is the east 4'-1 5/16", the sauna's face onto the hall's dead
-    # end. Same assembly, same top, same interior_room — the split is topological only.
+    # The sauna/bath partition (2026-11-25): one wall, x 9'-10"..18'-0", liner south. 2x6
+    # because it is the bath's wet wall (WC, lav and the vent rise in it;
+    # `advisory.wet_wall_depth`), glass-mat on the bath face the whole run (the shower's
+    # surround panel goes over it, the BATH2 pattern). W-B-SA-N2 retired with the hall tee.
     Wall(uid="CBW118AAAA", tag="W-B-SA-N", start_node="N-B-SA-NW",
-         end_node="N-B-HALL-S", assembly="SAUNA_2X4", top=ft(7, 6),
+         end_node="N-B-SA-NE", assembly="SAUNA_2X6", top=ft(7, 6),
+         layer_materials=(LayerMaterial(layer="gwb-cold", material="gwb-glass-mat"),),
          interior_room="RM-B-SAUNA"),
-    # PR-B-SAUNA-VENT used to rise at x=17'-4", one inch from stud-003 at x=17'-5". Move
-    # the riser one inch west into the clear stud bay; neither north segment needs deeper
-    # framing. The liner stack stays the same, so both the sauna hot face and hall face align.
-    Wall(uid="CM3FCDT2ST", tag="W-B-SA-N2", start_node="N-B-HALL-S",
-         end_node="N-B-SA-NE", assembly="SAUNA_2X4",
-         layer_materials=(LayerMaterial(layer="gwb-cold", material="gwb-ar", extent=AR_LOWER_BAND_ON_SLAB),), top=ft(7, 6),
-         interior_room="RM-B-SAUNA"),
+    # The bath's north wall on y=13'-0", split at N-B-HALL-S: BT-N faces the workshop,
+    # BT-N2 the hall and hosts D-B-BATH. Under W-M-BDN2, so `resolve/platform.py` lifts
+    # its body to meet that wall; the framing still stops at the bearing seat.
+    Wall(uid="23R8XDV8KM", tag="W-B-BT-N", start_node="N-B-BT-NW", end_node="N-B-HALL-S",
+         assembly="INT_2X4_PARTITION_HALF",
+         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-mr"),), top=ft(8),
+         interior_room="RM-B-BATH", structural_role=StructuralRole.NONBEARING),
+    Wall(uid="EBNGQ671QP", tag="W-B-BT-N2", start_node="N-B-HALL-S", end_node="N-B-C1",
+         assembly="INT_2X4_PARTITION_HALF",
+         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-mr"), LayerMaterial(layer="gwb-b", material="gwb-ar", extent=AR_LOWER_BAND_ON_SLAB),), top=ft(8),
+         interior_room="RM-B-BATH", structural_role=StructuralRole.NONBEARING),
+    # The bath's west wall, on W-B-SA-W's line: the shower's back.
+    Wall(uid="E39DG7Y2XA", tag="W-B-BT-W", start_node="N-B-SA-NW", end_node="N-B-BT-NW",
+         assembly="INT_2X4_PARTITION_HALF",
+         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-glass-mat"),), top=ft(8),
+         interior_room="RM-B-BATH", structural_role=StructuralRole.NONBEARING),
     # ** THE HALL'S WEST SIDE, NEW 2026-09-07. ** Axis x=13'-11" (1" west of the node line,
     # hall face flush with W-B-WELL's) from the y=18' line south
     # to the sauna's north wall, walling the workshop off the hall and hosting D-B-SHOP.
@@ -889,25 +868,26 @@ WALLS = [
          alignment=face("center", offset=inch(-1)),
          layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-ar", extent=AR_LOWER_BAND_ON_SLAB),), top=ft(8),
          structural_role=StructuralRole.NONBEARING),
-    # ** RETYPED AND RE-NODED 2026-09-05, AND IT IS DRY NOW. ** This was the stair-foot
-    # bathroom's only framed wall and it carried the whole room's plumbing. What is left
-    # here is the bathroom's north end: a plain 2x4 partition running
-    # x 10'-0"..14'-0" at y=25'-6", teeing into W-B-BA-E.
-    # Top=8'-0" is the bearing seat, like every other partition in this basement.
-    Wall(uid="CBW120AAAA", tag="W-B-BA-N", start_node="N-B-BA-NW",
-         end_node="N-B-BA-NE", assembly="INT_2X4_PARTITION_HALF",
-         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-mr"), LayerMaterial(layer="gwb-b", material="gwb-ar", extent=AR_LOWER_BAND_ON_SLAB),), top=ft(8),
-         interior_room="RM-B-BATH"),
-    # This 2x6 staggered partition now holds D-B-BATH and its split pocket frame. The
-    # services moved into W-B-STR2 so the leaf can pass south into W-B-HALL-W. Its north
-    # segment keeps the WC grab-bar backing; the cavity has no wall-mounted fixtures.
-    # Nonbearing (owner, 2026-10-29), so D-B-BATH heads with R602.7.4's flat 2x.
-    # Axis 1" west of the node line: its hall face is flush with W-B-WELL's (2026-11-16).
-    Wall(uid="8BRZAXSW73", tag="W-B-BA-E", start_node="N-B-BA-NE",
-         end_node="N-B-BA-SE", assembly="INT_2X6_STAGGERED_PLUMBING_HALF",
+    # The old stair-foot bath is gone (2026-11-25). W-B-BA-N moved south onto N-B-BA-W's
+    # line (y=21'-9 3/8"): north of it the under-stair closet runs full height to the flight,
+    # south of it is the water-heater alcove, open to the workshop through AO-B-WH-ALCOVE.
+    Wall(uid="CBW120AAAA", tag="W-B-BA-N", start_node="N-B-BA-W",
+         end_node="N-B-WH-NE", assembly="INT_2X4_PARTITION_HALF", top=ft(8),
+         structural_role=StructuralRole.NONBEARING),
+    # The hall's west face north of y=18', split at N-B-WH-NE. The pocket (D-B-BATH) left
+    # with the bath, so both halves are plain 2x6 like W-B-HALL-W. Axis 1" west of the node
+    # line: the hall face is flush with W-B-WELL's (2026-11-16). W-B-BA-E keeps the alcove
+    # half, where the water heater's grilles go.
+    Wall(uid="9KNNSS9A4G", tag="W-B-CL-E", start_node="N-B-BA-NE", end_node="N-B-WH-NE",
+         assembly="INT_2X6_PLUMBING_HALF",
          alignment=face("center", offset=inch(1)),
-         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-mr"), LayerMaterial(layer="gwb-b", material="gwb-ar", extent=AR_LOWER_BAND_ON_SLAB),), top=ft(8),
-         interior_room="RM-B-BATH", structural_role=StructuralRole.NONBEARING),
+         layer_materials=(LayerMaterial(layer="gwb-a", material="gwb-ar", extent=AR_LOWER_BAND_ON_SLAB), LayerMaterial(layer="gwb-b", material="gwb-ar", extent=AR_LOWER_BAND_ON_SLAB),), top=ft(8),
+         structural_role=StructuralRole.NONBEARING),
+    Wall(uid="8BRZAXSW73", tag="W-B-BA-E", start_node="N-B-WH-NE",
+         end_node="N-B-BA-SE", assembly="INT_2X6_PLUMBING_HALF",
+         alignment=face("center", offset=inch(1)),
+         layer_materials=(LayerMaterial(layer="gwb-b", material="gwb-ar", extent=AR_LOWER_BAND_ON_SLAB),), top=ft(8),
+         interior_room="RM-B-WH-ALCOVE", structural_role=StructuralRole.NONBEARING),
     # ESS closet's two framed walls: UL U305 wood studs, 5/8" Type X both faces (owner,
     # 2026-10-30) — the library partitions with their gwb swapped to `gwb-x`, no new tag.
     # Steel studs and fire-retardant spray were both declined: the tested build is the cheap
@@ -1011,35 +991,13 @@ OPENINGS = [
     # the furnace room used to be five rooms away (stair -> playroom -> gym -> aisle ->
     # workshop -> furnace).
     #
-    # D-B-GYM keeps its uid and moves onto W-B-CS3, the framed 3'-10" of the x=18' line
-    # between the rotated sauna and the y=13'-10" pour. ``from_node`` offsets the opening's
-    # near *edge*, so 2 9/16" is the whole north jamb allowance — everything north of
-    # N-B-C1 on this line is W-B-CS2's 12" pour.
-    #
-    # ** DOOR -> ROUGH OPENING, SAME 36" WIDTH, 2026-09-09. ** No leaf: the hall and the
-    # gym are one circulation space now, so there is nothing to swing or to case a glazed
-    # lite through — the gym's south daylight reaches the hall directly through the void.
-    # `is_door` is False, so `code.R308_4_safety_glazing` has no glazing to grade. As a
-    # floor-level passage (`is_passage`) it still breaks the base, the PT sill and the
-    # receptacle wall space, and takes the sauna's mat reducer at the floor change.
-    #
-    # ** THE WIDTH ARGUMENT, UNCHANGED FROM THE DOOR: ** the earlier "it stays 32"" note
-    # measured against 42 3/16" — N-B-C1's pour face down to W-B-SA-N2's north GWB face —
-    # and 42 3/16" less 6" of jamb pack really does leave only 3/16". But W-B-SA-N2 BUTTS
-    # this wall's west face: its studs stop at x=17'-8 5/8", clear of W-B-CS3's own stud
-    # line at x 17'-9 1/4"..18'-2 3/4". So the run a jamb pack lives in is the wall's full
-    # 46", not the hall-side face, and the near edge does not move: the opening grows 4"
-    # SOUTH, the south king lands at y=10'-5 3/16" and clears the sauna wall's finished
-    # face by 5/8". Nothing else here moved — ED-B-GYM-RC8 is at y=9'-5 7/8" on W-B-CS, south
-    # of the RO.
-    # The one cost is `structural.door_framing_module`, now UNKNOWN: W-B-CS3 reaches its
-    # 16" grid 6" along itself, so a 36" RO cuts three stud lines where two would do and no
-    # station on a 46" wall fixes that. Advisory, no citation, and it does not gate
-    # `haus print`. Narrowing the opening to save one cripple is not a trade this house
-    # makes.
-    RoughOpening(uid="CBD203AAAA", tag="D-B-GYM", host="W-B-CS3",
-                 position=from_node("N-B-C1", ft(0, 2.5625)), width=ft(3), height=ft(6, 8),
-                 doorway=D_B_SAUNA_MAT_REDUCER,
+    # D-B-GYM is a 36" rough opening, no leaf (2026-09-09): hall and gym are one
+    # circulation space. On W-B-CS2 since 2026-11-25, y 13'-7"..16'-7", north of the bath;
+    # 7" clears W-B-BT-N2's face (y=13'-2 1/4") for the 4 1/2" jamb pack. FT-B-CS2 starts
+    # under its south pack. `structural.door_framing_module` stays suppressed for it.
+    RoughOpening(uid="CBD203AAAA", tag="D-B-GYM", host="W-B-CS2",
+                 position=from_node("N-B-C1", inch(7)), width=ft(3), height=ft(6, 8),
+                 doorway=D_B_GYM_MAT_REDUCER,
                  header_spec='5.25x7 LVL', header_jacks=2,
                  published_span=PublishedSpan(
                      source="Boise Cascade EWP, VERSA-LAM 1.7 2650 Header Guide (Eastern), 06/2009 r 07/21/2011, p.16, VERSA-LAM 1.7 2650 Floor Load Tables (100% Load Duration)",
@@ -1049,15 +1007,11 @@ OPENINGS = [
                      capacity_plf=3632.0,
                      min_bearing_in=1.9,
                      condition="read as a load table, not a header-type column: the guide's header columns stop at Roof + 2 Floors and this stack carries three floors; span is centre to centre of supports, read at the next tabulated span with no interpolation; Total Load limited by shear, moment or L/240, in addition to the beam's own weight, at 100% duration and compared with the governing ASD combination; 1.9\" of end bearing is the row's at its full 3632 plf, against 3\" on 2 jacks across the full 5-1/4\" width; lateral support assumed at each support and along the compression edge (plates and head cripples over it); dry use; uniform load only; see notes/header_spans_r602_7.md section 5b")),
-    # The 36" pocket opens the bathroom without a swing in its WC/vanity clearance. Its
-    # 37" cavity runs south through N-B-BA-SE into W-B-HALL-W; both walls have the same
-    # 2x6 section even though their stud layouts differ. The bathroom services moved to
-    # W-B-STR2 and the east-wall backing stops at the north jamb. Keep the original uid.
-    # Derived 83 1/4" Eclisse RO since 2026-10-29 under a flat 2x6 (the kit hangs its track
-    # from its own steel pocket header, screwed up into this one; nothing bears on it).
-    # Nothing crosses the pocket since DU-B-ERV-R-GYM moved south of EQ-B-WH (2026-11-09).
-    Door(uid="CBD207AAAA", tag="D-B-BATH", host="W-B-BA-E", type_ref="DT-POCKET-INT-36-PRIV",
-         position=from_node("N-B-BA-NE", ft(2, 9.9375)), header_spec="flat 2x6 nonbearing", doorway=D_B_BATH_VINYL_REDUCER),
+    # The bath's door (2026-11-25): a 30" privacy swing in W-B-BT-N2 off the hall's south
+    # end, swinging in and hinged east so the leaf parks on W-B-CS3 clear of the lav.
+    Door(uid="CBD207AAAA", tag="D-B-BATH", host="W-B-BT-N2", type_ref="DT-INT-SWING30-PRIV",
+         position=from_node("N-B-HALL-S", inch(6.5)), flip_swing=True, flip_hinge=True,
+         header_spec="flat 2x4 nonbearing", doorway=D_B_BATH_VINYL_REDUCER),
     # ESS closet door: a cheap 24x80 steel leaf with a small tempered vision lite in a KD
     # frame, on spring hinges (DT-INT-STEEL24-LITE; owner 2026-10-30, not a rated door). It
     # swings into the closet. 18 7/8" off N-B-ESS-SW lands it on the wood stud module
@@ -1091,20 +1045,19 @@ OPENINGS = [
     # the start-node (north) jamb, parking the open leaf against the workshop's empty north
     # strip rather than over the benches on its west wall.
     #
-    # The 9 7/16" offset puts the RO's centre on D-B-GYM's (y=12'-3 7/16"), so the
-    # equipment route is straight through, and leaves ~7" of jamb room to W-B-SA-N2's hall
-    # face at the south end.
+    # The 7" offset puts the RO's centre on D-B-GYM's (y=15'-1", 2026-11-25), so the
+    # equipment route is straight through.
     # Derived RO since 2026-10-29: stays on D-B-GYM's centre (module suppressed) and
     # ED-B-WORKSHOP-SW moved north to clear it.
     Door(uid="GEVMH8HHZ9", tag="D-B-SHOP", host="W-B-HALL-W", type_ref="DT-INT-STEEL36-KEYED",
-         position=from_node("N-B-HALL-S", inch(9.4375)), flip_swing=True),
+         position=from_node("N-B-HALL-S", inch(7)), flip_swing=True),
     # The sauna is entered FROM THE GYM since the rotation — the short route to D-B-SUNKEN
     # and the sunken garden, which is what the brief asks the room for. Same uid, same 24"
-    # leaf, rehosted from W-B-SA-W onto W-B-CS. y 4'-10"..2'-10": far enough north to clear
-    # D-B-SUNKEN's inswing arc and the shower pan in the sauna's NE corner, far enough south
-    # to keep clear of D-B-GYM. Swings out into the gym on the default.
+    # leaf, rehosted from W-B-SA-W onto W-B-CS. RO ~y 4'-2"..6'-4" since 2026-11-25 (the
+    # shower left the NE corner): north of the heater, clear of D-B-SUNKEN's inswing arc.
+    # Swings out into the gym on the default.
     Door(uid="CBD205AAAA", tag="D-B-SAUNA", host="W-B-CS", type_ref="DT-INT-SAUNA24",
-         position=from_node("N-B-SA-NE", ft(4, 10.3125)), flip_hinge=True, doorway=D_B_SAUNA_MAT_REDUCER,
+         position=from_node("N-B-SA-NE", inch(19.375)), flip_hinge=True, doorway=D_B_SAUNA_MAT_REDUCER,
          header_spec='5.25x7 LVL', header_jacks=2,
          published_span=PublishedSpan(
              source="Boise Cascade EWP, VERSA-LAM 1.7 2650 Header Guide (Eastern), 06/2009 r 07/21/2011, p.16, VERSA-LAM 1.7 2650 Floor Load Tables (100% Load Duration)",
@@ -1145,6 +1098,11 @@ OPENINGS = [
                  position=from_node("N-B-S2", inch(8.34375)),
                  width=inch(63.3125), height=inch(2.75), sill_height=inch(4.5),
                  depth=inch(4.06), depth_from="exterior", framing_required=False),
+    # The water-heater alcove's mouth (2026-11-25): 34", what fits with its packs between
+    # W-B-STR2's studs and W-B-BA-E's (41 3/8"); flat head, the wall is nonbearing.
+    RoughOpening(uid="J266MAWD85", tag="AO-B-WH-ALCOVE", host="W-B-CW2",
+                 position=from_node("N-B-STR", inch(6.5)), width=inch(34), height=ft(6, 8),
+                 header_spec="flat 2x4 nonbearing"),
     # WT-1424: a sauna wants a small window, less glass to lose heat through. The 14"
     # family's one appearance in a concrete wall, where the usual 16" stud-module reason for
     # that width doesn't apply — size is the point here. The retired WT-3660 type and
@@ -1227,30 +1185,25 @@ ROOMS = [
     # WHOLE room and FAIL `code.R305_ceiling_height` for a stair the code measures at its
     # nosing line. The rake is recorded here, in prose, because that is the only place the
     # model can hold it.
-    # Stair-foot bathroom, ROTATED NORTH-SOUTH 2026-09-05: it runs down the framed stair
-    # wall (x 10'-3 1/4"..13'-7 5/16", y 18'-2 3/8"..25'-3 5/8", 3'-4 1/16" x 7'-1 1/4"
-    # between finish faces) rather than across the shaft's south 3'-0". It is still under
-    # ST-B2M's flight (bottom riser at y=26'-0 3/8"), and it is still one fixture at each
-    # end so each one's depth runs across the room's short dimension: WC north, vanity
-    # south (plan/fixtures.py). What the rotation bought is the HALL east of it — the room
-    # gave up the shaft's east half so the stair foot could reach the workshop without
-    # going through a door in a pour.
-    #
-    # Sheet vinyl, not tile, joining the house's washable spine — RM-M-BATH1 and
-    # RM-M-LAUNDRY, RM-2-BATH on the second storey and the attic studio's bath took the
-    # same move. 30.2 sf with no radiant zone under it, which is the
-    # whole test: tile earns its cost where it is the emitter's mass (RM-M-BATH2 keeps its
-    # tile for exactly that reason, at 98% of FH-M-BATH2's load). Here it buys grout to
-    # keep, a backer board, a membrane and a threshold at the door, for a floor three feet
-    # wide under a stair. Since 2026-11-03 it is the attic rooms' First Class Gatsby sheet
-    # (`catlin-vinyl-gatsby`) under a 4" rubber cove base with a silicone toe: Tarkett
-    # publishes no flash cove for First Class. Nothing impermeable goes under the sheet.
-    Room(uid="CBR407AAAA", tag="RM-B-BATH", seed=pt(ft(12), ft(22)),
+    # The basement bath (2026-11-25): the band between the sauna and y=13'-0", entered from
+    # the hall's south end. Shower, WC and lav on the south wet wall (plan/fixtures.py).
+    # Sheet vinyl, as before: First Class Gatsby under a 4" rubber cove base. The ceiling
+    # hangs like the sauna's, 5/8" MR board on a service cavity at 7'-0 1/16", so the runs
+    # crossing the band stay above it.
+    Room(uid="CBR407AAAA", tag="RM-B-BATH", seed=pt(inch(150), inch(125)),
          occupancy=Occupancy.BATHROOM, floor_finish="catlin-vinyl-gatsby",
          ceiling_lining=(
              Layer(name="gwb-ceil", material_ref="gwb-mr", thickness=inch(0.625),
                    function=LayerFunction.FINISH),
+             Layer(name="service-cavity", material_ref="spf", thickness=inch(12.75),
+                   function=LayerFunction.FURRING,
+                   framing=FramingSpec(member="2x10", direction="horizontal",
+                                       spacing=inch(16))),
          )),
+    # The water heater's alcove, behind AO-B-WH-ALCOVE: its own face of the wall graph, so
+    # its own Room, used as part of the workshop.
+    Room(uid="5XK0HAS5CA", tag="RM-B-WH-ALCOVE", seed=pt(inch(143), inch(240)),
+         occupancy=Occupancy.UTILITY, floor_finish="sealed-concrete"),
     Room(uid="CBR402AAAA", tag="RM-B-WORKSHOP", seed=pt(ft(8), ft(14)),
          occupancy=Occupancy.UTILITY, floor_finish="sealed-concrete"),
     # ** ROTATED ONTO THE GARDEN WALL 2026-09-05, THEN SHORTENED EAST THE SAME DAY ** — long
@@ -1406,66 +1359,13 @@ FLOOR_OPENINGS = [
     # Shower recess is a finish-zone concern; the stair arrives via the slab above.
 ]
 
-# The two 36 in. tiled splash spans replace wood with Durock and supported packing.
-# Finished faces close on the pan: east x=209.75, north y=116.125 in. The quarter-inch
-# projection is physical, not a renderer reveal. See notes/shower_assemblies.md for the
-# valve pocket, stringer and still-unqualified waterproofing/foil/pan transitions.
-PANELING = [
-    WallPaneling(uid="CBK901AAAA", tag="WP-B-SAUNA-SPLASH", room="RM-B-SAUNA",
-                 material_ref="tile", height=ft(7, 6), replaces_wall_finish=True,
-                 thickness=inch(0.25), finish_projection=inch(0.25),
-                 substrates=(PanelingSubstrate(material_ref="durock-half-inch",
-                                              thickness=inch(0.5)),
-                             PanelingSubstrate(material_ref="struct-1-plywood",
-                                               thickness=inch(0.25))),
-                 spans=(PanelingSpan(wall_ref="W-B-CS", start=inch(3.875), length=ft(3)),
-                        PanelingSpan(wall_ref="W-B-SA-N2", start=inch(5.75), length=ft(3)))),
-]
+# WP-B-SAUNA-SPLASH retired with the sauna shower (2026-11-25); the bath's shower surround
+# is in plan/shower_assemblies.py.
+PANELING = []
 
-# --- RM-B-BATH's wet-wall bulkhead --------------------------------------------------
-#
-# Three runs cross this bathroom, and they cross it in ONE 12" band at the SOUTH end:
-# `PR-B-LSINK-DRAIN` at y=18'-9", `PR-B-BATH-VENT` at 19'-3" and `PR-B-HW-BATH` at 19'-9".
-# `mep.run_in_finished_volume` called all three, at 5.8", 8.2" and 3.8" below the finished
-# ceiling. They are not reroutable as a group — the drain has to fall west to the stack and
-# the vent has to rise east off the fixture it serves — so this is the case the check's own
-# hint names: box them out.
-#
-# ONE RECTANGLE, and it is the whole width of the room (`soffit_clear_section` frames
-# axis-aligned rectangles only, and returns None — every occupant UNKNOWN — for anything
-# else). y runs from the north wall face to 20'-3", 6" clear past the southernmost of the
-# three.
-#
-# ** THE CORNERS ARE THE WALLS' FINISH FACES. ** The old axis-derived `Room.clear_face`
-# reached 2-3" INTO every wall around it, so a box drawn to it put
-# the ladder's rails through W-B-CW2's top plates and W-B-STR2's studs — 22 hits of
-# `structural.member_interference`, all of them real. These four numbers are read off the
-# resolved layer polygons instead: W-B-STR2's east face at 123 1/4", W-B-BA-E's west face at
-# 163.303", W-B-CW2's south face at 218 3/8".
-#
-# The LONG axis is x, which is what the three runs travel along, so the clear section is
-# measured across the 27" of y — the right reading for a band a pipe runs down.
-#
-# `underside_elevation`, not `drop`: the number that matters is the -20.7" the deepest of
-# the three reaches, and pinning the face states the clearance directly instead of deriving
-# it from a ceiling that is itself derived.
-#
-# ** AND IT IS STOREY-RELATIVE, WHICH IS THE TRAP HERE. ** This soffit is filed on the
-# BASEMENT, whose datum is -9'-1 7/16" (`params/main_deck.py::BASEMENT_DATUM`, the bearing
-# seat less the 8'-0" pour), while the -20.7" the check reports is off the MAIN datum. The
-# face wanted is 88 7/16" = -21" - (-109 7/16"). Writing the -21" straight in put the soffit
-# below the slab and `code.R305_ceiling_height` errored at -2'-3" clear, which is the useful
-# way to find out. This file is editable-dialect and cannot import the constant, so the
-# arithmetic is stated here and `integrity.basement_bearing_seat` is what guards the datum
-# it rests on. 88 7/16" left 7'-4 7/16" clear under the box, and the ceiling either side of
-# it is untouched.
-#
-# ** IT CARRIES DU-B-ERV-R-PLAY SINCE 2026-09-22, AND IS 1 1/2" DEEPER FOR IT. ** The play
-# radial used to cross ST-B2M in the headroom; it now crosses W-B-STR2 under the top plate
-# (-15 5/8"), so its underside rides at -20 3/16" and the cavity floor had to come down to
-# meet it: 86 15/16" face, 7'-2 7/8" clear per `code.R305_ceiling_height`. It leaves east
-# through W-B-BA-E south of the bath's three risers; `mep.duct_soffit_occupancy` is the
-# judge. PR-B-BATH-VENT now sits inside the box rather than 1" under its face.
+# --- SF-B-BATH IS RETIRED (2026-11-25) --------------------------------------------------
+# It boxed the drain, vent, hot line and play radial across the old stair-foot bath. That
+# space is the water-heater alcove and the under-stair closet now, both exposed-service rooms.
 # --- SF-B-HALL IS RETIRED (2026-09-13) ------------------------------------------------
 #
 # ** THE HALL INHERITED THE WORKSHOP'S SERVICE CEILING (2026-09-07). ** Two runs cross the
@@ -1502,14 +1402,6 @@ PANELING = [
 # headroom line. That is the trade a declaration makes and it is worth knowing before one is
 # written on a room with a lot of ceiling.
 SOFFITS = [
-    Soffit(uid="CEWX9GPQMQ", tag="SF-B-BATH",
-           outline=(pt(inch(123.375), inch(218.375)), pt(inch(163.303), inch(218.375)),
-                    pt(inch(163.303), inch(243)), pt(inch(123.375), inch(243))),
-           # 7'-2 9/16" since 2026-10-01 (was 7'-2 15/16"): the playroom ERV duct's
-           # lower edge sat 0.276" below the derived clear cavity, so the box drops 3/8".
-           # The earlier 2026-09-22 drop from 7'-4 7/16" clears W-B-STR2's top plate.
-           underside_elevation=inch(86.5625),
-           framing=FramingSpec(member="2x2", spacing=inch(16))),
     # --- SF-B-GYM IS RETIRED (2026-09-13) ---------------------------------------------
     #
     # It existed for eleven days and for exactly one reason: DU-B-ERV-R-GYM at y=10'-6 5/8"

@@ -168,6 +168,13 @@ D_B_SAUNA_MAT_REDUCER = DoorwayTreatment(transition=_bevel(
     run_in=2.0, depth_in=0.0, land_in=1.0, min_in=0.5, max_in=0.75,
     pairs=(("sealed-concrete", "catlin-rubber-stall-mat"),)))
 
+# D-B-GYM's mats on -normal: W-B-CS2 runs south to north, so its normal faces the hall.
+D_B_GYM_MAT_REDUCER = DoorwayTreatment(transition=_bevel(
+    RUBBER_REDUCER, "bevelled rubber edge for 3/4 in. mats", "Glued to the slab at the mat "
+    "edge, outside the hall's sealed concrete", "rubber", sign=-1, rise_in=0.75,
+    run_in=2.0, depth_in=0.0, land_in=1.0, min_in=0.5, max_in=0.75,
+    pairs=(("sealed-concrete", "catlin-rubber-stall-mat"),)))
+
 # The basement bath's sheet vinyl down to the sealed stair slab (vinyl on -normal).
 D_B_BATH_VINYL_REDUCER = DoorwayTreatment(transition=_bevel(
     RUBBER_REDUCER, "rubber reducer for 1/8 in. sheet vinyl", "Glued to the slab; vinyl "

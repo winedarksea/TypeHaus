@@ -27,9 +27,9 @@ BASEMENT_TOWEL_BACKING = [
     WallBacking(
         uid="TWBBLOCK02",
         tag="BK-B-SAUNA-BATH-TOWEL-N",
-        wall_ref="W-B-CS",
+        wall_ref="W-B-CS3",
         face="left",
-        start=inch(8.75),
+        start=inch(12.75),
         length=inch(14.5),
         elevation=inch(52),
         height=inch(5.5),
@@ -40,15 +40,15 @@ BASEMENT_TOWEL_BACKING = [
     WallBacking(
         uid="TWBBLOCK03",
         tag="BK-B-SAUNA-BATH-TOWEL-S",
-        wall_ref="W-B-CS",
+        wall_ref="W-B-CS3",
         face="left",
-        start=inch(40.75),
-        length=inch(14.5625),
+        start=inch(44.75),
+        length=inch(14.5),
         elevation=inch(52),
         height=inch(5.5),
         profile="2x6",
         material_ref="spf",
-        purpose="FURN-B-SAUNA-BATH-TOWEL south post to door king",
+        purpose="FURN-B-SAUNA-BATH-TOWEL south post, gym side",
     ),
 ]
 
