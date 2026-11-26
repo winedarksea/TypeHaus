@@ -32,7 +32,7 @@
 # Fixtures with NO grab course today, for the record: FX-S-BATH1-SH (W-S-N3/W-S-CH-W; it
 # has furred flange nailers instead, below),
 # FX-S-SUITEBATH-TUBSH's back wall (W-S-C2C), FX-S-BATH1-WC (W-S-W1), FX-B-BATH-WC
-# (W-B-BA-N), FX-B-SAUNA-SH and FX-A-STUBATH-SH.
+# (W-B-SA-N), FX-B-BATH-SH and FX-A-STUBATH-SH.
 #
 # A per-bay block can be omitted or shifted at the bay a shower valve and its risers occupy;
 # valve body, tub spout and shower arm are the plumber's rough-in blocking, not this file's.
@@ -218,10 +218,11 @@ ATTIC_WET_BACKING = [
 
 # Suspension rails and ledger feet for the selected floating boxes (2026-10-24).
 BASEMENT_WET_BACKING = [
-    WallBacking(uid="D9Q5V8QJ9N", tag="BK-B-CW2-VANITY-RAIL", wall_ref="W-B-CW2", face="left",
-                start=inch(0.75), length=inch(42.5), elevation=inch(30), height=inch(7.25),
-                profile="2x8", material_ref="spf", purpose="HAVBÄCK suspension rail"),
-    WallBacking(uid="V6VG5D1HF1", tag="BK-B-CW2-VANITY-FOOT", wall_ref="W-B-CW2", face="left",
-                start=inch(0.75), length=inch(42.5), elevation=inch(7), height=inch(5.5),
-                profile="2x6", material_ref="spf", purpose="HAVBÄCK cabinet base blocking"),
+    # FX-B-BATH-LAV's SEKTION 24 on W-B-SA-N's bath face (2026-11-25), stud-004 to stud-006.
+    WallBacking(uid="D9Q5V8QJ9N", tag="BK-B-SAN-VANITY-RAIL", wall_ref="W-B-SA-N", face="left",
+                start=inch(64.75), length=inch(29), elevation=inch(30), height=inch(7.25),
+                profile="2x8", material_ref="spf", purpose="SEKTION 24 suspension rail and ledger head"),
+    WallBacking(uid="V6VG5D1HF1", tag="BK-B-SAN-VANITY-FOOT", wall_ref="W-B-SA-N", face="left",
+                start=inch(64.75), length=inch(29), elevation=inch(5), height=inch(5.5),
+                profile="2x6", material_ref="spf", purpose="SEKTION 24 ledger foot"),
 ]

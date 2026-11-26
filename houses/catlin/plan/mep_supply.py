@@ -84,7 +84,7 @@ WATER_SUPPLY = [
                     "FX-M-BATH2-SH", "FX-M-BATH2-TUB", "FX-M-BATH2-FILLER",
                     "FX-M-BATH2-SINK",
                     "FX-M-LAUNDRY", "FX-M-KITCH-SINK",
-                    "FX-B-BATH-WC", "FX-B-BATH-LAV", "FX-B-SAUNA-SH",
+                    "FX-B-BATH-WC", "FX-B-BATH-LAV", "FX-B-BATH-SH",
                     "FX-S-BATH1-WC", "FX-S-BATH1-LAV", "FX-S-BATH1-SH",
                     "FX-S-VANITY-LAV1", "FX-S-VANITY-LAV2",
                     "FX-S-SUITEBATH-WC", "FX-S-SUITEBATH-LAV",
@@ -233,7 +233,7 @@ SUPPLY = [
                     "FX-M-BATH2-SH", "FX-M-BATH2-TUB", "FX-M-BATH2-FILLER",
                     "FX-M-BATH2-SINK",
                     "FX-M-LAUNDRY", "FX-M-KITCH-SINK",
-                    "FX-B-BATH-WC", "FX-B-BATH-LAV", "FX-B-SAUNA-SH",
+                    "FX-B-BATH-WC", "FX-B-BATH-LAV", "FX-B-BATH-SH",
                     "FX-S-BATH1-WC", "FX-S-BATH1-LAV", "FX-S-BATH1-SH",
                     "FX-S-VANITY-LAV1", "FX-S-VANITY-LAV2",
                     "FX-S-SUITEBATH-WC", "FX-S-SUITEBATH-LAV",
@@ -260,7 +260,7 @@ SUPPLY = [
                     "FX-M-BATH2-FILLER", "FX-M-BATH2-SINK", "FX-M-LAUNDRY",
                     "FX-M-LAUNDRY-SINK",
                     "FX-M-KITCH-SINK",
-                    "FX-B-BATH-LAV", "FX-B-SAUNA-SH",
+                    "FX-B-BATH-LAV", "FX-B-BATH-SH",
                     "FX-S-BATH1-LAV", "FX-S-BATH1-SH", "FX-S-VANITY-LAV1",
                     "FX-S-VANITY-LAV2", "FX-S-SUITEBATH-LAV",
                     "FX-S-SUITEBATH-TUBSH",
@@ -648,17 +648,16 @@ SUPPLY = [
                   None, None, None, "W-S-SN3"),
             serves=("FX-S-SUITEBATH-LAV", "FX-S-SUITEBATH-TUBSH", "FX-A-STUBATH-LAV",
                     "FX-A-STUBATH-SH", "FX-A-STUDIO-BAR-SINK")),
-    # The bathroom's 36" pocket occupies the east wall south of its opening. 3/4", kept from
+    # The utility sink's cold (and the old stair-foot bath's, until 2026-11-25). 3/4", kept from
     # when it also fed the WC. It tees off PR-B-CW-TRUNK's x=4'-9" leg at y=20'-3" and runs
-    # east 2" over the band (over PR-B-CW-BATH1's diagonal) to its old drop (2026-11-09:
-    # PR-B-CW-WH, which it used to tee off, left the furnace room with the heater).
+    # east 2" over the band (over PR-B-CW-BATH1's diagonal) to its drop in W-B-STR2.
     PipeRun(uid="CBPW44AAAA", tag="PR-B-CW-BATH", system=PipeSystem.WATER_COLD,
             path=(pt(inch(57), inch(243)), pt(inch(57), inch(243)), pt(inch(120), inch(243)),
                   pt(inch(120), inch(238)), pt(inch(120), inch(238))),
             diameter=inch(0.75), material="copper",
             elevations=(inch(100.638), inch(102.638), inch(102.638), inch(102.638), inch(27.4375)),
-            # FX-B-BATH-WC is fed off the trunk since 2026-10-31 (plan/mep_supply_branches.py).
-            serves=("FX-B-BATH-LAV", "FX-B-UTIL-SINK")),
+            # The stair-foot bath it was named for is gone (2026-11-25): the utility sink only.
+            serves=("FX-B-UTIL-SINK",)),
     PipeRun(uid="CBPW45AAAA", tag="PR-B-HW-BATH", system=PipeSystem.WATER_HOT,
             # Header out-6, west to x=9'-8 1/2", north through W-B-CW3 at 83 1/2" and over to
             # the bath riser. The drop is at 18'-8 1/2" (2026-10-31): at 19'-4 1/2" it stood in
@@ -672,60 +671,39 @@ SUPPLY = [
                         diameter=inch(0.5), material="pex",
             elevations=(inch(86.149), inch(83.5), inch(83.5), inch(95.4375), inch(95.4375), inch(83.5),
                   inch(83.5), inch(95.4375), inch(95.4375), inch(27.4375)),
-                        serves=("FX-B-BATH-LAV", "FX-B-UTIL-SINK")),
-    # Sauna shower mixer, the first supply this room ever had. Both legs tee off the existing
-    # trunks and run south — cold down x=17'-4" (2" clear of W-B-CS2's face at 17'-6"), hot
-    # down x=17'-3" beside it — through W-B-SA-N2's framed stud bay (no cast sleeve needed)
-    # to the valve inside W-B-CS's liner.
-    #
-    # ** THEY ARE A SIDE-BY-SIDE PAIR SINCE 2026-09-07, NOT A STACKED ONE. ** Both were on
-    # x=17'-4" with the hot 1 3/16" UNDER the cold, which is not how a pair gets hung and
-    # did not matter while this run crossed the workshop — UTILITY is in
-    # `EXPOSED_SERVICE_OCCUPANCIES` and nothing grades a pipe in its air. The hall reaching
-    # the sauna wall put six feet of both runs in RM-B-STAIR, where
-    # `mep.run_in_finished_volume` allows 3": the cold cleared at 2.55" and the hot, one
-    # inch lower, FAILed at 3.75". Stacking them is what made that gap, and at the old
-    # elevations there was no pair that fixed it — two 1/2" lines need 5/8" of separation
-    # and the band between the ceiling and the 3" limit was only 3" deep. So they came off
-    # the stack and went up beside each other, 1" apart on centre with 3/8" of air between
-    # the tubes.
-    #
-    # ** BOTH NOW RIDE THE COLD BAND AT 8'-4 5/8" (2026-09-19), AND THE PAIR STAYS SIDE BY
-    # SIDE. ** These are two BARE 1/2" lines — the hot sheds its jacket at the tee, which is
-    # why it is the one hot run in this file on the cold band and why side-by-side was ever
-    # possible. The 1.875" the jacketed pair needs does not apply to them, and 1" on centre
-    # with 3/8" of air is how the mixer's two legs are actually strapped. What changed is
-    # that the finished-volume argument is spent: at 8'-4 5/8" both are ABOVE RM-B-STAIR's
-    # 7'-11 3/16" ceiling, inside the floor cavity, with `mep.run_member_crossing` reading
-    # each web bore at crown +7.112", invert +1.388" in the 9.12" window. The arrangement is
-    # kept on its own merits, not on a clearance that no longer binds.
-    # Shower setout: east-wall centreline y=98 3/16 in., hot north (user's left).
-    # Drops and final elbows occupy the local insulated valve pocket behind the tile.
-    # The existing overhead lanes stay unchanged; side arrivals land on estimated hubs.
+                        serves=("FX-B-UTIL-SINK",)),
+    # RM-B-BATH's supplies (2026-11-25; the sauna shower's until then). Both still tee where
+    # they did and drop south through the floor cavity, then run west in the bath's hung-
+    # ceiling cavity as headers over W-B-SA-N's room face — cold on y=8'-7" at 7'-8 1/2", hot
+    # on y=8'-8 1/2" at 7'-9 1/2" — to the shower valve. The lav's terminals and the WC's stop
+    # tee off them (mep_lavatories.py, mep_supply_branches.py). Each drops in the valve's bay
+    # 1 1/4" behind the face and turns into the valve's side inlet. Cold is 3/4" (4.75 WSFU).
     PipeRun(uid="CBPW46AAAA", tag="PR-B-CW-SAUNA", system=PipeSystem.WATER_COLD,
-            # ESR-1153 Table A: x=206.5" (was 208") puts the 0.88" hole 6.3" off the x=213.25 face;
-            # it tees on the trunk's y=15'-0" leg (was y=16'-0").
-            path=(pt(inch(206.5), inch(180)), pt(inch(206.5), inch(92.1875)),
-                  pt(inch(211.5), inch(92.1875)), pt(inch(211.5), inch(92.1875)),
-                  pt(inch(211.5), inch(96.1875))),
-            diameter=inch(0.5), material="pex",
-            elevations=(ft(8, 4.6375), ft(8, 4.6375), ft(8, 4.6375), ft(4, 3.4375), ft(4, 3.4375)),
-            serves=("FX-B-SAUNA-SH",)),
+            # ESR-1153 Table A: x=206.5" puts the 0.88" hole 6.3" off the x=213.25 face; it tees
+            # on the trunk's y=15'-0" leg.
+            path=(pt(inch(206.5), inch(180)), pt(inch(206.5), inch(103)),
+                  pt(inch(206.5), inch(103)), pt(inch(137.5), inch(103)),
+                  pt(inch(137.5), inch(98.25)), pt(inch(137.5), inch(98.25)),
+                  pt(inch(140.25), inch(98.25))),
+            diameter=inch(0.75), material="pex",
+            elevations=(ft(8, 4.6375), ft(8, 4.6375), inch(92.5), inch(92.5), inch(92.5),
+                        inch(51.4375), inch(51.4375)),
+            serves=("FX-B-BATH-SH", "FX-B-BATH-LAV", "FX-B-BATH-WC")),
     PipeRun(uid="CBPW47AAAA", tag="PR-B-HW-SAUNA", system=PipeSystem.WATER_HOT,
-            # Header out-1, up to 103 3/16" and south in the joist web to its old y=15'-8" lane
-            # east, crossing the hall at x=16'-3". It holds 103 3/16" down x=16'-3" (2026-11-12)
-            # to pass over PR-B-CW-TRUNK's y=14'-8" lane, and steps down only past the last bore.
+            # Header out-1, up to 103 3/16" and south in the joist web to its y=15'-8" lane
+            # east, crossing the hall at x=16'-3", and down x=16'-3" over PR-B-CW-TRUNK's
+            # y=14'-8" lane into the bath's cavity.
             path=(pt(inch(160), inch(200.288)), pt(inch(160), inch(200.288)),
                   pt(inch(154.5), inch(200.288)), pt(inch(154.5), inch(200.288)),
                   pt(inch(154.5), inch(188)), pt(inch(195), inch(188)),
-                  pt(inch(195), inch(104.188)),
-                  pt(inch(195), inch(104.188)), pt(inch(211.5), inch(104.188)),
-                  pt(inch(211.5), inch(104.188)), pt(inch(211.5), inch(100.188))),
+                  pt(inch(195), inch(104.5)), pt(inch(195), inch(104.5)),
+                  pt(inch(147), inch(104.5)), pt(inch(147), inch(98.25)),
+                  pt(inch(147), inch(98.25)), pt(inch(144.25), inch(98.25))),
             diameter=inch(0.5), material="pex",
             elevations=(inch(86.149), inch(83.5), inch(83.5), inch(103.2), inch(103.2), inch(103.2),
-                  inch(103.2), inch(99.4375), inch(99.4375), inch(51.4375),
-                  inch(51.4375)),
-            serves=("FX-B-SAUNA-SH",)),
+                        inch(103.2), inch(93.5), inch(93.5), inch(93.5), inch(51.4375),
+                        inch(51.4375)),
+            serves=("FX-B-BATH-SH", "FX-B-BATH-LAV")),
 ]
 
 # --- The two south-face wall hydrants ------------------------------------------------

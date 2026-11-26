@@ -12,20 +12,15 @@ from typehaus import PipeAccessory, PipeAccessoryKind, PipeRun, PipeSystem, inch
 _ANGLE_STOP = '1/2 in. quarter-turn fixture angle stop'
 
 BASEMENT_SUPPLY_BRANCHES = [
-    # FX-B-BATH-WC. Its back wall W-B-BA-N sits under FS-M-STAIR's partition blocks, and the
-    # x=10'-0" bearing line has full-depth blocking, so the branch leaves the cold trunk's
-    # y=14'-8" lane, rides 2" over the band (over PR-B-CW-WH, 1 3/8" west) north through the
-    # joist webs at x=11'-7 1/2", and drops in BA-N's front half: PR-B-ERV-COND runs the
-    # cavity's centre line at 5'-0" above the slab.
+    # FX-B-BATH-WC (2026-11-25): off PR-B-CW-SAUNA's bath header, down W-B-SA-N's
+    # 166 3/4"-181 1/4" bay (beside the WC's vent) to the stop 4 5/16" left of centre.
     PipeRun(uid="WV0NXH51VG", tag="PR-B-BATH-WC-CW", system=PipeSystem.WATER_COLD,
-            path=(pt(inch(139.5), inch(176)), pt(inch(139.5), inch(176)),
-                  pt(inch(139.5), inch(304.875)), pt(inch(139.5), inch(304.875)),
-                  pt(inch(139.5), inch(303.8125)),),
-            elevations=(inch(100.6375), inch(102.6375), inch(102.6375), inch(8.12),
-                        inch(8.12),),
+            path=(pt(inch(175.5625), inch(103)), pt(inch(175.5625), inch(98.75)),
+                  pt(inch(175.5625), inch(98.75)), pt(inch(175.5625), inch(100)),),
+            elevations=(inch(92.5), inch(92.5), inch(8.12), inch(8.12),),
             diameter=inch(0.5), material="pex", serves=("FX-B-BATH-WC",)),
     PipeAccessory(uid="GT1SR1TGKY", tag="PA-B-BATH-WC-STOP", kind=PipeAccessoryKind.SHUTOFF,
-                  pipe_ref="PR-B-BATH-WC-CW", position=pt(inch(139.5), inch(303.8125)),
+                  pipe_ref="PR-B-BATH-WC-CW", position=pt(inch(175.5625), inch(100)),
                   elevation=inch(8.12), accessible=True, room="RM-B-BATH", model=_ANGLE_STOP,
                   serves=("FX-B-BATH-WC",)),
     # FX-M-BATH2-WC. Its stop is in front of FX-M-BATH1-WC's DuoFit carrier bay (W-M-HS1,

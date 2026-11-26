@@ -25,6 +25,7 @@ from typehaus import (
     Node,
     Occupancy,
     Pad,
+    PanelingSpan,
     PublishedSpan,
     ReinforcementSpec,
     Room,
@@ -34,6 +35,7 @@ from typehaus import (
     SlabThermalBreak,
     StructuralRole,
     Wall,
+    WallPaneling,
     Window,
     face,
     from_node,
@@ -1223,12 +1225,10 @@ ROOMS = [
     # frame runs 5-8 F colder than that, so the frame does condense at design. That is an
     # accepted condition over a sealed, drained slab in a room that dries between sessions,
     # not a hidden failure.
-    # The floor is SEALED CONCRETE, not tile. SL-B-FLOOR dishes 1/8"/ft to FX-B-SAUNA-FD
-    # (13'-6", 8'-2 3/16"; its `drain_dishes`, decision #148), and FX-B-SAUNA-SH is a curbed
-    # liner pan — the pan brings its own waterproof floor, so nothing outside it needs a
-    # tile bed. `integrity.concrete_finish_needs_concrete_deck` is satisfied by SL-B-FLOOR.
-    # The tile that remains in this room is WP-B-SAUNA-SPLASH, the pan's two closed wall
-    # sides; see the PANELING note below.
+    # The floor is SEALED CONCRETE, not tile: the aisle dishes 1/8"/ft to FX-B-SAUNA-FD
+    # (16'-4", 7'-0"; `drain_dishes`, decision #148). No shower since 2026-11-25 (it is the
+    # bath's), so no tile either. `integrity.concrete_finish_needs_concrete_deck` is satisfied
+    # by SL-B-FLOOR. Still BATHROOM occupancy while it has a floor drain.
     # Ceiling: the same shiplap-over-foil-polyiso liner as the walls (assemblies.py's
     # `_SAUNA_LINER`), restated rather than imported — the editable dialect cannot import
     # a sibling plan module. Keep the two in step by hand. The ceiling's boards are ASPEN
@@ -1250,9 +1250,9 @@ ROOMS = [
              # move them into: everywhere else on the storey the ceiling is 5/8" of gypsum
              # straight onto the joist soffit. Owner call: drop this ceiling rather than box
              # bulkheads into a 92 SF lined room. 10 1/4" of cavity (11 1/4" until 2026-11-01)
-             # puts the finished face at 7'-0 1/16" — R305.1's 7'-0": the sauna's shower makes
-             # it a bathroom (IRC R202). Over the foil (+87 5/16"): PR-B-COND, and
-             # DU-B-ERV-R-SAUNA-SUP's leg to REG-B-SUP3; PR-B-SAUNA-VENT rises in W-B-SA-N2.
+             # puts the finished face at 7'-0 1/16" — R305.1's 7'-0" for a room with a floor
+             # drain (IRC R202). Over the foil (+87 5/16"): DU-B-ERV-R-SAUNA-SUP's leg to
+             # REG-B-SUP3 and the bath's vent header over W-B-SA-N's plates.
              # Still a better sauna than 7'-10": a sauna stratifies, and the head space above
              # the top bench was heating nobody.
              #
@@ -1359,9 +1359,23 @@ FLOOR_OPENINGS = [
     # Shower recess is a finish-zone concern; the stair arrives via the slab above.
 ]
 
-# WP-B-SAUNA-SPLASH retired with the sauna shower (2026-11-25); the bath's shower surround
-# is in plan/shower_assemblies.py.
-PANELING = []
+# RM-B-BATH's shower surround (2026-11-25; WP-B-SAUNA-SPLASH's tile retired with the sauna
+# shower): the BATH2 pattern, a 1/4" solid-surface panel siliconed to the glass-mat backer
+# on the pan's two closed sides, pan top (+2") to 80", a TK-105 strip capping it, painted
+# board above to the 84" ceiling. W-B-SA-N runs east from x=9'-10" (pan at 2 1/4" along it),
+# W-B-BT-W north from y=7'-11 3/8" (pan at 4 5/8").
+PANELING = [
+    WallPaneling(uid="DQNG5Z6J7P", tag="WP-B-BATH-SURR", room="RM-B-BATH",
+                 material_ref="solid-surface-panel", offset=inch(2), height=inch(78),
+                 replaces_wall_finish=True, thickness=inch(0.25),
+                 spans=(PanelingSpan(wall_ref="W-B-SA-N", start=inch(2.25), length=ft(3)),
+                        PanelingSpan(wall_ref="W-B-BT-W", start=inch(4.625), length=ft(3)))),
+    WallPaneling(uid="HGZQ78TAEM", tag="WP-B-BATH-SURR-CAP", room="RM-B-BATH",
+                 material_ref="swanstone-trim-strip", offset=inch(80), height=inch(3.875),
+                 replaces_wall_finish=True, thickness=inch(0.25),
+                 spans=(PanelingSpan(wall_ref="W-B-SA-N", start=inch(2.25), length=ft(3)),
+                        PanelingSpan(wall_ref="W-B-BT-W", start=inch(4.625), length=ft(3)))),
+]
 
 # --- SF-B-BATH IS RETIRED (2026-11-25) --------------------------------------------------
 # It boxed the drain, vent, hot line and play radial across the old stair-foot bath. That

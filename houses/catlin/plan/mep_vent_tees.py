@@ -161,22 +161,22 @@ VENT_TEES = [
             diameter=inch(1.5), material="pvc",
             elevations=(inch(0), inch(15.5), inch(115.85), inch(115.9), inch(116)),
             serves=("FX-M-LAUNDRY-SINK",)),
-    # RM-B-BATH's lavatory: a tee at the trap outlet, a 45-degree rise into W-B-CW2, up its cavity, west in it and
-    # north in W-B-STR2's to PR-B-BATH-VENT's riser at 1'-6 3/8" under the deck. Arm ~2".
+    # RM-B-BATH's lavatory (2026-11-25; elevations main-relative, basement +109 7/16"): the
+    # sanitary tee in W-B-SA-N's 198 3/4"-211 3/4" bay at the stub, plumb to the wall's top,
+    # then west over its plates as the header the floor drain's and WC's vents tee into, onto
+    # PR-B-SAUNA-VENT's riser at x=10'-7". Arm 3 1/4".
     PipeRun(uid="MFDV1SAVZT", tag="PR-B-BATH-LAV-VENT", system=PipeSystem.VENT,
-            path=(pt(inch(144), inch(218.25)), pt(inch(144), inch(216)),
-                  pt(inch(144), inch(216)), pt(inch(121.6), inch(216)),
-                  pt(inch(121.6), inch(229.5))),
+            path=(pt(inch(200.5), inch(96.75)), pt(inch(200.5), inch(96.75)),
+                  pt(inch(127), inch(96.75))),
             diameter=inch(1.5), material="pvc",
-            elevations=(inch(-89.32), inch(-86.8), inch(-19.5), inch(-19.25), inch(-18.6)),
+            elevations=(inch(-89.4475), inch(-18.4375), inch(-18.1875)),
             serves=("FX-B-BATH-LAV",)),
-    # RM-B-BATH's water closet: a sanitary tee at the head of PR-B-BATH-DRAIN, (10'-0",
-    # 20'-2") under W-B-STR2 (arm 61" against Table 1002.2's 72"), plumb in the wall's cavity,
-    # then west and south onto PR-B-BATH-VENT's west end at (9'-0", 19'-1 1/2").
+    # RM-B-BATH's water closet: a tee on PR-B-SAUNA-DRAIN 2 1/4" downstream of its arm (a 26"
+    # arm against Table 1002.2's 72"), plumb in W-B-SA-N's 166 3/4"-181 1/4" bay, onto the
+    # lav's header.
     PipeRun(uid="KBNJYZPWCZ", tag="PR-B-BATH-WC-VENT", system=PipeSystem.VENT,
-            path=(pt(inch(120), inch(242)), pt(inch(120), inch(242)),
-                  pt(inch(108), inch(242)), pt(inch(108), inch(229.5))),
+            path=(pt(inch(169), inch(96.75)), pt(inch(169), inch(96.75))),
             diameter=inch(1.5), material="pvc",
-            elevations=(inch(-119.34), inch(-20.9), inch(-19.0), inch(-15.7)),
+            elevations=(inch(-117.4375), inch(-18.3305)),
             serves=("FX-B-BATH-WC",)),
 ]

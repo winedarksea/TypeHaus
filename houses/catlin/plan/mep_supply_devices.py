@@ -47,7 +47,7 @@ SUPPLY_DEVICES_BASEMENT = [
                   # (14d558949) ran through it; mid-bay between the two bridges now.
                   position=pt(inch(93), ft(26)), room="RM-B-FURNACE", accessible=True,
                   model='3/4" dual-check backflow preventer, testable',
-                  serves=("FX-B-BATH-WC", "FX-B-BATH-LAV", "FX-B-UTIL-SINK")),
+                  serves=("FX-B-UTIL-SINK",)),
     # ESS closet firestop (owner standard, not a rated assembly): PR-B-KITCH-DRAIN passes
     # both closet walls above the furred lid. Intumescent sealant at each annulus; the
     # conduits that enter the closet (CD-B-GARAGE through W-B-ESS-W, the battery's DC run)
@@ -76,7 +76,7 @@ SUPPLY_DEVICES_BASEMENT = [
                   # — there is no access-panel element — so it is said here.
                   position=pt(inch(206.5), inch(180)), room="RM-B-STAIR", accessible=True,
                   model='1/2" dual-check backflow preventer, testable',
-                  serves=("FX-B-SAUNA-SH",)),
+                  serves=("FX-B-BATH-SH", "FX-B-BATH-LAV", "FX-B-BATH-WC")),
     # P2903.5. The washer slams two solenoids shut, so it needs an arrestor on each supply —
     # cold alone would leave the hot line to hammer. Both sit in the washer box behind the
     # tower on W-M-CLN, on the machine's own branches (PR-M-WASH-CW/-HW, plan/mep_supply.py)

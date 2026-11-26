@@ -35,46 +35,44 @@ SUPPLY_SLEEVES = []
 STACK_SLEEVES = []
 
 # Slab-on-grade stub-ups. A fixture on grade has no wall drain stack — its trap arm runs
-# *under* the slab — so the penetration is set pre-pour, at the
-# fixture's own `drain_position` for an exact alignment match: a bathroom at the stair foot,
-# and the sauna's shower end (curbed pan + floor drain). All four moved with the rooms on
-# 2026-09-05 when the sauna rotated onto the garden wall and the bathroom onto the stair
-# wall; `mep.sleeve_alignment` is what holds each of them on its fixture.
+# *under* the slab — so the penetration is set pre-pour, at the fixture's own
+# `drain_position`; `mep.sleeve_alignment` holds each on its fixture. RM-B-BATH's three and
+# the sauna's floor drain moved with the 2026-11-25 replan, with the vents' risers.
 SLAB_STUBS = [
-    # Upsized to 3" for a WC (needing a closet bend) in place of the old utility sink.
+    # The WC's closet bend, 3" for 3".
     SleevePenetration(uid="CBP901AAAA", tag="SP-B-BATH-WC", host_ref="SL-B-FLOOR",
-                      position=pt(ft(12), inch(291.8125)), pipe_diameter=inch(3),
+                      position=pt(inch(171.25), inch(112)), pipe_diameter=inch(3),
                       sleeve_diameter=inch(4), serves_fixture="FX-B-BATH-WC"),
+    # The lav's drop, in W-B-SA-N under its sanitary tee.
     SleevePenetration(uid="CBP904AAAA", tag="SP-B-BATH-LAV", host_ref="SL-B-FLOOR",
-                      position=pt(ft(12), inch(224.375)), pipe_diameter=inch(1.5),
+                      position=pt(inch(200.5), inch(96.75)), pipe_diameter=inch(1.5),
                       sleeve_diameter=inch(2), serves_fixture="FX-B-BATH-LAV"),
     # FX-B-UTIL-SINK's drop, inside W-B-STR2 under the vent tee (mep_lavatories.py).
     SleevePenetration(uid="RF0AQ0KDPT", tag="SP-B-SLAB-USINK", host_ref="SL-B-FLOOR",
                       position=pt(inch(120), inch(229.5)), pipe_diameter=inch(2),
                       sleeve_diameter=inch(3), serves_fixture="FX-B-UTIL-SINK",
                       seal="continuous radon-rated elastomeric seal to pipe and slab membrane"),
-    # FX-B-BATH-WC's vent riser (mep_vent_tees.py PR-B-BATH-WC-VENT), up W-B-STR2's cavity.
+    # The bath's and the floor drain's vent risers off PR-B-SAUNA-DRAIN, all up W-B-SA-N:
+    # the WC's (mep_vent_tees.py), the shower's (PR-B-SAUNA-VENT) and the floor drain's.
     SleevePenetration(uid="PXGXETEFWC", tag="SP-B-SLAB-WC-VENT", host_ref="SL-B-FLOOR",
-                      position=pt(inch(120), inch(242)), pipe_diameter=inch(1.5),
+                      position=pt(inch(169), inch(96.75)), pipe_diameter=inch(1.5),
                       sleeve_diameter=inch(2), purpose=Service.VENT,
                       seal="continuous radon-rated elastomeric seal to pipe and slab membrane"),
-    # The sauna vents' risers (mep_venting.py PR-B-SAUNA-VENT, PR-B-SAUNA-FD-VENT), both up W-B-SA-N.
     SleevePenetration(uid="1RDFAM8VSF", tag="SP-B-SLAB-SA-VENT", host_ref="SL-B-FLOOR",
-                      position=pt(inch(158), inch(121.375)), pipe_diameter=inch(2),
+                      position=pt(inch(127), inch(96.75)), pipe_diameter=inch(2),
                       sleeve_diameter=inch(3), purpose=Service.VENT,
                       seal="continuous radon-rated elastomeric seal to pipe and slab membrane"),
     SleevePenetration(uid="KY9JRBHRRZ", tag="SP-B-SLAB-SA-FDV", host_ref="SL-B-FLOOR",
-                      position=pt(inch(143), inch(121.375)), pipe_diameter=inch(1.5),
+                      position=pt(inch(190), inch(96.75)), pipe_diameter=inch(1.5),
                       sleeve_diameter=inch(2), purpose=Service.VENT,
                       seal="continuous radon-rated elastomeric seal to pipe and slab membrane"),
-    # The sauna's two. The pan's is under the centre of the 36" x 36" curbed shower; the floor
-    # drain's is the drain body itself, which is why its position and the fixture's are the
-    # same point with no `drain_position` override on either.
-    SleevePenetration(uid="CBP905AAAA", tag="SP-B-SAUNA-SH", host_ref="SL-B-FLOOR",
-                      position=pt(inch(191.75), inch(98.1875)), pipe_diameter=inch(2),
-                      sleeve_diameter=inch(3), serves_fixture="FX-B-SAUNA-SH"),
+    # The pan's is under the centre of the 36" x 36" curbed shower; the floor drain's is the
+    # drain body itself, so its position and the fixture's are the same point.
+    SleevePenetration(uid="CBP905AAAA", tag="SP-B-BATH-SH", host_ref="SL-B-FLOOR",
+                      position=pt(inch(138.25), inch(118)), pipe_diameter=inch(2),
+                      sleeve_diameter=inch(3), serves_fixture="FX-B-BATH-SH"),
     SleevePenetration(uid="CBP906AAAA", tag="SP-B-SAUNA-FD", host_ref="SL-B-FLOOR",
-                      position=pt(ft(13, 6), inch(98.1875)), pipe_diameter=inch(2),
+                      position=pt(inch(196), inch(84)), pipe_diameter=inch(2),
                       sleeve_diameter=inch(3), serves_fixture="FX-B-SAUNA-FD"),
     # Kitchen stack west of the dry-fire lane and south of FT-B-N4. Seal both
     # the sleeve-to-pipe annulus and sleeve-to-slab joint to the radon membrane.

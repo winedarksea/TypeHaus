@@ -429,9 +429,9 @@ VENT_RISERS = [
 # Neither shares a leg with the other — the bathroom's runs north at x=7', the sauna's at
 # x=9' — the same rule PR-S-SUITEBATH-VENT follows against the hall bath's branch.
 VENT_BRANCHES_BASEMENT = [
-    # RM-B-BATH: the riser stands in W-B-STR2 at y=19'-1 1/2", clear of the east-wall pocket
-    # and, since 2026-10-30, in the bay south of stud-001 (at 19'-3" it stood in the stud).
-    # FX-B-UTIL-SINK's trap arm tees in at its base. The short west leg ties into the sauna vent.
+    # FX-B-UTIL-SINK's vent (the old stair-foot bath's too, until 2026-11-25): the riser stands
+    # in W-B-STR2 at y=19'-1 1/2", in the bay south of stud-001; the sink's trap arm tees in at
+    # its base. The short west leg ties into the sauna vent.
     # ** A COMMON VENT INTO PR-B-SAUNA-VENT SINCE 2026-09-23. ** It ran north on x=7'-0"
     # and west on y=34'-6" to the chase; the re-packed chase leaves one lane in at the
     # basement ceiling, which the 2" sauna vent takes, and this 1 1/2" ties into that 2" line
@@ -445,57 +445,40 @@ VENT_BRANCHES_BASEMENT = [
             # tops at 92 1/4" and the 12" leg takes the rest (1.52"/ft), so the turn reads as a
             # stock 90 (82.9; was 79.5) and the pipe leaves the wall under the plate.
             elevations=(ft(1, 3.4375), inch(92.25), inch(93.7678)),
-            serves=("FX-B-BATH-WC", "FX-B-BATH-LAV", "FX-B-UTIL-SINK")),
-    # ** THE SHOWER'S TEE IS UNDER THE SLAB (C6-E7, 2026-11-02). ** The riser used to start on
-    # the slab 22.6" off the drain, so it vented nothing. It now leaves the pan drop's
-    # bottom, 26" SW of the riser, runs NE under the slab on the drain's fall, and rises
-    # through SP-B-SLAB-SA-VENT. Pan arm ~11" against Table 1002.2's 60".
-    # RM-B-SAUNA's shower group. 2" for 4 DFU, rising at (16'-9", 10'-1 3/8") inside
-    # W-B-SA-N2's stud cavity, the pan's north wall, clear of the mixer's two supply drops.
-    # (Both fixtures still declare W-B-CS as their wet wall, plan/fixtures.py.)
+            serves=("FX-B-UTIL-SINK",)),
+    # ** RM-B-BATH'S VENTS, ONE PER FIXTURE (2026-11-25). ** Each fixture's tee is on
+    # PR-B-SAUNA-DRAIN under W-B-SA-N, downstream of its own join, and rises in its own bay:
+    # the shower's here (121 1/4"-133 1/4" bay), the floor drain's below, the WC's in
+    # mep_vent_tees.py; the lav's tee is in the wall at its stub. Over the wall's plates (+90")
+    # the lav vent runs west as the header the others tee into, onto this riser. A 908.2 wet
+    # vent was weighed and not built: the WC must join last and the shower is west of it, and
+    # the floor drain is not a bathroom-group fixture (notes/wet_vent_basis.md).
     #
-    # Trap arms as the check measures them, both well inside Table 1002.2's 5'-0" for a 2"
-    # arm. Over the wall's plates the run jogs north, crosses the workshop west at
-    # y=10'-6", and passes W-B-CW at x=9'.
-    # ** INTO THE RE-PACKED CHASE FROM THE SOUTH (2026-09-23). ** North on x=9'-0" only to
-    # y=29'-4", west to x=5'-1 1/2", north between the ERV cabinet (x<=5'-0") and
-    # DU-ERV-RISER-SUP's port, west on y=33'-4" just under FS-M-MECH's joists — 1" north of
-    # the backup enclosure's 110.26 dedicated space, over the supply duct's leg — and north
-    # onto the vent riser at x=10". PR-B-BATH-VENT ties into it at (9'-0", 19'-1 1/2").
+    # From the riser head it jogs south to y=7'-9" to pass over W-B-SA-W's plates clear of
+    # W-B-BT-W's end stud, runs west to x=9'-0" and takes the old north route into the chase:
+    # north on x=9'-0" to y=28'-8", west to x=4'-3 1/2", north between the ERV cabinet and
+    # DU-ERV-RISER-SUP's port, west on y=33'-4" under FS-M-MECH's joists, north onto the vent
+    # riser at x=10". PR-B-BATH-VENT ties into it at (9'-0", 19'-1 1/2").
     PipeRun(uid="CBPV02AAAA", tag="PR-B-SAUNA-VENT", system=PipeSystem.VENT,
-            # ** THE RISER IS IN W-B-SA-N'S 150"-166" BAY SINCE 2026-11-10 **, on the branch
-            # 43" down the shower's arm and 4" west of PR-B-COND's drop, since the branch now
-            # reaches the wall on a 1/8 bend (mep_drainage.py). It clears the wall's top plates
-            # (+90") before jogging north.
-            path=(pt(inch(158), inch(121.375)), pt(inch(158), inch(121.375)),
-                  pt(inch(158), inch(121.375)),
-                  pt(inch(158), ft(10, 6)), pt(ft(9), ft(10, 6)),
+            path=(pt(inch(127), inch(96.75)), pt(inch(127), inch(96.75)),
+                  pt(inch(127), inch(93)), pt(ft(9), inch(93)),
                   pt(ft(9), ft(19)), pt(ft(9), ft(28, 8)), pt(inch(51.5), ft(28, 8)),
                   pt(inch(51.5), inch(400)), pt(inch(10), inch(400)),
                   pt(inch(10), inch(412.9))),
             diameter=inch(2), material="pvc",
-            # ** THE NORTH LEG BREAKS AT y=19'-0" NOW (P1, 2026-09-19). ** It used to climb
-            # 7'-1 7/16" to 7'-9 15/16" in one straight ramp over twenty-four feet, which
-            # put it at 7'-5 1/4" where PR-B-LSINK-DRAIN falls west across x=9'-0" — inside
-            # it by 1.85". A vent has to be graded to drain back to the drainage pipe
-            # (P3104.1) so it cannot dip under one thing and climb over the next; what it
-            # can do is take its rise EARLY. It now gains 3 3/4" in the first 8'-6" and
-            # coasts the remaining 15'-6". The y=19' point rose another 1/2" with the
-            # dry-fire collector lift, keeping clear of the raised laundry drain. The tail
-            # to the riser stays under the ceiling board (top 1/32" under its face). The
-            # north profile retains the half-inch clearance over
-            # DU-B-ERV-R-PLAY at y=30'-6", where D3 left it 2 1/2 thousandths of an inch.
-            elevations=(inch(-9.19), ft(0, 3.4375), inch(90.5), inch(90.5625),
-                        inch(91.75), inch(93.75), ft(7, 10.4375), ft(7, 11.14), ft(7, 11.54),
+            # ** THE NORTH LEG BREAKS AT y=19'-0" (P1, 2026-09-19). ** A vent has to grade back
+            # to the drain (P3104.1), so it takes its rise early, under PR-B-LSINK-DRAIN where
+            # that drain falls west across x=9'-0", and coasts the rest. The north profile keeps
+            # its half inch over DU-B-ERV-R-PLAY at y=30'-6".
+            elevations=(inch(-9.0), inch(91.25), inch(91.35), inch(91.6),
+                        inch(93.75), ft(7, 10.4375), ft(7, 11.14), ft(7, 11.54),
                         ft(7, 11.6), ft(7, 11.65)),
-            serves=("FX-B-SAUNA-SH", "FX-B-SAUNA-FD")),
-    # The floor drain's own tee: on the branch 9" downstream of PR-B-SAUNA-FD-DROP's tie,
-    # up W-B-SA-N's 134"-150" bay through SP-B-SLAB-SA-FDV, and over the plates onto
-    # PR-B-SAUNA-VENT's y=10'-6" run. Arm ~36" against Table 1002.2's 60".
+            serves=("FX-B-BATH-SH", "FX-B-BATH-WC", "FX-B-BATH-LAV", "FX-B-SAUNA-FD")),
+    # The floor drain's tee, 6" downstream of PR-B-SAUNA-FD-DROP's join, up W-B-SA-N's
+    # 182 3/4"-197 1/4" bay through SP-B-SLAB-SA-FDV onto the lav's header. Arm ~21".
     PipeRun(uid="D9Z3MBW6KV", tag="PR-B-SAUNA-FD-VENT", system=PipeSystem.VENT,
-            path=(pt(inch(143), inch(121.375)), pt(inch(143), inch(121.375)),
-                  pt(inch(143), ft(10, 6))),
+            path=(pt(inch(190), inch(96.75)), pt(inch(190), inch(96.75))),
             diameter=inch(1.5), material="pvc",
-            elevations=(inch(-9.57), inch(90.6), inch(91.05)),
+            elevations=(inch(-7.4), inch(91.036)),
             serves=("FX-B-SAUNA-FD",)),
 ]

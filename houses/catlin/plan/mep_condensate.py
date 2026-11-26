@@ -69,17 +69,17 @@ CONDENSATE_NORTH = [
     # rel = abs + 109 7/16"). GRAVITY (owner, 2026-11-14). The sauna's ceiling void is out of
     # reach: its floor (the foil, 87 5/16" rel) stands above any drain a head under the gym's
     # 96 15/16" gypsum can have. So the hose leaves the head's north end at 83 1/4" rel and
-    # runs 28" north on the gym face over D-B-SAUNA (clipped 3/4" off the board, bottom at the
-    # RO head, 1" over the leaf), into W-B-CS's stud core (x=18'-0") in the bay past the
-    # door's king, north through its studs to the sauna's north wall, west in W-B-SA-N2/-N's
-    # 2x4 cores (y=10'-1 7/16") and tees onto PR-B-COND's drop at x=13'-6", 79 7/8" rel, 7 7/8"
-    # under the drop's head; the drop's 9" air gap over FX-B-SAUNA-FD is its receptor.
-    # 135 15/16" (11.3 ft) at 0.3"/ft, no rise. Stud bores 1 1/4": 23% of a 2x6, 36% of a 2x4.
+    # runs 38" north on the gym face over D-B-SAUNA (clipped 3/4" off the board, its underside
+    # 1/2" over the RO head and the leaf), into W-B-CS's stud core in the bay past the door's
+    # north king, north to W-B-SA-N's line and west into its core to tee onto PR-B-COND's drop
+    # in the 198 3/4"-211 3/4" bay (2026-11-25); that drop's air gap over FX-B-SAUNA-FD is its
+    # receptor. 66" at 1/8"/ft (IMC 307.2.2's minimum; 0.3 until the door moved north, which
+    # would put it in the opening).
     PipeRun(uid="1TFJSE4NC5", tag="PR-B-COND-HP2-GYM", system=PipeSystem.DRAIN, sanitary=False,
-            path=(pt(inch(220.5), inch(44)), pt(inch(220.5), inch(72)), pt(inch(216), inch(72)),
-                  pt(inch(216), inch(121.4375)), pt(inch(162), inch(121.4375))),
+            path=(pt(inch(220.5), inch(44)), pt(inch(220.5), inch(82)), pt(inch(216), inch(82)),
+                  pt(inch(216), inch(97.5)), pt(inch(208), inch(97.5))),
             diameter=inch(0.75), material="pvc",
-            elevations=(inch(-26.1875), inch(-26.8875), inch(-27.0), inch(-28.2359375),
-                        inch(-29.5859375)),
-            slope_in_per_ft=0.3),
+            elevations=(inch(-26.1875), inch(-26.615), inch(-26.6656), inch(-26.84),
+                        inch(-26.93)),
+            slope_in_per_ft=0.135),
 ]

@@ -3,31 +3,33 @@
 from typehaus import PipeRun, PipeSystem, PipeAccessory, PipeAccessoryKind, inch, pt
 
 BASEMENT_LAV_CONNECTIONS = [
+    # FX-B-BATH-LAV (2026-11-25): both off the bath's ceiling headers (mep_supply.py). The hot
+    # drops straight to its stub in the 198 3/4"-211 3/4" bay; the cold's stub lands on
+    # stud-005, so it drops in the bay west of it and crosses 1 1/2" in the cabinet.
     PipeRun(uid="XPPK42CSP2", tag="PR-B-LAV-TERMINAL-HW", system=PipeSystem.WATER_HOT,
-            path=(pt(inch(120), inch(224.5)), pt(inch(122), inch(224.5)), pt(inch(122), inch(220)), pt(inch(147), inch(220)), pt(inch(147), inch(218.25)),),
-            elevations=(inch(27.4375), inch(30.0), inch(30.0), inch(30.0), inch(24.12),),
+            path=(pt(inch(195), inch(104.5)), pt(inch(203.5), inch(104.5)), pt(inch(203.5), inch(98.75)), pt(inch(203.5), inch(98.75)), pt(inch(203.5), inch(100)),),
+            elevations=(inch(93.5), inch(93.5), inch(93.5), inch(24.12), inch(24.12),),
             diameter=inch(0.5), material="pex",
             serves=("FX-B-BATH-LAV",)),
     PipeAccessory(uid="JA7Z7DK4JF", tag="PA-B-LAV-TERMINAL-HW", kind=PipeAccessoryKind.SHUTOFF,
-                  pipe_ref="PR-B-LAV-TERMINAL-HW", position=pt(inch(147), inch(218.25)), elevation=inch(24.12000000),
+                  pipe_ref="PR-B-LAV-TERMINAL-HW", position=pt(inch(203.5), inch(100)), elevation=inch(24.12000000),
                   accessible=True, room="RM-B-BATH", model='1/2 in. quarter-turn fixture angle stop',
                   serves=("FX-B-BATH-LAV",)),
     PipeRun(uid="V8Y7EWXD1J", tag="PR-B-LAV-TERMINAL-CW", system=PipeSystem.WATER_COLD,
-            path=(pt(inch(120), inch(238)), pt(inch(118), inch(238)), pt(inch(118), inch(222)), pt(inch(141), inch(222)), pt(inch(141), inch(218.25)),),
-            elevations=(inch(27.4375), inch(27.4375), inch(27.4375), inch(26.0), inch(24.12),),
+            path=(pt(inch(196), inch(103)), pt(inch(196), inch(98.75)), pt(inch(196), inch(98.75)), pt(inch(196), inch(102)), pt(inch(197.5), inch(102)), pt(inch(197.5), inch(100)),),
+            elevations=(inch(92.5), inch(92.5), inch(26.0), inch(26.0), inch(26.0), inch(24.12),),
             diameter=inch(0.5), material="pex",
             serves=("FX-B-BATH-LAV",)),
     PipeAccessory(uid="2V86ED0NPG", tag="PA-B-LAV-TERMINAL-CW", kind=PipeAccessoryKind.SHUTOFF,
-                  pipe_ref="PR-B-LAV-TERMINAL-CW", position=pt(inch(141), inch(218.25)), elevation=inch(24.12000000),
+                  pipe_ref="PR-B-LAV-TERMINAL-CW", position=pt(inch(197.5), inch(100)), elevation=inch(24.12000000),
                   accessible=True, room="RM-B-BATH", model='1/2 in. quarter-turn fixture angle stop',
                   serves=("FX-B-BATH-LAV",)),
     # FX-B-UTIL-SINK (2026-10-30). The cabinet trap's 1 1/2" arm runs 5" east into W-B-STR2
     # and tees under PR-B-BATH-VENT's riser at (10'-0", 19'-1 1/2") — the vent before the
     # drop, so no S-trap — then drops through SP-B-SLAB-USINK and, since 2026-11-10, runs
-    # under the slab to the main as the lavatory's branch too (PR-B-BATH-LAV-DRAIN lands on
-    # the drop's foot): 3 DFU, so 2" (UPC Table 703.2, and Table 702.1 note 2's 2" minimum
+    # under the slab to the main: 2 DFU, so 2" (UPC Table 703.2, and Table 702.1 note 2's 2" minimum
     # for a utility sink; 2026-11-10). Past the drop it bends 1/8 south-west
-    # and runs west on y=18'-4", tying in 20" south of PR-B-BATH-DRAIN: 45° + 90° = 135°, so
+    # and runs west on y=18'-4", tying into the main: 45° + 90° = 135°, so
     # CO-B-USINK on the arm is its only cleanout.
     PipeRun(uid="TV31MEHNBX", tag="PR-B-USINK-DRAIN", system=PipeSystem.DRAIN,
             path=(pt(inch(115), inch(229.5)), pt(inch(120), inch(229.5)), pt(inch(120), inch(229.5)), pt(inch(110.5), inch(220)), pt(inch(42), inch(220)),),

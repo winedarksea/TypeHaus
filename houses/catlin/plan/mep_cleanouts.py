@@ -40,24 +40,14 @@ BASEMENT_CLEANOUTS = [
                   position=pt(inch(117.5), inch(229.5)), fitting_elevation=inch(15.9375),
                   cap_position=pt(inch(115), inch(229.5)), cap_elevation=inch(18),
                   access="cabinet", clear_width=inch(18), clear_depth=inch(18)),
-    # The slab branches' upper terminals are wall panels: the fitting on the buried pipe, its
-    # extension up a stud bay, the cap behind a panel. No slab branch turns past 707.4's
-    # 135° (mep_drainage.py), so none needs a turn cleanout.
-    # The WC branch: a wye 6 1/2" down it, west of W-B-STR2; the extension runs under the
-    # slab into the wall's 232"-248" bay, 6" south of the WC vent's riser, cap in the bath face.
-    DrainCleanout(uid="COB0000006", tag="CO-B-BATH", pipe_ref="PR-B-BATH-DRAIN",
-                  position=pt(inch(116), inch(242)), fitting_elevation=inch(-10.06),
-                  cap_position=pt(inch(122), inch(236)), cap_elevation=inch(12),
-                  access="wall", wall_ref="W-B-STR2",
-                  clear_width=inch(24), clear_depth=inch(24)),
-    # The sauna branch: a wye on its 1/8 bend 22" from the drop, under the shower pan; the
-    # extension runs under the slab into W-B-SA-N2's cavity, cap in the hall face (never the
-    # sauna's).
+    # No slab branch turns past 707.4's 135° (mep_drainage.py), so none needs a turn cleanout.
+    # PR-B-SAUNA-DRAIN's upper terminal (2026-11-25): a wye at its east end under W-B-SA-N,
+    # the extension north under the slab to a flush floor cap 4" in front of the lav. A 3"
+    # cap needs 24" clear, which neither the 24" cabinet nor W-B-CS3 (on FT-B-CS) gives.
     DrainCleanout(uid="COB0000007", tag="CO-B-SAUNA-HEAD", pipe_ref="PR-B-SAUNA-DRAIN",
-                  position=pt(inch(176.5), inch(113.4375)), fitting_elevation=inch(-9.13),
-                  cap_position=pt(inch(176.5), inch(122.5)), cap_elevation=inch(12),
-                  access="wall", wall_ref="W-B-SA-N2",
-                  clear_width=inch(18), clear_depth=inch(18)),
+                  position=pt(inch(200.5), inch(96.75)), fitting_elevation=inch(-9.0),
+                  cap_position=pt(inch(200.5), inch(122)), cap_elevation=inch(0),
+                  access="floor", clear_width=inch(24), clear_depth=inch(24)),
     # WC2's branch runs in the basement ceiling. Its upper terminal is the closet bend's heel;
     # the cleanout is a 45 wye there, its cap 3 1/2" SW and up, off the drop's axis and away
     # from PR-M-BATH2-WC-VENT, just under the furnace-room ceiling. Its turn east into the

@@ -27,7 +27,7 @@ from library.placeables.fixtures import (
     water_closet_required_clearance,
 )
 
-from plan.shower_assemblies import (ATTIC_SHOWER, BATH2_SHOWER_ASSEMBLY, SAUNA_SHOWER,
+from plan.shower_assemblies import (ATTIC_SHOWER, BASEMENT_SHOWER, BATH2_SHOWER_ASSEMBLY,
                                    TUB_SHOWER_ASSEMBLY)
 from plan.wet_ports import floor_drain_port, floor_wc_ports
 from typehaus.model import (
@@ -53,7 +53,7 @@ from typehaus.model.placeables import ModelRepresentation
 #
 # Six bowls, four models. The split is deliberate: wall-hung + skirted + rimless is the
 # cleanability ceiling and it is bought where it is seen, and the attic guest bath and the
-# basement sauna rinse take the Drake — same Tornado Flush, same CeFiONtect glaze, half the
+# basement bath take the Drake — same Tornado Flush, same CeFiONtect glaze, half the
 # money, and what it gives up is the skirt. All-Aquia-IV across the four workhorses is
 # $2,152 against $1,598 for the split, and it would still leave two tank designs.
 #
@@ -182,7 +182,7 @@ TOTO_AQUIA_IV_FLOOR = TOTO_AQUIA_IV.model_copy(update={
 
 # RM-A-STUBATH and RM-B-BATH. The workhorse: same flush and same glaze as the showpieces,
 # an exposed trapway instead of a skirt, and half the price. A skirt does not earn its keep
-# in an attic guest bath used a few weeks a year or in a basement sauna rinse.
+# in an attic guest bath used a few weeks a year or in the basement bath.
 TOTO_DRAKE = FixtureType(
     tag="FX-TOTO-DRAKE",
     name="Drake two-piece elongated water closet",
@@ -299,24 +299,22 @@ SHOWER_36_THERMO_COMBO = SHOWER.model_copy(update={
               'retaining full-span joists and <=16 in. spacing (bath2_shower.md).',
 })
 
-# RM-B-SAUNA's rinse and RM-A-STUBATH's guest shower. ** ONE OUTLET, ON PURPOSE. ** A
+# RM-B-BATH's shower (the sauna's rinse until 2026-11-25). ** ONE OUTLET, ON PURPOSE. ** A
 # two-in-one magnetic combo gives a handheld for cleaning off a plain single-function valve:
-# no diverter, no second riser, no blocking. Spending ~$500 of valve and trim to put a
-# separate handshower in a basement sauna rinse is bad value, and RM-A-STUBATH has a second
-# reason to stay simple — see the freeze note below.
+# no diverter, no second riser, no blocking.
 SHOWER_36_COMBO = SHOWER.model_copy(update={
-    "shower_assembly": SAUNA_SHOWER,
+    "shower_assembly": BASEMENT_SHOWER,
     "excludes_floor_finish": True,
     "tag": "FX-SHOWER-36-COMBO",
     # No base SKU: the threshold, at P2709.1's 9" most over the drain.
     "flood_rim_height": inch(9),
     "name": 'Shower, 36", pressure-balance valve with a two-in-one combo head',
     "product_ref": "PROD-MOEN-26010SRN",
-    # RM-B-SAUNA only (the attic took the neo-angle type): pan drain at its centre on the
-    # liner's 2" build-up, valve in W-B-CS east of the pan.
+    # RM-B-BATH only (the attic took the neo-angle type): pan drain at its centre on the
+    # liner's 2" build-up, valve in W-B-SA-N south of the pan.
     "ports": (floor_drain_port(0, 0, 2, note="Curbed liner pan, no base SKU; centre drain"),
-              *SAUNA_SHOWER.inlet_ports()),
-    "source": 'RM-B-SAUNA and RM-A-STUBATH, owner selection 2026-09-06. Delta MultiChoice '
+              *BASEMENT_SHOWER.inlet_ports()),
+    "source": 'RM-B-BATH (the sauna rinse until 2026-11-25), owner selection 2026-09-06. Delta MultiChoice '
               'R10000-UNBX rough (ASSE 1016), single-function trim, and a Moen Engage '
               'Magnetix 26010SRN two-in-one head — ONE outlet, so no diverter and no second '
               'riser. ** RM-A-STUBATH IS THE HIGHEST-CONSEQUENCE ROUGH-IN IN THE HOUSE: ** '

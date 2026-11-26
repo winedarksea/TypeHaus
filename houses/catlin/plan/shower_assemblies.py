@@ -1,7 +1,6 @@
 """House mounting choices; hardware is included in existing fixture package quantities."""
 
 from typehaus.model import ShowerAssemblySpec, ShowerComponent, inch
-from typehaus.model.shower_assembly import ShowerValvePocket
 
 
 def combo(valve_face, wall_direction, *, thermo=False, standing=2):
@@ -19,11 +18,11 @@ def combo(valve_face, wall_direction, *, thermo=False, standing=2):
                                     product_ref=head_ref, connection="head")))
 
 
-# Tile projects 1/4 in. past the old wood face: tile/setting bed + Durock + packing.
-# Body base is the slab; standing surface is the 2 in. pan, valve stays 51 7/16 in. over slab.
-SAUNA_SHOWER = combo((18, 0, 51.4375), (1, 0)).model_copy(update={
-    "valve_pocket": ShowerValvePocket(wall_ref="W-B-CS"),
-})
+# RM-B-BATH's shower (2026-11-25; the sauna rinse until then): valve on the pan's south wall,
+# W-B-SA-N. Body base is the slab; standing surface is the 2 in. pan, valve 51 7/16 in. over
+# the slab, 4 in. east of the pan's centre to sit mid-bay between W-B-SA-N's 134" and 150"
+# studs. No valve pocket: the wall is an ordinary 2x6 now, not a sauna liner.
+BASEMENT_SHOWER = combo((4, -18, 51.4375), (0, -1))
 BATH2_SHOWER_ASSEMBLY = combo((0, 18, 48), (0, 1), thermo=True, standing=1.5)
 ATTIC_SHOWER = combo((0, 18, 48), (0, 1))
 TUB_SHOWER_ASSEMBLY = ShowerAssemblySpec(

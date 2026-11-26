@@ -8,74 +8,37 @@ from typehaus import Appliance, Fixture, Mount, MountKind, deg, ft, inch, pt
 from typehaus.model import Location, TubEnclosureSpec, WallAttachment, m
 
 # --- basement ----------------------------------------------------------------------------
-# Both RM-B-SAUNA fixtures drain under the slab to PR-B-MAIN-DRAIN, not a wall stack
-# (see plan/mep.py SLAB_STUBS).
-#
-# **The sauna rotated onto the garden wall on 2026-09-05** — long axis east-west, clear box
-# x 5'-3 13/16"..17'-5 3/4", y 0'-11 1/2"/0'-9 1/2"..9'-8 3/16" between liner faces (the 2"
-# jog in the south face is where the buried pour hands over to the framed walkout at
-# x=8'-10"). The two fixtures moved with the room and kept their corner: the 36"x36" curbed
-# pan is still in the NE corner, still the only corner with both sides finished wall, and
-# the floor drain still sits west of it at the 1/8"/ft slope's low point where a boxed
-# corner chase can bring PR-B-COND's air-gap down over it. D-B-SAUNA is on W-B-CS now and
-# swings OUT into the gym, so no leaf sweeps this floor at all. The room's fall is modelled
-# (SL-B-FLOOR's `drain_dishes`, decision #148: 0.804" low at the drain); the pan's own
-# P2708.1 1/4"-1/2"/ft is inside the pan and lives only in comments.
-#
-# Both fixtures still chase through W-B-CS, not the closer W-B-SA-N partition, to keep
-# W-B-SA-N's foil-faced polyiso vapour barrier unbreached; W-B-CS also gives a true vent
-# stack path via W-M-C1 above. advisory.wet_wall_depth's 5.5" cavity requirement is a
-# house preference, not code — it is not what drives this wall choice.
+# RM-B-BATH (2026-11-25): the band north of the sauna, x 10'-0 1/4"..17'-8 3/4" by y 8'-4"..
+# 12'-9 3/4" between finish faces. Three fixtures on the south wet wall W-B-SA-N (2x6; every
+# `wall_ref` names it, since venting reads `wall_ref`), west to east: the 36" curbed pan in
+# the corner, the WC at exactly 15" off the pan (UPC 402.5), the 24" lav facing the door.
+# All drain under the slab on PR-B-SAUNA-DRAIN (mep_drainage.py), each with its own vent in
+# the wall's bays (mep_venting.py / mep_vent_tees.py). The sauna keeps only its floor drain,
+# in the aisle's NE corner, where PR-B-COND's air gap drops in the same wall.
 BASEMENT_FIXTURES = (
-    # Pan x 14'-5 3/4"..17'-5 3/4", y 6'-8 3/16"..9'-8 3/16" — snug into the liner faces.
-    # It moved 7" north with W-B-SA-N on 2026-09-05 (round three) to stay in the corner, and
-    # the floor drain, both sleeves, PR-B-SAUNA-DRAIN's first three vertices, the two
-    # condensate air gaps over the grate and PR-B-SAUNA-VENT's riser all moved with it.
-    # ** `drain_position` IS THE PAN'S OWN GRATE, AND IT HAS TO BE AUTHORED. ** Without it
-    # `_expected_drain_point` reads the "no hot connection = floor-drained" heuristic the
-    # wrong way round for a shower — this type DOES need hot water, so the derivation
-    # projects the drain onto `wall_ref`'s axis at x=18'-0", 24 1/4" east of the pan and
-    # inside W-B-CS's studs. A shower pan drains at its own grate; PR-B-SAUNA-DRAIN's first
-    # two vertices are already exactly here, so this authors a fact rather than a route.
-    Fixture(uid="CBQ802AAAA", tag="FX-B-SAUNA-SH", type_ref="FX-SHOWER-36-COMBO",
-            room="RM-B-SAUNA", position=pt(inch(191.75), inch(98.1875)),
-            wall_ref="W-B-CS", drain_position=pt(inch(191.75), inch(98.1875))),
+    # Pan x 10'-0 1/4"..13'-0 1/4", y 8'-4"..11'-4", the valve in W-B-SA-N's 134"-150" bay.
+    # `drain_position` is the pan's own grate: without it the derivation projects the drain
+    # onto `wall_ref`'s axis (this type needs hot water, so it reads as wall-drained).
+    Fixture(uid="CBQ802AAAA", tag="FX-B-BATH-SH", type_ref="FX-SHOWER-36-COMBO",
+            room="RM-B-BATH", position=pt(inch(138.25), inch(118)),
+            wall_ref="W-B-SA-N", drain_position=pt(inch(138.25), inch(118))),
     # The aisle's NE corner against the bath partition (2026-11-25), where PR-B-COND's air
     # gap drops in that wall and keeps the trap wet.
     Fixture(uid="CBQ803AAAA", tag="FX-B-SAUNA-FD", type_ref="FX-FLOOR-DRAIN",
             room="RM-B-SAUNA", position=pt(inch(196), inch(84)),
-            wall_ref="W-B-CS"),
-    # **RM-B-BATH rotated north-south on 2026-09-05** and is **3'-4 1/2" x 7'-1 1/2"**
-    # between finish faces (x 10'-3 1/4"..13'-7 3/4" off W-B-STR2/W-B-STR3B and W-B-BA-E,
-    # y 18'-2 1/4"..25'-3 3/4" off W-B-CW2 and W-B-BA-N). It lost 1" of width on 2026-11-16,
-    # when W-B-BA-E was aligned 1" west to flush its hall face with W-B-WELL's; nothing in
-    # the room had to move for it. One fixture at each end again, so
-    # each one's depth runs across the room's short dimension and the door lands between
-    # them on the long east wall.
-    #
-    # `wall_ref` on both is **W-B-BA-E**, the room's one wet wall and its only 5 1/2" stud
-    # cavity — venting reads `wall_ref`, not geometry, and W-B-BA-N dropped to a dry 2x4
-    # when the plumbing moved off it. Their shared 1 1/2" vent rises in it at
-    # (14'-0", 19'-3"), inside the 2x6 cavity (studs x 13'-8 1/4"..14'-1 3/4").
-    # Trap arms: lav ~2'-1", WC ~5'-9", both inside Table 1002.2's 3'-6"/6'-0" limits.
-    #
-    # WC at the NORTH end, backing W-B-BA-N, floor-mounted (a wall-hung carrier wants 6 1/2"
-    # of furring this room has nowhere to spend). Bowl x 11'-2"..12'-10", y 22'-10 5/8"..
-    # 25'-3" (tank 13/16" off the wall, SS-02049); the 24" front envelope then reaches
-    # y=20'-10 5/8" and its 15" side clearances land 10'-9"..13'-3", inside the room both
-    # ways — 5 5/8" of slack at the west face and 4 5/16" at the east.
+            wall_ref="W-B-SA-N"),
+    # Back to the wet wall (rotation 180): flange at the 12" rough-in, x=14'-3 1/4", 15" off
+    # the pan's edge; its 24" front zone ends 9/16" short of W-B-BT-N's face.
     Fixture(uid="CBQ801AAAA", tag="FX-B-BATH-WC", type_ref="FX-TOTO-DRAKE",
-            room="RM-B-BATH", position=pt(ft(12), inch(288.8125)),
-            wall_ref="W-B-STR2"),
-    # Relocated from the mechanical room's utility sink, so the IFC GlobalId follows the
-    # fixture rather than being retired with the tag.
-    #
-    # HAVBÄCK 36 / ORRSJÖN 37, centered in the 39.94 in. south-wall run.
-    # Cabinet/top clears the WC envelope; its recommended front zone overlaps it.
-    # Trap and supplies follow ServicePorts; the slab drop remains at its existing sleeve.
-    Fixture(uid="5BBZTZNBWN", tag="FX-B-BATH-LAV", type_ref="FX-HAVBACK-36-SS",
-            room="RM-B-BATH", position=pt(ft(12), inch(229.125)), mount=Mount(elevation=inch(8.375)), rotation=deg(180),
-            wall_ref="W-B-STR2"),
+            room="RM-B-BATH", position=pt(inch(171.25), inch(115)), rotation=deg(180),
+            wall_ref="W-B-SA-N"),
+    # SEKTION 24 / Corian, Indy stainless (the attic guest bath's type; the 36" HAVBÄCK no
+    # longer fits). x 15'-8 1/2"..17'-8 1/2", 16 1/4" off the WC's centre. The drain stub and
+    # hot drop are in the 198 3/4"-211 3/4" bay; the cold stub lands on stud-005, so its
+    # terminal drops one bay west and crosses in the cabinet (mep_lavatories.py).
+    Fixture(uid="5BBZTZNBWN", tag="FX-B-BATH-LAV", type_ref="FX-VANITY-24-SEKTION-SS",
+            room="RM-B-BATH", position=pt(inch(200.5), inch(109)), rotation=deg(180),
+            wall_ref="W-B-SA-N"),
     # Furnace-room utility sink (owner 2026-10-30): SE corner, back on W-B-STR2's bare studs,
     # clear of the dry-fire lane, the ESS zone, the panel working space and D-B-CLOSET. The
     # bundled faucet's hose adapter is used here, behind PA-B-USINK-VB; it is the ERV/WH

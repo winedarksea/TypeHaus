@@ -383,10 +383,9 @@ BASEMENT_EQUIPMENT = [
     # WIN-B-SAUNA's west jamb. It moved onto the garden wall with the room on 2026-09-05.
     # EQ-B-HP2-GYM (System 2's basement head). On W-B-CS's gym face, the wall shared with
     # RM-B-SAUNA (owner, 2026-11-14: no condensate pump), high and south: 4" off the south
-    # wall, over D-B-SAUNA (y 10 1/2".."43 3/8"). Bottom 1/2" over the door's RO head; top
-    # 92 13/16" over the 3/4" mats, 3 3/8" under the gypsum (Gree's top and side clearances
-    # are not in the repo: FIELD HOLD). Any further north is inside 440.8's 3 ft of
-    # FX-B-SAUNA-SH (here 3'-2"). Backs west, throws east across the gym's 16'-10 3/4".
+    # wall (y 10 1/2".."43 3/8"), south of D-B-SAUNA since the door moved north (2026-11-25);
+    # top 92 13/16" over the 3/4" mats, 3 3/8" under the gypsum (Gree's top and side
+    # clearances are not in the repo: FIELD HOLD). Backs west, throws east across the gym.
     # Plate on BK-B-CS-HP2-GYM; drain PR-B-COND-HP2-GYM; lineset PR-B-RFG-HP2-GYM. Rotation
     # -180 like the other heads, so its back (local +y, the lineset ports) is on the wall.
     # zone_rooms is the whole conditioned basement; RM-B-ESS is claimed for its load only.
