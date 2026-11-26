@@ -46,7 +46,7 @@ heater checks.
 - Tape each polyiso seam and each insulation-to-insulation junction at the wall and ceiling corner.
 - Lap the liquid floor membrane up the fiber cement base and flash the polyiso over its top edge.
 - Set heat-rated light strips on the new framing rails at 16 inches AFF; keep drivers and transformers out of the hot zone.
-- ERV supply: ceiling hatch over the heater (2026-11-25; was the north hatch over the upper bench). Keep the low west exhaust, decks clear of grilles, plastic pipe behind insulation.
+- ERV supply: ceiling hatch over the heater (2026-11-25). Keep the low west exhaust, decks clear of grilles, plastic pipe behind insulation.
 
 ### Spec 09 28 16
 - BATH2 shower walls: 1/2" glass-mat backer, ASTM C1178 (DensShield), floor to ceiling, grey face out, over the base flange.
