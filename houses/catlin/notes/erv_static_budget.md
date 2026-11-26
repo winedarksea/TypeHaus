@@ -1799,6 +1799,60 @@ and no capped tee.
 row and 75.6" in the strip (over D-B-CLOSET's swing, head 73 1/2"), the return trunk's 13" leg
 66" beside the case (as before). Risers 78"+, plenums 85"/86".
 
+### 10.32 The basement bath north of the sauna: GYM, SAUNA-SUP and BATH re-laid (2026-11-25)
+
+The replan put `RM-B-BATH` (x 120"..213", y 100"..154", a 12 3/4" service cavity under a hung
+5/8" ceiling) between the sauna and the furnace room. Flows do not move (GYM 48, SAUNA-SUP 38,
+BATH 20; `plan/erv_balance.py` unchanged, 210/210); only three developed lengths do.
+
+* `DU-B-ERV-R-GYM` leaves x=9'-4" at y=11'-3 1/2" (was 13'-4"), east through `W-B-BT-W`'s
+  127"..143" bay, over the bath ceiling, into `W-B-CS3`'s 128"..144" bay on `REG-B-SUP1`. It no
+  longer crosses `W-B-HALL-W` or `D-B-GYM`'s king (both bore FAILs and the neck FAIL retire).
+* `DU-B-ERV-R-SAUNA-SUP` tees off it at x=11'-0 1/2", rises on a 45 to 94 3/4", runs south
+  between the sauna vent's riser (x=10'-7") and CW-SAUNA's drop (x=11'-5 1/2"), crosses the
+  bath's supply band and `W-B-SA-N`'s top, takes a 45 diagonal over the sauna's cavity to
+  x=16'-7 3/4" and drops 10 3/4" to `REG-B-SUP3` on the heater's centre (199 3/4", 20 1/2").
+  Straight south at x~16'-8" does not fit: `PR-B-LAV-TERMINAL-HW` (top 93 3/4") and CW-SAUNA
+  (92 7/8") fill that crossing, and over them the duct top would stand 0.2" into the joists.
+* `DU-B-ERV-R-BATH` keeps its collar and runs east to x=10'-8", south through the workshop (a
+  45 pair under PLAY's y=19'-7 1/4" leg), and drops into `REG-B-EXH1`, a ceiling disc valve at
+  (128", 145"), 9" outside the shower, north of GYM's leg so the two never cross. Same
+  `_VALVE_PA` curve as the wall valve it replaces: 1.8 + (10/11.2) x 6.2 = **7.3357 Pa** at 20.
+
+`DU-B-ERV-R-PLAY` keeps its path; its `soffit_ref` to the retired `SF-B-BATH` became CHASE.
+
+**Hand-worked legs** (§10.30's f and VP at these flows; turns at the house rows, a stamped 90
+C 0.22, a 45 0.60 x 0.22 = 0.132; lengths off the authored vertices, ramps as 45 hypotenuses):
+
+    GYM        6 + 6.21875 + 8.48528 + 71.5 + 8.66206 + 6.625 + 5.30330 + 72.5 + 104 = 289.294"
+               C = 2 x 0.22 + 6 x 0.132 = 1.232
+               0.02811 x (289.294/4) x 0.0188618 = 0.038346; 1.232 x 0.0188618 = 0.023238
+                                                                          total 0.061584
+    SAUNA-SUP  4 + 6.54074 + 30.875 + 95.10586 + 8.25 + 10.75             = 155.522"
+               C = 4 x 0.132 + 0.22 = 0.748
+               0.02950 x (155.522/4) x 0.0118214 = 0.013559; 0.748 x 0.0118214 = 0.008842
+                                                                          total 0.022401
+    BATH       27.2 + 37.84375 + 3.53553 + 12.5 + 6.54074 + 80.375 + 4     = 171.995"
+               C = 2 x 0.22 + 4 x 0.132 = 0.968
+               0.03421 x (171.995/4) x 0.0032746 = 0.004817; 0.968 x 0.0032746 = 0.003170
+                                                                          total 0.007987
+
+Was: GYM 264.648" 0.058317 (§10.31), SAUNA-SUP 63.47" 0.011255 (§10.30), BATH 19.075"
+0.000534 (§10.31). BATH's last leg stands 4" over the collar top, two elbows' take-off.
+
+Paths (§10.31 -> now; a branch's path carries its parent, so SAUNA-SUP pays GYM's whole leg):
+
+    SAUNA-SUP  0.4750 + 0.003267 (GYM) + 0.011146                        = 0.4894
+    GYM        + 0.003267
+    BATH       + 0.007453 (terminal unchanged)
+    SUITEBATH  0.566926, unchanged (no leg of it moved)
+
+**Governing: still extract via SUITEBATH, 0.566926 in., 199.66 cfm** against R403.5's 188.0
+(+11.7). Engine: 0.566923, 199.66 cfm; SAUNA-SUP 0.4897 (the 0.0003 is §10.31's rounded flex
+terms inside its 0.4750), BATH 0.4190, GYM 0.3793, SAUNA-EXH 0.5486. The sauna supply path is
+still 0.077 in. under the governing one, so Harvia's inlet over the heater costs nothing at the
+curve. GYM's 48 cfm stays under the 4" limit of 50.
+
 ### 10.5 The thermal penalty of the legs (hand-worked)
 
 Both legs run through conditioned space in 2" of closed-cell elastomeric (two 1" layers of

@@ -201,6 +201,9 @@ def test_the_governing_side_is_supply_via_the_sauna(catlin_model_ro) -> None:
     ** 2026-11-21: extract via SUITEBATH, 0.567 against SAUNA-EXH 0.549 and supply via the
     sauna 0.475 (note §10.31). ** The ERV moved to the sink: the supply trunk stands straight
     into its plenum (its bent kit flex gone, -0.084") and the extract riser runs 4.4 ft further.
+
+    ** 2026-11-25: unchanged (note §10.32). ** The bath replan lengthens GYM, SAUNA-SUP and
+    BATH; supply via the sauna rises to 0.489, still under SUITEBATH's 0.567.
     """
     message = _machine_finding(catlin_model_ro).message
     assert "extract side via DU-M-ERV-R-SUITEBATH" in message
@@ -281,6 +284,7 @@ def test_the_static_and_the_delivered_flow_are_the_notes(catlin_model_ro) -> Non
     # 0.459790 + 0.007893 + 0.042192 + 17.22 / 249.089 = 0.579007, 199.42 cfm.
     # 2026-11-21, note §10.31: the ERV by the sink. Extract via SUITEBATH governs:
     # 0.554951 - 0.012159 + 0.000007 + 0.024127 = 0.566926, 199.66 cfm.
+    # 2026-11-25, note §10.32: the bath replan moves no leg of that path; unchanged.
     assert "extract side" in message
     assert "0.567 in. w.g." in message
     assert "DU-M-ERV-R-SUITEBATH 0.006\"" in message
@@ -341,6 +345,21 @@ def test_the_lengthened_straights_move_the_terms_the_notes_say(catlin_model_ro) 
     assert _delivered(_BROAN_CURVE, 0.602426) == pytest.approx(198.9030, abs=1e-3)
     assert _delivered(_BROAN_CURVE, 0.579007) == pytest.approx(199.4199, abs=1e-3)
     assert _delivered(_BROAN_CURVE, 0.566926) == pytest.approx(199.6615, abs=1e-3)
+
+
+def test_the_bath_replan_legs_are_the_notes(catlin_model_ro) -> None:
+    """Note §10.32: GYM over the bath ceiling, SAUNA-SUP to the heater, BATH to its ceiling
+    valve. Lengths and drops are the note's hand sums; the governing path does not move."""
+    from typehaus.checks.mep.erv_static import _duct_drop
+
+    ctx = check_context(model=catlin_model_ro)
+    ducts = {d.tag: d for d in catlin_model_ro.ducts}
+    for tag, elbows, length, drop in (("DU-B-ERV-R-GYM", 8, 289.294, 0.061584),
+                                      ("DU-B-ERV-R-SAUNA-SUP", 5, 155.522, 0.022401),
+                                      ("DU-B-ERV-R-BATH", 6, 171.995, 0.007987)):
+        assert ducts[tag].length_m / 0.0254 == pytest.approx(length, abs=1e-3), tag
+        assert _duct_drop(ctx, ducts[tag], elbows).drop_in_wg == pytest.approx(
+            drop, abs=5e-6), tag
 
 
 def test_sauna_radials_route_through_clear_stud_bays_without_plate_or_duct_conflicts(

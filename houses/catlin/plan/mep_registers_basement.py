@@ -31,15 +31,15 @@ REGISTERS_BASEMENT = [
     # exposed gym leg and a climb over W-B-CN2's plate. Each run now ends in a stud bay of the
     # wall it crossed, the valve on the room face, centred on the duct.
     #
-    # REG-B-SUP1: W-B-CS3's gym face at y=13'-4", over D-B-GYM's header, between the header
-    # (top 87 1/4") and the plates (93"), where DU-B-ERV-R-GYM already crossed the wall.
-    # 10 cfm since 2026-11-03: 8 went to the sauna's supply (REG-B-SUP3).
+    # REG-B-SUP1: W-B-CS3's gym face at y=11'-3 1/2", in the 128"..144" stud bay under the
+    # plates, where DU-B-ERV-R-GYM comes through over the bath ceiling (2026-11-25; it sat on
+    # D-B-GYM's king before). 10 cfm since 2026-11-03: 8 went to the sauna's supply (REG-B-SUP3).
     Register(uid="CBRV01AAAA", tag="REG-B-SUP1", kind=DuctSystem.SUPPLY, room="RM-B-GYM",
             duct_ref="DU-B-ERV-R-GYM",
             type_ref="REG-T-ERV-VALVE-SUP-WALL", design_cfm=REG_B_SUP1,
             mount=Mount(kind=MountKind.WALL, elevation=inch(86.84375)),
             location=Location(attachment=WallAttachment(
-                wall_ref="W-B-CS2", face="right", distance_from_start=inch(4),
+                wall_ref="W-B-CS3", face="left", distance_from_start=inch(20.5),
                 normal_gap=inch(0), rotation_offset=deg(-180)))),
     # RM-B-PLAY-N is 324 sf of windowless habitable MEDIA space, legal only under R303.1
     # Exception 1, whose second half requires outdoor air supplied to *the room* — an
@@ -48,7 +48,7 @@ REGISTERS_BASEMENT = [
     #
     # W-B-CN2's theater face at y=20'-6", in the 240"..256" stud bay. The face centre sits
     # 5/16" under DU-B-ERV-R-PLAY's 90 3/4" (the 4" duct stays inside the 5" increaser) so
-    # the increaser clears the plates (93"); the duct cannot drop, SF-B-BATH holds it up. It
+    # the increaser clears the plates (93"). It
     # throws east across the room, away from nothing: FURN-B-PLAY-TV is on the east wall.
     # Mount elevations here are off the finished floor, 3/4" over the slab datum.
     Register(uid="CBRV02AAAA", tag="REG-B-SUP2", kind=DuctSystem.SUPPLY, room="RM-B-PLAY-N",
@@ -85,29 +85,21 @@ REGISTERS_BASEMENT = [
              location=Location(attachment=WallAttachment(
                  wall_ref="W-B-SA-W", face="right", distance_from_start=inch(38),
                  normal_gap=inch(0), rotation_offset=deg(0)))),
-    # Fresh air in high, over the stones, directly above EQ-B-SAUNA-HTR (the EAST liner
-    # since 2026-09-05 round three, plan/electrical.py) at 7'-0" — below the 8' ceiling so
-    # the boot doesn't fight the drop ceiling the condensate line already runs above. It
-    # moved 1'-5" east with the heater, and DU-B-ERV-R-SAUNA-SUP's east leg moved with both:
-    # the register sits on the heater's own centre, which is what "over the stones" means.
-    # 20 cfm since 2026-11-03, balancing REG-B-EXH2 behind the sealed sauna door; the 8 cfm
-    # came off REG-B-SUP1 on the same plenum (notes/erv_static_budget.md §10.8).
+    # Fresh air in high, over the stones: a ceiling hatch on EQ-B-SAUNA-HTR's centre (the
+    # east liner), Harvia's inlet-near-heater layout restored with the bath replan
+    # (2026-11-25). DU-B-ERV-R-SAUNA-SUP drops 10 3/4" to it through the service cavity.
+    # 38 cfm, balancing REG-B-EXH2 behind the sealed sauna door (notes/erv_static_budget.md
+    # §10.30).
     Register(uid="CBRV06AAAA", tag="REG-B-SUP3", kind=DuctSystem.SUPPLY, room="RM-B-SAUNA",
-            position=pt(inch(134.4), inch(109.2)), duct_ref="DU-B-ERV-R-SAUNA-SUP",
+            position=pt(inch(199.75), inch(20.5)), duct_ref="DU-B-ERV-R-SAUNA-SUP",
             type_ref="REG-T-SAUNA-VENT-SUP", design_cfm=REG_B_SUP3,
             mount=Mount(kind=MountKind.CEILING, elevation=ft(7))),
     # RM-B-BATH. Filed as EXHAUST rather than RETURN, like RM-S-BATH1's terminal and unlike
     # the basement's other two stale pickups: a bathroom's air is pulled and not
-    # recirculated. It is a SIDEWALL grille high on W-B-STR3B, the west wall, far from the
-    # door, so the room's makeup air crosses it. Since 2026-09-22: the ceiling grille at
-    # (12', 24'-1 5/8") was fed through ST-B2M's stringer. x is the bath-side paint face plus
-    # 1"; the base at 7'-1 1/4" centres the 7" face on the duct. 5" south since 2026-11-21:
-    # the radial now runs straight east off EQ-B-ERV-MAN-EXH's end.
+    # recirculated. A ceiling disc valve 9" outside FX-B-BATH-SH's front, at the source
+    # (2026-11-25, the bath north of the sauna); DU-B-ERV-R-BATH drops to it from above.
     Register(uid="CBRV05AAAA", tag="REG-B-EXH1", kind=DuctSystem.EXHAUST, room="RM-B-BATH",
-            duct_ref="DU-B-ERV-R-BATH",
-            type_ref="REG-T-ERV-VALVE-EXH-WALL", design_cfm=REG_B_EXH1,
-            mount=Mount(kind=MountKind.WALL, elevation=inch(85.25)),
-             location=Location(attachment=WallAttachment(
-                 wall_ref="W-B-STR3B", face="left", distance_from_start=inch(23.15625),
-                 normal_gap=inch(0), rotation_offset=deg(-180)))),
+            position=pt(inch(128), inch(145)), duct_ref="DU-B-ERV-R-BATH",
+            type_ref="REG-T-ERV-VALVE-EXH", design_cfm=REG_B_EXH1,
+            mount=Mount(kind=MountKind.CEILING)),
 ]

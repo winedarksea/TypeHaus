@@ -186,13 +186,12 @@ DUCTS_ERV_BASEMENT = [
     # the HW-BATH and LSINK legs it crosses, then a 45 ramp to 90 1/8" by y=18'-2 3/8",
     # through W-B-CW3 in its 8'-1"..9'-5" stud bay, 1 1/2" under the plates.
     # ** SOUTH OF EQ-B-WH SINCE 2026-11-09. ** A 45 offset takes it 4" east, off the vent's
-    # x=9'-0" line, then south on x=9'-4" over PR-M-S-SUITE-DRAIN (1/2" clear) to y=13'-4",
-    # and straight east over D-B-SHOP's flat head (5" over the head, 1 5/8" under the plates)
-    # and the hall.
-    # ** IT CROSSES `W-B-CS3` OVER `D-B-GYM`'s HEADER AT 90 1/8". ** Centred at -19 5/16" it
-    # passes between the cripples at y=12'-4 3/16" and 13'-7 7/16" with 7/8" to header and
-    # plate (`notes/framing_bore_limits.md` §6a is a hole IN a cripple; this is air between
-    # two), and ENDS in that bay on REG-B-SUP1, a sidewall valve on the gym face.
+    # x=9'-0" line, then south on x=9'-4" over PR-M-S-SUITE-DRAIN (1/2" clear).
+    # ** OVER THE BATH CEILING SINCE 2026-11-25. ** At y=11'-3 1/2" it turns east through
+    # W-B-BT-W's 127"..143" bay, across RM-B-BATH's 12 3/4" service cavity (south of BATH's
+    # drop, so the two never cross), and ENDS in W-B-CS3's 128"..144" bay under the plates on
+    # REG-B-SUP1, a sidewall valve on the gym face. It no longer crosses W-B-HALL-W or
+    # D-B-GYM's king. SAUNA-SUP tees off it.
     DuctRun(uid="CND5TE40W0", tag="DU-B-ERV-R-GYM", system=DuctSystem.SUPPLY,
             # Stock turns only: two 45 degree ramps and a 45 degree offset.
             # x=9'-0 1/4" (2026-11-21): 2" of collar damper before the first elbow.
@@ -201,7 +200,7 @@ DUCTS_ERV_BASEMENT = [
                   pt(inch(108.25), inch(224.5)), pt(inch(108.25), inch(218.375)),
                   pt(inch(108.25), inch(211.75)),
                   pt(inch(112), inch(208)),
-                  pt(inch(112), ft(13, 4)), pt(ft(18), ft(13, 4))),
+                  pt(inch(112), inch(135.5)), pt(ft(18), inch(135.5))),
             elevations=(inch(90), inch(90), inch(90), inch(84), inch(84), inch(90.125),
                         inch(90.125), inch(90.125), inch(90.125), inch(90.125)),
             diameter=inch(4), routing=DuctRouting.CHASE, material="galvanized",
@@ -215,7 +214,8 @@ DUCTS_ERV_BASEMENT = [
     # W-B-BA-E at y=18'-6 3/4" (the one gap in that staggered wall south of the bath's three
     # risers wide enough for a 4" duct). Then 1'-5" north up the hall at x=16'-9" and east at
     # y=20'-6" into W-B-CN2's 240"..256" stud bay, where it ends on REG-B-SUP2, a sidewall
-    # valve on the theater face.
+    # valve on the theater face. CHASE since SF-B-BATH retired (2026-11-25): the old bath it
+    # crossed is the WH alcove and the hall, both exposed-service rooms now.
     DuctRun(uid="DMEQ946YAX", tag="DU-B-ERV-R-PLAY", system=DuctSystem.SUPPLY,
             path=(pt(inch(98.5), inch(313.21875)), pt(inch(98.5), inch(319.25)),
                   pt(ft(9, 6), inch(319.25)), pt(ft(9, 6), inch(310)),
@@ -227,22 +227,22 @@ DUCTS_ERV_BASEMENT = [
             elevations=(inch(90), inch(90), inch(90), inch(90), inch(83.15), inch(83.15),
                         inch(91.25), inch(90.75), inch(90.75), inch(90.75), inch(90.75),
                         inch(90.75)),
-            diameter=inch(4), routing=DuctRouting.SOFFIT, soffit_ref="SF-B-BATH",
-            material="galvanized", design_cfm=DU_B_ERV_R_PLAY),
-    # ** THE SAUNA SUPPLY IS A BRANCH OFF GYM'S y=13'-4" LEG (2026-11-11). ** It used to leave its
-    # own plenum collar and go 49 1/2 ft: west, south down x=1'-7" and east along the south band.
-    # Now it taps GYM at x=11'-2" (GYM carries its 20 cfm, plan/erv_balance.py) and runs 3 ft
-    # south: a 45 ramp up to 94 3/4" over PR-B-SAUNA-VENT's y=10'-6" run (top 92 1/4"), over
-    # W-B-SA-N's plates and the hung ceiling's foil, then 10 3/4" down to REG-B-SUP3 on the
-    # 7'-0" face over the north end of the upper bench. The top stands 3/4" under the joists
-    # (-11 7/8"); PR-B-SAUNA-FD-VENT (x=11'-11") is 8 1/2" east. EQ-B-ERV-MAN-SUP's collar-sauna
-    # is spare: the shop leaves it uncut (or blanks it). Harvia wants the inlet near the heater;
-    # the owner accepted the departure for the 41 ft it saves.
+            diameter=inch(4), routing=DuctRouting.CHASE, material="galvanized",
+            design_cfm=DU_B_ERV_R_PLAY),
+    # ** THE SAUNA SUPPLY IS A BRANCH OFF GYM'S BATH-CEILING LEG (2026-11-25). ** It taps GYM
+    # at x=11'-0 1/2" and rises on a 45 to 94 3/4" (3/4" under the joists) to pass over the
+    # bath's supply band (PR-B-CW-SAUNA at y=8'-7", top 92 7/8"; HW-SAUNA only reaches east
+    # of x=12'-3") and W-B-SA-N's top (90"), between the sauna vent's riser (x=10'-7") and
+    # CW-SAUNA's drop (x=11'-5 1/2"). Over the sauna's service cavity a 45 runs it to
+    # x=16'-7 3/4", then 10 3/4" down to REG-B-SUP3 over the heater: Harvia's layout. x=16'-8"
+    # straight south was the first try; the bath's lav and HW lines fill that crossing.
     DuctRun(uid="VXGA0P0V72", tag="DU-B-ERV-R-SAUNA-SUP", system=DuctSystem.SUPPLY,
-            path=(pt(inch(134.4), ft(13, 4)), pt(inch(134.4), inch(156)),
-                  pt(inch(134.4), inch(151.375)), pt(inch(134.4), inch(109.2)),
-                  pt(inch(134.4), inch(109.2))),
-            elevations=(inch(90.125), inch(90.125), inch(94.75), inch(94.75), ft(7)),
+            path=(pt(inch(132.5), inch(135.5)), pt(inch(132.5), inch(131.5)),
+                  pt(inch(132.5), inch(126.875)), pt(inch(132.5), inch(96)),
+                  pt(inch(199.75), inch(28.75)), pt(inch(199.75), inch(20.5)),
+                  pt(inch(199.75), inch(20.5))),
+            elevations=(inch(90.125), inch(90.125), inch(94.75), inch(94.75), inch(94.75),
+                        inch(94.75), ft(7)),
             diameter=inch(4), routing=DuctRouting.CHASE, material="galvanized",
             design_cfm=DU_B_ERV_R_SAUNA_SUP),
     # The bench extract is a branch off SAUNA-EXH's x=1'-7" leg (2026-11-11). It takes off the
@@ -255,12 +255,19 @@ DUCTS_ERV_BASEMENT = [
             elevations=(inch(82.25), inch(82.25)),
             diameter=inch(4), routing=DuctRouting.CHASE, material="galvanized",
             design_cfm=DU_B_ERV_R_BENCH, inline_dampers=(inch(28),)),
-    # The basement bath's extract leaves MAN-EXH's east end and runs straight east on
-    # y=23'-6 27/32" at 89" to a sidewall grille in W-B-STR3B (REG-B-EXH1), over GYM's and
-    # PLAY's lanes and under PR-B-SAUNA-VENT; W-B-STR3B is passed in its 23'-4"..24'-8" bay.
+    # The basement bath's extract (2026-11-25, the bath north of the sauna; first laid by
+    # `haus route`) leaves MAN-EXH's east end at 89", runs east to x=10'-8" and south through
+    # the workshop: a 45 down to 86 1/2" under DU-B-ERV-R-PLAY's y=19'-7 1/4" leg, a 45 up to
+    # 91 1/8" (4" over the collar, two elbows' take-off), through W-B-CW2's and W-B-BT-N's
+    # stud bays, and down into REG-B-EXH1's ceiling collar north of GYM's bath leg. Still its
+    # own collar-bath radial: the sauna extract it could tee onto is at 44 of 50 cfm.
     DuctRun(uid="03883CKF0H", tag="DU-B-ERV-R-BATH", system=DuctSystem.EXHAUST,
-            path=(pt(inch(100.8), inch(282.84375)), pt(inch(119.875), inch(282.84375))),
-            elevations=(inch(89), inch(89)),
+            path=(pt(inch(100.8), inch(282.84375)), pt(inch(128), inch(282.84375)),
+                  pt(inch(128), inch(245)), pt(inch(128), inch(242.5)),
+                  pt(inch(128), inch(230)), pt(inch(128), inch(225.375)),
+                  pt(inch(128), inch(145)), pt(inch(128), inch(145))),
+            elevations=(inch(89), inch(89), inch(89), inch(86.5), inch(86.5), inch(91.125),
+                        inch(91.125), inch(87.125)),
             diameter=inch(4), routing=DuctRouting.CHASE, material="galvanized",
             design_cfm=DU_B_ERV_R_BATH),
     # It leaves MAN-EXH's west end at 90 1/2", passes OVER PR-M-S-BATH1-DRAIN's x=5'-0" fall
