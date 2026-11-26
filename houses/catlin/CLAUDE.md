@@ -2221,8 +2221,8 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   footprint at (138 1/2", 246 3/4"), back to `W-B-BA-N`, serviced through the 34" doorless RO
   `AO-B-WH-ALCOVE` in `W-B-CW2` (explicit NONBEARING) from the workshop. Ducts and grilles on
   `W-B-BA-E`'s hall face; `ED-B-WH-RC` behind the tank at 78"; a keyless light and switch on
-  `W-B-STR2`. `EQ-B-HW-HEADER` did not move. `electrical.equipment_space_lighting` is UNKNOWN
-  (no entry door).
+  `W-B-STR2`. `EQ-B-HW-HEADER` did not move. `electrical.equipment_space_lighting` reads the RO as the
+  alcove's entry.
 
 - **Hall and circulation.** The hall runs from the stair foot south, west of `W-B-CN2`, the
   full way to the bath's door (`D-B-BATH`) at y=13'-0". `W-B-BA-E`/`W-B-HALL-W` (6 1/2") stand on the x=14'-0"

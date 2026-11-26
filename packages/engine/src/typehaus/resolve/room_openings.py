@@ -103,7 +103,14 @@ def room_doors(model: Any, room) -> list:
     return _openings_on_boundary(model, room, doors=True, exterior_only=False)
 
 
-def _openings_on_boundary(model: Any, room, *, doors: bool, exterior_only: bool) -> list:
+def room_passages(model: Any, room) -> list:
+    """Leafless floor-level through holes (a cased opening, an alcove's mouth) on this room's
+    bounding wall: entries with no door."""
+    return _openings_on_boundary(model, room, doors=False, exterior_only=False, passages=True)
+
+
+def _openings_on_boundary(model: Any, room, *, doors: bool, exterior_only: bool,
+                          passages: bool = False) -> list:
     """The openings of one kind whose centre falls in this room's boundary band."""
     from shapely.geometry import Point, Polygon
 
@@ -116,7 +123,10 @@ def _openings_on_boundary(model: Any, room, *, doors: bool, exterior_only: bool)
     index = rooms_by_storey(model) if exterior_only else None
     found = []
     for opening in model.openings:
-        if bool(opening.is_door) != doors or opening.type_ref is None:
+        if passages:
+            if opening.is_door or not opening.is_passage:
+                continue
+        elif bool(opening.is_door) != doors or opening.type_ref is None:
             continue
         wall = model.wall(opening.host_wall)
         if wall is None or wall.storey != room.storey:

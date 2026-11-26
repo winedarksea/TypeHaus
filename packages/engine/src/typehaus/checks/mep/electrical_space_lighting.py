@@ -6,9 +6,10 @@ a point of control at each entry, and a light at or near the equipment. Equipmen
 ``Equipment`` element (ducts' manifolds and plenums are not serviced) or a panel. Per room:
 
 * no luminaire, or none with a wall switch or integral switch: FAIL (advisory);
-* an entry door with no controlling switch within 6 ft, an equipment footprint with no
-  luminaire within 6 ft, or no modelled door (a stair or open entry): UNKNOWN, since "entry
-  that permits access" and "near" are judgement the plan cannot settle.
+* an entry (a door, or a leafless floor-level opening) with no controlling switch within
+  6 ft, an equipment footprint with no luminaire within 6 ft, or no modelled entry (a
+  stair): UNKNOWN, since "entry that permits access" and "near" are judgement the plan
+  cannot settle.
 
 (C)(3): where every switched light in the room answers only to automatic controls (a
 switch type whose ``control`` is ``occupancy`` or ``timer``) and none has an integral switch,
@@ -72,7 +73,7 @@ def equipment_space_lighting(ctx: CheckContext) -> list[Finding]:
 
     from typehaus.resolve.geometry import opening_center
     from typehaus.resolve.room_lookup import room_owning
-    from typehaus.resolve.room_openings import room_doors
+    from typehaus.resolve.room_openings import room_doors, room_passages
 
     code = cite(NEC.EQUIPMENT_SPACE_LIGHTING)
     objects = {o.tag: o for o in ctx.model.canvas_objects}
@@ -90,7 +91,9 @@ def equipment_space_lighting(ctx: CheckContext) -> list[Finding]:
                 and e.kind is DeviceKind.SWITCH and e.tag in objects}
     types = {t.tag: t for t in ctx.plan.library.electrical_device_types}
     rooms = {r.tag: r for r in ctx.model.rooms}
-    doors_of = {r.tag: {d.tag for d in room_doors(ctx.model, r)} for r in ctx.model.rooms}
+    entries = {r.tag: room_doors(ctx.model, r) + room_passages(ctx.model, r)
+               for r in ctx.model.rooms}
+    doors_of = {tag: {d.tag for d in found} for tag, found in entries.items()}
     out: list[Finding] = []
     for tag in sorted(held):
         room = rooms[tag]
@@ -115,9 +118,9 @@ def equipment_space_lighting(ctx: CheckContext) -> list[Finding]:
             gaps.append(f"every switched light answers only to automatic control, and "
                         f"{NEC.EQUIPMENT_SPACE_AUTOMATIC} wants a manual bypass the model does "
                         "not hold")
-        doors = [d for d in room_doors(ctx.model, room) if not _closet_door(d, tag, doors_of)]
+        doors = [d for d in entries[tag] if not _closet_door(d, tag, doors_of)]
         if not doors:
-            gaps.append("no entry door is modelled (a stair or open entry?)")
+            gaps.append("no entry is modelled (a stair?)")
         for door in doors:
             wall = ctx.model.wall(door.host_wall)
             centre = opening_center(wall, door) if wall is not None else None

@@ -73,8 +73,7 @@ though it stops at G. Model height is A, 74 3/16". Filter (top) wants 6" over th
 
 **Why the alcove (owner, 2026-11-25).** The bath replan took the stair-foot bath's footprint
 for the water heater; walls and ducts follow in `notes/basement_winter_heat.md`. The workshop
-keeps its area; the alcove (an exposed-service room, doorless, so
-`electrical.equipment_space_lighting` is UNKNOWN) has a keyless light and switch on `W-B-STR2`
+keeps its area; the alcove (an exposed-service room, doorless) has a keyless light and switch on `W-B-STR2`
 and `ED-B-WH-RC` (GFCI, `W-B-BA-N`, 78" AFF, behind the tank). **Why here (owner,
 2026-11-09, the corner it left).** The workshop keeps its area and gains no walls or door;
 both air connections are ducted through `W-B-HALL-W` to two grilles in the stair hall, so the

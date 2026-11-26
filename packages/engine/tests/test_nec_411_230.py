@@ -36,11 +36,11 @@ def test_catlins_equipment_rooms_are_graded_for_210_70_c(catlin_model_ro):
     found = _findings(catlin_model_ro, "electrical.equipment_space_lighting")
     by_room = {f.element_tags[0]: f.result.value for f in found}
     # The 3-way pairs at D-B-FURN (2026-11-14); D-B-ESS is a closet door, not an entry.
-    # RM-B-WH-ALCOVE (2026-11-25) opens through a doorless RO, so "at each entry" is the
-    # inspector's: UNKNOWN, with its switch just inside the opening.
+    # RM-B-WH-ALCOVE (2026-11-25) is entered through a doorless RO, which counts as its
+    # entry: its switch is just inside it. To the workshop it is a dead end, like a closet.
     assert by_room == {"RM-A-EAST-UNFIN": "pass", "RM-B-ESS": "pass",
                        "RM-B-FURNACE": "pass", "RM-B-WORKSHOP": "pass",
-                       "RM-B-WH-ALCOVE": "unknown"}
+                       "RM-B-WH-ALCOVE": "pass"}
 
 
 def test_laundry_track_is_in_another_room_than_the_tub(catlin_model_ro):

@@ -29,7 +29,10 @@ old bath's footprint, an alcove with a doorless 34" RO from the workshop.
   only wall tile, so `finish-wall-tile-material` goes to $0 and the tile-backer lump halves to
   BATH2's floor. Without those two the branch is ~$900-$1,000 more.
 - Open (not graded): the condensate tail in the sauna's NE corner runs ~14" over the floor at
-  9" to the drain. `electrical.equipment_space_lighting` is UNKNOWN for the doorless alcove.
+  9" to the drain.
+- Engine (review, 2026-11-26): `electrical.equipment_space_lighting` counts a leafless
+  floor-level opening as an entry (`room_openings.room_passages`), so the alcove passes on its
+  switch inside `AO-B-WH-ALCOVE`; to the workshop that mouth is a dead end, like a closet door.
 
 ## Basement stair: the railing tape goes, two landing cans come in (2026-11-25, owner)
 
