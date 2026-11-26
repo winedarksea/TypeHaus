@@ -74,14 +74,14 @@ EQUIPMENT_TYPES_HEADER = (
                                      certainty=PortCertainty.EXACT))),
 )
 
-# ** IN THE WORKSHOP'S NE CORNER BESIDE EQ-B-WH SINCE 2026-11-09 ** (was x=7'-6" in
-# RM-B-FURNACE), so the 1" trunk is 7.2 ft: a foot of it holds what 4.7 ft of 1/2" PEX does.
-# Body on x=13'-4" between the tank and W-B-HALL-W, inlet south, closed end 3/8" off
-# W-B-CW2; tips at 86 1/8". Copper and 7.2 ft of trunk from the tap: UPC 604.13's 18" holds.
+# ** IN THE WORKSHOP'S NE CORNER SINCE 2026-11-09 ** (was x=7'-6" in RM-B-FURNACE). EQ-B-WH
+# moved into RM-B-WH-ALCOVE behind it on 2026-11-25; the 1" trunk is now 12.4 ft. Body on
+# x=13'-4", 3 3/4" off W-B-HALL-W, inlet south, closed end 3/8" off W-B-CW2; tips at 86 1/8".
+# Copper from the tap: UPC 604.13's 18" holds.
 # Each branch drops 2 5/8" to 83 1/2" and turns west (a bend support at each), then:
-#   out-1 SAUNA, out-2 KITCH: 6-7" west, up to 103 3/16" in the joist web, south and east.
+#   out-1 SAUNA, out-2 KITCH: 6-7" west, up to 102" / 103 3/16" in the joist web, south, east.
 #   out-3..8 FILLER, WASH, BATH2, BATH, BATH1, BATH2-SH: up at x=12'-7" to 95 7/16" and
-#     west over the tank's elbow on their own outlet's line (BATH2 at 97 7/16"), each
+#     west on their own outlet's line (BATH2 at 97 7/16"), each
 #     dropping or climbing where it turns. Lines south of out-3 would meet
 #     PR-M-S-SUITE-DRAIN's drop at x=10'-2".
 # Lanes drawn by hand and graded by `haus check` (0 FAIL); `haus route --manifold` proposed

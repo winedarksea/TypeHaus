@@ -227,11 +227,11 @@ SUPPLY_STOPS = [
     # The water heater's cold inlet — the one stop in this list that IS at its branch's own
     # end rather than at a fixture, and the one the house most obviously lacked. UPC 606.2
     # wants a valve on the cold supply to a water heater; without it, changing an anode rod
-    # or a T&P valve means closing the main. It stands on the cold drop beside the tank,
-    # at hand height in the workshop (2026-11-09).
+    # or a T&P valve means closing the main. It stands on the cold drop between the tank and
+    # W-B-BA-E, at hand height, reached through AO-B-WH-ALCOVE (2026-11-25).
     PipeAccessory(uid="XTPXNZ8PRZ", tag="PA-B-WH-STOP-CW", kind=PipeAccessoryKind.SHUTOFF,
-                  pipe_ref="PR-B-CW-WH", position=pt(inch(138.15), inch(182.38)),
-                  elevation=inch(48), accessible=True, room="RM-B-WORKSHOP",
+                  pipe_ref="PR-B-CW-WH", position=pt(inch(158.473), inch(242.126)),
+                  elevation=inch(48), accessible=True, room="RM-B-WH-ALCOVE",
                   model='1" full-port bronze ball valve, lever handle, at the tank inlet',
                   serves=("EQ-B-WH",)),
     # UPC 608.3: closed system assumed until SPRWS says whether its meter set has a check
@@ -239,8 +239,8 @@ SUPPLY_STOPS = [
     # it with the heater. ST-12 is Amtrol's own row for 80 gal at 40-80 psi (MC4090-09/25).
     # Precharge to the measured static pressure. The PRV waits on that pressure.
     PipeAccessory(uid="X7400QBP4T", tag="PA-B-WH-XTANK", kind=PipeAccessoryKind.EXPANSION_TANK,
-                  pipe_ref="PR-B-CW-WH", position=pt(inch(138.15), inch(182.38)),
-                  elevation=inch(30), accessible=True, room="RM-B-WORKSHOP",
+                  pipe_ref="PR-B-CW-WH", position=pt(inch(158.473), inch(242.126)),
+                  elevation=inch(30), accessible=True, room="RM-B-WH-ALCOVE",
                   model='listed potable expansion tank, Amtrol ST-12 or equal (4.4 gal, 3/4" NPTM)',
                   serves=("EQ-B-WH",)),
 ]

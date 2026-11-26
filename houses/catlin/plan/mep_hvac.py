@@ -371,21 +371,21 @@ DUCTS_HVAC_ATTIC = [
             design_cfm=35, material="galvanized"),
 ]
 
-# ** OPEN IN RM-B-WORKSHOP's NE CORNER SINCE 2026-11-09 (owner). ** Back on W-B-CW2 (Rheem
-# 0" rear), riser lobe 14" off W-B-HALL-W. Both air connections are ducted through
-# W-B-HALL-W's one 12 1/2" bay north of D-B-SHOP into the stair hall (plan/mep_hpwh_air.py),
-# so the chill and the shop dust both stay out of the workshop's air and the filter.
+# ** IN RM-B-WH-ALCOVE SINCE 2026-11-25 ** (was open in the workshop's NE corner), back
+# 1/4" off W-B-BA-N, entered and serviced through AO-B-WH-ALCOVE. Both air connections are
+# ducted through W-B-BA-E's north bay into the stair hall (plan/mep_hpwh_air.py), so the
+# chill and the shop dust both stay out of the workshop's air and the filter. The top inlet
+# elbow stands north of DU-B-ERV-R-PLAY's y=19'-7" leg; the tank body is under it.
 #
-# ** ROTATED -40 deg: EXHAUST SOUTH-EAST, ON THE BAY'S LINE. ** The exhaust is front + 70
-# deg, so the side port, the top elbow's outlet and the turn onto the bay line up in plan:
-# each duct runs straight to one bend square to W-B-HALL-W. The display faces south-west
-# over the 30x30 working space on the open floor; the T&P and condensate face it, west of
-# the ducts. World ports (notes/water_service.md §1): hot (145.0", 188.4", 42 3/8"), cold
-# (138.0", 185.4", 5 1/16"), T&P (124.1", 193.7", ~46"), condensate (124.7", 197.8", 59"),
-# air-out (143.6", 190.9", 65 1/2"), air-in (top centre, 74 3/16").
+# ** ROTATED +35 deg: EXHAUST AND RISER EAST-NORTH-EAST. ** The side exhaust points at the
+# bay with one 15 deg bend into its boot; the display, T&P and condensate face south-east
+# toward the opening. World ports (notes/water_service.md §1): hot (153.0", 250.7", 42 3/8"),
+# cold (154.1", 243.1", 5 1/16"), T&P (142.5", 231.8", ~46"), condensate (138.7", 233.4",
+# 59"), air-out (150.2", 249.9", 65 1/2"), air-in (top centre, 74 3/16"). The cord reaches
+# W-B-BA-N behind the tank or W-B-STR2 west of it; ED-B-WH-RC is re-placed in Phase 5.
 EQUIPMENT = [
     Equipment(uid="CME902AAAA", tag="EQ-B-WH", kind=EquipmentKind.WATER_HEATER,
-             position=pt(inch(137.5), inch(201.375)), rotation=deg(-40),
-             footprint=(inch(24.25), inch(24.25)), room="RM-B-WORKSHOP", type_ref="EQ-T-WATER-HEATER", circuit="CKT-WH",
+             position=pt(inch(138.5), inch(246.75)), rotation=deg(35),
+             footprint=(inch(24.25), inch(24.25)), room="RM-B-WH-ALCOVE", type_ref="EQ-T-WATER-HEATER", circuit="CKT-WH",
              relief_discharge_ref="PR-B-WH-TPR"),
 ]

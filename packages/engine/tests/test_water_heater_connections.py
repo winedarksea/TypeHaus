@@ -145,7 +145,7 @@ def test_the_tank_stands_inside_the_room_it_claims(catlin_model, water_heater) -
     """A placeable that drifts out of its room takes its clearances and loads with it."""
     from shapely.geometry import Polygon
 
-    room = next((r for r in catlin_model.rooms if r.tag == "RM-B-WORKSHOP"), None)
+    room = next((r for r in catlin_model.rooms if r.tag == "RM-B-WH-ALCOVE"), None)
     assert room is not None
     # Hard on a wall, so a sub-micrometre tolerance on the shared faces.
     assert Polygon(room.clear_face).buffer(1e-6).contains(Polygon(water_heater.footprint))

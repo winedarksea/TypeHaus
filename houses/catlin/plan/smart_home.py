@@ -45,9 +45,10 @@ BASEMENT_ELEMENTS = [
     # Leak sensors (notes/leak_detectors.md): SONOFF SNZB-05P on the floor at each risk point,
     # Zigbee to ZHA, battery (no circuit). HA notifies; nothing depends on them. `position`
     # is the floor point (an Alarm has no wall host or elevation).
+    # Beside the HydroBoost riser foot in RM-B-WH-ALCOVE (2026-11-25).
     Alarm(uid="4MRMB39TRR", tag="AL-B-WH-LEAK", kind=AlarmKind.LEAK,
-          type_ref="ED-T-LEAK-SNZB05P", room="RM-B-WORKSHOP",
-          position=pt(inch(147), inch(186))),
+          type_ref="ED-T-LEAK-SNZB05P", room="RM-B-WH-ALCOVE",
+          position=pt(inch(157.5), inch(238))),
     Alarm(uid="F5CW2JYT7F", tag="AL-B-HDR-LEAK", kind=AlarmKind.LEAK,
           type_ref="ED-T-LEAK-SNZB05P", room="RM-B-WORKSHOP",
           position=pt(inch(161), inch(205))),

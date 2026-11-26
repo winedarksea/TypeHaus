@@ -57,12 +57,12 @@ def _point_along_trunk(trunk, distance_in):
 
 
 def _pex_branch(model, tag, distance_in, plan_off_in=0.0):
-    """A PEX branch teeing ``distance_in`` along the real trunk and running 3' north, away
-    from the heater (the trunk leaves west, then north, since the tank's move, 2026-11-09)."""
+    """A PEX branch teeing ``distance_in`` along the real trunk and running 3' east, away
+    from the heater (the trunk drops and runs south beside the tank since 2026-11-25)."""
     trunk = next(r for r in model.pipe_runs if r.tag == "PR-B-HW-TRUNK")
     x, y, z = _point_along_trunk(trunk, distance_in)
     x += plan_off_in * _IN
-    return replace(trunk, uid=tag, tag=tag, path=((x, y), (x, y + 0.9144)),
+    return replace(trunk, uid=tag, tag=tag, path=((x, y), (x + 0.9144, y)),
                    z_m=(z, z), z_start_m=z, z_end_m=z, length_m=0.9144, material="pex")
 
 
@@ -71,7 +71,7 @@ def test_catlin_passes_and_names_its_tap_runs(catlin_model_ro) -> None:
     assert [f.result for f in findings] == [Result.PASS]
     msg = findings[0].message
     assert "PR-B-HW-TRUNK" in msg and "PR-B-CW-WH" in msg
-    assert "tees on 66\" out" in msg  # PR-B-HW-SBATH, off the trunk ahead of the header
+    assert "tees on 128\" out" in msg  # PR-B-HW-SBATH, off the trunk ahead of the header
 
 
 def test_a_pex_trunk_on_the_tap_fails(model) -> None:

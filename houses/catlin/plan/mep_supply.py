@@ -242,20 +242,24 @@ SUPPLY = [
                     # 1 1/4" trunk that carries 64 in Table 610.4's 46-60 psi column, so the
                     # tee costs nothing in size.
                     "FX-M-PORCH-HYD", "FX-S-BALCONY-HYD")),
-    # ** 7.2 FT, TAP TO HEADER, IN THE WORKSHOP'S NE CORNER (2026-11-09; was 19.3). ** Off the
-    # HydroBoost riser's side tap (E 42 3/8"), a 3" stub on the port axis under DU-B-WH-OUT,
-    # a 90 to x=12'-9 3/4" (8" clear of the ducts), up to 95 1/2", north and east, and down
-    # into EQ-B-HW-HEADER's +y-facing inlet. UPC 604.13: copper at the tap, never PEX.
+    # ** FROM THE ALCOVE (2026-11-25; was 7.2 ft from the workshop corner). ** Off the
+    # HydroBoost riser's side tap (E 42 3/8"), a 3" stub on the port axis, a 90 down and
+    # south at 40" between tank and W-B-BA-E, up to 86" (under DU-B-ERV-R-PLAY), out over
+    # AO-B-WH-ALCOVE's head on x=13'-1" past the header's west side, and up at (12'-9 3/4",
+    # 15'-10") onto the old 95 1/2" legs into EQ-B-HW-HEADER's +y-facing inlet. Every leg in
+    # D-B-SHOP's swing is above its head. UPC 604.13: copper at the tap, never PEX.
     # PR-B-HW-SBATH (PEX-A) and PR-B-HW-SUITE stay 3/4" and tee off the 95 1/2" legs ahead of the
     # header. The header's eight 1/2" branches: plan/mep_supply_header.py.
     PipeRun(uid="CBPW31AAAA", tag="PR-B-HW-TRUNK", system=PipeSystem.WATER_HOT,
-            path=(pt(inch(145.023), inch(188.405)), pt(inch(146.523), inch(185.807)),
-                  pt(inch(153.786), inch(190)), pt(inch(153.786), inch(190)),
+            path=(pt(inch(152.975), inch(250.66)), pt(inch(155.873), inch(251.437)),
+                  pt(inch(155.873), inch(251.437)), pt(inch(155.873), inch(229)),
+                  pt(inch(155.873), inch(229)), pt(inch(157), inch(229)), pt(inch(157), inch(190)), pt(inch(153.786), inch(190)),
+                  pt(inch(153.786), inch(190)),
                   pt(inch(153.786), inch(196.16)), pt(inch(160), inch(196.16)),
                   pt(inch(160), inch(196.16)), pt(inch(160), inch(198.66))),
             diameter=inch(1), material="copper", insulation='1" fiberglass sleeve, ASJ jacket (R-3.5)',
-            elevations=(inch(42.375), inch(42.375), inch(42.375), inch(95.5), inch(95.5), inch(95.5),
-                  inch(88), inch(88)),
+            elevations=(inch(42.375), inch(42.375), inch(40), inch(40), inch(86), inch(86),
+                  inch(86), inch(86), inch(95.5), inch(95.5), inch(95.5), inch(88), inch(88)),
             serves=("FX-M-BATH1-LAV", "FX-M-BATH2-SH", "FX-M-BATH2-TUB",
                     "FX-M-BATH2-FILLER", "FX-M-BATH2-SINK", "FX-M-LAUNDRY",
                     "FX-M-LAUNDRY-SINK",
@@ -271,20 +275,19 @@ SUPPLY = [
                     "APPL-M-DW")),
     # Cold feed to the water heater itself (equipment, not a fixture — no fixture units).
     PipeRun(uid="CBPW32AAAA", tag="PR-B-CW-WH", system=PipeSystem.WATER_COLD,
-            # Tees off PR-B-CW-TRUNK's y=14'-8" leg over the tank, runs 6 3/8" north in the
-            # cold band (2026-11-12; was 9 5/8" south off joist 012's line) and drops on the
-            # inlet's axis, 3" off the riser-foot tap (K 5 1/16"),
-            # 9" clear of the ducts (2026-11-09; 9.0 ft, was 30.8). The full drop is Rheem's
-            # 6" heat trap many times over.
-            path=(pt(inch(138.152), inch(176)), pt(inch(138.152), inch(182.383)),
-                  pt(inch(138.152), inch(182.383)), pt(inch(138.048), inch(185.381))),
+            # Tees off PR-B-CW-TRUNK's y=14'-8" leg at x=11'-5" (2026-11-25), north in the
+            # joist web at 102.6" (over PR-M-S-SUITE-DRAIN's y=16'-8" lane), down at y=17'-8 1/2",
+            # into the alcove over AO-B-WH-ALCOVE's head at 84", east on y=19'-5" and down
+            # beside the tank on the inlet's axis, 4 1/2" off the riser-foot tap (K 5 1/16").
+            # The full drop is Rheem's 6" heat trap many times over.
+            path=(pt(inch(137), inch(176)), pt(inch(137), inch(176)), pt(inch(137), inch(212.5)),
+                  pt(inch(137), inch(212.5)), pt(inch(137), inch(233)),
+                  pt(inch(158.473), inch(233)), pt(inch(158.473), inch(242.126)),
+                  pt(inch(158.473), inch(242.126)), pt(inch(154.09), inch(243.139))),
             diameter=inch(1), material="copper",
-            # The cold band rides INSIDE FS-M-WEST's I-joist
-            # web, whose window is -10 1/2" to -1 3/8"; two inches down puts a 1" PEX's
-            # invert 7/8" into the bottom flange and `mep.run_member_crossing` says so. Two
-            # inches up is the same 2" of separation in the half of the window that is
-            # empty.
-            elevations=(inch(100.638), inch(100.638), inch(5.0625), inch(5.0625))),
+            # 102.6" is inside FS-M-WEST's I-joist web window (98.9..108.1").
+            elevations=(inch(100.638), inch(102.6), inch(102.6), inch(84), inch(84), inch(84),
+                        inch(84), inch(5.0625), inch(5.0625))),
     # Main-storey groups.
     #
     # BATH1 cold stays in the shared south wet wall; the basin takes a separate
@@ -690,9 +693,10 @@ SUPPLY = [
                         inch(51.4375), inch(51.4375)),
             serves=("FX-B-BATH-SH", "FX-B-BATH-LAV", "FX-B-BATH-WC")),
     PipeRun(uid="CBPW47AAAA", tag="PR-B-HW-SAUNA", system=PipeSystem.WATER_HOT,
-            # Header out-1, up to 103 3/16" and south in the joist web to its y=15'-8" lane
-            # east, crossing the hall at x=16'-3", and down x=16'-3" over PR-B-CW-TRUNK's
-            # y=14'-8" lane into the bath's cavity.
+            # Header out-1, up to 102" and south in the joist web to its y=15'-8" lane east,
+            # crossing the hall at x=16'-3", and down x=16'-3" over PR-B-CW-TRUNK's y=14'-8"
+            # lane (0.4" clear) into the bath's cavity. 102", not 103 3/16": the dip is what
+            # `mep.run_route_efficiency` charges (2026-11-25, 2.47 vs 2.50).
             path=(pt(inch(160), inch(200.288)), pt(inch(160), inch(200.288)),
                   pt(inch(154.5), inch(200.288)), pt(inch(154.5), inch(200.288)),
                   pt(inch(154.5), inch(188)), pt(inch(195), inch(188)),
@@ -700,8 +704,8 @@ SUPPLY = [
                   pt(inch(147), inch(104.5)), pt(inch(147), inch(98.25)),
                   pt(inch(147), inch(98.25)), pt(inch(144.25), inch(98.25))),
             diameter=inch(0.5), material="pex",
-            elevations=(inch(86.149), inch(83.5), inch(83.5), inch(103.2), inch(103.2), inch(103.2),
-                        inch(103.2), inch(93.5), inch(93.5), inch(93.5), inch(51.4375),
+            elevations=(inch(86.149), inch(83.5), inch(83.5), inch(102), inch(102), inch(102),
+                        inch(102), inch(93.5), inch(93.5), inch(93.5), inch(51.4375),
                         inch(51.4375)),
             serves=("FX-B-BATH-SH", "FX-B-BATH-LAV")),
 ]

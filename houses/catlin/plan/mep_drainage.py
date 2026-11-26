@@ -611,61 +611,16 @@ ERV_CONDENSATE = [
                   pt(inch(115), inch(243)), pt(inch(112.5), inch(243))),
             diameter=inch(0.75), material="pvc",
             elevations=(inch(75), inch(74.6), inch(74.45), inch(41), inch(39.6), inch(39.5))),
-    # EQ-B-WH's primary condensate (3/4" NPT, 59" AFF, Rheem sheet C), 2026-11-09: off the
-    # port's axis, west along the tank's side, north at x=9'-8" through W-B-CW3 into the
-    # furnace room, and down to its own 13" air gap over FX-B-UTIL-SINK's rim, beside
-    # PR-B-ERV-COND's (5.3 ft, >= 1/4"/ft). Never into the tank's own pan; no trap to
+    # EQ-B-WH's primary condensate (3/4" NPT, 59" AFF, Rheem sheet C), 2026-11-25: an elbow
+    # at the port, then west along y=19'-5 7/16" through W-B-STR2 (the bay north of stud-001)
+    # into the furnace room, and down to its own 13" air gap over FX-B-UTIL-SINK's rim, 9"
+    # from PR-B-ERV-COND's (2.3 ft, >= 1/4"/ft). Never into the tank's own pan; no trap to
     # a non-sewer receptor (Rheem). It crosses no doorway or swing.
     PipeRun(uid="V5TVMM2BN9", tag="PR-B-WH-COND", system=PipeSystem.DRAIN, sanitary=False,
-            path=(pt(inch(124.684), inch(197.769)), pt(inch(122.916), inch(195.663)),
-                  pt(inch(116), inch(195.663)), pt(inch(116), inch(232)),
-                  pt(inch(112), inch(232)), pt(inch(112), inch(232))),
+            path=(pt(inch(138.666), inch(233.438)), pt(inch(112), inch(233.438)),
+                  pt(inch(112), inch(233.438))),
             diameter=inch(0.75), material="pvc",
-            elevations=(inch(59), inch(58.9), inch(58.75), inch(57.9), inch(57.8), inch(44))),
-]
-
-# ** THE COLLECTOR MOVED ONTO THE SERVICE BAND, AND THE HEAD CAME UP 2 5/8" (2026-09-09). **
-# The trunk used to run west on y=9'-0" straight out of the gym at -1'-8 3/4", which is
-# 10.6" under that room's finished ceiling for 8'-8" — `mep.run_in_finished_volume`, and not
-# fixable by elevation: the deck soffit is the ceiling here, so the whole usable band is
-# 1 5/8" deep and 0.3"/ft eats it in five feet.
-#
-# So the gym leg moved north onto y=10'-11", beside DU-B-ERV-R-GYM's lane, and leaves that
-# band SOUTH INSIDE W-B-CS3 on x=18'-0", hidden. Since 2026-11-25 it turns west at W-B-SA-N's
-# line into that wall's core below its plates, drops in the 198 3/4"-211 3/4" bay, and leaves
-# through the liner 9 1/2" up to its air gap over FX-B-SAUNA-FD, which it keeps wet. Head at
-# 7'-8", which keeps the pipe's bottom at 89" over the whole gym leg.
-#
-# ** SF-B-GYM BOXED THE PAIR AND IS RETIRED (2026-09-13). ** RM-B-GYM declares its ceiling
-# open (plan/storeys/basement.py), so this leg is graded against the 6'-8" headroom line.
-CONDENSATE = [
-    PipeRun(uid="3XVTM6HD5T", tag="PR-B-ERV-COND", system=PipeSystem.DRAIN, sanitary=False,
-            path=(pt(inch(99.375), inch(301.1625)), pt(inch(113.6), inch(301.1625)),
-                  pt(inch(113.6), inch(242)), pt(inch(110), inch(242))),
-            diameter=inch(0.75), material="pvc",
-            elevations=(inch(38.5), inch(38.15), inch(36.6), inch(36.5))),
-    # DU-ERV-EA's drain tee (2026-11-21): the riser's condensate and any rain past the hood
-    # run back down the reversed leg to the tee by the machine. 3/4" PVC with a P-trap at the
-    # tee (the leg is downstream of the fan, under positive pressure), east at 75" (over
-    # D-B-CLOSET's head), south past the jamb, down W-B-STR3B's face and south to its own air
-    # gap over the sink, 5 1/2" over the rim.
-    PipeRun(uid="D5MADB7T2B", tag="PR-B-ERV-EA-DRAIN", system=PipeSystem.DRAIN, sanitary=False,
-            path=(pt(inch(96.625), inch(315.5)), pt(inch(115), inch(315.5)),
-                  pt(inch(115), inch(310)), pt(inch(115), inch(310)),
-                  pt(inch(115), inch(243)), pt(inch(112.5), inch(243))),
-            diameter=inch(0.75), material="pvc",
-            elevations=(inch(75), inch(74.6), inch(74.45), inch(41), inch(39.6), inch(39.5))),
-    # EQ-B-WH's primary condensate (3/4" NPT, 59" AFF, Rheem sheet C), 2026-11-09: off the
-    # port's axis, west along the tank's side, north at x=9'-8" through W-B-CW3 into the
-    # furnace room, and down to its own 13" air gap over FX-B-UTIL-SINK's rim, beside
-    # PR-B-ERV-COND's (5.3 ft, >= 1/4"/ft). Never into the tank's own pan; no trap to
-    # a non-sewer receptor (Rheem). It crosses no doorway or swing.
-    PipeRun(uid="V5TVMM2BN9", tag="PR-B-WH-COND", system=PipeSystem.DRAIN, sanitary=False,
-            path=(pt(inch(124.684), inch(197.769)), pt(inch(122.916), inch(195.663)),
-                  pt(inch(116), inch(195.663)), pt(inch(116), inch(232)),
-                  pt(inch(112), inch(232)), pt(inch(112), inch(232))),
-            diameter=inch(0.75), material="pvc",
-            elevations=(inch(59), inch(58.9), inch(58.75), inch(57.9), inch(57.8), inch(44))),
+            elevations=(inch(59), inch(58.35), inch(44))),
 ]
 
 # ** THE COLLECTOR MOVED ONTO THE SERVICE BAND, AND THE HEAD CAME UP 2 5/8" (2026-09-09). **
@@ -709,21 +664,21 @@ CONDENSATE = [
 #
 # 3/4" full-size copper (the valve's own outlet — UPC 608.5 forbids reducing it, or any
 # valve/trap/rise along the run). Falls from the valve to an air gap 6" over the floor — inside Minn. R. 4714.0608's "within 18 inches of the floor"
-# (its rewrite of UPC 608.5(3)). Discharges onto the workshop slab by design, with no
+# (its rewrite of UPC 608.5(3)). Discharges onto the alcove slab by design, with no
 # fixture below to damage — the same reason UPC 507.5 needs no pan under the tank. It ends
-# ~19' from SM-B-RADON — too far for "the floor
+# ~17' from SM-B-RADON — too far for "the floor
 # falls to SM-B-RADON" to be an argument on its own. The air gap is what UPC 608.5 actually
 # requires; the slope is a slab-pour question the pour has to be told to fall this way
 # rather than assumed to. Flagged in plans/TODO.md.
-# ** THE RELIEF LINE FOLLOWS THE TANK'S T&P PORT (2026-11-09). ** The valve outlet is the
-# type's `relief` port: front-left of the plug-in, ~46" up (scaled), facing south-west into
-# the workshop. A 2" stub pitched down, then straight down beside the tank to its air gap
-# 6" over the slab; never into the condensate line.
+# ** THE RELIEF LINE FOLLOWS THE TANK'S T&P PORT (2026-11-25). ** The valve outlet is the
+# type's `relief` port: front-left of the plug-in, ~46" up (scaled), facing south-south-east
+# toward AO-B-WH-ALCOVE. A 2" stub pitched down, then straight down in front of the tank to
+# its air gap 6" over the alcove slab; never into the condensate line.
 # `test_water_heater_connections` grades its start against the `relief` port.
 TPR_DISCHARGE = [
     PipeRun(uid="CBPT01AAAA", tag="PR-B-WH-TPR", system=PipeSystem.DRAIN, sanitary=False,
-            path=(pt(inch(124.12), inch(193.674)), pt(inch(122.388), inch(192.674)),
-                  pt(inch(122.388), inch(192.674))),
+            path=(pt(inch(142.475), inch(231.832)), pt(inch(142.993), inch(229.9)),
+                  pt(inch(142.993), inch(229.9))),
             diameter=inch(0.75), material="copper",
             elevations=(inch(46), inch(45.75), inch(6))),
 ]
