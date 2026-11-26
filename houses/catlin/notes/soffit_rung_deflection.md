@@ -19,9 +19,8 @@ for. **A calc that only agrees with itself is not verified** — the arithmetic 
 independently of the code, and the engine reproduces it to the third decimal.
 
 **Scope gap, stated rather than hidden:** this note has only ever worked the SECOND-STOREY
-boxes. `SF-B-BATH` is framed by the same generator and graded by the same check and has
-never been in the table below. (`SF-B-HALL` and `SF-B-GYM` stood in the same position and
-were retired on 2026-09-13, so the gap is one box wide now instead of three.)
+boxes. `SF-B-BATH` stood outside the table below until it was retired with the old basement bath
+(2026-11-25), as `SF-B-HALL` and `SF-B-GYM` were on 2026-09-13, so the gap is closed.
 
 ## Wall-width hallway revision — 2026-10-23
 

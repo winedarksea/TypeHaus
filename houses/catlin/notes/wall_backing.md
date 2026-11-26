@@ -128,8 +128,8 @@ cabinet, it stays and is renamed for that body.
 Fixtures with **no grab course** today, by geometry: `FX-S-BATH1-SH` (on `W-S-N3` /
 `W-S-CH-W`; the course on `W-S-BD-N` was never in front of it and now backs the two vanity
 top rails), `FX-S-SUITEBATH-TUBSH`'s back wall `W-S-C2C` (its end on `W-S-SN3` is covered),
-`FX-S-BATH1-WC` (`W-S-W1`), `FX-B-BATH-WC` (`W-B-BA-N`), `FX-B-SAUNA-SH` and
-`FX-A-STUBATH-SH`. Each is a band to add if a bar is wanted there.
+`FX-S-BATH1-WC` (`W-S-W1`), `FX-B-BATH-WC` and `FX-B-BATH-SH` (`W-B-SA-N`, since 2026-11-25)
+and `FX-A-STUBATH-SH`. Each is a band to add if a bar is wanted there.
 
 **What it gains beyond the flat wall.** A per-bay block can be omitted or shifted at the bay
 a shower valve and its risers occupy. A continuous sheet cannot, and §5 flags that overlap as

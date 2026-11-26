@@ -1360,7 +1360,7 @@ CONDUIT_TRUNKS = [
     # this feeds) is.
     #
     # ** OVER THE THEATER CEILING, NOT UNDER IT (2026-11-02, decision #112). ** The hall leg
-    # keeps its 2026-09-22 lane around ST-B2M (x=9'-6 5/8" strip, W-B-STR2, SF-B-BATH, up the
+    # keeps its 2026-09-22 lane around ST-B2M (x=9'-6 5/8" strip, W-B-STR2, the old bath's footprint, up the
     # hall at x=16'-5 1/2"), but stops at y=23'-4", south of FO-M-STAIR (y>26'-0 3/8" is open
     # well). A conduit body there (accessible, covers down) takes the turn: a ramp rises into
     # FS-M-WEST's bay and crosses the x=18' plate OVER it, not through the framed W-B-CN (a

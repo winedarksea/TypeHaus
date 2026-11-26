@@ -27,7 +27,7 @@ CONDENSATE_NORTH = [
     # PR-M-CW-COLDSTORE-STUB's 30" leg. It drops mid-plate in C5's south bay into FS-M-NE's
     # bearing box, east out of it and south in the truss bay over CD-B-PLAY-SPARE, back west
     # across the box at y=25'-2 3/4", south to y=25'-0" and west along the FS-M-STAIR/MECH
-    # bay, boring W-B-BA-N's nailers and 1" under PR-B-BATH-WC-CW. The riser's hole leaves
+    # bay over the under-stair closet (the old bath left 2026-11-25). The riser's hole leaves
     # the box a cheek under W-M-C5's end stud (BM-M-HALL's bearing); a run along the box
     # would strip both cheeks. Since the ERV moved to the sink (2026-11-21) it drops into the
     # furnace room at x=9'-3", between DU-B-ERV-R-GYM's and -PLAY's lanes, runs south to

@@ -2398,7 +2398,9 @@ less; a PE reading this row should read it beside the E band. The next board up 
 > 364.8); W-B-HALL-W 96 -> 60 (516.3 -> 322.7); W-B-BA-E 90 -> 45.37 + new W-B-CL-E 44.62
 > (484.1 -> 244.0 + 240.0); new W-B-BT-N/N2/W (304.0 + 291.8 + 326.1). Net framed walls
 > 73,180 -> 73,786 lb = **+606 lb**; footings, slabs and concrete walls are unchanged (54,831 /
-> 43,504 / 107,640). Friction numerator 102,164.0 + 0.25 x 606 = 102,315.5; / 13,896.75 = 7.3625
+> 43,504 / 107,640). The footings really are: `FT-B-CS` ran on 35 9/16" (to y 171) and `FT-B-CS2`
+> gave up the same 35 9/16" (from y 191), so the x=18' strip keeps its 196" and its 20" gap moves north
+> with `D-B-GYM`; the line stays a stub (§11m). Friction numerator 102,164.0 + 0.25 x 606 = 102,315.5; / 13,896.75 = 7.3625
 > (ratio 1.5 / 7.3625 = 0.2037). The thrust T, the line and every other row are unchanged.
 
 Hand-worked before the engine; `tests/test_thermal_break.py` reproduces it. **Supersedes §11k

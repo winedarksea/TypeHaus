@@ -31,7 +31,7 @@ attic 240". `VERT` is a segment whose plan position does not move.
 | `FX-S-SUITEBATH-TUBSH` (60" tub-shower) | second | `PR-M-S-SUITE-TUB-DRAIN`, 1 1/2" | **3.30"** (120.75 → 117.45) at (16'-5 5/8", 21'-9 1/8") | 3" north to its vent tee, then 7'-5 1/2" west and south inside the deck (2026-11-05) |
 | `FX-A-STUBATH-SH` (36" neo) | attic | `PR-A-STUBATH-SH-DRAIN`, 2" | **3.75"** (240.75 → 237.00) at (16'-2 5/8", 20'-7 5/8") | 20 3/8" arm east to its vent tee, 2.4" down, then 8'-0" west inside the deck (2026-11-05) |
 | `FX-M-BATH2-SH` (36" diverted) | main | `PR-B-SH2-DRAIN`, 2" | **3.00"** (0.00 → −3.00) at (6'-4 5/8", 14'-11") | 21 1/2" arm east to its vent tee, **18.50"** down (−3.5 → −22.0), then west to the collector (2026-11-05) |
-| `FX-B-SAUNA-SH` | basement | `PR-B-SAUNA-DRAIN`, 2" | 10.5", then under-slab | nothing below it — it is the bottom storey |
+| `FX-B-BATH-SH` (the sauna's until 2026-11-25) | basement | `PR-B-BATH-SH-DRAIN`, 2" | 11.3", then under-slab | nothing below it — it is the bottom storey |
 
 **What is in the way is the floor deck, and it is 12" deep.** Main's ceiling plane resolves at
 z = 108" and second's structure at z = 120": 11 7/8" of I-joist plus subfloor. A 1 1/2" trap arm
@@ -77,8 +77,8 @@ in the room rather than in a soffit.
 `FX-S-BATH1-SH` and `FX-S-SUITEBATH-TUBSH`; `FX-A-STUBATH-SH` reaches it via
 `PR-A-STUBATH-DRAIN` → `PR-M-S-SUITE-DRAIN`, which lands on the collector at (6'-0", 16'-6").
 Every branch joins **at or upstream of (3'-0", 16'-6")**, one foot upstream of the drop — so
-the whole 80.34" carries all four upper- and main-storey showers. Only `FX-B-SAUNA-SH` misses
-it (`PR-B-SAUNA-DRAIN` goes under-slab independently). It also carries three WCs, which is
+the whole 80.34" carries all four upper- and main-storey showers. Only `FX-B-BATH-SH` misses
+it (it drains under-slab on `PR-B-SAUNA-DRAIN`). It also carries three WCs, which is
 permitted — a DWHR is a double-wall drain and is listed for a soil stack — but it means the
 unit sees non-shower flow it recovers nothing from.
 
@@ -242,7 +242,7 @@ it now.
   water heating; `building_science.energy` is an envelope UA calculation and says nothing about
   domestic hot water.
 - **Whether to insulate the hot drain.** A separate and much cheaper question, not asked here.
-- **The sauna shower.** `FX-B-SAUNA-SH` drains under-slab and is outside every option above.
+- **The basement shower.** `FX-B-BATH-SH` drains under-slab and is outside every option above.
 - **Any code question.** MN ch. 4714 (UPC) permits a listed double-wall DWHR on a drain; since
   nothing is being installed, that reading was not pursued past confirming it is not a barrier.
 

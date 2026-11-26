@@ -1710,8 +1710,9 @@ only where it is simple and cheap and never lengthens a run.
 | RM-S-BATH1 | REG-S-EXH1, ceiling (67 1/2", 392") | tub/shower, front ~y 394" | ~2" outside the tub front | already at the source |
 | RM-S-SUITEBATH | REG-S-EXH3, W-S-DC2 at 95 3/4" | tub/shower, nearest corner ~(182", 200") | ~5 1/2 ft, opposite wall | every closer station is longer or no shorter; owner: leave it |
 | RM-A-STUBATH | REG-A-STUBATH-EXH, W-A-STU-W at 3'-0" | 36" shower, west edge ~x 176 1/2" | ~4 3/4 ft | the drains and vents picked the station; no ceiling bay under the hot roof; closer is ~6 ft longer |
-| RM-B-BATH, RM-M-BATH1 | | none (WC and lav only) | | not applicable |
-| RM-B-SAUNA | REG-B-EXH2 | FX-B-SAUNA-SH | | Harvia's layout governs |
+| RM-B-BATH (2026-11-25) | REG-B-EXH1, ceiling (128", 145") | 36" pan, front y 136" | ~9" outside the pan | already at the source |
+| RM-M-BATH1 | | none (WC and lav only) | | not applicable |
+| RM-B-SAUNA | REG-B-EXH2 | none since 2026-11-25 (the shower moved to RM-B-BATH) | | Harvia's layout governs |
 
 **The stair pickup.** `DU-A-ERV-R-STAIR` leaves `EQ-A-ERV-MAN-EXH`'s east face (now 4 of 6 ports)
 at y=414". A 45 pair takes it to y=404", south of VR-M-STACK's riser and PR-A-STUBATH-VENT's
