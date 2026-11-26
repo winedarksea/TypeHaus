@@ -205,7 +205,7 @@ HARVIA_CILINDRO_PC110E = Product(
     tag="PROD-HARVIA-PC110E", brand="Harvia", model="PC110E",
     name="Cilindro 10.5 kW electric sauna heater, floor standing, stainless",
     source="Harvia/Finnleo published specifications, read 2026-09-06. Rated 141-636 cf, "
-           "which brackets RM-B-SAUNA's 555 cf where a 9 kW does not. ETL listed. Carries "
+           "which brackets RM-B-SAUNA's 347 cf (555 cf until the 2026-11-25 replan). ETL listed. Carries "
            "264 lb of stone -- two to six times anything near its price, and rock mass is "
            "what decides loyly quality and whether the room recovers when someone opens the "
            "door. 45\" tall, 3.94\" clearance all round, 37.4\" headroom above, 78\" "

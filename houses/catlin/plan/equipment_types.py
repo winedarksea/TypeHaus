@@ -32,8 +32,9 @@ from typehaus import (
 )
 
 EQUIPMENT_TYPES = (
-    # RM-B-SAUNA's heated zone measures 555 cf off the resolved liner faces (8'-3 15/16" x
-    # 8'-10 11/16" x 7'-6").
+    # ** 347 cf SINCE THE 2026-11-25 REPLAN ** (87 1/2" x 81 1/2" x 84 1/16" between liner
+    # faces), inside both this heater's 141-636 cf and a 9 kW's 283-494 cf. Keeping 10.5 kW
+    # and the 60 A circuit is open with the owner. The history below is the 555 cf room.
     #
     # ** THE 9 kW WAS UNDERSIZED, AND IT WAS THE "600 cf" CLAIM THAT WAS WRONG (2026-09-06).
     # ** The comment this replaces held 9 kW on the argument that the trade rule
