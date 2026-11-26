@@ -163,6 +163,7 @@ a release or for exhaustive local verification.
   strut pair (`ElectricalDeviceType.exterior_mount`, `resolve/mount_blocks.py`, `.mount_blocks`).
   Flats come from `resolve/panel_flats.py`. Graded by `integrity.wall_penetration_closure`,
   billed in `[wall_penetrations]`. Never author a `normal_gap` for a metal-wall device.
+- **A shower's door is `FixtureType.shower_enclosure`** (decision #152, `model/shower_enclosure.py`): `placeable_symbols/_shower_door.py` holds the one leaf-sector function (glyph, `resolve/shower_enclosures.py` record, BATH2's `door_swing_outline`); the record's `free_angle_degrees` (room face or body below the head) is graded by `code.MN_4714_0408_shower_door` against UPC 408.5's 22" opening, never IRC P2708.1 (struck in MN). A shower with no spec is UNKNOWN, a curtain N/A; the zone in front is `advisory.shower_door_swing`, since UPC 402.5 names only WCs and bidets.
 - **Condensate overflow is authored on the unit** (decision #127): `Equipment.secondary_drain_pan`
   / `overflow_drain_ref` / `float_switch_ref`, graded by `mep.condensate_overflow` (IMC 307.2.3).
 - **A hung machine's trapeze is derived from `Equipment.hangers`** (decision #131):

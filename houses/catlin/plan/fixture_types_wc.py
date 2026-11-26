@@ -20,6 +20,8 @@ cheap common listings, not ASSE 1016.
 
 from __future__ import annotations
 
+import math
+
 from library.placeables.fixtures import (
     SHOWER,
     TOILET_WALL_HUNG,
@@ -38,6 +40,7 @@ from typehaus.model import (
     PortCertainty,
     Service,
     ServicePort,
+    ShowerEnclosure,
     ft,
     inch,
     m,
@@ -245,6 +248,15 @@ TOTO_DRAKE = FixtureType(
 # are specified THREADED (IPS), never slip-fit: a slip-fit spout seals on an O-ring over a
 # bare copper stub and when it ages the leak is behind the tile.
 
+# The Flex door, hinged at the south end of the entry (seen from outside: right). The symbol
+# sweeps the same sector (`_swanstone_flex.door_swing_outline`), so these read BATH2_SHOWER.
+FLEX_DOOR = ShowerEnclosure(
+    kind="hinged", entry_edge="-y", hinge="right", fixed_glass_edges=("-x",),
+    clear_opening=inch(BATH2_SHOWER.door_swing_radius),
+    leaf_width=inch(BATH2_SHOWER.door_swing_radius),
+    swing_radius=inch(BATH2_SHOWER.door_swing_radius + BATH2_SHOWER.handle_projection),
+    hinge_inset=inch(BATH2_SHOWER.rail_width), plane_inset=inch(BATH2_SHOWER.threshold_depth / 2),
+    product_ref="PROD-DREAMLINE-FLEX-3272")
 # RM-M-BATH2's 36" shower — the primary, used daily and long. Thermostatic trim on the same
 # R10000 rough, one magnetic combo outlet (the diverter rough, second riser and slide bar of
 # FX-SHOWER-36-DIVERTED are gone, 2026-10-12), solid-surface walls and base, and glass that
@@ -252,6 +264,7 @@ TOTO_DRAKE = FixtureType(
 # front and the stock clipped return (2026-11-05); the post detail remains open.
 SHOWER_36_THERMO_COMBO = SHOWER.model_copy(update={
     "shower_assembly": BATH2_SHOWER_ASSEMBLY,
+    "shower_enclosure": FLEX_DOOR,
     "excludes_floor_finish": True,
     "tag": "FX-SHOWER-36-THERMO-COMBO",
     "height": inch(BATH2_SHOWER.model_height),
@@ -302,8 +315,12 @@ SHOWER_36_THERMO_COMBO = SHOWER.model_copy(update={
 # RM-B-BATH's shower (the sauna's rinse until 2026-11-25). ** ONE OUTLET, ON PURPOSE. ** A
 # two-in-one magnetic combo gives a handheld for cleaning off a plain single-function valve:
 # no diverter, no second riser, no blocking.
+# Entered on its north edge, hinged at the west end, a fixed panel on the east: the same Flex
+# front as BATH2's. `code.MN_4714_0408_shower_door` sweeps its leaf against the room.
 SHOWER_36_COMBO = SHOWER.model_copy(update={
     "shower_assembly": BASEMENT_SHOWER,
+    "shower_enclosure": FLEX_DOOR.model_copy(update={
+        "entry_edge": "+y", "hinge": "right", "fixed_glass_edges": ("+x",)}),
     "excludes_floor_finish": True,
     "tag": "FX-SHOWER-36-COMBO",
     # No base SKU: the threshold, at P2709.1's 9" most over the drain.
@@ -331,9 +348,10 @@ SHOWER_36_COMBO = SHOWER.model_copy(update={
 # enter through, across the full width of the door. Cutting that corner back 16" on each leg
 # opens the diagonal: at the door's east jamb there are 20 3/8", at x=15'-0" there are
 # 31 7/8", and the shower's own entrance — which now faces SW into the middle of the room
-# rather than south at the door — has 38 1/2" in front of it instead of 19 1/4". That is the
-# clearance IPC 405.3.1 and UPC 402.5 ask for at a shower entrance; the IRC, which is what
-# actually governs this house, asks for none, so this is comfort bought deliberately.
+# rather than south at the door — has 38 1/2" in front of it instead of 19 1/4". That is room in
+# front of the entrance that no Minnesota code asks for (UPC 402.5 names water closets and
+# bidets; UPC 408.5 asks only for a 22" door opening), so it is comfort bought
+# deliberately (`advisory.shower_door_swing` grades the zone).
 # ** SINCE 2026-11-01 THE DOOR IS ONE MODULE EAST ** (RO 15'-3 1/2"..17'-5 3/4", for the roof,
 # storeys/attic_studio.py): it now enters opposite the pan's flat south face, 18 3/8" off the
 # wall face over most of its width and 27 1/2" at its west jamb, and swings out. The pan's
@@ -360,8 +378,13 @@ SHOWER_36_COMBO = SHOWER.model_copy(update={
 # Valve, trim and head are SHOWER_36_COMBO's unchanged — one outlet, one magnetic combo head,
 # and the same ASSE 1016 rough this file's header argument applies to every shower here.
 _NEO_SIZE = (ft(3), ft(3))
+_NEO_OPENING = inch(16 * math.sqrt(2))  # the cut's diagonal: the door, per the P2708.1 note above
 SHOWER_36_NEO_COMBO = SHOWER_36_COMBO.model_copy(update={
     "shower_assembly": ATTIC_SHOWER,
+    # A pivot door filling the diagonal, fixed glass on both legs (Prism class allowance).
+    "shower_enclosure": ShowerEnclosure(
+        kind="pivot", entry_edge="diagonal", hinge="right", fixed_glass_edges=("-x", "-y"),
+        clear_opening=_NEO_OPENING, leaf_width=_NEO_OPENING),
     "tag": "FX-SHOWER-36-NEO-COMBO",
     "name": 'Shower, 36" neo-angle, pressure-balance valve with a two-in-one combo head',
     "plan_symbol": "shower-neo-angle",
@@ -405,6 +428,9 @@ TUBSHOWER_60_DIVERTED = TUB_SHOWER.model_copy(update={
     "shower_assembly": TUB_SHOWER_ASSEMBLY,
     "excludes_floor_finish": True,
     "tag": "FX-TUBSHOWER-60-DIVERTED",
+    # A curtain over the tub rim: no door, and no stall-entry zone (a lav may face a tub).
+    "shower_enclosure": ShowerEnclosure(kind="curtain", entry_edge="-y",
+                                        clear_opening=inch(60), front_zone_depth=inch(0)),
     "name": 'Alcove tub-shower, 60", complete trim with diverter and handshower',
     "height": inch(73),  # 71370116 finished height; the flange tops at 74 1/4"
     "product_ref": "PROD-DELTA-T14459-SS",

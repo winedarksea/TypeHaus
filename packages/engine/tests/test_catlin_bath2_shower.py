@@ -61,8 +61,14 @@ def test_actual_finished_opening_and_outward_swing(catlin_model_ro):
     assert min(y for _, y in east_panel.outline) == pytest.approx(finished_south_face)
     assert max(y for _, y in east_panel.outline) == pytest.approx(
         min(y for _, y in deck.outline))
-    sweep = Polygon(place_local(door_swing_outline(width, depth), fixture.position,
-                                fixture.rotation_degrees))
+    # The resolved record, the symbol and this test read one sector function (#152).
+    record = next(r for r in model.shower_enclosures if r.tag == fixture.tag)
+    symbol_sweep = place_local(door_swing_outline(width, depth), fixture.position,
+                               fixture.rotation_degrees)
+    assert [c for pt in record.sector for c in pt] == pytest.approx(
+        [c for pt in symbol_sweep for c in pt])
+    assert record.free_angle_degrees == pytest.approx(record.max_opening_degrees)
+    sweep = Polygon(record.sector)
     vanity = next(obj for obj in model.canvas_objects if obj.tag == "FX-M-BATH2-SINK")
     door = next(opening for opening in model.openings if opening.tag == "D-M-BATH2")
     assert sweep.distance(Polygon(vanity.footprint)) > 0

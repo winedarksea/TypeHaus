@@ -4,6 +4,11 @@ All notable changes to `typehaus`. This project follows [semantic versioning](ht
 
 ## Unreleased
 
+- **A shower's door is modelled and graded.** `FixtureType.shower_enclosure` (kind, entry edge,
+  leaf, hinge, swing radius) drives the plan glyph's glass and door arc (the generic `shower` no
+  longer glazes its wall sides), a resolved leaf sector served to the plan overlay, and the new
+  `code.MN_4714_0408_shower_door` (UPC 408.5's 22" opening against how far the leaf can swing)
+  plus `advisory.shower_door_swing`. Catlin's basement shower, entered on its north edge, fails.
 - **NEC 210.52(E)(3) is graded**: new `code.NEC_210_52_E3_balcony_receptacles` finds balconies
   and porches from their exterior doors. A soffit-hosted light run's ends now snap to the host
   edges only within 10".
