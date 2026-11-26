@@ -90,13 +90,11 @@ def equipment_space_lighting(ctx: CheckContext) -> list[Finding]:
     switches = {e.tag: e for e in ctx.plan.all_elements() if e.element_kind == "ElectricalDevice"
                 and e.kind is DeviceKind.SWITCH and e.tag in objects}
     types = {t.tag: t for t in ctx.plan.library.electrical_device_types}
-    rooms = {r.tag: r for r in ctx.model.rooms}
     entries = {r.tag: room_doors(ctx.model, r) + room_passages(ctx.model, r)
                for r in ctx.model.rooms}
     doors_of = {tag: {d.tag for d in found} for tag, found in entries.items()}
     out: list[Finding] = []
     for tag in sorted(held):
-        room = rooms[tag]
         mine = [e for e in lights if room_of(objects[e.tag]) is not None
                 and room_of(objects[e.tag]).tag == tag]
         tags = (tag, *held[tag])
