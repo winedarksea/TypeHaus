@@ -632,118 +632,6 @@
       "node": "polyline",
       "points": [
         [
-          209.62500000000003,
-          -19.39532529527559
-        ],
-        [
-          209.67524047358089,
-          -19.58288387987318
-        ],
-        [
-          209.77736405515213,
-          -19.68503937007874
-        ],
-        [
-          210.22263594484792,
-          -19.68503937007874
-        ],
-        [
-          210.32475952641917,
-          -19.58288387987318
-        ],
-        [
-          210.37500000000003,
-          -19.39532529527559
-        ],
-        [
-          210.32475952641917,
-          -19.207766710678005
-        ],
-        [
-          210.18750000000003,
-          -19.070464297356864
-        ],
-        [
-          210.00000000000003,
-          -19.02020812608042
-        ],
-        [
-          209.81250000000003,
-          -19.070464297356864
-        ],
-        [
-          209.67524047358089,
-          -19.207766710678005
-        ]
-      ],
-      "layer": "S-FNDN",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "CMPC02AAAA-run",
-      "tag": "PR-M-COND-HEADS-RUN"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          209.62500000000003,
-          -19.39532529527559
-        ],
-        [
-          209.67524047358089,
-          -19.58288387987318
-        ],
-        [
-          209.77736405515213,
-          -19.68503937007874
-        ],
-        [
-          210.22263594484792,
-          -19.68503937007874
-        ],
-        [
-          210.32475952641917,
-          -19.58288387987318
-        ],
-        [
-          210.37500000000003,
-          -19.39532529527559
-        ],
-        [
-          210.32475952641917,
-          -19.207766710678005
-        ],
-        [
-          210.18750000000003,
-          -19.070464297356864
-        ],
-        [
-          210.00000000000003,
-          -19.02020812608042
-        ],
-        [
-          209.81250000000003,
-          -19.070464297356864
-        ],
-        [
-          209.67524047358089,
-          -19.207766710678005
-        ]
-      ],
-      "pattern": "concrete",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": "concrete"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
           200.15748031496065,
           -19.68503937007874
         ],
@@ -878,7 +766,7 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "CMFS01AAAA",
-      "tag": "bearing-block-1-003"
+      "tag": "bearing-block-1-001"
     },
     {
       "space": "model",
@@ -926,7 +814,7 @@
       "linetype": "CONTINUOUS",
       "closed": false,
       "uid": "CMFS01AAAA",
-      "tag": "bearing-block-1-003/flange"
+      "tag": "bearing-block-1-001/flange"
     },
     {
       "space": "model",
@@ -946,7 +834,7 @@
       "linetype": "CONTINUOUS",
       "closed": false,
       "uid": "CMFS01AAAA",
-      "tag": "bearing-block-1-003/flange"
+      "tag": "bearing-block-1-001/flange"
     },
     {
       "space": "model",
@@ -974,7 +862,7 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "CMFS02AAAA",
-      "tag": "bearing-block-0-005"
+      "tag": "bearing-block-0-003"
     },
     {
       "space": "model",
@@ -1022,7 +910,7 @@
       "linetype": "CONTINUOUS",
       "closed": false,
       "uid": "CMFS02AAAA",
-      "tag": "bearing-block-0-005/flange"
+      "tag": "bearing-block-0-003/flange"
     },
     {
       "space": "model",
@@ -1042,7 +930,7 @@
       "linetype": "CONTINUOUS",
       "closed": false,
       "uid": "CMFS02AAAA",
-      "tag": "bearing-block-0-005/flange"
+      "tag": "bearing-block-0-003/flange"
     },
     {
       "space": "model",
@@ -1269,6 +1157,62 @@
       "uid": null,
       "material": "df-l-no2",
       "fill": "#d4b98f"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          217.25000000000003,
+          -19.68503937007874
+        ],
+        [
+          218.75000000000003,
+          -19.68503937007874
+        ],
+        [
+          218.75000000000003,
+          -19.43750000000001
+        ],
+        [
+          217.25000000000003,
+          -19.43750000000001
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CBW111AAAA",
+      "tag": "backing-0-000"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          217.25000000000003,
+          -19.68503937007874
+        ],
+        [
+          218.75000000000003,
+          -19.68503937007874
+        ],
+        [
+          218.75000000000003,
+          -19.43750000000001
+        ],
+        [
+          217.25000000000003,
+          -19.43750000000001
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "spf"
     },
     {
       "space": "model",

@@ -1159,22 +1159,6 @@
         202.90748031496065,
         -137.15403543307087
       ],
-      "content": "R.O. HEIGHTS IN THIS ASSEMBLY 6'-10 1/4\" – 6'-11 3/8\": SEE A-601",
-      "height": 3.0,
-      "height_pt": 6.5,
-      "rotation": 0.0,
-      "style": "ARCH",
-      "layer": "A-ANNO-DIMS",
-      "align": "left",
-      "uid": "layout-caption:1"
-    },
-    {
-      "space": "model",
-      "node": "text",
-      "anchor": [
-        202.90748031496065,
-        -141.15403543307087
-      ],
       "content": "CASING 11/16\" x 3 1/2\" mdf-casing, 3/16\" REVEAL TO JAMB",
       "height": 3.0,
       "height_pt": 6.5,
@@ -1182,7 +1166,7 @@
       "style": "ARCH",
       "layer": "A-ANNO-DIMS",
       "align": "left",
-      "uid": "layout-caption:2"
+      "uid": "layout-caption:1"
     },
     {
       "space": "model",

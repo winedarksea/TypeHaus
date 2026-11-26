@@ -56,8 +56,7 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "gwb-mr",
-      "fill": "#e0d6ec"
+      "material": "gwb"
     },
     {
       "space": "model",
@@ -190,7 +189,7 @@
       "closed": false,
       "uid": "CBW119AAAA",
       "tag": "W-B-CW2/paint-a-tee-0",
-      "material": "paint-wet"
+      "material": "paint-wall"
     },
     {
       "space": "model",
@@ -452,34 +451,6 @@
       "uid": "CMW129AAAA",
       "tag": "W-M-CLN/paint-b",
       "material": "paint-wall"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          218.37500000000003,
-          -19.68503937007874
-        ],
-        [
-          219.0,
-          -19.68503937007874
-        ],
-        [
-          219.0,
-          -11.875
-        ],
-        [
-          218.37500000000003,
-          -11.875
-        ]
-      ],
-      "layer": "S-FNDN",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "CEWX9GPQMQ",
-      "tag": "SF-B-BATH"
     },
     {
       "space": "model",
@@ -1086,158 +1057,6 @@
       "node": "polyline",
       "points": [
         [
-          215.25000105491807,
-          -19.68503937007874
-        ],
-        [
-          216.74999894508193,
-          -19.68503937007874
-        ],
-        [
-          216.74999894508193,
-          -19.5
-        ],
-        [
-          215.25000105491807,
-          -19.5
-        ]
-      ],
-      "layer": "S-FNDN",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "MFDV1SAVZT-run",
-      "tag": "PR-B-BATH-LAV-VENT-RUN"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          215.25000105491807,
-          -19.68503937007874
-        ],
-        [
-          216.74999894508193,
-          -19.68503937007874
-        ],
-        [
-          216.74999894508193,
-          -19.5
-        ],
-        [
-          215.25000105491807,
-          -19.5
-        ]
-      ],
-      "pattern": "concrete",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": "concrete"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          215.25,
-          -19.49999995606018
-        ],
-        [
-          215.2500945265465,
-          -19.500352755904935
-        ],
-        [
-          216.7499054734535,
-          -19.500352755904935
-        ],
-        [
-          216.75,
-          -19.49999995606018
-        ],
-        [
-          216.64951905283834,
-          -19.124976601498048
-        ],
-        [
-          216.375,
-          -18.850440451933647
-        ],
-        [
-          216.0,
-          -18.74995324693591
-        ],
-        [
-          215.625,
-          -18.850440451933647
-        ],
-        [
-          215.35048094716166,
-          -19.124976601498048
-        ]
-      ],
-      "layer": "S-FNDN",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "MFDV1SAVZT-run",
-      "tag": "PR-B-BATH-LAV-VENT-RUN"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          215.25,
-          -19.49999995606018
-        ],
-        [
-          215.2500945265465,
-          -19.500352755904935
-        ],
-        [
-          216.7499054734535,
-          -19.500352755904935
-        ],
-        [
-          216.75,
-          -19.49999995606018
-        ],
-        [
-          216.64951905283834,
-          -19.124976601498048
-        ],
-        [
-          216.375,
-          -18.850440451933647
-        ],
-        [
-          216.0,
-          -18.74995324693591
-        ],
-        [
-          215.625,
-          -18.850440451933647
-        ],
-        [
-          215.35048094716166,
-          -19.124976601498048
-        ]
-      ],
-      "pattern": "concrete",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": "concrete"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
           224.03900000000004,
           -13.0
         ],
@@ -1378,8 +1197,8 @@
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "CBR407AAAA-ceiling",
-      "tag": "CEIL-RM-B-BATH"
+      "uid": "5XK0HAS5CA-ceiling",
+      "tag": "CEIL-RM-B-WH-ALCOVE"
     },
     {
       "space": "model",
@@ -1402,13 +1221,12 @@
           -11.875
         ]
       ],
-      "pattern": "gwb-mr",
+      "pattern": "gwb",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "gwb-mr",
-      "fill": "#e0d6ec"
+      "material": "gwb"
     },
     {
       "space": "model",
@@ -1951,7 +1769,7 @@
         218.00000000000003,
         -18.68503937007874
       ],
-      "text": "gwb-mr 1/2\"",
+      "text": "gwb 1/2\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -2138,7 +1956,7 @@
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "paint-wet",
+      "material": "paint-wall",
       "fill": "#f4f6f1"
     },
     {
@@ -2176,7 +1994,7 @@
         0.7,
         1.3980000000000001
       ],
-      "content": "paint-wet  0.01\"",
+      "content": "paint-wall  0.01\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -2211,8 +2029,7 @@
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "gwb-mr",
-      "fill": "#e0d6ec"
+      "material": "gwb"
     },
     {
       "space": "paper",
@@ -2249,7 +2066,7 @@
         0.7,
         1.228
       ],
-      "content": "gwb-mr  1/2\"",
+      "content": "gwb  1/2\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -2351,12 +2168,13 @@
           0.9580000000000001
         ]
       ],
-      "pattern": "gypsum",
+      "pattern": "metal",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "gwb"
+      "material": "paint-wet",
+      "fill": "#f4f6f1"
     },
     {
       "space": "paper",
@@ -2393,7 +2211,7 @@
         0.7,
         0.8880000000000001
       ],
-      "content": "gwb  1/2\"",
+      "content": "paint-wet  0.01\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -2423,13 +2241,13 @@
           0.7880000000000001
         ]
       ],
-      "pattern": "metal",
+      "pattern": "gypsum",
       "scale": 1.0,
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "paint-wall",
-      "fill": "#f4f6f1"
+      "material": "gwb-mr",
+      "fill": "#e0d6ec"
     },
     {
       "space": "paper",
@@ -2466,7 +2284,7 @@
         0.7,
         0.7180000000000002
       ],
-      "content": "paint-wall  0.01\"",
+      "content": "gwb-mr  1/2\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
