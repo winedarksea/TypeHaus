@@ -465,6 +465,8 @@ def test_dragging_a_floor_drained_wc_carries_its_sleeve_and_drain_run() -> None:
         ("Fixture", "FX-B-BATH-WC"),
         ("SleevePenetration", "SP-B-BATH-WC"),
         ("PipeRun", "PR-B-BATH-WC-DRAIN"),
+        # The wall-fed cold stub's first vertex is the flange's plan point too (2026-11-25).
+        ("PipeRun", "PR-B-BATH-WC-CW"),
     ]
     sleeve = next(item for item in plan.all_elements() if item.tag == "SP-B-BATH-WC")
     sleeve_x, sleeve_y = sleeve.position.xy_m
@@ -484,25 +486,25 @@ def test_dragging_a_floor_drained_wc_carries_its_sleeve_and_drain_run() -> None:
 
     joined = " | ".join(result.warnings)
     assert "SP-B-BATH-WC" in joined and "PR-B-BATH-WC-DRAIN" in joined
-    # …and the runs that merely *serve* the WC (its supply, its vent, the house collector)
+    # …and the runs that merely *serve* the WC (its supply header, its vent, the branch)
     # are reported as left behind rather than silently dragged twenty feet across the plan.
-    assert "PR-B-BATH-VENT" in joined and "left as routed" in joined
+    assert "PR-B-BATH-WC-VENT" in joined and "left as routed" in joined
 
 
 def test_an_authored_drain_position_pins_the_drain_while_the_fixture_moves() -> None:
     """``drain_position`` is the author saying where the waste leaves, independently of the
-    fixture — FX-B-SAUNA-SH authors one at its grate, which PR-B-SAUNA-DRAIN's first two
+    fixture — FX-B-BATH-SH authors one at its grate, which PR-B-SAUNA-DRAIN's first two
     vertices already sit on. Moving the pan says nothing about that outlet, so the macro emits
     its one op and drags no pipe or sleeve with it. (FX-B-BATH-LAV carried this test until
     the 2026-10-24 lavatory selection drained it from its product's own port instead.)"""
     house = Path(__file__).resolve().parents[3] / "houses" / "catlin"
     plan = load_plan(house).plan
     assert plan is not None
-    shower = plan.by_tag("FX-B-SAUNA-SH")
+    shower = plan.by_tag("FX-B-BATH-SH")
     assert shower.drain_position is not None
     x, y = shower.position.xy_m
-    result = move_placeable(plan, "basement", tag="FX-B-SAUNA-SH", position=(x + 0.1, y - 0.05))
-    assert [(op.type, op.tag) for op in result.ops] == [("Fixture", "FX-B-SAUNA-SH")]
+    result = move_placeable(plan, "basement", tag="FX-B-BATH-SH", position=(x + 0.1, y - 0.05))
+    assert [(op.type, op.tag) for op in result.ops] == [("Fixture", "FX-B-BATH-SH")]
 
 
 def test_coupled_drain_move_writes_source_that_reloads(tmp_path: Path) -> None:

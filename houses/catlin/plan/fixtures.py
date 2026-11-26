@@ -10,17 +10,21 @@ from typehaus.model import Location, TubEnclosureSpec, WallAttachment, m
 # --- basement ----------------------------------------------------------------------------
 # RM-B-BATH (2026-11-25): the band north of the sauna, x 10'-0 1/4"..17'-8 3/4" by y 8'-4"..
 # 12'-9 3/4" between finish faces. Three fixtures on the south wet wall W-B-SA-N (2x6; every
-# `wall_ref` names it, since venting reads `wall_ref`), west to east: the 36" curbed pan in
-# the corner, the WC at exactly 15" off the pan (UPC 402.5), the 24" lav facing the door.
+# `wall_ref` names it, since venting reads `wall_ref`), west to east: the 36" neo-angle pan in
+# the corner (cut corner NE, pivot door on the diagonal), the WC at exactly 15" off the pan's
+# east leg (UPC 402.5), the 24" lav facing the door.
 # All drain under the slab on PR-B-SAUNA-DRAIN (mep_drainage.py), each with its own vent in
 # the wall's bays (mep_venting.py / mep_vent_tees.py). The sauna keeps only its floor drain,
 # in the aisle's NE corner, where PR-B-COND's air gap drops in the same wall.
 BASEMENT_FIXTURES = (
     # Pan x 10'-0 1/4"..13'-0 1/4", y 8'-4"..11'-4", the valve in W-B-SA-N's 134"-150" bay.
+    # Neo-angle since 2026-11-26 (rotation 180: back on W-B-SA-N, 16" cut NE): its pivot door opens
+    # 90 degrees where the square pan's Flex door could not. The WC's NW corner still stands 1.9"
+    # in the 24" recommended front zone; UPC 402.5's 15" to the lav allows the WC 2.25" of the 2.8".
     # `drain_position` is the pan's own grate: without it the derivation projects the drain
     # onto `wall_ref`'s axis (this type needs hot water, so it reads as wall-drained).
-    Fixture(uid="CBQ802AAAA", tag="FX-B-BATH-SH", type_ref="FX-SHOWER-36-COMBO",
-            room="RM-B-BATH", position=pt(inch(138.25), inch(118)),
+    Fixture(uid="CBQ802AAAA", tag="FX-B-BATH-SH", type_ref="FX-SHOWER-36-NEO-B-COMBO",
+            room="RM-B-BATH", position=pt(inch(138.25), inch(118)), rotation=deg(180),
             wall_ref="W-B-SA-N", drain_position=pt(inch(138.25), inch(118))),
     # The aisle's NE corner against the bath partition (2026-11-25), where PR-B-COND's air
     # gap drops in that wall and keeps the trap wet.

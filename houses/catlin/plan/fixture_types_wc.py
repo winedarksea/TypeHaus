@@ -29,8 +29,8 @@ from library.placeables.fixtures import (
     water_closet_required_clearance,
 )
 
-from plan.shower_assemblies import (ATTIC_SHOWER, BASEMENT_SHOWER, BATH2_SHOWER_ASSEMBLY,
-                                   TUB_SHOWER_ASSEMBLY)
+from plan.shower_assemblies import (ATTIC_SHOWER, BASEMENT_NEO_SHOWER, BASEMENT_SHOWER,
+                                   BATH2_SHOWER_ASSEMBLY, TUB_SHOWER_ASSEMBLY)
 from plan.wet_ports import floor_drain_port, floor_wc_ports
 from typehaus.model import (
     FixtureType,
@@ -315,8 +315,9 @@ SHOWER_36_THERMO_COMBO = SHOWER.model_copy(update={
 # RM-B-BATH's shower (the sauna's rinse until 2026-11-25). ** ONE OUTLET, ON PURPOSE. ** A
 # two-in-one magnetic combo gives a handheld for cleaning off a plain single-function valve:
 # no diverter, no second riser, no blocking.
-# Entered on its north edge, hinged at the west end, a fixed panel on the east: the same Flex
-# front as BATH2's. `code.MN_4714_0408_shower_door` sweeps its leaf against the room.
+# Square 36" base, entered on its north edge with the Flex front BATH2 has. RETIRED from the
+# catalog 2026-11-26 (its leaf cannot open in RM-B-BATH, `code.MN_4714_0408_shower_door`): kept
+# only as the base the neo-angle types copy.
 SHOWER_36_COMBO = SHOWER.model_copy(update={
     "shower_assembly": BASEMENT_SHOWER,
     "shower_enclosure": FLEX_DOOR.model_copy(update={
@@ -412,6 +413,24 @@ SHOWER_36_NEO_COMBO = SHOWER_36_COMBO.model_copy(update={
               'the corner and every escutcheon.',
 })
 
+# RM-B-BATH's shower (2026-11-26): the attic's neo-angle turned 180 degrees into the room's SW
+# corner, so the cut faces NE and the pivot door opens into the room's open floor. The square
+# pan's Flex door could not open: 17 3/4" to the north wall, the WC 6 1/4" off its east side
+# (`code.MN_4714_0408_shower_door`). Same kit, valve and head; the valve station is the square
+# pan's (4" east of centre, 51 7/16" over the slab), so the supplies did not move. The drain is
+# a curbed liner pan's centre, 2" up, as before. UPC 408.6 (1024 sq in., a 30" circle) by hand,
+# not engine-graded: inside 1/4" panels on the walls and 1 1/2" of curb and glass on the open
+# sides it is 1,059 sq in. and a 31.2" circle; it fails past ~2 1/8" of open-side inset, so
+# confirm the ordered base's inside dimensions. Basis: DESIGN-LOG 2026-11-26.
+SHOWER_36_NEO_B_COMBO = SHOWER_36_NEO_COMBO.model_copy(update={
+    "shower_assembly": BASEMENT_NEO_SHOWER,
+    "tag": "FX-SHOWER-36-NEO-B-COMBO",
+    "ports": (floor_drain_port(0, 0, 2, note="Neo-angle base on the slab; centre drain, "
+                               "2\" build-up; confirm on the ordered base"),
+              *BASEMENT_NEO_SHOWER.inlet_ports()),
+    "source": 'RM-B-BATH, owner selection 2026-09-06, neo-angle 2026-11-26. ' + SHOWER_36_NEO_COMBO.source,
+})
+
 # RM-S-BATH1 and RM-S-SUITEBATH. The two 60" combos, and the two places a handshower earns
 # its diverter outright: bathing children, rinsing hair over the rim, rinsing the tub itself.
 # Slide bar in one, wall elbow and hook in the other — same valve either way.
@@ -465,5 +484,5 @@ TUBSHOWER_60_DIVERTED = TUB_SHOWER.model_copy(update={
 
 WC_AND_SHOWER_TYPES = (
     TOTO_AP_WALL_HUNG, TOTO_CARLYLE_II, TOTO_AQUIA_IV, TOTO_AQUIA_IV_FLOOR, TOTO_DRAKE,
-    SHOWER_36_THERMO_COMBO, SHOWER_36_COMBO, SHOWER_36_NEO_COMBO, TUBSHOWER_60_DIVERTED,
+    SHOWER_36_THERMO_COMBO, SHOWER_36_NEO_COMBO, SHOWER_36_NEO_B_COMBO, TUBSHOWER_60_DIVERTED,
 )

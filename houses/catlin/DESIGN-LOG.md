@@ -7,8 +7,8 @@ door off the hall, owner: hall door only). The sauna kept its heater, door and f
 pocket. All of the bath's fixtures stand on one wet wall, `W-B-SA-N`, and drain to one 3"
 branch with individual vents. A bathroom-group wet vent was the plan, but it is rejected:
 the WC must join last and the shower is west of it, and a floor drain isn't a bath-group
-fixture. The shower is the 36x36 curbed combo, which fits between the west wall and the WC's
-15" side clearance, so the neo-angle option wasn't needed. The water heater moved into the
+fixture. The shower was the 36x36 curbed combo, which fit between the west wall and the WC's
+15" side clearance; its door could not open, so it went neo-angle on 2026-11-26 (below). The water heater moved into the
 old bath's footprint, an alcove with a doorless 34" RO from the workshop.
 
 - **Sauna seating.** Two 80 9/16 x 28 decks replace the 78" bench, the 20" foot platform and
@@ -33,6 +33,46 @@ old bath's footprint, an alcove with a doorless 34" RO from the workshop.
 - Engine (review, 2026-11-26): `electrical.equipment_space_lighting` counts a leafless
   floor-level opening as an entry (`room_openings.room_passages`), so the alcove passes on its
   switch inside `AO-B-WH-ALCOVE`; to the workshop that mouth is a dead end, like a closet door.
+
+## Basement shower goes neo-angle: the door has room to open (2026-11-26)
+
+- **Why.** Decision #152's `code.MN_4714_0408_shower_door` (UPC 408.5, 22" unobstructed)
+  found the 2026-11-25 shower could not open: the Flex leaf (22 7/8", 23 7/8" with its handle)
+  needs 87.8 degrees and stopped at 53.4 against `W-B-BT-N` (17 3/4" off the pan's north edge).
+  The east edge was no better: the WC bowl is 6 1/4" away.
+- **Taken.** `FX-B-BATH-SH` is `FX-SHOWER-36-NEO-B-COMBO` (the attic's DreamLine DL-6040C-01
+  neo-angle, pivot door on the 16" cut), `rotation=deg(180)`: back and valve on `W-B-SA-N`, cut
+  corner NE, glass on the north and east legs, door hinged at the north end. The leaf opens the
+  full 90 degrees (needs 88.4 for its 22.63"); its sector clears the WC bowl by 0.8" and
+  `D-B-BATH`'s swing. The pan's bounding box, centre drain and valve station did not move, so
+  no drain, vent, supply, sleeve, backing, device or surround span changed (the surround's two
+  wall legs are still 36"). `FX-SHOWER-36-COMBO` (the square pan) is retired.
+- **Why the others lost** (free angle by `free_opening_angle`, 87.8 needed). Square 36x36 with
+  the door on the north edge: 48 degrees, then the north wall, hinged either end. Square with an
+  inline door on the east edge: 15.6 degrees against the WC, 21.3 with the WC at its 2.25" limit
+  (UPC 402.5's 15" to the lav), and it would need the WC about 24" east: no room. A 36" bypass
+  slider opens about half its width, 17-18" against 22". A 36 x 53 3/4" alcove receptor with the
+  door in the east face's north part passes (90 degrees) but is a custom receptor, costs the room
+  its west 18", and its leaf overlaps `D-B-BATH`'s swing. The neo-angle moves nothing.
+- **UPC 408.6 (1,024 sq in., a 30" circle; no engine check, by hand).** Nominal 1,168 sq in.
+  Finished interior inside 1/4" wall panels and 1 1/2" of curb and glass on the open sides:
+  1,059 sq in., 31.2" circle. It fails past ~2 1/8" of open-side inset (1" gives 1,089, 2" gives
+  1,029), so the ordered base's inside dimensions are the hold point.
+- **Front zone, left.** `advisory.shower_door_swing` (the 24" recommended zone) holds the WC's
+  NW corner by 1.9"; the 53.4-degree swing finding is gone. Clearing it takes the WC 2.8" east and
+  UPC 402.5's 15" to the lav allows 2.25", so it needs an 18" lav and a moved WC, drain, vent and
+  supplies: not taken for a recommendation. Count is unchanged (one advisory on this fixture).
+- **Cost** (`haus takeoff`). The type row replaces the square pan's: +$1,060 low / +$910 high
+  on `placeables`, +$6-$10 of floor field where the cut corner returns 0.9 SF; construction
+  +$920-$1,066 and the total with contingency and tax +$1,080-$1,262. The row omits the kit's
+  QWALL-2 walls because the room keeps its solid-surface surround.
+- **Owner questions.** (1) The kit's own QWALL-2 walls (`acrylic-shower-panel`, $0) in place of
+  `WP-B-BATH-SURR` and its TK-105 strip would bill the attic's full row and drop two sheets and a
+  strip: about $700-$1,400 cheaper and one product for both neo-angles, against yesterday's
+  selection. (2) The pan's real inside dimensions (408.6 above).
+- Pre-existing reds fixed with this: `test_canvas_placeables` (retired `FX-B-SAUNA-SH`, and the
+  WC drag now carries `PR-B-BATH-WC-CW`), `test_drain_cleanouts` (12, `CO-B-BATH` left with the
+  replan), and `test_bid_packages::test_framing_golden` (stale since the replan's framing).
 
 ## Basement stair: the railing tape goes, two landing cans come in (2026-11-25, owner)
 

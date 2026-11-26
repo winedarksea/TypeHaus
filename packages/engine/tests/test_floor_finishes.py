@@ -301,10 +301,11 @@ def test_the_billed_finishes_are_one_lvp_field(catlin_model):
     # 529.6 SF after the 1/2" walls, less the attic's 8.1 SF neo-angle receptor, less
     # ~0.6 SF the D-A-HALVES / D-B-BATH reducers cover in their reveals (2026-11-01), less
     # the attic WC chase's 1.3 SF (2026-11-02); +0.8 SF for RM-B-BATH's replan (2026-11-25:
-    # 34.5 SF room, 25.6 SF of it field once the 3x3 pan is cut out).
+    # 34.5 SF room, 25.6 SF of it field once the 3x3 pan is cut out); +0.9 SF where the
+    # neo-angle pan's 16" cut returns a corner to the field (2026-11-26).
     assert (float(rows["catlin-vinyl-gatsby"]["net_area_sqft"])
             + float(rows["catlin-plant-vinyl-raised"]["net_area_sqft"])) == pytest.approx(
-                520.1, abs=0.5)
+                521.0, abs=0.5)
     assignments = {
         "catlin-tile-limestone": ({"RM-M-BATH2", "RM-S-BATH1"}, "catlin-ditra-heat"),
         "catlin-tile-kaleo-brick": ({"RM-S-SUITEBATH"}, "catlin-ditra-xl"),

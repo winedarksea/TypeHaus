@@ -7,7 +7,7 @@ Components are geometry with product references, not additional `ProductPart` pu
 
 | Shower | Finished-face valve station, fixture-local inches | Into wall | Standing surface above fixture base | Head mounting station above fixture base |
 | --- | --- | --- | --- | --- |
-| Basement bath, `RM-B-BATH` (`FX-B-BATH-SH`; the sauna's rinse until 2026-11-25) | (4, -18, 51 7/16) | south, `W-B-SA-N` | 2 in. | 80 in. |
+| Basement bath, `RM-B-BATH` (`FX-B-BATH-SH`; the sauna's rinse until 2026-11-25) | (-4, 18, 51 7/16), the neo-angle turned 180 degrees (was (4, -18) on the square pan) | south, `W-B-SA-N` | 2 in. | 80 in. |
 | BATH2 | (0, 18, 48) | local north; east after -90° rotation | 1 1/2 in. | 79 1/2 in. |
 | Attic | (0, 18, 48) | north | 2 in. preliminary base allowance | 80 in. |
 | BATH1 tub | (-30, 0, 30) | west end | 2 in. preliminary tub-base allowance | 80 in. |
@@ -29,7 +29,7 @@ body, head shapes, hoses and lever dimensions remain illustrative envelopes.
 
 ## Supply coordination
 
-- Basement bath (2026-11-25): the 36 x 36 pan is centred (138 1/4", 118"); the valve and head
+- Basement bath (2026-11-25; neo-angle 2026-11-26, same station and drain): the 36 x 36 pan is centred (138 1/4", 118"); the valve and head
   stand 4 inches east of it, x=142 1/4 inches, mid-bay between `W-B-SA-N`'s 134" and 150"
   studs, 51 7/16 inches over the slab. Hot is east (user's left facing south), cold west. Cold
   (`PR-B-CW-SAUNA`, 3/4") and hot (`PR-B-HW-SAUNA`, 1/2") run west in the bath's hung-ceiling

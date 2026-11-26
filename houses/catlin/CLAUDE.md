@@ -2209,10 +2209,12 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   y 100"..153 3/4" (34.5 sf), ceiling 84 3/16" under a 12 3/4" service cavity (R305 7'-0").
   One door, `D-B-BATH` (32" privacy swing in `W-B-BT-N2` off the hall's south end, swinging in,
   hinged east so the leaf parks clear of the WC). On the south wet wall, west to east: a 36x36
-  curbed pan (`FX-SHOWER-36-COMBO`, valve mid-bay at x=142 1/4"), the Drake WC (15" each side),
-  a SEKTION 24 lav. All drain to one 3" `PR-B-SAUNA-DRAIN` under the wall (individual vents;
+  neo-angle pan (`FX-SHOWER-36-NEO-B-COMBO`, turned 180 so the 16" cut faces NE and its pivot
+  door hinges at the north end and opens 90 degrees; valve mid-bay at x=142 1/4"; 408.6 by hand
+  1,059 sq in.), the Drake WC (15" off the east leg), a SEKTION 24 lav. The door's 24" front zone
+  holds the WC corner by 1.9" (advisory). All drain to one 3" `PR-B-SAUNA-DRAIN` under the wall (individual vents;
   a wet vent would need the WC last), cleanout a floor cap in front of the lav; the head stays
-  3" west of `FT-B-CS`. Solid-surface surround `WP-B-BATH-SURR`. Mirror and VALLMORA over the
+  3" west of `FT-B-CS`. Solid-surface surround `WP-B-BATH-SURR` (36" on each wall). Mirror and VALLMORA over the
   lav, GFCI and hand towel on `W-B-CS3`, TP on the vanity's side, shower towel bar on
   `W-B-BT-N`, can `ED-B-BATH-CAN1` and the switch by the latch on `W-B-BT-N`. Exhaust
   `REG-B-EXH1` is a ceiling valve on its own radial.

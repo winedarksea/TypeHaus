@@ -23,6 +23,9 @@ def combo(valve_face, wall_direction, *, thermo=False, standing=2):
 # the slab, 4 in. east of the pan's centre to sit mid-bay between W-B-SA-N's 134" and 150"
 # studs. No valve pocket: the wall is an ordinary 2x6 now, not a sauna liner.
 BASEMENT_SHOWER = combo((4, -18, 51.4375), (0, -1))
+# The same valve station for the neo-angle pan turned 180 degrees (2026-11-26): its back is
+# local +y, so the wall is local +y and the 4 in. east of centre is local -x.
+BASEMENT_NEO_SHOWER = combo((-4, 18, 51.4375), (0, 1))
 BATH2_SHOWER_ASSEMBLY = combo((0, 18, 48), (0, 1), thermo=True, standing=1.5)
 ATTIC_SHOWER = combo((0, 18, 48), (0, 1))
 TUB_SHOWER_ASSEMBLY = ShowerAssemblySpec(

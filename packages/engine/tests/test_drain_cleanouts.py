@@ -134,8 +134,9 @@ def test_catlin_sewer_cleanout_is_inside_by_the_north_exit(catlin_model_ro):
 
 def test_catlin_cleanouts_have_plan_schedule_and_three_solids(catlin_model_ro):
     model = catlin_model_ro
-    # No turn cleanouts on the slab branches since 2026-11-10 (BATH-TURN, SAUNA-TURN, STACK-BASE)
-    assert len(model.drain_cleanouts) == 13
+    # No turn cleanouts on the slab branches since 2026-11-10 (BATH-TURN, SAUNA-TURN, STACK-BASE);
+    # the 2026-11-25 replan's one 3" bath/sauna branch has CO-B-SAUNA-HEAD alone (CO-B-BATH left).
+    assert len(model.drain_cleanouts) == 12
     wc2_cleanouts = {item.tag: item for item in model.drain_cleanouts
                      if item.pipe_ref == "PR-B-WC2-DRAIN"}
     assert set(wc2_cleanouts) == {"CO-B-WC2-HEAD"}

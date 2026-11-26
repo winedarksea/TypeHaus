@@ -361,7 +361,9 @@ This is the part of the pass with a deadline on it.
 - **Confirm the neo-angle base's published door opening is 22 5/8" or less** before the
   enclosure is ordered. `FX-SHOWER-36-NEO-COMBO` is drawn to a 16"-per-leg corner cut, which
   inscribes a 30 1/2" circle against IRC P2708.1's 30" — half an inch of margin, and a deeper
-  cut spends it.
+  cut spends it. The same base serves RM-B-BATH (`FX-SHOWER-36-NEO-B-COMBO`, 2026-11-26): UPC
+  408.6 asks 1,024 sq in. and a 30" circle, 1,059 sq in. and 31.2" on a 1 1/2" curb and glass
+  inset, so confirm the inside dimensions there too; the door must open at least 22" (408.5).
 - **The studio wet bar's bowl** — if it handles ice and glassware, a vitreous-china lav is
   the wrong product and it wants a stainless bar sink.
 - Take one drawing of the peninsula to three Twin Cities fabricators, and **vet the shop

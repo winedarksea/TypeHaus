@@ -78,8 +78,11 @@ def test_sauna_station_is_pan_centerline_and_thermo_uses_48_inches(catlin_model_
             spec.standing_surface_height.meters + 78 * .0254)
         if fixture.tag == "FX-B-BATH-SH":
             # Valve on the pan's south wall (W-B-SA-N), 4" east of centre, mid-bay (2026-11-25).
-            assert spec.valve_face[1].meters == pytest.approx(-18 * .0254)
-            assert spec.valve_face[0].meters == pytest.approx(4 * .0254)
+            # The neo-angle pan stands at 180 degrees (2026-11-26): its back is local +y and
+            # its east is local -x.
+            assert fixture.rotation_degrees == pytest.approx(180)
+            assert spec.valve_face[1].meters == pytest.approx(18 * .0254)
+            assert spec.valve_face[0].meters == pytest.approx(-4 * .0254)
             assert (spec.valve_face[2].meters - spec.standing_surface_height.meters) / .0254 == pytest.approx(49.4375)
         if fixture.tag == "FX-M-BATH2-SH":
             assert spec.valve_face[2].meters / .0254 == pytest.approx(48)
