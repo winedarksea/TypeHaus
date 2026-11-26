@@ -236,6 +236,19 @@ to y 32 1/4" on the jack pack, clear of the corner bookcase (30 5/8"), its next 
 y 65" on the north pack (both handrail backing blocks retired). `BWP-S-E1-0000` ends at the new south jamb and `-0062` starts at the north jamb: 34.25 +
 46.25 = 80.5", the same total.
 
+### 5d. 2026-11-25 basement replan: what moved
+
+- **D-B-GYM** is now a 36" RO on `W-B-CS2` (y 13'-7"..16'-7", north of the bath; it was on
+  `W-B-CS3`). Same 5 1/4 x 7 VERSA-LAM, 2 jacks and 4 ft row (3,632 plf, d/c 0.90); the load
+  is the same x=18' stack on the same bearing line. The ERV duct and condensate crossing that
+  fixed the 7" depth was over its old position and is not re-derived here.
+- **D-B-SAUNA** moved north on `W-B-CS` (y 51"..75"); RO, member and row unchanged (d/c 0.60).
+- **Flat nonbearing heads (no table row):** `D-B-BATH` (32" leaf, 34.24" RO, `W-B-BT-N2`) and
+  `AO-B-WH-ALCOVE` (34" RO, `W-B-CW2`, explicit NONBEARING) are single flat 2x4s under R602.7.4
+  (nonbearing, up to 8 ft, within 24" of the plates); `D-B-BATH` was a flat 2x6 over an Eclisse
+  pocket in `W-B-BA-E` until then. Graded by `structural.header_span`; not pinned by
+  `tests/test_header_spans.py`.
+
 ## Cross-checks of the table read (not catlin openings)
 
 - R602.7(1) "Roof and ceiling", 50 psf, 36': 2-2x8 = 4'-2" NJ 2 (50 × 0.70 = 35.0").

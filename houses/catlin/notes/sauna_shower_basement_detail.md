@@ -12,65 +12,52 @@ source:
   - sauna_shower_basement_detail.py
 ---
 
-**Seating revision, 2026-10-11:** [sauna_seating.md](sauna_seating.md) supersedes earlier
-bench layouts and heights. Independent 42/24-inch levels, a 78 × 28-inch lying
-bench, south reading recliner and removable service decks are now modeled. Finished ceiling
-is 84 1/16 inches AFF; use that surface for headroom and heater checks.
+**2026-11-25 basement replan:** the shower and its tile splash left this room. `RM-B-BATH`
+(north of the sauna, behind `W-B-SA-N`) took the 36 x 36 curbed pan (`FX-B-BATH-SH`), the
+wet-wall build-up and the valve; the sauna keeps its floor drain, the condensate air gap and a
+**smaller dish** (below). `FX-B-SAUNA-SH`, `WP-B-SAUNA-SPLASH`, `BK-B-SAUNA-VALVE`, the glass
+partition and the Durock/valve-pocket detail are retired; the shower history is in
+[shower_assemblies.md](shower_assemblies.md). Seating: [sauna_seating.md](sauna_seating.md)
+(two 80 9/16 x 28 decks, finished ceiling 84 1/16 inches AFF).
 
 # Notes
 
-- Intent: schematic section for a combined sauna + shower room in a basement on slab. Confirm all dimensions, waterproofing, and structural requirements with the project drawings and manufacturers.
+- Intent: schematic section for a sauna in a basement on slab. Confirm all dimensions, waterproofing, and structural requirements with the project drawings and manufacturers.
 
-- Current clear room: approximately 7'-3" east–west by 8'-10 11/16" north–south; use the resolved polygon for the north-wall jog. The main west liner face is x=122 13/16 inches, east face x=209 3/4 inches, south face y=9 1/2 inches and north face y=116 3/16 inches. The 36 × 36-inch curbed shower occupies the north-east corner. Current seating and finished ceiling are defined in [sauna_seating.md](sauna_seating.md).
+- Current clear room: x 122 1/2 inches to 210 inches, y 9 1/4 inches to 90 3/4 inches (about 7'-3 1/2" east-west by 6'-9 1/2" north-south). The north liner is `W-B-SA-N`, 2x6, the bath's wet wall; its bath face is glass-mat board and carries the shower, WC and lav. Current seating and finished ceiling are defined in [sauna_seating.md](sauna_seating.md).
 
-- Entry from the gym through `D-B-SAUNA` in the east wall. The door swings out; use the current opening coordinates rather than historical room-layout stations.
+- Entry from the gym through `D-B-SAUNA` in the east wall (`W-B-CS`, y 51"..75"). The door swings out; use the current opening coordinates rather than historical room-layout stations.
 
-- **Curbed pan plus a floor drain, not one curbless recess.** The wet end has two separate receptors: a 36"×36" *curbed* shower pan in the north-east corner (`FX-B-SAUNA-SH`, its two closed sides on the north liner at y=9'-8 3/16" and the east liner at x=17'-5 3/4"), and a floor drain at (13'-6", 8'-2 3/16") (`FX-B-SAUNA-FD`) taking the rest of the wet floor, on the pan's own centre line, 8 3/4" clear west of the curb; `PR-B-SAUNA-DRAIN`, both condensate air gaps and `SP-B-SAUNA-FD` sit with it. The three bullets below are superseded where they conflict; the wall, glass, electrical, lighting and ventilation notes still stand.
+- **One floor drain, no pan.** `FX-B-SAUNA-FD` (6 x 6 grate, centre (196", 84"), x 193-199") stands in the open east aisle, NE corner, 3" north of the step. It takes the aisle's wet floor and the condensate air gap (`PR-B-COND`, `PR-B-COND-HP2-GYM`, which drop in `W-B-SA-N`'s 198 3/4"-211 3/4" bay and end 9" AFF over the grate), which keeps its trap wet. `PR-B-SAUNA-FD-DROP` (2") runs 12 3/4" north under the partition onto the bath's shared 3" `PR-B-SAUNA-DRAIN`, vent tee 6" downstream. The cleanout is a floor cap in the bath (`CO-B-SAUNA-HEAD`). The decks stand west of the aisle and need no service panel over the drain.
 
-- Slabs: both sauna and shower are slab-on-grade over vapor barrier and foam, with a thermal break around the perimeter of the combined room. **The 4" recess is dropped:** with a curb around the pan and a floor drain outside it, the slab stays flat across the whole room and the pan is built up on top of it. That also removes the step at the sauna/shower line the old scheme needed a threshold detail for.
+- Slab: slab-on-grade over vapor barrier and foam, with a thermal break around the perimeter. The slab stays flat across the room except the aisle dish (below); there is no pan, curb or threshold step inside the sauna.
 
-- Sauna floor: dishes at 1/8" per foot minimum to the floor drain at (13'-6", 8'-2 3/16"); see "Dished floor (decision #148)" below. The wet floor outside the pan falls to the same drain, so there is one low point in the room and no dam between the two zones.
+- Sauna floor: dishes at 1/8" per foot to the floor drain; see "Dished floor (decision #148)" below.
 
-- Shower floor: finish is built up using foam tile backer (GoBoard or other polyiso-based board preferred) and wedges. **Inside the pan**, slope to the pan drain at IRC P2708.1's 1/4"–1/2" per foot, built up from the pan's level bed. Coordinate with drain height and waterproofing membrane. The pan slope is not carried in the model; the room floor's dish is (below).
-
-- Curb: around the pan's two *open* sides only (south and west). The closed sides are finished wall. The plan symbol draws a single curb bar; build both.
-
-- Drains: the pan drain is centered in the 36 × 36-inch pan. The separate 6 × 6-inch floor grate is centered at (162, 98 3/16) inches, 18 inches south of the north liner and 8 3/4 inches clear west of the pan's west curb. It is beneath `FURN-B-SAUNA-LOWER`, with removable deck panels and an open frame. Both condensate drops descend in the north-wall cavity and run beneath the deck, ending 9 inches AFF over the floor grate at x=162 and x=160 inches. Both sanitary receptors connect below the slab to `PR-B-SAUNA-DRAIN`; the vent riser remains in the east-wall liner. Keep all access panels and the aisle cleanout cap reachable; see sauna_seating.md.
-
-- Shower walls: 1/2-inch USG Durock under tile, with supported packing and a bonded waterproofing system still requiring sauna temperature qualification. See the 2026-11-09 revision below.
-
-- Partition: glass shower enclosure wall + 36" glass divider door between shower and sauna. Partition is elevated leaving a 1" gap at bottom for air + water flow. Use 1/2" tempered glass with 2–3 spigots (sealant anchor method) and ≥1" standoff; maintain cleanable, durable edges at the floor.
+- Shower and wet-wall items (pan, curb, glass partition, tile, Durock, valve pocket): **retired here**, now `RM-B-BATH` (`WP-B-BATH-SURR`, a solid-surface surround on the glass-mat backer; [shower_assemblies.md](shower_assemblies.md)). The sauna's own liner on `W-B-SA-N` is the dry, foil-faced wood liner; the glass-mat board is on the bath face.
 
 - Electrical: supply 240V, **60A** 2-pole breaker and wiring to a 10.5 kW sauna heater (Harvia Cilindro PC110E). 2026 NEC 424.5 makes this a continuous load at 125%: 43.75 A x 1.25 = 54.7 A, which a 50A breaker will not carry — the "50A / 10.5 kW max" this note used to print was never arithmetic that closed. Pull **#6 THHN in conduit**, not #8 NM-B: NEC 334.80 caps NM-B at the 60 °C column, making #8 a 40 A conductor. **No GFCI on the heater** — 210.8(A) governs receptacles, 210.8(D)'s appliance list excludes sauna heaters, and the manufacturers advise against it in writing because moisture in the elements' magnesium-oxide fill causes nuisance trips; a 2–4 hour dry burn-in before final inspection is the fix, and a 30 mA GFPE is the fallback if the AHJ insists. The sauna **lights** are on a separate circuit; 2026 210.8(A)(6) (basements) covers receptacles, not them, so their protection follows the luminaire listing. For gas/wood appliances, reference MPC Section 615 and the appliance listing.
 
 - Lighting: Heat-rated 24V LED tape on the new framing rails at 16 inches AFF; no line voltage inside the hot room. Keep drivers/transformers outside it.
 
-- Ventilation: the ERV supply is a ceiling hatch at the NORTH end, over the upper bench (`REG-B-SUP3`, a 4" branch off the gym radial since 2026-11-11). The owner accepted this departure from Harvia's "inlet near the heater" guidance for 44 ft less duct. The low west-wall exhaust stays at 4 inches AFF; both terminals are adjustable. Keep plastic vent pipe behind insulation.
+- Ventilation: the ERV supply is a ceiling hatch over the heater (`REG-B-SUP3`, (199 3/4", 20 1/2"), a drop from `DU-B-ERV-R-SAUNA-SUP`), Harvia's inlet-near-heater layout restored with the 2026-11-25 replan (was the north end over the upper bench since 2026-11-11). The low west-wall exhaust stays at 4 inches AFF (`REG-B-EXH2`); both terminals are adjustable closeable wood vents, balanced behind the sealed door. Keep plastic vent pipe behind insulation.
 
-- **The room floor is sealed concrete, not tile.** `FX-B-SAUNA-SH` is a curbed *liner* pan: it brings its own waterproof floor inside the curb, so there is no tile bed to lay there and no reason to tile the wet floor outside it either. `RM-B-SAUNA.floor_finish` is `sealed-concrete` — densifier plus two coats on `SL-B-FLOOR`, which dishes 1/8" per foot to `FX-B-SAUNA-FD`. The tile that remains in this room is `WP-B-SAUNA-SPLASH`, the pan's two closed wall sides, unchanged. The "shower tile" and "foam tile backer" bullets above are superseded for the *floor*; the wall build-up still stands. Duckboards over the sealed slab in the hot zone remain an owner option and are not modelled.
+- **The room floor is sealed concrete, not tile.** `RM-B-SAUNA.floor_finish` is `sealed-concrete`: densifier plus two coats on `SL-B-FLOOR`, which dishes 1/8" per foot to `FX-B-SAUNA-FD`. With the shower gone the sauna has no tile at all. Duckboards over the sealed slab in the hot zone remain an owner option and are not modelled.
 
-- Coordinate: thresholds (now flush throughout — see the slab note), the pan curb's two open sides, slip resistance, and transitions between the sealed slab, any duckboards, and the pan curb.
+- Coordinate: thresholds (flush at `D-B-SAUNA`), slip resistance, and transitions between the sealed slab and any duckboards.
 
-## Wet-wall revision — 2026-11-09
+## Wet-wall revision — 2026-11-09 (RETIRED 2026-11-25)
 
-[Shower assembly coordination](shower_assemblies.md) supersedes the earlier foam-backer
-wall intent. Both tiled spans now remove shiplap, model 1/2-inch USG Durock over supported
-packing, and include the local valve pocket and a stringer 2 3/4 inches behind tile.
-The control stays 51 7/16 inches above slab, which is 49 7/16 inches above the 2-inch
-shower standing surface. Control and head are centred on the pan's east wall, at
-north–south centreline y=98 3/16 inches. Hot/cold endpoints meet their approximate hubs
-with axial side arrivals; their geometric match does not make the manufacturer dimensions exact.
-
-**Construction remains BLOCKED** until the complete waterproofing/tape/mortar/collar/sealant
-system is qualified for sauna temperatures and the pan connection and foil continuity are
-accepted. USG permits Durock in saunas; that does not approve the remaining materials.
-See the linked coordination note and its rendered valve section for the actual layer planes,
-insulation termination, supported stringer, sealed pipe penetrations and required foil return.
+Superseded: the sauna has no wet wall. The Durock/packing build-up, valve pocket, stringer and
+the sauna-temperature waterproofing qualification belonged to the shower that moved to
+`RM-B-BATH`, where the wall is an ordinary 2x6 with glass-mat board and a solid-surface surround
+(no temperature qualification is needed there). See [shower_assemblies.md](shower_assemblies.md).
 
 ## Dished floor (decision #148)
 
-- **Rim level, flush with the gym.** The walls, liner foot and D-B-SAUNA threshold stay where they were. The rim is the pour's edge: x 10'-2 1/2"..16'-11 1/2", y 1'-9"..9'-8 3/8". FT-B-S2 (south 11 3/4" strip) and FT-B-CS (east 6 1/2" strip) are poured first, flush and flat, so those strips stay level.
-- **Four planes to the drain.** Screed each one from the rim down to the drain. The south plane is the long one, 77 3/16", and it sets the drop: 1/8" x 77 3/16" / 12 = **0.804" (13/16")**. The other three planes are steeper.
-- **Constant 3 1/2" slab.** Dish the capillary stone and the 2" XPS under the sauna by the same amount. The vapour retarder follows the stone.
-- **Drain body 13/16" low.** Set the FX-B-SAUNA-FD strainer flush at the bottom of the dish. PR-B-SAUNA-FD-DROP starts at -0.804".
-- **Pan bedded level.** Bed FX-B-SAUNA-SH level at the rim, its highest point. Benches built against the rim are levelled off it, and their legs are scribed to the dish. The free-standing step sits about 3/8" low.
+- **Rim level, flush with the gym.** The walls, liner foot and D-B-SAUNA threshold stay where they were. The rim is the pour's edge. FT-B-S2 (south 11 3/4" strip) and FT-B-CS (east 6 1/2" strip) are poured first, flush and flat, so those strips stay level.
+- **Aisle only.** The dish is x 179 1/4"..203 1/2", y 21"..90 3/4" (the east aisle); the decks stand on flat floor west of x=179 1/4".
+- **Four planes to the drain.** Screed each one from the dish edge down to the drain at (196", 84"). The south plane is the long one, 63", and it sets the drop: 1/8" x 63" / 12 = **0.657" (21/32")**. The other three planes are steeper.
+- **Constant 3 1/2" slab.** Dish the capillary stone and the 2" XPS under the aisle by the same amount. The vapour retarder follows the stone.
+- **Drain body 0.657" low.** Set the FX-B-SAUNA-FD strainer flush at the bottom of the dish. PR-B-SAUNA-FD-DROP starts at -0.65".
+- **Decks on the rim, step in the dish.** The decks stand on flat floor and need no scribing. The step (x 179 1/4"..193 1/4", y 68"..78") lies inside the dish, so scribe its feet to it (under 0.66").

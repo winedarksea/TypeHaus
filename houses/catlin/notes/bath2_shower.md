@@ -168,7 +168,8 @@ BATH2's 20 cfm, so the grille's position is the only lever.
 - **Drain-water heat recovery**: still no. See `dwhr_decision.md` §10.
 - **A transom, a boost of the ERV extract, or steam features**: not done. The ERV cannot
   boost (§4). The former stall-drying transfer loop was removed (§7).
-- **The studio bath and sauna showers, and the two tub-showers' valves**: unchanged. The
+- **The studio bath and basement bath showers, and the two tub-showers' valves**: unchanged
+  (the basement bath's was the sauna's until 2026-11-25). The
   tub-showers get only the 52535-SS head. Their WALLS are §6.
 - **A flow-rate field**: none. Nothing in the engine would read it. 1.75 gpm lives on the
   product records in `plan/products_showering.py`.
@@ -224,8 +225,8 @@ The under-joist leg retains its entry into `PR-B-MAIN-DRAIN` at (36, 198), eleva
 above the 1/4-inch minimum; the existing dry vent still terminates the trap arm.
 
 The new full-span joist also requires coordinated crossings: BATH2's shower hot riser is
-at y=189.5, and the BATH2-lavatory, kitchen and sauna hot turns move from y=186 to 188.
-The sauna hot lane moves from x=198 to 195, leaving **3.75 inches edge-to-edge** between
+at y=189.5, and the BATH2-lavatory, kitchen and basement-bath hot turns (`PR-B-HW-SAUNA`) move from y=186 to 188.
+That hot lane moves from x=198 to 195, leaving **3.75 inches edge-to-edge** between
 its bore and the cold trunk's x=200 bore at the new joist, against ESR-1153's 3.25-inch
 minimum. The lavatory drain at y=182.375 clears the new joist. The shower hot branch
 still arrives axially at its y=178.25 side hub, now along an 11 1/4-inch final approach.
@@ -248,7 +249,7 @@ would retype the whole wall face).
 | STUBATH neo-angle | DreamLine DL-6040C-01: QWALL-2 acrylic/ABS panels (`WP-A-STUBATH-SURR`) glued to greenboard or cement board, base flange to the studs; no membrane (owner, 2026-11-05) | the kit, panels included, is priced on `FX-SHOWER-36-NEO-COMBO` |
 | BATH1, SUITEBATH tub-showers | the one-piece insert IS the wall | **nothing penetrates the insert** but the valve and spout knockouts; use the moulded shelves. Both lit niches are dropped (`notes/superseded/shower_niche.md`) |
 | BATH1's back, exterior `W-S-N3` | insert inside, ccSPF outside: ~0 perm both faces | never penetrate it |
-| sauna rinse | model: tile on shiplap; note: foam backer | OPEN — `notes/sauna_shower_basement_detail.md` |
+| basement bath (`FX-B-BATH-SH`; the sauna rinse until 2026-11-25) | 1/4" solid-surface panel (`WP-B-BATH-SURR`, the BATH2 pattern) siliconed to the glass-mat backer on the pan's two closed walls, pan top to 80", painted board above | CLOSED 2026-11-25: the shower left the sauna for an ordinary 2x6 wet wall, so the tile/foam-backer question is gone (`notes/shower_assemblies.md`) |
 
 **Backer: the spec above stands** (owner, 2026-10-22, after a reviewer suggested GoBoard).
 Swanstone's shower-wall-kit guide prepares sheetrock/greenboard/cementboard/wood, plaster,

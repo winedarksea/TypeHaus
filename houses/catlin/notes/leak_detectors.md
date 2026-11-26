@@ -23,12 +23,12 @@ probe. Why this one:
 
 | Tag | Room | Risk |
 |---|---|---|
-| `AL-B-WH-LEAK` | RM-B-WORKSHOP | HPWH (`EQ-B-WH`), beside the HydroBoost riser foot (drain valve, cold inlet), 3" off the tank |
-| `AL-B-HDR-LEAK` | RM-B-WORKSHOP | hot-water header, floor below it (NE corner, beside the tank) |
+| `AL-B-WH-LEAK` | RM-B-WH-ALCOVE | HPWH (`EQ-B-WH`), beside the HydroBoost riser foot (drain valve, cold inlet), at (157 1/2", 238") in the alcove; moved with the tank 2026-11-25 |
+| `AL-B-HDR-LEAK` | RM-B-WORKSHOP | hot-water header, floor below it at (161", 205"), workshop NE corner; stayed when the tank went into the alcove |
 | `AL-B-UTIL-LEAK` | RM-B-FURNACE | utility sink, the ERV/WH condensate receptor |
 | `AL-B-SUMP-LEAK` | RM-B-FURNACE | sump pit overflow (sealed lid), south of the pit |
 | `AL-B-MAIN-LEAK` | RM-B-STAIR | main shutoff `PA-B-MAIN-SHUTOFF` (water entry) |
-| `AL-B-BATH-LEAK` | RM-B-BATH | basement lav and WC |
+| `AL-B-BATH-LEAK` | RM-B-BATH | basement lav, WC and shower (the bath north of the sauna since 2026-11-25), floor point (186", 103") between the WC and the vanity against `W-B-SA-N` |
 | `AL-M-LAUNDRY-LEAK` | RM-M-LAUNDRY | washer tower, gap beside it (no drain pan) |
 | `AL-M-KITCH-LEAK` | RM-M-LIVING | sink base floor, 4 1/2" (cabinet bottom): sink, disposal, dishwasher hoses |
 | `AL-M-BATH1-LEAK`, `AL-M-BATH2-LEAK` | main baths | lav/WC; tub side in BATH2 |

@@ -1,4 +1,4 @@
-# Owner wood supply against demand — 2026-10-16
+# Owner wood supply against demand — 2026-10-16 (sauna rows re-read 2026-11-25)
 
 The owner's log pile, and what `haus millwork` asks of it after the red-oak reassignment
 (the "white oak" was red oak). Demand is read off `haus millwork houses/catlin`, rough board
@@ -27,19 +27,21 @@ the sauna.
 | cherry | unknown | — | — | suite stools and bedroom-face door casing only | Confirm the stack against the current millwork schedule. Base is bought painted pine (2026-10-19); headboard is bought MDF and S4S poplar (2026-10-20), removing the former ~65 bf wainscot demand. |
 | white oak (bought) | — | — | — | ~54 (19 stools, 5/4) | order ~60 bf of 5/4, select heartwood widths of 11"+; includes hall/stair stools since 2026-10-18 for condensation resistance |
 | cedar (owner) | "a little" | — | — | ~12 (sauna door casing 10, the stool 2) | clear heartwood, no knots; **confirm "a little" covers three 8' boards**, else the casing goes back to locust (one line in `plan/millwork.py`) |
-| basswood | 24", 17", 16" | ~304 | ~228 | ~304 (wall liner 257, bench slats 46) | see below |
-| aspen | 16", 12" | ~91 | ~68 | ~79 (the ceiling liner) | see below |
+| basswood | 24", 17", 16" | ~304 | ~228 | ~286 (wall liner 247.5, bench slats 38.6: 14 slats x 80 9/16 + 3 on the step) | see below; re-read off `haus millwork` after the 2026-11-25 re-lay (deck cut lists 7 slats + 7 bearers each, reading platform 0 ea) |
+| aspen | 16", 12" | ~91 | ~68 | ~61 (the ceiling liner, 55 SF) | see below |
 | willow | 14.5" | ~48 | ~36 | none since 2026-10-18 (was the ceiling) | not used in the sauna |
-| Douglas fir (bought) | — | — | — | ~28 bearers + ~30 allowance (legs, stretchers, recliner, heater fence) | bought KD 2x4/4x4; off `haus millwork` |
+| Douglas fir (bought) | — | — | — | ~15 bearers (14 at 28", 2 at 10"; net, since the 2026-11-25 re-lay) + ~30 allowance (legs, stretchers, recliner, heater fence) | bought KD 2x4/4x4; off `haus millwork` |
 | walnut (bought) | — | — | — | ~79 | bought, priced in `[placeables]` |
 
-## The sauna is about 105 bf short
+## The sauna is about 70 bf short
 
 Since 2026-10-18 the frame is bought Douglas fir and the ceiling is aspen; willow is out.
-Basswood and aspen together: ~395 bf gross, ~296 usable, against ~402 of owner-stock demand
-(liner 336, bench slats 46 on 4/4 since 2026-10-20, and a ~20 bf margin for picking the clearest slat stock). That
-is one more basswood or aspen log of about 24" (~169 gross, ~126 usable), or two of 18–20"
-(~63–82 usable each). Allocation by job puts the best wood where skin touches it: the
+Basswood and aspen together: ~395 bf gross, ~296 usable, against ~367 of owner-stock demand
+(liner 308: walls 247.5 + ceiling 60.5; bench slats ~39 on 4/4; and a ~20 bf margin for picking
+the clearest slat stock). Before the 2026-11-25 re-lay the gap was ~105 bf: the room is
+smaller (225 SF of wall liner, 55 SF of ceiling) and the reading platform's slats are gone.
+That is one more basswood or aspen log of 18-20" (~63-82 usable each, close) or one of about
+24" (~169 gross, ~126 usable). Allocation by job puts the best wood where skin touches it: the
 clearest basswood (mostly off the 24" log) to the bench slats (clear aspen is equal), the
 aspen to the ceiling, the rest of the basswood and the new log to the walls.
 

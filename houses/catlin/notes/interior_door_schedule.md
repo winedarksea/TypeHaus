@@ -9,8 +9,8 @@ live in `plan/interior_door_types.py` (plus the trimless and bookcase types in
 **Hardware.** Kwikset Halifax Square, satin nickel 15 (US15 / 619), house-wide; hinges in
 the same finish and lot (US15A is antique nickel, a different colour). Schlage Latitude 619
 is the fallback. Privacy on every bath and bedroom, passage on every other swing door.
-Pockets take retail parts: a pocket privacy lock (turn inside, emergency release outside)
-plus an edge pull at `D-B-BATH`; a flush pull plus an edge pull at the pantry and laundry.
+Pockets take retail parts: a flush pull plus an edge pull at the pantry and laundry
+(`D-B-BATH`'s pocket privacy lock went with its pocket, 2026-11-25).
 
 **Core.** Hollow on every commodity leaf; the exceptions are the solid, steel and sauna rows
 below.
@@ -23,7 +23,7 @@ prints it with the core, function, leaf and bottom:
 |---|---|
 | Steves & Sons flush HC primed composite prehung, `x62H1WASAE` (J 24 / M 30 / N 32 / Q 36, RH/LH) | every hollow `-SWING*`, `CLOSET32` (cut to 6'-0", rail re-glued) |
 | Masonite 65726 flush solid-core primed prehung | every `-SOLID*`, `DOUBLE60` (prehung as a pair by the yard) |
-| Masonite 14548 flush HC slab, 36x80 | both pockets (the Eclisse kit serves on the opening: EKC3680 / its 2x6 sibling) |
+| Masonite 14548 flush HC slab, 36x80 | both pockets, `D-M-PANTRY` and `D-M-LAUN` (the Eclisse kit serves on the opening: EKC3680) |
 | Steves J62H1FADLC99 flush HC slab, 24x80 | `BYPASS48` (two), `ACCESS24` (cut to 36", rail re-glued) |
 | Johnson Hardware 138F482D | `BYPASS48`'s set |
 | Impact Plus BFP344-6080W flush bifold, trimmed to 56" (confirm; no stock 56") | `BIFOLD56` |
@@ -75,11 +75,16 @@ sweep or automatic bottom closes its undercut (`DoorType.bottom_seal`).
 | D-A-STUDY | attic study | DT-INT-BOOKCASE30 | touch latch, ships with the unit (filtered out of the passage row) | solid | sealed (owner, 2026-11-12): gasketed leaf, bottom sweep | none: passes no air; the study is open to the stair |
 | D-B-FURN | furnace / workshop | DT-INT-SWING36 | passage | hollow | 3/4" **must stay** | the workshop's makeup |
 | D-B-SHOP | workshop / stair hall | DT-INT-STEEL36-KEYED | keyed entry 740HFL SQT 15 SMT + US15 hinges | steel | weatherstrip + sweep across a 1/2" undercut, no sill | via D-B-FURN |
-| D-B-SAUNA | sauna / gym | DT-INT-SAUNA24 | own handle and roller catch, no lock | insulated wood | sealed | supply and exhaust balanced 20/20 cfm |
+| D-B-SAUNA | sauna / gym | DT-INT-SAUNA24 | own handle and roller catch, no lock | insulated wood | sealed | supply and exhaust balanced 38/38 cfm (`plan/erv_balance.py`) |
 | D-B-PLAY | play / gym | DT-INT-DOUBLE60 | pair: passage (east, active) + dummy + flush bolts on the passive west leaf, which shelters ED-B-PLAY-N-SW (owner, 2026-11-22) | solid | jamb/head gaskets + astragal, 3/4" | 30 cfm supply exits under the pair |
-| D-B-BATH | bath / stair hall | DT-POCKET-INT-36-PRIV | pocket privacy + edge pull | - | - | - |
+| D-B-BATH | bath / stair hall | DT-INT-SWING32-PRIV | privacy (a 32" swing, 2026-11-25; was a pocket) | hollow | 3/4" (relief undercut) | the bath's 20 cfm exhaust (`REG-B-EXH1`) makes up under it |
 | D-B-ESS | ESS closet | DT-INT-STEEL24-LITE | passage, spring hinges | steel | - | - |
 | D-B-CLOSET | under-stair storage | DT-INT-CLOSET32 | closet (dummy knob) | hollow | 1/2" (standard; the 3/4" heater undercut is retired, 2026-11-09) | - |
+
+**D-B-GYM** is not a door: a 36" rough opening with no leaf on `W-B-CS2` (moved 2026-11-25),
+hall and gym being one circulation space. `D-B-BATH` swings in and is hinged east so the leaf
+parks clear of the WC; its type is the one `D-M-BATH2` and `D-A-HALVES` use. `DT-POCKET-INT-36-PRIV`
+and the 2x6 Eclisse kit are catalog-only now (`pocket_frame_eclisse.md`).
 
 **Open at order.** The sauna door's maker and its RO against the 3/4 x 9 1/4 cedar flat jamb
 (the model keeps the 24" leaf's derived RO); the Halifax lever projection against the 3"

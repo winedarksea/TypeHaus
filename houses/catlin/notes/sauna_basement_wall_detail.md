@@ -12,10 +12,12 @@ source:
   - sauna_basement_wall_detail.py
 ---
 
-**Seating revision, 2026-10-11:** [sauna_seating.md](sauna_seating.md) supersedes earlier
-bench layouts and heights. Independent 42/24-inch levels, a 78 × 28-inch lying
-bench, south reading recliner and removable service decks are now modeled. Finished ceiling
-is 84 1/16 inches AFF; use that surface for headroom and heater checks.
+**Seating revision, 2026-11-25:** [sauna_seating.md](sauna_seating.md) supersedes earlier
+bench layouts and heights. Two 80 9/16 × 28-inch decks run along the west wall, an upper
+lying bench at 42 inches and a lower deck at 24 inches carrying the reading recliner; the
+reading platform is retired. The room gave its north 2' to the bath and lost its shower
+(2026-11-25). Finished ceiling is 84 1/16 inches AFF; use that surface for headroom and
+heater checks.
 
 ## Sheet notes
 
@@ -33,7 +35,7 @@ is 84 1/16 inches AFF; use that surface for headroom and heater checks.
 - [K1 @ host#layer:liner-furring:out] Furring to the pour: masonry anchors, embedment verified for the substrate.
 - {opening_perimeter:SAUNA_LINER_ON_GARDEN*} [K2] South window: the 3 1/4" liner deepens the framed rough jamb. Line the jamb through it.
 - [K3 @ host#layer:foil-polyiso:out] Return the foil facing into the jamb and seal it. Do not stop it short.
-- [K4] Independent lying bench at 42 inches, foot platform at 24 inches and lighting rails at 16 inches AFF.
+- [K4] Upper lying bench at 42 inches, lower deck at 24 inches and lighting rail at 16 inches AFF.
 - [K5] Drop framing: 2x4 wall on the pour, 2x4 ceiling hung from the I-joists.
 - [K6] Footing drain: perforated pipe in the stone beside the footing, not under.
 
@@ -44,7 +46,7 @@ is 84 1/16 inches AFF; use that surface for headroom and heater checks.
 - Tape each polyiso seam and each insulation-to-insulation junction at the wall and ceiling corner.
 - Lap the liquid floor membrane up the fiber cement base and flash the polyiso over its top edge.
 - Set heat-rated light strips on the new framing rails at 16 inches AFF; keep drivers and transformers out of the hot zone.
-- ERV supply: north hatch over the upper bench (2026-11-11). Keep the low west exhaust, bench clear of grilles, plastic pipe behind insulation.
+- ERV supply: ceiling hatch over the heater (2026-11-25; was the north hatch over the upper bench). Keep the low west exhaust, decks clear of grilles, plastic pipe behind insulation.
 
 ### Spec 09 28 16
 - BATH2 shower walls: 1/2" glass-mat backer, ASTM C1178 (DensShield), floor to ceiling, grey face out, over the base flange.
@@ -66,7 +68,9 @@ is 84 1/16 inches AFF; use that surface for headroom and heater checks.
 
 - Support framing: 2x4 wall framed against concrete supports the dropped 2x4 ceiling. The primary structure above this room is joists, not a deck — `FS-M-WEST`, 11 7/8" I-joists at 16" o.c. spanning east-west. Hang the drop framing from the joists (the concrete band is east of x=18' and does not reach this room). `emit/draw/detail_components/sauna.py::ceiling_underside_over` reads a joist soffit as readily as a slab's.
 
-- Benches + heater: independent 42" upper and 24" lower platforms; see sauna_seating.md. Maintain the selected US heater listing and fence.
+- Benches + heater: independent 42" upper bench and 24" lower deck; see sauna_seating.md. Maintain the selected US heater listing and fence.
+
+- **North wall (2026-11-25).** `W-B-SA-N` (2x6, `SAUNA_2X6`, y=95 3/8") is the sauna's north liner wall and the bath's wet wall: the sauna face is the general liner above, the bath face glass-mat board. It carries the bath's drains, vents and the condensate drop in its bays; no sauna-side tile, backer or valve pocket.
 
 - Base: 6" fiber cement baseboard (or tile backer) at bottom of walls replaces T&G and furring. Provide flashing from polyiso over baseboard at top edge. Liquid floor membrane extends up the fiber cement baseboard.
 
@@ -85,11 +89,9 @@ is 84 1/16 inches AFF; use that surface for headroom and heater checks.
 - Foundation: 8" concrete wall with #6 @ 48" o.c. vertical reinforcement, bearing on 20"×8" footing per IRC Table R403.1 (confirm local requirements). Footing concrete 5000 psi. Footing bears on 6" compacted washed stone aggregate (wider than footing) with French drain located in the wider area, not under the footing. (Same pipe the model calls drain tile — see `basement_to_framed_wall_detail.md`; the two names do not describe two runs.)
 
 
-## Local shower-wall exception — 2026-11-09
+## Local shower-wall exception — 2026-11-09 (RETIRED 2026-11-25)
 
-The two tiled 36-inch spans remove the shiplap and use 1/2-inch USG Durock over supported
-packing, with the local insulated valve pocket and a stringer 2 3/4 inches behind tile.
-The sauna's general wood liner remains on the dry spans. The complete waterproofing,
-foil-tape, collar and sealant system still needs documented temperature qualification;
-Durock permission alone does not resolve it. See [shower_assemblies.md](shower_assemblies.md)
-for the actual faces, quantities, section and unresolved construction interfaces.
+The two tiled 36-inch spans, the Durock/packing build-up and the valve pocket left with the
+sauna's shower. The sauna's wood liner now runs unbroken on every wall, and the temperature
+qualification question is closed by removal. See [shower_assemblies.md](shower_assemblies.md)
+for the basement bath's wet wall.

@@ -2036,7 +2036,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
       Sealed doors (2026-11-03): `D-S-BATH1` (makes up through `REG-S-XFER-BATH1`/`-VANITY`),
       `D-B-SHOP` (through `D-B-FURN`, which must keep its undercut), `D-M-BED2` (RM-M-BED
       exhausts through `D-M-BATH2`, which must keep its undercut) and `D-B-SAUNA` (balanced
-      20/20). `D-B-PLAY` and `D-M-BATH1` keep 3/4".
+      38/38). `D-B-PLAY` and `D-M-BATH1` keep 3/4".
     - Where the box passes under `ST-S2A`'s flight, `ledger-W-S-SS2-stringer-2` (the 2x10 on
       `W-S-SS2` at y 104 1/8"..105 5/8") may NOT be lapped — `structural.member_interference`
       excuses treads/stringers over a soffit but not that ledger.
@@ -2185,7 +2185,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     face, and `clear_face` (the finish face) shows it (`notes/basement_to_framed_wall_detail.md`).
 
 - **Sauna (`RM-B-SAUNA`), re-laid 2026-11-25** when it gave its north 2' to the bath:
-  clear box x 121 5/8"..210", y 9 1/4"..90 3/4" (7'-4 3/8" x 6'-9 1/2"), ceiling underside
+  clear box x 122 1/2"..210", y 9 1/4"..90 3/4" (7'-4 3/8" x 6'-9 1/2"), ceiling underside
   **84 1/16" AFF**. Seating in `plan/sauna.py`, sizes in `plan/sauna_types.py`; construction:
   `notes/sauna_seating.md`.
   - Two full-depth decks against the west wall, both **80 9/16 x 28**: upper lying bench at
@@ -2199,15 +2199,15 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     shower, WC and lav, and every drain, vent and the condensate drop rise in its bays.
   - Condensate (`PR-B-COND`, `PR-B-COND-HP2-GYM`) drops in `W-B-SA-N`'s 198 3/4"-211 3/4" bay
     and ends in a 9" air gap over the floor drain, which keeps its trap wet.
-  - Vents: `REG-B-SUP3` is a ceiling hatch over the heater (199 3/4", 20 1/2"), a tee off
-    `DU-B-ERV-R-GYM`; `REG-B-EXH2` low on the west wall (20/20 cfm, sealed door). Both are
+  - Vents: `REG-B-SUP3` is a ceiling hatch over the heater (199 3/4", 20 1/2"), fed by
+    `DU-B-ERV-R-SAUNA-SUP`; `REG-B-EXH2` low on the west wall (38/38 cfm, sealed door). Both are
     house-local `REG-T-SAUNA-VENT-SUP`/`-EXH` (ProSaunas aspen sliding hatch on a 4" boot).
   - Lighting: `LR-B-SAUNA-WEST`/`-SOUTH` along the lower deck's exposed edge at 16" AFF, split
     at the recliner's head, one switch; PSU on `W-B-SA-W`.
 
 - **Bathroom (`RM-B-BATH`), north of the sauna since 2026-11-25.** Clear x 120 1/4"..212 3/4",
   y 100"..153 3/4" (34.5 sf), ceiling 84 3/16" under a 12 3/4" service cavity (R305 7'-0").
-  One door, `D-B-BATH` (30" privacy swing in `W-B-BT-N2` off the hall's south end, swinging in,
+  One door, `D-B-BATH` (32" privacy swing in `W-B-BT-N2` off the hall's south end, swinging in,
   hinged east so the leaf parks clear of the WC). On the south wet wall, west to east: a 36x36
   curbed pan (`FX-SHOWER-36-COMBO`, valve mid-bay at x=142 1/4"), the Drake WC (15" each side),
   a SEKTION 24 lav. All drain to one 3" `PR-B-SAUNA-DRAIN` under the wall (individual vents;
@@ -2232,9 +2232,8 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   stair -> hall -> `D-B-SHOP` -> workshop -> `D-B-FURN`. There are now **no doors through a
   concrete pour** — `prices.toml`'s `concrete-window-bucks-and-blockouts` row drives to zero
   and is kept there under the `glazed-green-brick` convention.
-  - `D-B-GYM` is on the hall (not the workshop): same uid/position, 32" leaf, type
-    `DT-INT-SWING32-GLAZED`, glazed for the gym's daylight. Since 2026-11-25 it is a 36"
-    RO with a mat reducer on `W-B-CS2`, 7" north of `N-B-C1`; `FT-B-CS2` stops short of it
+  - `D-B-GYM` is on the hall (not the workshop), same uid. Since 2026-11-25 it is a 36"
+    doorless RO (no leaf) with a mat reducer on `W-B-CS2`, 7" north of `N-B-C1`; `FT-B-CS2` stops short of it
     with a 20" slab bridge (`params/foundations._START_EXTENSION`).
   - The workshop is a room (not a corridor) with `D-B-SHOP` (3'-0", in `W-B-HALL-W`, RO
     y 13'-7".."16'-9", leaf swings west). `D-B-FURN` (3'-0", widened) is the dry-fire lane's door. `W-B-CW2B`
