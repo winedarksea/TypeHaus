@@ -9,11 +9,16 @@ _HOLDER_BASE = inch(25.33)
 _PAD_BASE = inch(23.25)
 
 BASEMENT_BATH_ACCESSORIES = [
+    # On FX-B-BATH-LAV's west side, facing the WC; moves with the vanity (FURN-A-STUBATH-TP).
     Furniture(uid="TPBBATH001", tag="FURN-B-BATH-TP", type_ref="FT-MOEN-ALIGN-TP",
-              room="RM-B-BATH", mount=Mount(kind=MountKind.WALL, elevation=_HOLDER_BASE),
-              location=Location(attachment=WallAttachment(
-                  wall_ref="W-B-STR3B", face="left", distance_from_start=inch(38.5625),
-                  rotation_offset=deg(-180)))),
+              room="RM-B-BATH", host_fixture_ref="FX-B-BATH-LAV",
+              position=pt(inch(186.83), inch(112.625)), rotation=deg(-90),
+              mount=Mount(kind=MountKind.WALL, elevation=_HOLDER_BASE)),
+    Furniture(uid="PF963RXEQF", tag="FURN-B-BATH-TP-PAD", type_ref="FT-TP-CABINET-BACKING-12",
+              room="RM-B-BATH", host_fixture_ref="FX-B-BATH-LAV",
+              position=pt(inch(189.625), inch(112)), rotation=deg(-90),
+              mount=Mount(kind=MountKind.WALL, elevation=_PAD_BASE,
+                          recessed_into_host_surface=True)),
 ]
 
 MAIN_BATH_ACCESSORIES = [

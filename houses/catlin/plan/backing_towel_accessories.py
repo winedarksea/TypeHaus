@@ -6,23 +6,31 @@
 from typehaus import WallBacking, inch
 
 BASEMENT_TOWEL_BACKING = [
-    WallBacking(uid="75HJPPS83V", tag="BK-B-BATH-HAND-TOWEL-N", wall_ref="W-B-STR2", face="left",
-                start=inch(0), length=inch(12.625), elevation=inch(45.37),
-                height=inch(5.5), profile="2x6", material_ref="spf",
-                purpose="FURN-B-BATH-HAND-TOWEL north post, beside first stud"),
     # Bath floor +0.12 in.; gym floor +0.75 in. (stall mats) above wall framing datum.
     WallBacking(
         uid="TWBBLOCK01",
         tag="BK-B-BATH-HAND-TOWEL",
-        wall_ref="W-B-STR2",
-        face="left",
-        start=inch(14.125),
+        wall_ref="W-B-CS3",
+        face="right",
+        start=inch(12.75),
         length=inch(14.5),
         elevation=inch(45.37),
         height=inch(5.5),
         profile="2x6",
         material_ref="spf",
         purpose="FURN-B-BATH-HAND-TOWEL both posts",
+    ),
+    WallBacking(
+        uid="A2CZQYWKE3", tag="BK-B-BATH-BATH-TOWEL",
+        wall_ref="W-B-BT-N",
+        face="right",
+        start=inch(0),
+        length=inch(31.25),
+        elevation=inch(50.75),
+        height=inch(5.5),
+        profile="2x6",
+        material_ref="spf",
+        purpose="FURN-B-BATH-BATH-TOWEL both posts",
     ),
     WallBacking(
         uid="TWBBLOCK02",

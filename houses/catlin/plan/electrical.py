@@ -271,13 +271,13 @@ BASEMENT_DEVICES = [
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
     # EQ-B-WH's factory cord (Rheem: a grounded standard outlet, not shared past half its
     # breaker). Dedicated CKT-WH, GFCI at the device as the sump's (210.8(A)(5)). On
-    # W-B-CW2's workshop face beside the tank's north-west shoulder, 3 13/16" above its
-    # 74 3/16" top, west of the inlet elbow: reachable with the tank in place.
+    # W-B-BA-N's alcove face behind the tank (x=12'-1"), 3 13/16" above its 74 3/16" top,
+    # east of the inlet elbow: reachable through AO-B-WH-ALCOVE with the tank in place.
     ElectricalDevice(uid="4KWVWZGFP6", tag="ED-B-WH-RC", kind=DeviceKind.RECEPTACLE_GFCI,
-                     type_ref="ED-T-LEV-GFCI-15", circuit="CKT-WH", room="RM-B-WORKSHOP",
+                     type_ref="ED-T-LEV-GFCI-15", circuit="CKT-WH", room="RM-B-WH-ALCOVE",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(78)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-B-CW2", face="right", distance_from_start=inch(7),
+                         wall_ref="W-B-BA-N", face="right", distance_from_start=inch(25),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     # EQ-B-ERV's 6' factory cord (120 V, 3.6 A). On W-B-STR3B's furnace-room face at 48",
     # 23" off its north end (y 23'-7"), beside the case's south box side (2026-11-21, with
@@ -322,9 +322,9 @@ BASEMENT_DEVICES = [
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-SG-W1", face="left", distance_from_start=inch(59.3125),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
-    # RM-B-BATH's NEC 210.52(D) receptacle: GFCI within 3'-0" of the basin's edge (1'-9"
-    # here), on W-B-STR2's bath face at x=10'-3 1/4" — beside the vanity across the room's
-    # short dimension, with no wall between plate and basin. On CKT-BATH-RC since 2026-11-07
+    # RM-B-BATH's NEC 210.52(D) receptacle: GFCI within 3'-0" of the basin's edge, on
+    # W-B-CS3's bath face at y=10'-4", 6" north of the vanity's end (2026-11-25), with no
+    # wall between plate and basin. On CKT-BATH-RC since 2026-11-07
     # (210.11(C)(3): bathroom receptacles only), whose breaker is not GFCI, so it is the GFCI
     # guide-light device the other bath vanities use rather than the plain guide duplex.
     ElectricalDevice(uid="CEE040AAAA", tag="ED-B-BATH-RC1", kind=DeviceKind.RECEPTACLE_GFCI,
@@ -332,8 +332,8 @@ BASEMENT_DEVICES = [
                      circuit="CKT-BATH-RC", room="RM-B-BATH",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(42)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-B-STR2", face="left", distance_from_start=inch(31.25),
-                         normal_gap=inch(0), rotation_offset=deg(-180)))),
+                         wall_ref="W-B-CS3", face="right", distance_from_start=inch(32),
+                         normal_gap=inch(0), rotation_offset=deg(0)))),
 ]
 
 BASEMENT_EQUIPMENT = [
@@ -394,7 +394,8 @@ BASEMENT_EQUIPMENT = [
               room="RM-B-GYM", type_ref="EQ-T-GREE-HEAD-9", outdoor_ref="EQ-M-HP2-OD",
               mount=Mount(kind=MountKind.WALL, elevation=inch(82)),
               zone_rooms=("RM-B-GYM", "RM-B-PLAY-N", "RM-B-STAIR", "RM-B-WORKSHOP",
-                          "RM-B-SAUNA", "RM-B-FURNACE", "RM-B-BATH", "RM-B-ESS"),
+                          "RM-B-SAUNA", "RM-B-FURNACE", "RM-B-BATH", "RM-B-ESS",
+                          "RM-B-WH-ALCOVE"),
               location=Location(attachment=WallAttachment(
                   wall_ref="W-B-CS", face="left", distance_from_start=inch(68.4375),
                   normal_gap=inch(0), rotation_offset=deg(-180)))),
@@ -2070,10 +2071,8 @@ NEC_FILL_BASEMENT = [
     # ever call this gap. It is authored because the code says so, not because the model
     # noticed.
     #
-    # On W-B-HALL-W's hall face (east face at 14'-2 1/4") 1" proud of it — the face
-    # convention at the top of this file — at y=16'-0", roughly the hall's midpoint and
-    # clear of both doors: D-B-SHOP's north jamb is at 13'-10 9/16" and D-B-GYM is opposite,
-    # on the other side. `rotation=deg(90)` turns the plate east into the hall. Elevation
+    # On W-B-HALL-W's hall face (east face at 14'-2 1/4"), y=17'-3", in the bay north of
+    # D-B-SHOP's king (2026-11-25: the door moved north to y 13'-7".."16'-9"). Elevation
     # 16", the house's standard. CKT-RC-BSMT is already `gfci=True, afci=True`
     # (plan/circuits.py), which is what 210.8(A)(6) wants of any basement outlet.
     ElectricalDevice(uid="KYE6QTF5VS", tag="ED-B-HALL-RC1", kind=DeviceKind.RECEPTACLE,
@@ -2081,7 +2080,7 @@ NEC_FILL_BASEMENT = [
                      circuit="CKT-RC-BSMT", room="RM-B-STAIR",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-B-HALL-W", face="left", distance_from_start=inch(24),
+                         wall_ref="W-B-HALL-W", face="left", distance_from_start=inch(9),
                          normal_gap=inch(0), rotation_offset=deg(-180)))),
 ]
 NEC_FILL_MAIN = [

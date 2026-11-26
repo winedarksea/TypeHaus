@@ -2,35 +2,36 @@
 # Selected bathroom mirrors and lights; products/types in mirror_types.py.
 # Mount elevations are BODY BOTTOMS above finished floor, not electrical box centres.
 # Karlie shades face down; the junction box is 5.5 in. above its body bottom. RM-B-BATH's
-# mirror dropped 2 in. for the taller VALLMORA under SF-B-BATH (2026-11-21).
+# mirror and VALLMORA centre on the lav, on W-B-SA-N's bath face, the light's top under the
+# ~84" ceiling (2026-11-25).
 from typehaus import DeviceKind, ElectricalDevice, Furniture, LightRun, Location, Mount, MountKind, WallAttachment, WallBacking
 from typehaus.model import deg, inch, pt
 
 BASEMENT_MIRRORS = [
     Furniture(uid="E63FE4725D", tag="FURN-B-BATH-MIRROR", type_ref="FT-MIRROR-KOHLER-26052-BNL", room="RM-B-BATH",
-            mount=Mount(kind=MountKind.WALL, elevation=inch(38)),
+            mount=Mount(kind=MountKind.WALL, elevation=inch(36.75)),
             location=Location(attachment=WallAttachment(
-                wall_ref="W-B-CW2", face="left", distance_from_start=inch(24),
+                wall_ref="W-B-SA-N", face="left", distance_from_start=inch(82.5),
                 normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="2455867868", tag="ED-B-BATH-MIRROR", kind=DeviceKind.LIGHT,
             type_ref="ED-T-LT-VALLMORA-3-NI", box_use="bracket", room="RM-B-BATH",
             circuit="CKT-LT-BSMT", controlled_by=("ED-B-BATH-SW",),
-            mount=Mount(kind=MountKind.WALL, elevation=inch(74.1875)),
+            mount=Mount(kind=MountKind.WALL, elevation=inch(72.9375)),
             location=Location(attachment=WallAttachment(
-                wall_ref="W-B-CW2", face="left", distance_from_start=inch(24),
+                wall_ref="W-B-SA-N", face="left", distance_from_start=inch(82.5),
                 normal_gap=inch(0), rotation_offset=deg(0)))),
-    WallBacking(uid="E4237B788F", tag="BK-B-CW2-MIRROR-LOW", wall_ref="W-B-CW2", face="left",
-        start=inch(16.75), length=inch(14.5),
-        elevation=inch(38), height=inch(7.25), profile="2x8",
+    WallBacking(uid="E4237B788F", tag="BK-B-SAN-MIRROR-LOW", wall_ref="W-B-SA-N", face="left",
+        start=inch(64.75), length=inch(29),
+        elevation=inch(36.75), height=inch(7.25), profile="2x8",
         material_ref="spf", purpose="mirror body bottom"),
-    WallBacking(uid="19EA8A2D8F", tag="BK-B-CW2-MIRROR-HANG", wall_ref="W-B-CW2", face="left",
-        start=inch(16.75), length=inch(14.5),
-        elevation=inch(62), height=inch(11.25), profile="2x12",
+    WallBacking(uid="19EA8A2D8F", tag="BK-B-SAN-MIRROR-HANG", wall_ref="W-B-SA-N", face="left",
+        start=inch(64.75), length=inch(29),
+        elevation=inch(60.75), height=inch(11.25), profile="2x12",
         material_ref="spf", purpose="K-26052 portrait hanging rail, about 67 in. AFF"),
-    WallBacking(uid="35159AF246", tag="BK-B-CW2-MIRROR-LIGHT", wall_ref="W-B-CW2", face="left",
-        start=inch(16.75), length=inch(14.5),
-        elevation=inch(80.5), height=inch(7.25), profile="2x8",
-        material_ref="spf", purpose="VALLMORA box at 83 3/16 in. AFF"),
+    WallBacking(uid="35159AF246", tag="BK-B-SAN-MIRROR-LIGHT", wall_ref="W-B-SA-N", face="left",
+        start=inch(64.75), length=inch(29),
+        elevation=inch(79.25), height=inch(7.25), profile="2x8",
+        material_ref="spf", purpose="VALLMORA box at 81 15/16 in. AFF"),
 
 ]
 

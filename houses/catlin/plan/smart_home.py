@@ -63,7 +63,7 @@ BASEMENT_ELEMENTS = [
           position=pt(inch(136), inch(414))),
     Alarm(uid="PKG7EJRSDK", tag="AL-B-BATH-LEAK", kind=AlarmKind.LEAK,
           type_ref="ED-T-LEAK-SNZB05P", room="RM-B-BATH",
-          position=pt(inch(127), inch(243.1))),
+          position=pt(inch(186), inch(103))),
 ]
 
 # --- main: doorbell and the porch camera -----------------------------------------------------

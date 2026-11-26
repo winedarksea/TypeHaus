@@ -13,10 +13,25 @@ BASEMENT_TOWEL_ACCESSORIES = [
         mount=Mount(kind=MountKind.WALL, elevation=inch(47.33)),
         location=Location(
             attachment=WallAttachment(
-                wall_ref="W-B-STR2",
-                face="left",
-                distance_from_start=inch(15.625),
-                rotation_offset=deg(-180),
+                wall_ref="W-B-CS3",
+                face="right",
+                distance_from_start=inch(20),
+                rotation_offset=deg(0),
+            )
+        ),
+    ),
+    # FX-B-BATH-SH's bar: W-B-BT-N's bath face, centred x=11'-2", across from the pan.
+    Furniture(
+        uid="THT7PGF4XZ", tag="FURN-B-BATH-BATH-TOWEL",
+        type_ref="FT-MOEN-ALIGN-BATH-TOWEL",
+        room="RM-B-BATH",
+        mount=Mount(kind=MountKind.WALL, elevation=inch(53.33)),
+        location=Location(
+            attachment=WallAttachment(
+                wall_ref="W-B-BT-N",
+                face="right",
+                distance_from_start=inch(16),
+                rotation_offset=deg(0),
             )
         ),
     ),

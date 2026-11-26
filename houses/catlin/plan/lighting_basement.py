@@ -151,20 +151,37 @@ BASEMENT_LIGHTING = [
                      controlled_by=("ED-B-WORKSHOP-SW", "ED-B-WORKSHOP-SW3"),
                      mount=Mount(kind=MountKind.CEILING, drop=inch(2.5))),
     ElectricalDevice(uid="E6HC520FMQ", tag="ED-B-WORKSHOP-LT7", kind=DeviceKind.LIGHT,
-                     position=pt(ft(11, 6), ft(12, 8)), type_ref="ED-T-LT-STRIP-T8",
+                     position=pt(ft(11, 8), ft(14, 10)), type_ref="ED-T-LT-STRIP-T8",
                      circuit="CKT-LT-BSMT", room="RM-B-WORKSHOP",
                      controlled_by=("ED-B-WORKSHOP-SW", "ED-B-WORKSHOP-SW3"),
                      mount=Mount(kind=MountKind.CEILING, drop=inch(8))),
-    # A 1-gang on W-B-HALL-W's workshop face, inside D-B-SHOP. The door's latch jamb has
-    # 5 5/8" of wall, so it is on the hinge side; at 90 degrees the leaf is clear of it.
-    # Distance is off the wall's north end.
+    # A 1-gang on W-B-HALL-W's workshop face, inside D-B-SHOP, in the bay north of its king
+    # (y=17'-4"; the door moved north 2026-11-25). Distance is off the wall's north end.
     ElectricalDevice(uid="QTB0007AAA", tag="ED-B-WORKSHOP-SW", kind=DeviceKind.SWITCH,
                      type_ref="ED-T-HBL-SW3",
                      circuit="CKT-LT-BSMT", room="RM-B-WORKSHOP",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-B-HALL-W", face="right", distance_from_start=inch(41),
+                         wall_ref="W-B-HALL-W", face="right", distance_from_start=inch(8),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
+
+    # RM-B-WH-ALCOVE (2026-11-25): one keyless lampholder on W-B-STR2's alcove face beside
+    # the tank, its switch in the bay just inside AO-B-WH-ALCOVE's west jamb.
+    ElectricalDevice(uid="WY270PDGQ7", tag="ED-B-WH-ALCOVE-LT", kind=DeviceKind.LIGHT,
+                     type_ref="ED-T-LT-KEYLESS",
+                     circuit="CKT-LT-BSMT", room="RM-B-WH-ALCOVE",
+                     controlled_by=("ED-B-WH-ALCOVE-SW",),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(80)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-B-STR2", face="left", distance_from_start=inch(21.375),
+                         normal_gap=inch(0), rotation_offset=deg(-180)))),
+    ElectricalDevice(uid="KR5CE3PC02", tag="ED-B-WH-ALCOVE-SW", kind=DeviceKind.SWITCH,
+                     type_ref="ED-T-LEV-SW1",
+                     circuit="CKT-LT-BSMT", room="RM-B-WH-ALCOVE",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
+                     location=Location(attachment=WallAttachment(
+                         wall_ref="W-B-STR2", face="left", distance_from_start=inch(36.375),
+                         normal_gap=inch(0), rotation_offset=deg(-180)))),
 
     # Its 3-way partner at D-B-FURN, the room's second entry (NEC 210.70(C)(1)), on W-B-CW's
     # workshop face at x=2'-0" (latch side; the leaf hangs on the east jamb), the bay east of
@@ -488,24 +505,23 @@ BASEMENT_LIGHTING = [
                      circuit="CKT-LT-BSMT", room="RM-B-STAIR",
                      controlled_by=("ED-B-STAIR-SW", "ED-M-STAIR-SW"),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
-    ElectricalDevice(uid="K96T60Y9RX", tag="ED-B-STAIR-CAN4", kind=DeviceKind.LIGHT,
-                     position=pt(inch(190), ft(11, 6)), type_ref="ED-T-LT-CAN4",
-                     circuit="CKT-LT-BSMT", room="RM-B-STAIR",
-                     controlled_by=("ED-B-STAIR-SW", "ED-M-STAIR-SW"),
+    # The hall's old fourth can, inside RM-B-BATH since 2026-11-25: the bath's ceiling light,
+    # moved south of DU-B-ERV-R-GYM's leg.
+    ElectricalDevice(uid="K96T60Y9RX", tag="ED-B-BATH-CAN1", kind=DeviceKind.LIGHT,
+                     position=pt(inch(190), ft(10, 4)), type_ref="ED-T-LT-CAN4",
+                     circuit="CKT-LT-BSMT", room="RM-B-BATH",
+                     controlled_by=("ED-B-BATH-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
 
-    # RM-B-BATH (2026-07-30; rotated 2026-09-05). On CKT-LT-BSMT with the stair foot since
-    # 2026-11-02 (off backup: notes/backup_power.md §5). No recessed light since 2026-11-19
-    # (owner): ED-B-BATH-CAN1 is retired and the Karlie over the mirror (ED-B-BATH-MIRROR,
-    # plan/mirrors.py) lights the room. Switch on the latch-jamb side (door swings out, so
-    # it isn't behind the leaf).
-    # Hosted on W-B-BA-E's bath face (x=13'-7 3/4" since the 2026-11-16 1" alignment), so it
-    # follows the wall.
+    # RM-B-BATH (moved north of the sauna 2026-11-25). On CKT-LT-BSMT, off backup
+    # (notes/backup_power.md §5): ED-B-BATH-CAN1 (the old hall CAN4, now inside the bath)
+    # and the VALLMORA over the mirror (plan/mirrors.py). D-B-BATH swings in, hinged east
+    # (clear of the WC); the switch is on W-B-BT-N's bath face at x=13'-4", the latch side.
     ElectricalDevice(uid="QTB000LAAA", tag="ED-B-BATH-SW", kind=DeviceKind.SWITCH,
                      type_ref="ED-T-LEV-SW1",
                      circuit="CKT-LT-BSMT", room="RM-B-BATH",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-B-BA-E", face="right", distance_from_start=inch(14.125),
+                         wall_ref="W-B-BT-N", face="right", distance_from_start=inch(42),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
 ]
