@@ -3,7 +3,7 @@
 ``_lights_near`` was a 4 ft plan buffer with no z filter at all, and a plan ring has no
 opinion about height: ED-S-STUDY2-STAIR-SC1 sat 2'-11 1/2" *below* the tread it was drawn
 to light and ``code.R303_7_stairway_illumination`` counted it, the pantry light one storey
-under ST-M2S counted, and the handrail tape that does not climb with its flight counted.
+under ST-M2S counted, and a handrail tape that did not climb with its flight counted.
 This module pins the window that fixes that, in both directions: the buried fixture is
 discounted, and the step light set into the riser beside the flight is not.
 """
@@ -20,8 +20,6 @@ SC1 = "ED-S-STUDY2-STAIR-SC1"
 STUDY_STAIR = "ST-S2A"
 PORCH_STAIR = "ST-SG-PORCH"
 PORCH_STEP_LIGHT = "ED-M-STAIR-LT"
-BASEMENT_STAIR = "ST-B2M"
-RAIL_TAPE = "LR-B-STAIR-RAIL"
 
 
 @pytest.fixture(scope="module")
@@ -137,19 +135,3 @@ def test_a_fitting_below_the_whole_flight_is_still_discounted(ctx):
     finally:
         _set_light_z(ctx, PORCH_STEP_LIGHT, original)
     assert f"{PORCH_STEP_LIGHT} sits" in message, message
-
-
-def test_the_handrail_tape_that_does_not_climb_is_reported(ctx):
-    """LR-B-STAIR-RAIL's known limit, said by the engine instead of by a comment.
-
-    ``LightRun`` carries one mount elevation for a whole path, so the tape under ST-B2M's
-    handrail lies flat at 34" off the slab while the flight climbs away from it. The house
-    documents that in prose (``plan/lighting_basement.py``) and noted that nothing graded it. The
-    stair is still lit by five other fixtures, so this is a parenthetical on a PASS rather
-    than a FAIL — but it is no longer silent.
-    """
-    from typehaus.checks.code.mn_residential.illumination import stairway_illumination
-
-    message = _finding_for(stairway_illumination(ctx), BASEMENT_STAIR).message
-    assert f"{RAIL_TAPE} sits" in message and "below the nosing line" in message, message
-    assert message.startswith("stair"), message  # still a PASS-shaped message

@@ -140,15 +140,16 @@ def test_switch_legs_are_dashed_and_only_drawn_where_both_ends_are_on_the_sheet(
             if isinstance(node, Polyline) and node.layer == "E-LITE-CIRC"]
     assert legs and all(node.linetype == "DASHED" and len(node.points) == 2
                         for node in legs)
-    # LR-B-STAIR-RAIL is 3-way with a main-storey switch; that leg has no second end here,
-    # so the basement sheet draws one leg for it, not two.
-    run = next(r for r in catlin_model.light_runs if r.tag == "LR-B-STAIR-RAIL")
-    assert len(run.controlled_by) == 2
+    # The stair cans are 3-way with a main-storey switch; that leg has no second end here,
+    # so the basement sheet draws one leg for each, not two.
+    can = next(e for e in catlin_model.plan.storey_elements("basement")
+               if e.tag == "ED-B-STAIR-LAND-CAN1")
+    assert len(can.controlled_by) == 2
     basement_switches = {element.tag for element in
                          catlin_model.plan.storey_elements("basement")
                          if element.element_kind == "ElectricalDevice"
                          and element.kind.value == "switch"}
-    assert len([tag for tag in run.controlled_by if tag in basement_switches]) == 1
+    assert len([tag for tag in can.controlled_by if tag in basement_switches]) == 1
 
 
 def test_the_legend_lists_only_the_forms_on_that_sheet(catlin_model):

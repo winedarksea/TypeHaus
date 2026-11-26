@@ -58,13 +58,14 @@ def test_the_schedule_counts_reconcile_with_the_placed_fixtures(catlin_model):
 
 
 def test_a_run_type_reports_lineal_feet_instead_of_a_count(catlin_model):
-    row = next(r for r in luminaire_schedule(catlin_model) if r["type"] == "ED-T-LT-STRIP24")
+    row = next(r for r in luminaire_schedule(catlin_model)
+               if r["type"] == "ED-T-LT-STRIP24-TUNABLE")
     assert row["count"] == 0 and row["length_ft"] > 0
     assert row["watts"] is None and row["watts_per_ft"] == 3.0
     assert row["volts"] == 24
     # Only this type's runs — a schedule row is per type.
     total = sum(run.length_m for run in catlin_model.light_runs
-                if run.type_ref == "ED-T-LT-STRIP24") * _M_TO_FT
+                if run.type_ref == "ED-T-LT-STRIP24-TUNABLE") * _M_TO_FT
     assert row["length_ft"] == pytest.approx(round(total, 1))
     assert len({run.type_ref for run in catlin_model.light_runs}) > 1, \
         "this assertion only means something while more than one run type exists"
@@ -98,25 +99,22 @@ def test_run_lengths_and_watts_sum_from_the_authored_polylines(catlin_model):
 
 def test_light_run_materials_splits_the_blended_length_into_order_lines(catlin_model):
     """The order sheet off each type's tape and channel (decision #137): tape by the foot,
-    channel by whole sticks per run, two end caps per surface run, modules by length, and
-    the derived 24 V leads by gauge with one connector per feed."""
-    import math
-
+    channel by the foot (whole sticks where a stick is read), two end caps per surface run,
+    modules by length, and the derived 24 V leads by gauge with one connector per feed."""
     materials = light_run_materials(catlin_model)
     by_key = {(row["type"], row["item"]): row for row in materials}
-    strip24 = [run for run in catlin_model.light_runs if run.type_ref == "ED-T-LT-STRIP24"]
-    assert all(run.profile == "surface" for run in strip24)
+    sauna = [run for run in catlin_model.light_runs if run.type_ref == "ED-T-LT-STRIP24-SAUNA"]
+    assert all(run.profile == "surface" for run in sauna)
     # Shadow-gap coves bill tape alone; their channel row stays, at zero.
     assert by_key[("ED-T-LT-STRIP24-RGBCCT", "channel")]["quantity"] == 0
-    tape = by_key[("ED-T-LT-STRIP24", "tape")]
+    tape = by_key[("ED-T-LT-STRIP24-SAUNA", "tape")]
     assert tape["quantity"] == pytest.approx(
-        round(sum(run.length_m * _M_TO_FT for run in strip24), 1))
-    # DI-CHB-S2 comes in 48" sticks: each run buys whole ones.
-    channel = by_key[("ED-T-LT-STRIP24", "channel")]
-    assert channel["quantity"] == pytest.approx(
-        sum(math.ceil(run.length_m * _M_TO_FT / 4) * 4 for run in strip24))
+        round(sum(run.length_m * _M_TO_FT for run in sauna), 1))
+    # The sauna's channel has no stick length, so it bills net feet, not whole sticks.
+    channel = by_key[("ED-T-LT-STRIP24-SAUNA", "channel")]
+    assert channel["quantity"] == tape["quantity"]
     assert channel["unit"] == tape["unit"] == "LF"
-    assert by_key[("ED-T-LT-STRIP24", "end_cap")]["quantity"] == 2 * len(strip24)
+    assert by_key[("ED-T-LT-STRIP24-SAUNA", "end_cap")]["quantity"] == 2 * len(sauna)
     # MITTLED is bought as modules (24+12, 18+12, 15, 12), never as cut tape.
     assert ("ED-T-LT-MITTLED", "tape") not in by_key
     assert {item: by_key[("ED-T-LT-MITTLED", item)]["quantity"] for item in (

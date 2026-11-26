@@ -52,8 +52,9 @@ def test_every_light_run_material_row_is_priced(catlin_estimate):
             if row["section"] == "light_run_materials"] == []
     section = catlin_estimate["sections"]["light_run_materials"]
     units = {row["key"]: row["unit"] for row in section["rows"]}
-    assert units["channel"] == "LF" and units["tape"] == "LF"
-    assert units["end_cap"] == "EA" and units["corner_connector"] == "EA"
+    cove = "ED-T-LT-STRIP24-TUNABLE"
+    assert units[f"channel:{cove}"] == "LF" and units[f"tape:{cove}"] == "LF"
+    assert units[f"end_cap:{cove}"] == "EA" and units[f"corner_connector:{cove}"] == "EA"
     assert units["end_cap:ED-T-LT-LINEAR-EXT"] == "EA"
     assert section["subtotal"]["low"] > 0
 
@@ -69,10 +70,8 @@ def test_the_two_stopgap_allowances_are_gone_and_nothing_bills_twice(catlin_esti
 
 
 def test_the_exterior_and_sauna_types_price_apart_from_the_24v_cove(catlin_estimate):
-    rows = {(row["key"], row["quantity"]): row
-            for row in catlin_estimate["sections"]["light_run_materials"]["rows"]}
-    exterior = next(row for (key, _), row in rows.items()
-                    if key == "channel:ED-T-LT-LINEAR-EXT")
-    cove = next(row for (key, _), row in rows.items() if key == "channel")
-    per_ft = lambda row: row["unit_price"]["low"]  # noqa: E731
-    assert per_ft(exterior) > per_ft(cove), "ladder work at the eaves is not cove work"
+    rows = {row["key"]: row for row in catlin_estimate["sections"]["light_run_materials"]["rows"]}
+    per_ft = lambda key: rows[key]["unit_price"]["low"]  # noqa: E731
+    cove = per_ft("channel:ED-T-LT-STRIP24-TUNABLE")
+    assert per_ft("channel:ED-T-LT-LINEAR-EXT") > cove, "ladder work at the eaves is not cove work"
+    assert per_ft("channel:ED-T-LT-STRIP24-SAUNA") > cove, "a sauna-rated channel is not cove work"
