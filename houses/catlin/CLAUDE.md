@@ -1767,7 +1767,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
       the old route (south into the unblocked 31'-32' bay, west, back north at x=240", plus a
       ceiling access cleanout) is the fallback. The kitchen supply risers stand in the
       35'-36' bay and jog back to the old stops.
-    - **PR-B-SAUNA-VENT shapes all of it.** It runs x=9'-0" from y=10'-6" to 34'-6", rising
+    - **PR-B-SAUNA-VENT shapes all of it.** It runs x=9'-0" from y=7'-9" (2026-11-25) to 34'-6", rising
       -20" to -15 1/2", so every east-west lane in the west half crosses it and the crossing
       elevation depends on where. That is why both sauna radials come east along y=1'-8 1/2"
       and y=3'-2", south of the vent's corner.
@@ -1981,7 +1981,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
       room's one free lane at x 8'-2".
       `EQ-B-HP2-GYM`'s is `PR-B-COND-HP2-GYM`, by gravity (owner, 2026-11-14): 28" exposed on the
       gym face over `D-B-SAUNA`, then in `W-B-CS`'s and the sauna north walls' stud cores onto
-      `PR-B-COND`'s drop at x=13'-6". The sauna ceiling void is above any head's drain.
+      `PR-B-COND`'s drop at x=17'-4" (2026-11-25). The sauna ceiling void is above any head's drain.
     - **`REG-S-HP-RET` is a ceiling filter grille in `SF-S-DUCT`'s underside**: `AO-S-DUCT-RET`
       is exactly its 24x12 neck, and the return duct (not the soffit cavity) is behind it
       (IMC 601.5; no check catches a cavity return). The neck is the rack plus the shop filter
@@ -2057,7 +2057,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   greenboard. A
   one-piece tub-shower insert takes no niche, screw or accessory: only the valve and spout
   knockouts. Both lit niches are gone. The spec lives on the fixture types' `source` and
-  their price rows (`notes/bath2_shower.md` §6); the sauna rinse is the open exception.
+  their price rows (`notes/bath2_shower.md` §6); RM-B-BATH's surround is BATH2's pattern (2026-11-25).
 - **CCT rule (owner, 2026-10-31): one schedule mark per working CCT.** A selectable (5CCT)
   module is allowed, set once to its mark's `cct_k`; a tunable fixture records its working
   CCT in `cct_k` and its range in `cct_range_k`. BATH2 is 5000 K day / 2700 K evening
