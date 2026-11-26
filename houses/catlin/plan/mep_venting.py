@@ -473,7 +473,9 @@ VENT_BRANCHES_BASEMENT = [
             elevations=(inch(-9.0), inch(91.25), inch(91.35), inch(91.6),
                         inch(93.75), ft(7, 10.4375), ft(7, 11.14), ft(7, 11.54),
                         ft(7, 11.6), ft(7, 11.65)),
-            serves=("FX-B-BATH-SH", "FX-B-BATH-WC", "FX-B-BATH-LAV", "FX-B-SAUNA-FD")),
+            # The fixtures whose trap this tee vents: the WC and lav vent at their own tees
+            # (mep.vent_connection grades every served fixture's weir against this one).
+            serves=("FX-B-BATH-SH", "FX-B-SAUNA-FD")),
     # The floor drain's tee, 6" downstream of PR-B-SAUNA-FD-DROP's join, up W-B-SA-N's
     # 182 3/4"-197 1/4" bay through SP-B-SLAB-SA-FDV onto the lav's header. Arm ~21".
     PipeRun(uid="D9Z3MBW6KV", tag="PR-B-SAUNA-FD-VENT", system=PipeSystem.VENT,
