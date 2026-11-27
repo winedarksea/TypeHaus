@@ -19,8 +19,6 @@ model rather than a re-run. Set ``SOURCE_DATE_EPOCH`` to pin the generation date
 
 from __future__ import annotations
 
-import os
-import sys
 from pathlib import Path
 
 import typer
@@ -65,7 +63,6 @@ def handoff(
              "(default: <house>/out/issued, if present; else 'first issue')."),
 ) -> None:
     """Assemble the engineering handoff bundle: calcs, notes, models and a seal form."""
-    _pin_hash_seed()
     from typehaus._meta import engine_version
     from typehaus.cli.engineering_load import load_engineering
     from typehaus.engineering.scaffold import SealDefaults, scaffold_external, scaffold_register
@@ -234,18 +231,3 @@ def _write_text(path: Path, text: str, root: Path) -> str:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(text, encoding="utf-8", newline="")
     return path.relative_to(root).as_posix()
-
-
-def _pin_hash_seed() -> None:
-    """Re-exec once with ``PYTHONHASHSEED=0`` so the bundle is byte-identical run to run.
-
-    Two emitters still depend on set order — the S-100 locating dimension chain
-    (``emit/draw/structural_dimensions``) and the IFC's ``IfcRelCoversBldgElements`` GUIDs —
-    and a manifest is worthless if a re-run changes a hash. Fix those and this goes away.
-    """
-    if os.environ.get("PYTHONHASHSEED") == "0" or "pytest" in sys.modules:
-        return
-    os.environ["PYTHONHASHSEED"] = "0"
-    sys.stdout.flush()
-    sys.stderr.flush()
-    os.execv(sys.executable, [sys.executable, *sys.argv])

@@ -94,8 +94,10 @@ def _foundation_storey(model: ResolvedModel) -> str | None:
     storeys = {wall.storey for wall in model.walls if wall.is_foundation}
     if not storeys:
         return None
-    elevation = {s.tag: s.elevation.meters for s in model.plan.storeys}
-    return min(storeys, key=lambda tag: elevation.get(tag, 0.0))
+    # Lowest storey; equal elevations (basement, court-low, ...) go by declared order, never
+    # set order, so the sheet does not vary with the hash seed.
+    rank = {s.tag: (s.elevation.meters, i) for i, s in enumerate(model.plan.storeys)}
+    return min(storeys, key=lambda tag: rank.get(tag, (0.0, len(rank))))
 
 
 def build_foundation_plan(model: ResolvedModel,
