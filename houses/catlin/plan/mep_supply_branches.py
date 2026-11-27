@@ -115,13 +115,14 @@ MAIN_SUPPLY_BRANCHES = [
             diameter=inch(0.75), material="pex",
             serves=("FX-S-BATH1-SH", "FX-S-BATH1-WC")),
     PipeRun(uid="JV56ZZP8TZ", tag="PR-S-BATH1-SH-HW", system=PipeSystem.WATER_HOT,
-            path=(pt(inch(76), inch(319.5)), pt(inch(76), inch(319.5)),
+            path=(pt(inch(76), inch(319.5)), pt(inch(76), inch(321)), pt(inch(76), inch(321)),
                   pt(inch(76), inch(407.5)), pt(inch(32.5), inch(407.5)),
                   pt(inch(32.5), inch(407.5)), pt(inch(32.5), inch(405.5)),
                   pt(inch(38.5), inch(405.5)), pt(inch(38.5), inch(407.5)),),
-            elevations=(inch(212), inch(238), inch(238), inch(238), inch(150.75),
-                        inch(150.75), inch(150.75), inch(150.75),),
-            diameter=inch(0.5), material="pex", serves=("FX-S-BATH1-SH",)),
+            elevations=(inch(212), inch(212), inch(237.75), inch(237.75), inch(237.75),
+                        inch(150.75), inch(150.75), inch(150.75), inch(150.75),),
+            diameter=inch(0.5), material="pex",
+            insulation='1/2" fiberglass sleeve, ASJ jacket (R-3.1)', serves=("FX-S-BATH1-SH",)),
     # The floor-fed stop: down the chase past the valve tee into FO-S-ERV-CHASE, east of the
     # ERV riser ducts, south through the trusses' 1'-5 1/2"..2'-6 1/2" web opening, west in
     # the 30'-8"..32'-0" bay (the flat ERV trunk takes the bay south of it, 2026-11-08), back
@@ -199,7 +200,8 @@ MAIN_SUPPLY_BRANCHES = [
             path=(pt(inch(363.6), inch(424.2)), pt(inch(363.6), inch(422.75)),
                   pt(inch(314.175), inch(422.75)),),
             elevations=(inch(5.5), inch(5.5), inch(5.438),),
-            diameter=inch(0.5), material="pex", serves=("APPL-M-DW",)),
+            diameter=inch(0.5), material="pex",
+            insulation='1/2" fiberglass sleeve, ASJ jacket (R-3.1)', serves=("APPL-M-DW",)),
     PipeAccessory(uid="8C6JYRFZWJ", tag="PA-M-DW-STOP", kind=PipeAccessoryKind.SHUTOFF,
                   pipe_ref="PR-M-DW-HW", position=pt(inch(358), inch(422.75)),
                   elevation=inch(5.5), accessible=True, room="RM-M-LIVING",

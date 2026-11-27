@@ -319,6 +319,7 @@ SUPPLY = [
                   pt(inch(93.5), inch(266.25)), pt(inch(50.5), inch(266.25)),
                   pt(inch(50.5), inch(266.25)), pt(inch(50.5), inch(271.375))),
             diameter=inch(0.5), material="pex",
+            insulation='1/2" fiberglass sleeve, ASJ jacket (R-3.1)',
             elevations=(inch(86.149), inch(83.5), inch(83.5), inch(95.4375), inch(95.4375), inch(83.5),
                   inch(83.5), inch(83.5), inch(83.5), inch(134.438), inch(134.438)),
             serves=("FX-M-BATH1-LAV",)),
@@ -353,10 +354,11 @@ SUPPLY = [
             # The sister block at x=6'-2 9/16" closes the 192..208 bay, so it cannot stay there.
             path=(pt(inch(160), inch(206.288)), pt(inch(160), inch(206.288)), pt(inch(151), inch(206.288)),
                   pt(inch(151), inch(206.288)), pt(inch(105.5), inch(206.288)),
-                  pt(inch(105.5), inch(206.288)), pt(inch(90), inch(206.288)),
-                  pt(inch(90), inch(206.288)), pt(inch(90), inch(189)), pt(inch(16), inch(189)),
+                  pt(inch(105.5), inch(206.288)), pt(inch(90), inch(206.015)),
+                  pt(inch(90), inch(206.015)), pt(inch(90), inch(189)), pt(inch(16), inch(189)),
                   pt(inch(16), inch(201.6)), pt(inch(9), inch(201.6)), pt(inch(9), inch(201.6))),
                         diameter=inch(0.5), material="pex",
+                        insulation='1/2" fiberglass sleeve, ASJ jacket (R-3.1)',
             elevations=(inch(86.149), inch(83.5), inch(83.5), inch(95.4375), inch(95.4375), inch(83.5),
                   inch(83.5), inch(103.2), inch(103.2), inch(103.2), inch(103.2), inch(103.2),
                   inch(145.438)),
@@ -497,6 +499,7 @@ SUPPLY = [
                   pt(inch(363.6), inch(424.2)), pt(inch(363.6), inch(424.2)),
                   pt(inch(363.6), inch(421.5)), pt(inch(363.6), inch(421.5))),
             diameter=inch(0.5), material="pex",
+            insulation='1/2" fiberglass sleeve, ASJ jacket (R-3.1)',
             # Down off header out-2, up into the y=16'-5" joist bay at 103 3/16" beside the
             # header, over W-B-HALL-W's plate and the authored route east and north (it
             # crosses the trusses in D12; one run per pocket). PR-M-DW-HW tees on its riser.
@@ -698,15 +701,17 @@ SUPPLY = [
             # lane (0.4" clear) into the bath's cavity. 102", not 103 3/16": the dip is what
             # `mep.run_route_efficiency` charges (2026-11-25, 2.47 vs 2.50).
             path=(pt(inch(160), inch(200.288)), pt(inch(160), inch(200.288)),
-                  pt(inch(154.5), inch(200.288)), pt(inch(154.5), inch(200.288)),
+                  pt(inch(154.5), inch(199.9)), pt(inch(154.5), inch(199.9)),
                   pt(inch(154.5), inch(188)), pt(inch(195), inch(188)),
                   pt(inch(195), inch(104.5)), pt(inch(195), inch(104.5)),
-                  pt(inch(147), inch(104.5)), pt(inch(147), inch(98.25)),
+                  pt(inch(147), inch(104.5)), pt(inch(147), inch(98.7)),
+                  pt(inch(147), inch(98.7)), pt(inch(147), inch(98.25)),
                   pt(inch(147), inch(98.25)), pt(inch(144.25), inch(98.25))),
             diameter=inch(0.5), material="pex",
-            elevations=(inch(86.149), inch(83.5), inch(83.5), inch(102), inch(102), inch(102),
-                        inch(102), inch(93.5), inch(93.5), inch(93.5), inch(51.4375),
-                        inch(51.4375)),
+            insulation='1/2" fiberglass sleeve, ASJ jacket (R-3.1)',
+            elevations=(inch(86.149), inch(83.5), inch(83.5), inch(103), inch(103), inch(103),
+                        inch(103), inch(94.2), inch(94.2), inch(94.2), inch(84), inch(78),
+                        inch(51.4375), inch(51.4375)),
             serves=("FX-B-BATH-SH", "FX-B-BATH-LAV")),
 ]
 
@@ -956,7 +961,7 @@ PENETRATIONS_HYDRANT_SECOND = [
 # grades on the geometric upstream subtree — supply runs grade on the AUTHORED tuple. A fixture
 # missing from it is an unfed fixture as far as the checks are concerned.
 #
-# The hot run copies PR-B-HW-SUITE's insulation string VERBATIM so `mep.hot_water_insulation`
+# The hot run copies PR-B-HW-SUITE's insulation string VERBATIM so `mep.pipe_insulation`
 # passes the way every other hot run in the house passes; do not paraphrase it.
 #
 # FILED ON ``main`` (datum 0'-0"), SO THESE ELEVATIONS ARE PROJECT ELEVATIONS. Same

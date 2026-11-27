@@ -17,8 +17,8 @@ from __future__ import annotations
 
 import pytest
 
-from typehaus.checks.mep.plumbing import (exterior_hydrant_protection, hot_water_insulation,
-                                          hydrant_freeze_depth, pipe_material_preference)
+from typehaus.checks.mep.plumbing import (exterior_hydrant_protection, hydrant_freeze_depth,
+                                          pipe_material_preference)
 from typehaus.checks.mep.supply_protection import (backflow_prevention, main_shutoff,
                                                    water_hammer_arrestor)
 from typehaus.checks.registry import CheckContext, Preferences
@@ -271,17 +271,7 @@ def test_an_uninsulated_barrel_is_an_advisory_failure(catlin_plan):
     assert "thermal bridge" in failed[0].message
 
 
-# --- the finish rule and the insulation rule ------------------------------------------
-
-def test_hot_runs_at_or_over_three_quarter_inch_are_insulated(catlin_plan, catlin_model):
-    findings = hot_water_insulation(_context(catlin_plan, catlin_model))
-    assert findings
-    assert not _fails(findings), [f.message for f in _fails(findings)]
-    # The 1/2" branches are below N1103.4.2's threshold and are not asked at all.
-    graded = {f.element_tags[0] for f in findings}
-    assert "PR-B-HW-TRUNK" in graded
-    assert "PR-B-HW-SAUNA" not in graded
-
+# --- the finish rule ------------------------------------------------------------------
 
 def _copper_prefs(base):
     """``base`` with the visible-copper rule restated.

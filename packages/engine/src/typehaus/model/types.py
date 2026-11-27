@@ -611,6 +611,9 @@ class FixtureType(HausModel):
     # The door: graded by ``shower.door_opening``. None on a shower is UNKNOWN there.
     shower_enclosure: ShowerEnclosure | None = None
     flood_rim_height: Length | None = None
+    # A kitchen outlet (sink, pot filler): its hot line takes R-3 (2012 IECC R403.4.2 item 3).
+    # Declared, not read off a name or a room: an open plan puts the sink in a living room.
+    kitchen_outlet: bool = False
     # Prefabricated receptors bear on the slab/subfloor, without the room's covering.
     # Enclosed drop-in baths exclude their enclosure rather than just the rim footprint.
     excludes_floor_finish: bool = False
@@ -685,6 +688,8 @@ class ApplianceType(FurnitureType, EvseElectricalFacts):
     # A permanently installed cooking appliance (range, cooktop, wall oven): IRC R314.3.3
     # keeps a smoke alarm 6-20 ft off it. Declared, like the two above, not read off a name.
     cooking: bool = False
+    # A kitchen outlet (dishwasher, pot filler): as ``FixtureType.kitchen_outlet``.
+    kitchen_outlet: bool = False
     # Factory door hinge side, seen from the front. Its swing zone is authored for it; an
     # `Appliance.door_hinge` on the other side mirrors the type's zones.
     door_hinge: Literal["left", "right"] | None = None

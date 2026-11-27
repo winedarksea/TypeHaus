@@ -42,6 +42,7 @@ KITCHEN_SINK_32_SINGLE = FixtureType(
     # Includes three inches behind the 19-inch steel flange for a quartz-mounted faucet.
     footprint=(inch(32), inch(22)),
     height=inch(20),
+    kitchen_outlet=True,
     mount=Mount(kind=MountKind.WALL,
                 elevation=inch(BASE_AFF_IN)),
     plan_symbol="kitchen-sink-undermount-single",

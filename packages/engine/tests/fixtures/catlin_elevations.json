@@ -21703,9 +21703,9 @@
 ],
 "geometry/CBPW47AAAA-run/body": [
 -1.47955,
--0.1825625,
-264,
-"ecdb7b516227"
+-0.1571625,
+312,
+"91f2eb39749d"
 ],
 "geometry/CBR401AAAA-ceiling-2/body": [
 -0.3175,
@@ -72913,9 +72913,9 @@
 ],
 "geometry/JV56ZZP8TZ-run/body": [
 3.8227,
-6.05155,
-168,
-"54df2b9b4a7c"
+6.0452,
+192,
+"1e1906bc085c"
 ],
 "geometry/JWWQ53ZA3Z-run/body": [
 1.7408906,
@@ -125840,9 +125840,9 @@
 "pipe_runs/PR-B-HW-SAUNA/z_end_m": -1.4732,
 "pipe_runs/PR-B-HW-SAUNA/z_m": [
 -1.4732,
--0.1889125,
-12,
-"8c5c0483ae4d"
+-0.1635125,
+14,
+"063010bdbd92"
 ],
 "pipe_runs/PR-B-HW-SAUNA/z_start_m": -0.5915279,
 "pipe_runs/PR-B-HW-SBATH/z_end_m": 5.3848127,
@@ -126448,9 +126448,9 @@
 "pipe_runs/PR-S-BATH1-SH-HW/z_end_m": 3.82905,
 "pipe_runs/PR-S-BATH1-SH-HW/z_m": [
 3.82905,
-6.0452,
-8,
-"051096ce290f"
+6.03885,
+9,
+"130ce0305851"
 ],
 "pipe_runs/PR-S-BATH1-SH-HW/z_start_m": 5.3848,
 "pipe_runs/PR-S-BATH1-SH-VENT/z_end_m": 5.92328,
@@ -133666,7 +133666,7 @@
 "solids/PR-B-HW-KITCH-RUN/z0_m": -0.6651625,
 "solids/PR-B-HW-KITCH-RUN/z1_m": 0.5080127,
 "solids/PR-B-HW-SAUNA-RUN/z0_m": -1.47955,
-"solids/PR-B-HW-SAUNA-RUN/z1_m": -0.1825625,
+"solids/PR-B-HW-SAUNA-RUN/z1_m": -0.1571625,
 "solids/PR-B-HW-SBATH-RUN/z0_m": -0.6937375,
 "solids/PR-B-HW-SBATH-RUN/z1_m": 5.3848127,
 "solids/PR-B-HW-SUITE-RUN/z0_m": -0.3540125,
@@ -133826,7 +133826,7 @@
 "solids/PR-S-BATH1-SH-CW-RUN/z0_m": 3.819525,
 "solids/PR-S-BATH1-SH-CW-RUN/z1_m": 6.003925,
 "solids/PR-S-BATH1-SH-HW-RUN/z0_m": 3.8227,
-"solids/PR-S-BATH1-SH-HW-RUN/z1_m": 6.05155,
+"solids/PR-S-BATH1-SH-HW-RUN/z1_m": 6.0452,
 "solids/PR-S-BATH1-SH-VENT-RUN/z0_m": 2.96545,
 "solids/PR-S-BATH1-SH-VENT-RUN/z1_m": 5.9423002,
 "solids/PR-S-BATH1-VENT-RUN/z0_m": 5.8496213,

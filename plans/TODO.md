@@ -26,20 +26,9 @@ Note that many of the pinned decisions in the code base here aren't as fixed as 
 - **Sheet layout (decision #146).** D-M-ENTRY's flat head has no cripples above it. Gypsum is
   not laid sheet by sheet.
 
-- **SRW drain pipe and capstone adhesive are not billed (review A2-F8).** `SrwChartSection.drain`
-  (`model/srw_chart.py`) is authored on the five raised-garden legs but no takeoff reads it:
-  ~86 LF of 4" perforated pipe in sock (legs plus stubs to the outlet bedding's wall column)
-  and ~2 tubes of capstone adhesive. Bill them off the wall axes and outlet distance, then price
-  them in `prices.toml` beside `RETAINING_BLOCK_12`.
-
 - **Partition-top crossings read the node-to-node axis, not the top plate** (`resolve/partition_fasteners.classify`):
   W-M-MECH-E is billed a crossing of FS-S-WEST's north LSL rim its plate never reaches (109, one
   phantom). Clipping to the plate fixes it but reclassifies ~25 walls; take it as its own re-pin.
-
-- **Emit nondeterminism (found 2026-11-23).** The S-100 LOCATING dimension chain
-  (`emit/draw/structural_dimensions.py`) varies with the hash seed; `haus handoff` works around
-  it by re-execing under `PYTHONHASHSEED=0` (`cli/cmd_handoff.py`). Sort the set iteration and
-  drop the re-exec. (The IFC covering-relationship GUIDs are pinned since 2026-11-23.)
 
 ### Left out of decision #142 (metal-wall penetrations)
 
@@ -123,9 +112,15 @@ branch overlaps, ERV trunk/flex/ERV-R-BATH refusals, wall-hung port stub, WC arm
   313.3.1); the profile says so. Needs a `support_spacing_in` on `PipeRun` and a
   `mep.pipe_support` check. Field-inspected, not a permit gap.
 - [ ] Deferred checks: M1506.3's 3 ft exception and the operable-opening distance; a damper
-  actuator inside a duct; a PIPE insulation spec's thickness vs its R-value (ducts: #150).
+  actuator inside a duct; `mep.pipe_insulation` (#154) leaves R403.4.2 items 2, 5 and 8
+  (multi-dwelling, heater-to-manifold, recirculation) and R403.3 linesets unread.
 
 ## Questions
+
+- **Pipe insulation text and R (decision #154).** The 2012 IECC R403.4.2 list and Table
+  R403.4.2 were read from a secondary quote (codes.iccsafe.org 403s); confirm against the
+  printed edition or the AHJ. The 1/2" sleeve's R-3.1 is the spec string's figure; re-read
+  Owens Corning 722579 for the 1/2"-PEX size (pipe R falls with bore).
 
 - **Radon exhaust vs WIN-A-N1: confirm with the AHJ/MDH.** Minn. R. 1303.2402 subp. 5.A reads
   10 ft from any window, unqualified. The radon leg is ~1'-2" from WIN-A-N1 in plan;
@@ -168,7 +163,6 @@ branch overlaps, ERV trunk/flex/ERV-R-BATH refusals, wall-hung port stub, WC arm
 - [ ] Exterior doors, after the 2026-11-17 sill-beam pass (`notes/exterior_door_sill_beam.md`):
   - **Supplier:** Wahoo publishes no AridDek plank-to-wall gap; FS-SG-BALCONY's rear edge stands 1 1/8" off the house cladding (2026-11-18).
   - **Billing:** the HLGM10 row in `prices.toml` is an estimate (no retail read); ENTRY's two 1/2" seat fillers bill as an 8' "0.5x11.875 LSL" stock line but are resawn from rim offcut (`JoistReinforcement` has no stock profile).
-  - **Engine:** TJ-8000 p.4's 2D spacing between adjacent rim holes is ungraded.
   - **Supplier holds:** one prehung submittal, ZAI5625FN + XXXXW on the 4 9/16" jamb for the three pairs and the ENTRY single (installed sections, ratings), and Endura's confirmation that the nose bears on the beam; the self-adhered membrane pan under the sill (the prehanger's acceptance); the Endura adjustable cap's travel and factory setting (raising the cap raises the crest one for one); PORCH's cover product, slip rating and seat drawing; Trex's acceptance of the FRP plate under D-B-SUNKEN's tread; installed sweep/hinge sections; assembled-unit label/warranty; the 06-002 submittal (CPD, NFRC/NAFS, astragal, PanoLock+); Proglaze ETA flashing-end application; D-B-SUNKEN's PVC sheet / drainage board / sealant compatibility. Complete preferred/Tru-Defense prices remain unavailable publicly.
 - House K2 base flashing and wall-top closures now derive, bill and receive coverage checks; coordinate the garage Sill to Soffit panel break and installation order, which the fit check records UNKNOWN. See the trim note for the selected aluminium section, isolation and quantities.
 - [ ] House eave/gutter, remaining after the geometry pass ([plan](roof-wall-eave-detail.md), [note](../houses/catlin/notes/roof_wall_eave_detail.md)):

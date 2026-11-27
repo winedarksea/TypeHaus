@@ -91,7 +91,7 @@ def pipe_insulation_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     run rather than a routed element of its own.
 
     Runs with no ``insulation`` are absent rather than billed at zero: a bare hot line is a
-    finding (``mep.hot_water_insulation``), not a row of nothing.
+    finding (``mep.pipe_insulation``), not a row of nothing.
     """
     specs: dict[tuple[str, float], dict[str, object]] = {}
     for run in model.pipe_runs:

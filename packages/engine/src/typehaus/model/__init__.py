@@ -188,6 +188,7 @@ from typehaus.model.penetrations import (
     StrapBlockRow,
     StrutRow,
 )
+from typehaus.model.pipe_insulation import PipeInsulationRow, PipeInsulationStandard
 from typehaus.model.placeables import (
     ClearancePolicy,
     ClearanceZone,
@@ -523,7 +524,7 @@ __all__ = [
     "RacewayCable",
     "GroundingStandard", "GroundingElectrode", "BondingConductor", "ServiceEntrance",
     "LabelStandard", "LedCable", "LedChannel", "LedController", "LedStandard", "LedStrip",
-    "LinesetStandard", "RefrigerantLimits",
+    "LinesetStandard", "RefrigerantLimits", "PipeInsulationRow", "PipeInsulationStandard",
     "PenetrationStandard", "PenetrationSleeveRow", "BondSleeveRow", "BootRow", "StrapBlockRow",
     "LinesetInletRow", "MountBlockRow", "StrutRow",
     "DuctStandard", "RoundGaugeRow", "DuctElbowRow", "DuctPartRow", "DuctSupportRow", "PortKit",

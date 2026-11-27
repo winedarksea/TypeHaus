@@ -1,9 +1,9 @@
 """Supply-side plumbing checks — the potable water leaving the meter.
 
 Frost-free hydrants (bury depth, and the freeze protection an envelope can substitute for
-it), hot-water pipe insulation, and the house's own rule for what visible supply pipe is
-made of. Nothing here grades a drain: waste and vent live in ``plumbing_dwv``, and the
-cast-in-place geometry both sides share lives in ``plumbing_concrete``.
+it), and the house's own rule for what visible supply pipe is made of. Nothing here grades
+a drain: waste and vent live in ``plumbing_dwv``, and the cast-in-place geometry both sides
+share lives in ``plumbing_concrete``.
 """
 
 from __future__ import annotations
@@ -11,7 +11,7 @@ from __future__ import annotations
 from typehaus.checks._authoring import failed as _fail
 from typehaus.checks._authoring import passed as _pass
 from typehaus.checks._authoring import unknown as _unknown
-from typehaus.checks.mep.plumbing_common import _M_TO_FT, _advisory_fail
+from typehaus.checks.mep.plumbing_common import _advisory_fail
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding
 from typehaus.model.enums import PipeAccessoryKind, PipeSystem, Service
@@ -19,10 +19,6 @@ from typehaus.model.placeable_symbols._yard_hydrant_config import HYDRANT_SYMBOL
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.slab_clip import floor_outline
 from typehaus.resolve.solid_categories import in_slab_family, is_pour_slab
-
-# N1103.4.2's bore threshold for hot-water pipe insulation: 3/4" nominal and larger.
-_INSULATION_MIN_BORE_M = 0.01905
-
 
 # A frost-free hydrant's shutoff has to sit below the frost line, not merely below grade:
 # the whole point of the fixture is that the valve is deep enough never to freeze and the
@@ -200,35 +196,6 @@ def _hydrant_accessories(ctx: CheckContext, hydrant_tag: str) -> list:
     feeds = {run.tag for run in ctx.model.pipe_runs if hydrant_tag in run.serves}
     return [a for a in ctx.model.pipe_accessories
             if hydrant_tag in a.serves or (a.pipe_ref in feeds and not a.serves)]
-
-
-@check(Tier.CODE, "mep.hot_water_insulation")
-def hot_water_insulation(ctx: CheckContext) -> list[Finding]:
-    """IRC N1103.4.2 — R-3 insulation on hot-water piping 3/4" and larger.
-
-    The bore threshold is the code's, not a house rule: below 3/4" the standing loss is
-    small enough that the code does not ask, and insulating a 1/2" branch to a single
-    lavatory buys almost nothing. A run at or above it must *say* what it is wrapped in;
-    an unstated spec reads as bare pipe, because on site that is what it becomes.
-    """
-    cid = "mep.hot_water_insulation"
-    out: list[Finding] = []
-    for run in ctx.model.pipe_runs:
-        if run.system != PipeSystem.WATER_HOT.value:
-            continue
-        if run.diameter_m + 1e-9 < _INSULATION_MIN_BORE_M:
-            continue
-        if run.insulation:
-            out.append(_pass(
-                cid, f"hot run {run.tag} ({run.diameter_m / M_PER_IN:.2f}\") is insulated "
-                     f"with {run.insulation} over {run.length_m * _M_TO_FT:.0f}'",
-                (run.tag,)))
-        else:
-            out.append(_fail(
-                cid, f"hot run {run.tag} is {run.diameter_m / M_PER_IN:.2f}\" and authors "
-                     "no insulation — N1103.4.2 requires R-3 on hot-water piping 3/4\" and "
-                     "larger", (run.tag,)))
-    return out
 
 
 def _ceiling_above(ctx: CheckContext, point: tuple[float, float],

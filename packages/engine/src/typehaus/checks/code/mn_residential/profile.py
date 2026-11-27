@@ -585,8 +585,8 @@ MN_2020 = JurisdictionProfile(
         PermitItemSpec("Fixture and appliance control valves", ("mep.fixture_control_valve",),
                        ("MN Plumbing Code (ch. 4714) 606.5",
                         "MN Plumbing Code (ch. 4714) 606.6")),
-        PermitItemSpec("Hot-water pipe insulation", ("mep.hot_water_insulation",),
-                       ("IRC N1103.4.2",)),
+        PermitItemSpec("Hot-water pipe insulation", ("mep.pipe_insulation",),
+                       ("MN Rules 1322.0010 (2012 IECC) R403.4.2",)),
         PermitItemSpec("Duct and plenum insulation", ("mep.duct_insulation",),
                        ("MN Rules 1322.0403 Table R403.2.1",)),
         # A balanced ventilator's outdoor-side terminations. A plan reviewer

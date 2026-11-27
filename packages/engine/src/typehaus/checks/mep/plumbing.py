@@ -42,7 +42,6 @@ from typehaus.checks.mep.plumbing_dwv import (  # noqa: F401 - re-export + regis
 )
 from typehaus.checks.mep.plumbing_supply import (  # noqa: F401 - re-export + register
     exterior_hydrant_protection,
-    hot_water_insulation,
     hydrant_freeze_depth,
     pipe_material_preference,
 )

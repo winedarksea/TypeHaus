@@ -180,6 +180,7 @@ LG_DISHWASHER = ApplianceType(
     plan_symbol="dishwasher",
     needs=frozenset({Service.WATER_HOT, Service.DRAIN, Service.POWER_120}),
     quick_closing=True,  # solenoid fill valve — P2903.5
+    kitchen_outlet=True,
     ports=(ServicePort(tag="power", service=Service.POWER_120, position=(ft(0), ft(0), ft(0))),
            # The fill valve is at the LEFT FRONT (owner's manual p.19); the house's 3/8" line
            # runs back along the floor 6 1/2-7 3/4" in from the opening's left side (p.17) to

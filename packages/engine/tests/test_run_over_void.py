@@ -242,6 +242,7 @@ def test_the_worst_graded_run_leaves_a_documented_margin(catlin_model):
     2026-11-06: its J12 pocket jog (decision #117) took it to 2.50, ON the line. 2026-11-08:
     its re-lane to the y=266" bay brought it to 2.28, and the coldstore stub leads again at 2.47.
     2026-11-25: RM-B-BATH's hot feed, PR-B-HW-SAUNA (22.5 ft developed), leads at 2.48.
+    2026-11-27: its R-3.1 sleeve re-lane (decision #154) took it to 2.49.
     """
     from typehaus.takeoff.runs import run_schedule
 
@@ -251,4 +252,4 @@ def test_the_worst_graded_run_leaves_a_documented_margin(catlin_model):
               and terminals.get(r["tag"], 0) < 3]
     worst = max(graded, key=lambda r: r["ratio"])
     assert worst["tag"] == "PR-B-HW-SAUNA"
-    assert worst["ratio"] == pytest.approx(2.48, abs=0.005)
+    assert worst["ratio"] == pytest.approx(2.49, abs=0.005)

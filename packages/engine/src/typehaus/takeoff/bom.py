@@ -232,7 +232,7 @@ def bill_of_materials(
         # gasket/bracket/foam kits that go in with them.
         "plumbing_specialties": plumbing_specialties_takeoff(model),
         "install_parts": install_parts_takeoff(model),
-        # Hot-water line insulation by the foot (IRC N1103.4.2). A field on the run, so it
+        # Hot-water line insulation by the foot (R403.4.2). A field on the run, so it
         # cannot drift out of length with the pipe it sleeves.
         "pipe_insulation": pipe_insulation_takeoff(model),
         # Heater cable by the foot, the electrical twin of the row above. Kept apart

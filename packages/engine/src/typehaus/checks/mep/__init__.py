@@ -89,6 +89,7 @@ from typehaus.checks.mep import (  # noqa: F401 - register
     linesets,
     manifold_feed,
     open_web_panel,
+    pipe_insulation,
     plaster_in_depth,
     plenum_openings,
     plumbing,
