@@ -72,12 +72,12 @@ export function StairDesigner({ model, focus }: { model: Model; focus?: Stair })
       onChange={(event) => setWidth(event.target.value)} /></label>
     <label style={{ display: "block", marginTop: 5 }}>Run direction <select value={runDirection}
       onChange={(event) => setRunDirection(event.target.value as "x" | "y")}>
-      <option value="x">E–W</option><option value="y">N–S</option>
+      <option value="x">along X</option><option value="y">along Y</option>
     </select></label>
     <label style={{ display: "block", marginTop: 5 }}>Climb toward <select value={runReversed ? "reverse" : "forward"}
       onChange={(event) => setRunReversed(event.target.value === "reverse")}>
-      <option value="forward">{runDirection === "x" ? "east" : "north"}</option>
-      <option value="reverse">{runDirection === "x" ? "west" : "south"}</option>
+      <option value="forward">{runDirection === "x" ? "+X" : "+Y"}</option>
+      <option value="reverse">{runDirection === "x" ? "−X" : "−Y"}</option>
     </select></label>
     <label style={{ display: "block", marginTop: 5 }}>Layout <select value={layout}
       onChange={(event) => setLayout(event.target.value as Stair["layout"])}>

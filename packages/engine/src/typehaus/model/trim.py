@@ -198,6 +198,8 @@ class FasciaBoard(HausModel):
 class EaveGutter(HausModel):
     """A hung gutter derived along a roof's *level* eave edges.
 
+    Edge names here and on the drip edge and eave trim are plan-frame (project north).
+
     The authored :class:`Gutter` run is the right element for a deck or a porch edge, whose
     elevation is a fixed fact. A roof's is not: a raised-heel truss lifts the whole deck plane
     during the envelope stage, so an authored elevation drifts off the roof it hangs from.

@@ -56,7 +56,7 @@ def trade_sheets(model: ResolvedModel, level_tags: list[str],
         # from MN 4714 plan review. `[print] permit_add = ["P-1"]` restores them.
         sheets.append(SheetSpec(f"P-{100 + index}", f"Plumbing plan — {storey_tag}",
                                 scene=trade_plan_sheet(build_plumbing_plan, storey_tag),
-                                sets=FULL_ONLY))
+                                north_arrow=True, sets=FULL_ONLY))
     # P-2xx: the drainage plans, one per storey with stormwater content — the same
     # second-series-per-trade convention the lighting sheets use against E-10x. Gutters,
     # leaders, tile, trenches and pits are a different installer (and inspection) from the
@@ -85,7 +85,8 @@ def trade_sheets(model: ResolvedModel, level_tags: list[str],
     hvac_storeys = [tag for tag in level_tags if has_hvac_content(at[tag], tag)]
     for index, storey_tag in enumerate(hvac_storeys, start=1):
         sheets.append(SheetSpec(f"M-{100 + index}", f"HVAC plan — {storey_tag}",
-                                scene=trade_plan_sheet(build_hvac_plan, storey_tag)))
+                                scene=trade_plan_sheet(build_hvac_plan, storey_tag),
+                                north_arrow=True))
     if has_mechanical_schedule(model):
         # Duct construction + duct/terminal schedules (#114), paged like S-602.
         sheets.extend(_paged("M-601", "Duct and air terminal schedules",
@@ -98,7 +99,7 @@ def trade_sheets(model: ResolvedModel, level_tags: list[str],
         # Electricity, not by DSI, and the checklist names no E drawings.
         sheets.append(SheetSpec(f"E-{100 + index}", f"Electrical plan — {storey_tag}",
                                 scene=trade_plan_sheet(build_electrical_plan, storey_tag),
-                                sets=FULL_ONLY))
+                                north_arrow=True, sets=FULL_ONLY))
 
     # E-2xx: the lighting plans, one per storey that has luminaires. A separate series
     # from the E-10x power sheets on purpose — an electrician wiring devices and a reader
@@ -108,7 +109,7 @@ def trade_sheets(model: ResolvedModel, level_tags: list[str],
     for index, storey_tag in enumerate(lighting_storeys, start=1):
         sheets.append(SheetSpec(f"E-{200 + index}", f"Lighting plan — {storey_tag}",
                                 scene=at_level(build_lighting_plan, storey_tag),
-                                sets=FULL_ONLY))
+                                north_arrow=True, sets=FULL_ONLY))
 
     if model.plan.library.circuits:
         sheets.append(SheetSpec("E-601", "Panel schedule / service load",

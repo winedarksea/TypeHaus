@@ -255,3 +255,33 @@ def test_starter_omits_the_site_data_it_does_not_have(starter_dir: Path):
     assert not ({"C-PROP-EASE", "C-EROS", "C-ANNO-BMRK"} & layers)
     # The zoning table is not optional: a lot with no easements still has an area.
     assert "C-ANNO-TABL" in layers
+
+
+@pytest.mark.parametrize("frame", ["crs", "lonlat"])
+def test_surveyed_basemap_rotates_into_the_plan_frame(tmp_path: Path, frame: str):
+    """A plan point sent out to the survey frame comes back where it started, at θ = 37°."""
+    import json
+
+    import pyproj
+
+    from typehaus import Site, deg, ft
+    from typehaus.model.site import load_basemap_geojson
+    from typehaus.resolve import compass
+
+    site = Site(lat=44.97, lon=-93.26, elevation=ft(800), true_north=deg(37))
+    plan = [(0.0, 0.0), (30.0, 0.0), (30.0, 40.0), (0.0, 40.0)]
+    grid = [compass.plan_to_grid(x, y, site) for x, y in plan]
+    if frame == "lonlat":
+        back = pyproj.Transformer.from_crs(site.crs, "EPSG:4326", always_xy=True)
+        grid = [back.transform(e, n) for e, n in grid]
+    ring = [list(p) for p in grid]
+    geojson = {"type": "FeatureCollection", "features": [
+        {"type": "Feature", "properties": {"role": "parcel"},
+         "geometry": {"type": "Polygon", "coordinates": [ring + [ring[0]]]}}]}
+    path = tmp_path / "survey.geojson"
+    path.write_text(json.dumps(geojson))
+    basemap = load_basemap_geojson(path, frame=frame, site=site)
+    for got, (x, y) in zip(basemap.parcel, plan, strict=True):
+        assert got.xy_m == pytest.approx((x, y), abs=1e-3)
+    with pytest.raises(ValueError, match="needs the Site"):
+        load_basemap_geojson(path, frame=frame)

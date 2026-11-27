@@ -32,6 +32,7 @@ from typehaus.emit.draw.elevation_annotate import (
 from typehaus.emit.draw.elevation_finish import emit_cladding_texture
 from typehaus.emit.draw.elevation_openings import emit_opening_glyphs
 from typehaus.emit.draw.elevation_project import (
+    OUTWARD,
     VisiblePiece,
     collect_candidates,
     occlude,
@@ -89,7 +90,37 @@ _FAMILY_LAYER = {"body": "A-WALL", "roof": "A-ROOF", "trim": "A-ROOF-TRIM",
 _RECEDES_TO_BEYOND = frozenset({"body", "roof", "trim", "rail"})
 
 
+#: Project-axis view keys (see ``elevation_project._VIEWS``), not compass names: with a
+#: rotated ``Site.true_north`` the face a key looks at is named by :func:`display_facing`.
 FACINGS = ("north", "south", "east", "west")
+_NAMES = {"N": "north", "S": "south", "E": "east", "W": "west"}
+
+
+def display_facing(model: ResolvedModel, key: str) -> str:
+    """The true-compass name (``"north"``..) of the face the project-axis ``key`` looks at."""
+    from typehaus.resolve import compass
+
+    return _NAMES[compass.facade_name(OUTWARD[key], model.plan.project.site)]
+
+
+def display_bearing(model: ResolvedModel, key: str) -> str | None:
+    """``"faces N 37° W"`` when that face is off its cardinal, else ``None``."""
+    from typehaus.resolve import compass
+
+    return compass.facade_bearing_text(OUTWARD[key], model.plan.project.site)
+
+
+def keys_by_display(model: ResolvedModel) -> dict[str, str]:
+    """``{display name: project-axis key}`` in :data:`FACINGS` order of the display name."""
+    named = {display_facing(model, key): key for key in FACINGS}
+    return {name: named[name] for name in FACINGS}
+
+
+def elevation_title(model: ResolvedModel, key: str) -> str:
+    """``"North exterior elevation"``, with the bearing appended when off-cardinal."""
+    title = f"{display_facing(model, key).title()} exterior elevation"
+    bearing = display_bearing(model, key)
+    return f"{title} · {bearing}" if bearing else title
 
 
 @dataclass(frozen=True)
@@ -145,8 +176,13 @@ def annotate_elevation(model: ResolvedModel, drawn: ProjectedElevation,
     emit_height_key(b, drawn.marks.targets, lo_u - _EXTEND_M,
                     drawn.bottom_z - 3.0 * anno_in(scale) * M_PER_IN, scale, ANNO_PT)
     b.add(Text(anchor=(lo_u / M_PER_IN, drawn.label_z),
-               content=f"{view.facing.upper()} ELEVATION",
+               content=f"{display_facing(model, view.facing).upper()} ELEVATION",
                height=anno_in(scale) * 1.5, height_pt=ANNO_PT * 1.5, align="left"))
+    bearing = display_bearing(model, view.facing)
+    if bearing:
+        b.add(Text(anchor=(lo_u / M_PER_IN, drawn.label_z + anno_in(scale) * 2.0),
+                   content=bearing.upper(), height=anno_in(scale), height_pt=ANNO_PT,
+                   align="left"))
     return b.build()
 
 

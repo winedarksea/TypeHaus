@@ -1,6 +1,6 @@
 """A transparent block-load estimate, not a replacement for Manual J (M5 WP5.3).
 
-The arithmetic only: exposed UA by component, orientation-weighted window solar gain, and
+The arithmetic only: exposed UA by component, hourly window solar gain (``solar``), and
 the two air-side terms (blower-door infiltration, ERV ventilation air). What counts as
 envelope is answered in ``envelope_geometry``, how much of a plane a zone owns in
 ``energy_scope``, and what a below-grade surface's conductance and ΔT are in ``ground`` —
@@ -25,10 +25,9 @@ would have. What moved, and where the derivation for each lives:
 * The air side carries the LBL table's N (not its two-storey cell as a flat default), the
   heating design-hour uplift over Sherman's annual-average N, and an altitude correction.
 
-Solar is deliberately NOT touched here: the orientation weights are wrong, but the term is
-71% of the cooling load and a partial fix moves it the WRONG way — raising E/W without
-adding shading or fixing the all-orientations-peak-at-once error makes the number worse.
-It changes exactly once, with the hourly method, in ``solar``.
+Window solar is ``solar.fenestration_gain``: the hourly clear-sky method with shading, on each
+face's continuous true azimuth. The old per-facade orientation weights were replaced in one
+step because a partial fix (raising E/W alone) moves the number the wrong way.
 """
 
 from __future__ import annotations
@@ -61,11 +60,11 @@ from typehaus.checks.building_science.latent import (
 )
 from typehaus.checks.building_science.solar import (
     fenestration_gain,
-    horizontal_surface_irradiance,
     internal_gains,
     roof_absorptance,
     sol_air_temperature_f,
 )
+from typehaus.checks.building_science.solar_geometry import horizontal_surface_irradiance
 from typehaus.checks.building_science.wwr import _wall_length
 from typehaus.checks.registry import Preferences
 from typehaus.resolve.envelope_geometry import envelope_geometry
@@ -281,7 +280,7 @@ def estimate_block_load(
     storeys: frozenset[str] | None = None,
     rooms: frozenset[str] | None = None,
 ) -> EnergyReport:
-    """Sum exposed resolved wall/opening UA plus orientation-weighted window solar gain,
+    """Sum exposed resolved wall/opening UA plus hourly window solar gain,
     then the two air-side terms: blower-door infiltration and ERV ventilation air.
 
     Every area comes from the resolved IR.  Missing geometry or thermal data remains named

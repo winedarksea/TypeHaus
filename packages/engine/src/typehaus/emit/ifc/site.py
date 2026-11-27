@@ -15,6 +15,7 @@ from typehaus._meta import PSET_SOURCE
 from typehaus.emit.ifc import lowlevel as ll
 from typehaus.model.ids import derive_child_guid, derive_guid
 from typehaus.quantities import M_PER_IN
+from typehaus.resolve import compass
 from typehaus.resolve.geometry import polygon_area, rect_between
 from typehaus.resolve.model import ResolvedModel
 
@@ -110,27 +111,18 @@ def _emit_footing_bedding(f: Any, body: Any, bedding: Any, storeys: dict[str, An
 
 
 def _georef(f: Any, ifc_project: Any, model: ResolvedModel, source_context: Any) -> None:
-    """IfcProjectedCRS + IfcMapConversion from Site (pyproj transforms, → 12)."""
+    """IfcProjectedCRS + IfcMapConversion from Site, through ``resolve/compass``.
+
+    The origin is ``Site.lat/lon`` in the CRS (best-effort 0, 0 out of domain, e.g. a test
+    fixture's (0, 0)); the X axis is plan +x as a grid vector, so it carries θ and the grid
+    convergence. ``TrueNorth`` is set on the context (``lowlevel.add_context``).
+    """
     site = model.plan.project.site
     crs = f.createIfcProjectedCRS(site.crs)
-    try:
-        import math
-
-        import pyproj
-
-        transformer = pyproj.Transformer.from_crs("EPSG:4326", site.crs, always_xy=True)
-        easting, northing = transformer.transform(site.lon, site.lat)
-        # A lat/lon outside the target CRS's valid domain (e.g. the (0, 0) placeholder a
-        # minimal test fixture authors against the Minnesota UTM default) transforms to inf,
-        # not an exception — IfcMapConversion then rejects it outright. Best-effort means
-        # this falls back with everything else out-of-domain, not that it takes the whole
-        # export down.
-        if not (math.isfinite(easting) and math.isfinite(northing)):
-            raise ValueError("non-finite georeference transform")
-    except Exception:  # noqa: BLE001 - georef is best-effort in M1
-        easting, northing = 0.0, 0.0
+    origin = compass.grid_origin(site)
+    easting, northing = (origin[0], origin[1]) if origin is not None else (0.0, 0.0)
+    x_abscissa, x_ordinate = compass.project_east_grid_axis(site)
     f.createIfcMapConversion(
         source_context, crs, easting, northing, site.elevation.meters,
-        1.0, 0.0,  # XAxisAbscissa/Ordinate — true_north rotation applied here
-        1.0,
+        x_abscissa, x_ordinate, 1.0,
     )

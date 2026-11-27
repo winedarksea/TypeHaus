@@ -19,7 +19,6 @@ sizes themselves and the scale ladder live in ``paper.py`` and are re-exported h
 
 from __future__ import annotations
 
-import math
 import textwrap
 from collections.abc import Callable, Iterator
 from contextlib import contextmanager
@@ -68,6 +67,7 @@ from typehaus.emit.draw.title_block import (  # noqa: F401 — re-exported, see 
     title_height,
 )
 from typehaus.emit.draw.typography import NOTES_PT, wrap_columns_for
+from typehaus.resolve.compass import plan_vector_for_true_bearing
 
 if TYPE_CHECKING:  # pragma: no cover — SheetSpec lives in sheets.py (which imports us)
     from typehaus.resolve.model import ResolvedModel
@@ -421,9 +421,8 @@ def _ft_label(feet: float) -> str:
 def _draw_north_arrow(fig, model: ResolvedModel, view, size) -> None:
     """A circled north arrow, top-right inside the viewport, rotated by true north.
 
-    Same convention as the site plan's authored arrow (``siteplan._emit_north_arrow``):
-    direction ``(sin θ, cos θ)`` with θ = ``site.true_north``, so project-north pages and
-    the site plan agree on where north points. Drawn as sheet furniture (its own small
+    Direction comes from ``compass.plan_vector_for_true_bearing(0, site)``, so every plan
+    sheet agrees on where true north points. Drawn as sheet furniture (its own small
     axes) rather than an IR Symbol — ``pdf_writer`` has no "north-arrow" glyph and an
     unknown symbol name falls through to the window-glass bar.
     """
@@ -437,11 +436,7 @@ def _draw_north_arrow(fig, model: ResolvedModel, view, size) -> None:
     ax.set_aspect("equal")
     ax.axis("off")
     ax.patch.set_visible(False)
-    try:
-        radians = model.plan.project.site.true_north.radians
-    except AttributeError:
-        radians = 0.0
-    dx, dy = math.sin(radians), math.cos(radians)
+    dx, dy = plan_vector_for_true_bearing(0.0, model.plan.project.site)
     from matplotlib.patches import Circle
 
     ax.add_patch(Circle((0.0, 0.0), 1.0, fill=False, edgecolor="#204070", linewidth=0.8))

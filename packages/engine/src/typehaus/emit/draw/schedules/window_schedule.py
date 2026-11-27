@@ -10,6 +10,7 @@ from __future__ import annotations
 
 from typehaus.emit.draw.schedules.paged_tables import PagedTable
 from typehaus.model.enums import WindowOperation
+from typehaus.resolve import compass
 from typehaus.resolve.model_window_seat import window_frame_dimensions
 
 WINDOW_COLUMNS = ("Mark", "Tag", "Type", "Product", "Operation", "RO", "Modeled frame",
@@ -75,7 +76,7 @@ def _rough_row(model, opening, sill_m) -> tuple[str, ...]:
 
 
 def _hinge_text(model, opening, spec) -> str:
-    """The hinge jamb as a plan-north compass side (``W jamb``), from ``Window.hinge``."""
+    """The hinge jamb as a true-compass side (``W jamb``), from ``Window.hinge``."""
     element = model.plan.by_tag(opening.tag)
     side = getattr(element, "hinge", None)
     wall = model.wall(opening.host_wall)
@@ -83,8 +84,7 @@ def _hinge_text(model, opening, spec) -> str:
         return "—"
     (sx, sy), (ex, ey) = wall.axis[0], wall.axis[1]
     dx, dy = (sx - ex, sy - ey) if side == "start" else (ex - sx, ey - sy)
-    compass = ("E" if dx > 0 else "W") if abs(dx) >= abs(dy) else ("N" if dy > 0 else "S")
-    return f"{compass} jamb"
+    return f"{compass.facade_name((dx, dy), model.plan.project.site)} jamb"
 
 
 def _window_clear_text(opening, spec) -> str:

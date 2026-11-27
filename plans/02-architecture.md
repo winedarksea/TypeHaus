@@ -181,10 +181,18 @@ plan source ──parse────► PlanModel      (Pydantic; authored units 
 - **Project north vs. true north (never tilt the canvas):** all authoring — plan source, the
   UI canvas, floor-plan sheets, dimensions — happens in **project-north coordinates**, an
   orthogonal local frame where the house's walls are axis-aligned. `true_north` is a single
-  `Angle` on `Site` recording how project north deviates from true north; it is consumed
-  *only* by the georef emit (`IfcMapConversion` rotation), the sun indicator (→ 30), the north
-  arrow, and the M3 basemap import (which rotates *imported* parcel geometry into the project
-  frame — the house never rotates). Users draw orthogonal walls on an orthogonal grid, always.
+  `Angle` on `Site`: θ, measured **clockwise on the plan from project north (+y) to true
+  north** (true north on the plan is `(sin θ, cos θ)`; true bearing = plan bearing − θ). All
+  compass reads go through `resolve/compass.py` (#153) — facade names, bearings, the north
+  arrow, and the grid transform below. `Site.lat/lon` is the plan origin (0, 0); grid north
+  differs from true north by the CRS's meridian convergence, which `compass.grid_*` carries.
+  - **IFC:** `IfcMapConversion` = origin easting/northing, X axis = plan +x as a grid vector
+    (`compass.project_east_grid_axis`); the Model context's `TrueNorth` = `(sin θ, cos θ)`.
+  - **Survey import** (`load_basemap_geojson(path, frame=, site=)`): `"plan"` (default) reads
+    plan-frame coordinates as authored; `"crs"` (`Site.crs` easting/northing, metres) and
+    `"lonlat"` (WGS84) are rotated into the project frame by `compass.grid_to_plan` /
+    `lonlat_to_plan` — the house never rotates. Users draw orthogonal walls on an orthogonal
+    grid, always.
 - IFC schema choice, IfcOpenShell pinning, and emitter details: (→ 12 §IFC emission).
 
 ## CLI

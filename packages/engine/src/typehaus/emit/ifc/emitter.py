@@ -138,7 +138,7 @@ def emit_ifc(model: ResolvedModel, out_path: Path, lod: str = "framed",
         assign_structural_units(f)
     # IfcOpenShell attaches representation contexts to IfcProject; creating this first is
     # required by current 0.8.x APIs and keeps the output portable to Blender/Bonsai.
-    body = ll.add_context(f)
+    body = ll.add_context(f, model.plan.project.site)
     _georef(f, ifc_project, model, body.ParentContext)
     site = ll.create_entity(f, "IfcSite", name="Site")
     building = ll.create_entity(f, "IfcBuilding", name=model.plan.project.building.name)

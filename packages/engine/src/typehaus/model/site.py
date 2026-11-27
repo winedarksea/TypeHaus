@@ -10,7 +10,7 @@ from __future__ import annotations
 import json
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Literal
+from typing import Any, Literal
 
 from typehaus.model.base import Element, HausModel
 from typehaus.model.enums import UtilityKind
@@ -255,18 +255,32 @@ class Basemap:
     contours: tuple[Contour, ...] = ()
 
 
-def load_basemap_geojson(path: str | Path, *, unit: str = "ft") -> Basemap:
+def load_basemap_geojson(path: str | Path, *, unit: str = "ft", frame: str = "plan",
+                         site: Any = None) -> Basemap:
     """Load a parcel boundary + contour lines from a GeoJSON ``FeatureCollection``.
 
-    Coordinates are read in the project plan frame (default feet, not lon/lat) so a
-    freshly surveyed basemap drops straight onto the authored geometry.  A feature is a
+    ``frame`` says what the coordinates are:
+
+    - ``"plan"`` (default): the project plan frame in ``unit`` (feet or metres), so a
+      freshly surveyed basemap drops straight onto the authored geometry.
+    - ``"crs"``: ``Site.crs`` easting/northing in metres.
+    - ``"lonlat"``: WGS84 lon/lat degrees.
+
+    The last two need ``site`` and are rotated by ``Site.true_north`` (and grid convergence)
+    into the plan frame, origin at ``Site.lat/lon`` (``resolve/compass``). ``unit`` is the
+    plan frame's unit and the unit of ``elevation`` properties in every frame.  A feature is a
     *parcel* when its ``role`` property is ``"parcel"`` or its geometry is a ``Polygon``;
     a *contour* when ``role`` is ``"contour"`` or the geometry is a ``LineString``.
     Contour grade comes from the ``elevation`` (or ``elev``/``z``) property.
     """
     if unit not in ("ft", "m"):
         raise ValueError(f"unsupported basemap unit {unit!r}; use 'ft' or 'm'")
+    if frame not in ("plan", "crs", "lonlat"):
+        raise ValueError(f"unsupported basemap frame {frame!r}; use 'plan', 'crs' or 'lonlat'")
+    if frame != "plan" and site is None:
+        raise ValueError(f"basemap frame {frame!r} needs the Site (origin, CRS, true north)")
     to_length = ft if unit == "ft" else m
+    to_xy = _frame_to_plan(frame, site, to_length)
     data = json.loads(Path(path).read_text())
     features = data.get("features", []) if data.get("type") == "FeatureCollection" else [data]
 
@@ -280,13 +294,13 @@ def load_basemap_geojson(path: str | Path, *, unit: str = "ft") -> Basemap:
         coords = geometry.get("coordinates") or []
         if role == "parcel" or (role is None and gtype == "Polygon"):
             ring = coords[0] if gtype == "Polygon" and coords else coords
-            parcel = _ring_to_points(ring, to_length)
+            parcel = _ring_to_points(ring, to_xy)
         elif role == "contour" or (role is None and gtype in ("LineString", "MultiLineString")):
             elevation = properties.get("elevation",
                                        properties.get("elev", properties.get("z", 0.0)))
             lines = coords if gtype == "MultiLineString" else [coords]
             for line in lines:
-                pts = tuple(pt(to_length(c[0]), to_length(c[1])) for c in line)
+                pts = tuple(to_xy(c[0], c[1]) for c in line)
                 if len(pts) >= 2:
                     contours.append(Contour(elevation=to_length(elevation), points=pts))
     return Basemap(parcel=parcel, contours=tuple(contours))
@@ -317,8 +331,23 @@ class WindowWell(Element):
     cover: str | None = None  # grate/cover product, where one is fitted
 
 
-def _ring_to_points(ring: list, to_length) -> tuple[Point2D, ...]:
-    pts = [pt(to_length(c[0]), to_length(c[1])) for c in ring]
+def _frame_to_plan(frame: str, site: Any, to_length):
+    """``(x, y)`` in a basemap frame to a plan ``Point2D``."""
+    if frame == "plan":
+        return lambda x, y: pt(to_length(x), to_length(y))
+    # Lazy: model sits below resolve; compass imports nothing from model at module level.
+    from typehaus.resolve import compass
+
+    convert = compass.grid_to_plan if frame == "crs" else compass.lonlat_to_plan
+
+    def to_xy(x: float, y: float) -> Point2D:
+        px, py = convert(x, y, site)
+        return Point2D(m(px), m(py))
+    return to_xy
+
+
+def _ring_to_points(ring: list, to_xy) -> tuple[Point2D, ...]:
+    pts = [to_xy(c[0], c[1]) for c in ring]
     # GeoJSON polygons repeat the first vertex to close the ring; the plan frame does not.
     if len(pts) >= 2 and pts[0].xy_m == pts[-1].xy_m:
         pts = pts[:-1]

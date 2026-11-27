@@ -20,7 +20,7 @@ from typehaus.emit.draw.datum import model_at_level
 from typehaus.emit.draw.detail_derive import DerivedDetail
 from typehaus.emit.draw.detail_enlarged import enlarged_details
 from typehaus.emit.draw.details import build_authored_detail_scene
-from typehaus.emit.draw.elevation import elevation_sheets
+from typehaus.emit.draw.elevation import elevation_sheets, elevation_title, keys_by_display
 from typehaus.emit.draw.floorplan import build_floorplan
 from typehaus.emit.draw.floorplan_sheet import floorplan_sheet
 from typehaus.emit.draw.hvacplan import build_hvac_plan
@@ -163,7 +163,7 @@ def build_sheet_index(model: ResolvedModel,
     sheets.append(SheetSpec("G-005", "Ventilation and energy certificate",
                             page=partial(_write_ventilation_sheet,
                                          preferences=preferences)))
-    sheets.append(SheetSpec("C-101", "Site plan", "project north",
+    sheets.append(SheetSpec("C-101", "Site plan",
                             scene=schedule_plan_sheet(build_site_plan),
                             north_arrow=True))
 
@@ -207,10 +207,12 @@ def build_sheet_index(model: ResolvedModel,
     # what it is cut open to show — and the numbering already said so. One scale for all
     # four (C7-E5): ``elevation_sheets`` frames them together.
     elevations = elevation_sheets()
-    for number, facing in (("A-201", "north"), ("A-202", "south"),
-                           ("A-203", "east"), ("A-204", "west")):
-        sheets.append(SheetSpec(number, f"{facing.title()} exterior elevation",
-                                scene=partial(elevations, facing=facing)))
+    # Named and ordered by TRUE compass (decision #153): A-201 is always the north face,
+    # whichever project axis it is. ``key`` is that face's project-axis view.
+    for number, key in zip(("A-201", "A-202", "A-203", "A-204"),
+                           keys_by_display(model).values(), strict=True):
+        sheets.append(SheetSpec(number, elevation_title(model, key),
+                                scene=partial(elevations, facing=key)))
 
     sheets.append(SheetSpec("A-301", "Building section", scene=build_center_section))
     # Authored SECTION slices join the A-301 series right after the auto centre section —

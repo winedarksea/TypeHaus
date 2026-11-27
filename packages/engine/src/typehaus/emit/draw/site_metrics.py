@@ -14,6 +14,7 @@ from dataclasses import dataclass
 
 from typehaus.model.project import Site
 from typehaus.quantities import Point2D
+from typehaus.resolve import compass
 from typehaus.resolve.model import ResolvedModel
 
 SF_PER_M2 = 10.763910416709722
@@ -146,24 +147,13 @@ def coverage_table(model: ResolvedModel, site: Site, *,
     return rows
 
 
-def _bearing(dx_m: float, dy_m: float, true_north_deg: float) -> str:
-    """Surveyor's quadrant bearing of a lot line, e.g. ``N 45°00' E``.
+def _bearing(dx_m: float, dy_m: float, site: Site) -> str:
+    """Surveyor's quadrant bearing of a lot line from TRUE north, e.g. ``N 45°00' E``.
 
-    Measured from TRUE north: the plan frame's +y is project north and ``Site.true_north``
-    is project north's deviation from true, so the deviation is added here rather than
-    quietly labelling a project bearing as a compass one.
+    The plan frame's +y is project north; ``compass.true_bearing`` subtracts
+    ``Site.true_north`` (decision #153).
     """
-    azimuth = (math.degrees(math.atan2(dx_m, dy_m)) + true_north_deg) % 360.0
-    ns = "N" if azimuth <= 90.0 or azimuth >= 270.0 else "S"
-    angle = azimuth if azimuth <= 90.0 else (
-        180.0 - azimuth if azimuth < 180.0 else (
-            azimuth - 180.0 if azimuth < 270.0 else 360.0 - azimuth))
-    ew = "E" if azimuth < 180.0 else "W"
-    degrees = int(angle)
-    minutes = int(round((angle - degrees) * 60.0))
-    if minutes == 60:
-        degrees, minutes = degrees + 1, 0
-    return f"{ns} {degrees}°{minutes:02d}' {ew}"
+    return compass.quadrant_bearing_text(compass.true_bearing(dx_m, dy_m, site))
 
 
 def lot_line_dimensions(site: Site) -> list[tuple[int, float, str]]:
@@ -176,10 +166,9 @@ def lot_line_dimensions(site: Site) -> list[tuple[int, float, str]]:
     verts = [p.xy_m for p in site.parcel]
     if len(verts) < 3:
         return []
-    true_north_deg = site.true_north.degrees if site.true_north is not None else 0.0
     out: list[tuple[int, float, str]] = []
     for i, (x0, y0) in enumerate(verts):
         x1, y1 = verts[(i + 1) % len(verts)]
         dx, dy = x1 - x0, y1 - y0
-        out.append((i, math.hypot(dx, dy) * FT_PER_M, _bearing(dx, dy, true_north_deg)))
+        out.append((i, math.hypot(dx, dy) * FT_PER_M, _bearing(dx, dy, site)))
     return out

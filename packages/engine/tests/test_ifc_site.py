@@ -7,7 +7,6 @@ from pathlib import Path
 import pytest
 
 
-
 def test_ifc_site_has_representation_and_pset(catlin_ifc_path: Path):
     ifcopenshell = pytest.importorskip("ifcopenshell")
 
@@ -71,3 +70,25 @@ def test_a_subfloor_deck_reaches_the_ifc_export(catlin_model_ro, catlin_ifc_path
     for slab in (item for item in f.by_type("IfcSlab") if item.Name.endswith("/deck")):
         assert slab.PredefinedType == "FLOOR"
         assert slab.Representation is not None
+
+
+def test_true_north_reaches_the_map_conversion_and_context():
+    """θ = 90°: plan +x points at grid north (up to convergence); TrueNorth = (1, 0)."""
+    ifcopenshell = pytest.importorskip("ifcopenshell")
+    from types import SimpleNamespace
+
+    from typehaus import Site, deg, ft
+    from typehaus.emit.ifc import lowlevel as ll
+    from typehaus.emit.ifc.site import _georef
+
+    site = Site(lat=44.97, lon=-93.26, elevation=ft(800), true_north=deg(90))
+    model = SimpleNamespace(plan=SimpleNamespace(project=SimpleNamespace(site=site)))
+    f = ll.new_file("test")
+    ll.create_entity(f, "IfcProject", name="P")
+    body = ll.add_context(f, site)
+    _georef(f, None, model, body.ParentContext)
+    conv = f.by_type("IfcMapConversion")[0]
+    assert (conv.XAxisAbscissa, conv.XAxisOrdinate) == pytest.approx((0.0, 1.0), abs=0.01)
+    assert conv.Eastings > 1e5 and conv.Northings > 1e6
+    assert body.ParentContext.TrueNorth.DirectionRatios == pytest.approx((1.0, 0.0), abs=1e-9)
+    assert ifcopenshell is not None

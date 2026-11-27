@@ -102,6 +102,16 @@ def test_lot_line_dimensions_index_the_same_edges_setbacks_do(catlin_plan) -> No
         "N 90°00' E", "N 0°00' E", "N 90°00' W", "S 0°00' W"]
 
 
+def test_lot_line_bearings_subtract_true_north(catlin_plan) -> None:
+    """True bearing = plan bearing − θ: project north 37° clockwise of true puts the plan's
+    east line at N 53° E and its north line at N 37° W."""
+    from typehaus.quantities import deg
+
+    site = _site(catlin_plan, parcel=_rect(0, 0, 100, 165), true_north=deg(37))
+    assert [bearing for _, _, bearing in lot_line_dimensions(site)] == [
+        "N 53°00' E", "N 37°00' W", "S 53°00' W", "S 37°00' E"]
+
+
 # --- code.site_parcel_is_surveyed ---------------------------------------------------------
 #
 # Every number above is measured off the parcel ring, which is exactly why the ring's

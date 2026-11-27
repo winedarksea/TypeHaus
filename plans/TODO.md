@@ -7,8 +7,8 @@ We generally want exact products specified (or standard/commodity sizes) so we c
 Our general goals are decent longevity and quality at a reasonable price, avoiding premium items unless clearly a major improvement for our needs.
 Note that many of the pinned decisions in the code base here aren't as fixed as they sometimes claim, the "fixed" decisions were usually fixed in a narrower context, and can be changed for sufficiently good reasons.
 
-+X: east, +Y: north, +Z: vertical/up. Will need to support rotating the house off axis in
-the future.
++X: project east, +Y: project north, +Z: up. Rotating the house off axis is supported: set
+`Site.true_north` (decision #153, `resolve/compass.py`).
 
 ## Needs your decision
 

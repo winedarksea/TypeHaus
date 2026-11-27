@@ -7,6 +7,8 @@ from dataclasses import dataclass
 
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result, Severity
+from typehaus.resolve import compass
+from typehaus.resolve.envelope_geometry import carries_a_weather_skin
 from typehaus.resolve.model import ResolvedModel, ResolvedWall
 
 _M2_TO_FT2 = 10.7639104167
@@ -33,31 +35,8 @@ def _wall_length(wall: ResolvedWall) -> float:
 
 
 def _facade_for_wall(wall: ResolvedWall, model: ResolvedModel) -> str:
-    """Choose the normal pointing away from the resolved building centroid.
-
-    The resolver stores an axis but not an explicit outside normal yet. For the closed
-    exterior loops it already resolves, this produces the same outward normal without
-    adding geometry to the authored model.
-    """
-    mid_x = (wall.axis[0][0] + wall.axis[1][0]) / 2
-    mid_y = (wall.axis[0][1] + wall.axis[1][1]) / 2
-    all_midpoints = [((w.axis[0][0] + w.axis[1][0]) / 2, (w.axis[0][1] + w.axis[1][1]) / 2)
-                     for w in model.walls]
-    center_x = sum(p[0] for p in all_midpoints) / len(all_midpoints)
-    center_y = sum(p[1] for p in all_midpoints) / len(all_midpoints)
-    dx, dy = wall.axis[1][0] - wall.axis[0][0], wall.axis[1][1] - wall.axis[0][1]
-    length = math.hypot(dx, dy)
-    if not length:
-        return "N"
-    nx, ny = -dy / length, dx / length
-    if nx * (mid_x - center_x) + ny * (mid_y - center_y) < 0:
-        nx, ny = -nx, -ny
-    true_north = model.plan.project.site.true_north.radians
-    # Plan +Y is project north. Rotate it into true-north coordinates before binning.
-    true_x = nx * math.cos(true_north) - ny * math.sin(true_north)
-    true_y = nx * math.sin(true_north) + ny * math.cos(true_north)
-    angle = math.atan2(true_x, true_y)  # clockwise from north
-    return ("N", "E", "S", "W")[int((angle + math.pi / 4) // (math.pi / 2)) % 4]
+    """The true cardinal (N/E/S/W) of the wall's outward face, from its resolved layers."""
+    return compass.facade_name(compass.wall_outward_normal(wall), model.plan.project.site)
 
 
 def wwr_summary(model: ResolvedModel) -> dict[str, object]:
@@ -73,8 +52,10 @@ def wwr_summary(model: ResolvedModel) -> dict[str, object]:
 
 def analyze_wwr(model: ResolvedModel) -> tuple[FacadeWWR, ...]:
     buckets = {name: [0.0, 0.0] for name in ("N", "E", "S", "W")}
-    wall_by_tag = {w.tag: w for w in model.walls}
-    for wall in model.walls:
+    # Only walls with an outboard weather skin are facade; partitions and bare retaining or
+    # bearing courses are not (an opening in one is not fenestration here either).
+    wall_by_tag = {w.tag: w for w in model.walls if carries_a_weather_skin(w)}
+    for wall in wall_by_tag.values():
         facade = _facade_for_wall(wall, model)
         buckets[facade][0] += _wall_length(wall) * (wall.z1_m - wall.z0_m)
     # A glazed door is fenestration (IRC R202), so a French pair belongs in the ratio the
@@ -95,15 +76,29 @@ def analyze_wwr(model: ResolvedModel) -> tuple[FacadeWWR, ...]:
     return tuple(FacadeWWR(name, *buckets[name]) for name in ("N", "E", "S", "W"))
 
 
+# Outward plan normal of each rectangular-roof edge, by the project-north names that
+# ``Roof.edge_overhangs`` keys use (decision #153).
+_EDGE_NORMALS = {"south": (0.0, -1.0), "north": (0.0, 1.0), "east": (1.0, 0.0),
+                 "west": (-1.0, 0.0)}
+
+
 def _adequate_south_overhang(ctx: CheckContext) -> bool:
+    """Does any roof edge that faces TRUE south project at least the preferred overhang?"""
     from typehaus.model.spatial import Roof
 
-    overhangs = []
+    site = ctx.plan.project.site
+    south_edges = [edge for edge, normal in _EDGE_NORMALS.items()
+                   if compass.facade_name(normal, site) == "S"]
+    overhangs: list[float] = []
     for element in ctx.plan.all_elements():
-        if isinstance(element, Roof):
-            if element.overhang is not None:
-                overhangs.append(element.overhang.feet)
-            overhangs.extend(length.feet for _edge, length in element.edge_overhangs)
+        if not isinstance(element, Roof):
+            continue
+        per_edge = {edge.lower(): length.feet for edge, length in element.edge_overhangs}
+        default = element.overhang.feet if element.overhang is not None else None
+        for edge in south_edges:
+            value = per_edge.get(edge, default)
+            if value is not None:
+                overhangs.append(value)
     return bool(overhangs) and max(overhangs) >= ctx.preferences.adequate_overhang_ft
 
 

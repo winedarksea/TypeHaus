@@ -112,12 +112,19 @@ class ElevationView:
         return self.depth_sign * (y if self.u_axis == "x" else x)
 
 
+#: Keyed by PROJECT-axis facing: "north" views the face whose outward normal is plan +y,
+#: whatever ``Site.true_north`` is. Drawings are NAMED by true compass through
+#: ``elevation.display_facing`` (decision #153); these keys stay internal.
 _VIEWS = {
     "south": ElevationView("south", +1.0, "x", +1.0),
     "north": ElevationView("north", -1.0, "x", -1.0),
     "east": ElevationView("east", +1.0, "y", -1.0),
     "west": ElevationView("west", -1.0, "y", +1.0),
 }
+
+
+#: Outward plan normal of the face each project-axis key looks at.
+OUTWARD = {"north": (0.0, 1.0), "south": (0.0, -1.0), "east": (1.0, 0.0), "west": (-1.0, 0.0)}
 
 
 def view_for(facing: str) -> ElevationView:

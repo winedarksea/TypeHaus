@@ -127,6 +127,8 @@ def _write_view(model: ResolvedModel, scene, path: Path, sheet: _SheetId, *,
     changes from before: the frameless fit, which is what a quick look wants.
     """
     if paper is None:
+        if sheet.north_arrow:
+            scene = _with_north_arrow(scene, model)
         return write_scene(scene, path, sheet.caption, dpi, long_edge, underlays)
 
     from typehaus.emit.draw.artist_tags import ArtistTagger
@@ -162,6 +164,28 @@ def _write_view(model: ResolvedModel, scene, path: Path, sheet: _SheetId, *,
     fig.savefig(path, dpi=out_dpi)
     _close(fig)
     return path
+
+
+def _with_north_arrow(scene, model: ResolvedModel):
+    """A frameless scene has no sheet furniture: draw true north into it, off the walls."""
+    from typehaus.emit.draw._shared import to_in
+    from typehaus.emit.draw.lineweights import CUT_HEAVY
+    from typehaus.emit.draw.scene import Polyline, Text
+    from typehaus.emit.draw.typography import TEXT_PT
+    from typehaus.resolve.compass import plan_vector_for_true_bearing
+
+    points = [point for wall in model.walls for point in wall.axis]
+    if not points:
+        return scene
+    origin = (min(p[0] for p in points) - 2.0, max(p[1] for p in points) - 1.0)
+    dx, dy = plan_vector_for_true_bearing(0.0, model.plan.project.site)
+    tip = (origin[0] + dx * 3.0, origin[1] + dy * 3.0)
+    label = (origin[0] + dx * 3.5, origin[1] + dy * 3.5)
+    arrow = (Polyline(points=(to_in(origin), to_in(tip)), layer="A-ANNO",
+                      lineweight=CUT_HEAVY),
+             Text(anchor=to_in(label), content="N", height_pt=TEXT_PT, layer="A-ANNO",
+                  align="center"))
+    return scene.model_copy(update={"nodes": scene.nodes + arrow})
 
 
 def write_scene(scene, path: Path, title: str, dpi: int,
@@ -297,16 +321,22 @@ def render_views(
                 _SheetId("SECT", "Building section", "section · house center"),
                 dpi=page_dpi, paper=paper, scale=scale, long_edge=long_edge))
     elif view == "elevation":
-        from typehaus.emit.draw.elevation import FACINGS, build_elevation, framed_elevations
+        from typehaus.emit.draw.elevation import (
+            FACINGS,
+            build_elevation,
+            elevation_title,
+            framed_elevations,
+            keys_by_display,
+        )
 
         # On paper, the four share the set's one scale (C7-E5) unless --scale forces one.
         shared = (framed_elevations(model, paper) if paper is not None and scale is None
                   else {facing: build_elevation(model, facing) for facing in FACINGS})
-        for facing in FACINGS:
+        # Named by true compass (decision #153); ``facing`` is the project-axis view.
+        for name, facing in keys_by_display(model).items():
             written.append(_write_view(
-                model, shared[facing], out_dir / f"elev_{facing}{sfx}.{fmt}",
-                _SheetId("ELEV", f"{facing.title()} exterior elevation",
-                         f"elevation · {facing}"),
+                model, shared[facing], out_dir / f"elev_{name}{sfx}.{fmt}",
+                _SheetId("ELEV", elevation_title(model, facing), f"elevation · {name}"),
                 dpi=page_dpi, paper=paper, scale=scale, long_edge=long_edge))
     elif view == "details":
         from typehaus.emit.draw.details import (

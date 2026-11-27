@@ -3,13 +3,13 @@ import { useStore } from "../state/store";
 import type { PreviewGeometry } from "../engine/EngineClient";
 import type { Opening, Room, Vec2, Wall } from "../model/types";
 import { anyTradeVisible, canvasObjectTrades } from "../model/visibility";
-import { primaryTradeVisible } from "../model/tradeVisibility";
 import { storeysAtDatum } from "../model/levels";
-import { wallTrades } from "../model/tradeVisibility";
+import { primaryTradeVisible, wallTrades } from "../model/tradeVisibility";
 import type { PlanWarningMarker } from "../model/planWarnings";
 import {
   formatFtIn, M_PER_FT, openingHostWall, snapWorld, orthoLock,
 } from "../model/geometry";
+import { NorthArrow } from "./NorthArrow";
 import { SunIndicator } from "./SunIndicator";
 import { ZoomControls } from "./ZoomControls";
 import { BackgroundGrid } from "./plan/PlanChrome";
@@ -477,11 +477,11 @@ export function Canvas2D() {
         warningPopup={warningPopup} setWarningPopup={setWarningPopup}
         ctxMenu={ctxMenu} setCtxMenu={setCtxMenu}
       />
-      {/* The plan's bottom-*left* is the extents card, so its zoom stacks over the sun chip on
-          the right instead — one cluster, so neither has to know the other's height. */}
+      {/* Bottom-left is the extents card, so zoom, sun and north stack on the right. */}
       <div className="canvas-nav-controls side">
         <ZoomControls label="Plan zoom" onZoom={zoomBy} />
         <SunIndicator model={model} />
+        <NorthArrow model={model} />
       </div>
       <CanvasHud model={model} serviceOptions={serviceOptions}
         activeService={activeService} setActiveService={setActiveService}

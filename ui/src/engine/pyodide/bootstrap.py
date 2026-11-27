@@ -204,7 +204,6 @@ class OfflineEngine:
             return {
                 "revision": self._revision,
                 "units": "imperial",
-                "projectNorth": 0.0,
                 "findings": [f.model_dump(mode="json") for f in self.findings],
                 "ok": False,
             }

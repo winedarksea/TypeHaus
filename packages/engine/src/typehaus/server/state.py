@@ -450,7 +450,7 @@ class ProjectState:
                 return {
                     "revision": revision,
                     "contentHash": self.content_hash,
-                    "units": "imperial", "projectNorth": 0.0,
+                    "units": "imperial",
                     "findings": [f.model_dump(mode="json") for f in self.findings],
                     "ok": False,
                     "perf": dict(self.timings),

@@ -2117,7 +2117,6 @@ export interface Model {
   // restarted". Absent on older model.json.
   contentHash?: string;
   units: string;
-  projectNorth: number;
   findings: Finding[];
   project: {
     name: string;

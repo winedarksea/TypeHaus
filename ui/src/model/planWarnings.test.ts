@@ -16,7 +16,7 @@ function wall(tag: string, uid: string): Wall {
 
 function model(overrides: Partial<Model>): Model {
   return {
-    revision: "r", units: "imperial", projectNorth: 0, findings: [],
+    revision: "r", units: "imperial", findings: [],
     project: { name: "Catlin", uuid: "u" }, storeys: [], walls: [], openings: [], rooms: [],
     conditions: [], stack_edges: [], ...overrides,
   };

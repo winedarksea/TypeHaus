@@ -248,7 +248,8 @@ class FloorOpening(Element):
 class FloorOpeningEdgeInterval(HausModel):
     """One low-to-high station interval on a rectangular floor-opening edge.
 
-    The edge names deliberately use the opening box's fixed compass vocabulary.  A pocket
+    The edge names deliberately use the opening box's fixed compass vocabulary: plan-frame
+    (project north, +y), never true north.  A pocket
     closure is a narrow stair-well exception, so it must not grow a second arbitrary-line
     geometry language beside ``FloorOpening.outline``.
     """

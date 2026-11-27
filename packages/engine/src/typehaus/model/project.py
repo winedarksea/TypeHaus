@@ -30,11 +30,13 @@ from typehaus.quantities import Angle, Length, Point2D, Temperature, deg
 class Site(HausModel):
     """Georeferencing + design-day boundary conditions (#11, #41)."""
 
-    lat: float
-    lon: float
+    lat: float  # lat/lon is the plan origin (0, 0): survey imports and IfcMapConversion
+    lon: float  # are measured from it
     elevation: Length
     crs: str = "EPSG:26915"  # UTM 15N (Minnesota)
-    true_north: Angle = deg(0)  # project-north deviation from true north (→ 02)
+    # θ, clockwise on the plan from project north (+y) to true north: true bearing = plan
+    # bearing − θ. Read only through ``resolve/compass.py`` (decision #153).
+    true_north: Angle = deg(0)
     grade: Length | None = None
     parcel_refs: tuple[str, ...] = ()
     design_temp_heating: Temperature | None = None  # 99% heating design temp

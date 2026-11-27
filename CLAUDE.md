@@ -215,6 +215,9 @@ a release or for exhaustive local verification.
   foot lies in a falling pour rides its plane (`ResolvedLayer.bottom_plane`, `resolve/layer_seat.py`;
   a dish never raises one): `layer_solids` makes those pieces `GBox`es, the viewer reads the
   served plane, the takeoff bills the trapezoid. `mep_concrete.concrete_hosts` carries the solid.
+- **Compass direction goes through `resolve/compass.py`** (decision #153): plan coordinates are
+  project north; `Site.true_north` is read nowhere else (a lint), and a facade's name is
+  `compass.facade_name`. Plan-frame words (`SlabFall.toward`, eave `edges`) mean project north.
 - **`Slab.kind`** is `pour | deck | platform | band` (decision #81). Code that means concrete
   reads `is_pour_slab`, never `category == "slab"`.
 - **`clear_face` is the finish face; `axis_face` owns points** (decision #82). Measure

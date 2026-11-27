@@ -30,13 +30,16 @@ from typehaus.checks.building_science.solar import (
     _OCCUPANT_SENSIBLE_BTUH,
     _ShadePlane,
     fenestration_gain,
-    horizontal_surface_irradiance,
     internal_gains,
     roof_absorptance,
     shaded_band_m,
     shaded_fraction,
     sol_air_temperature_f,
+)
+from typehaus.checks.building_science.solar_geometry import (
+    horizontal_surface_irradiance,
     solar_position,
+    surface_azimuth,
     vertical_surface_irradiance,
 )
 from typehaus.resolve.envelope_geometry import envelope_geometry
@@ -46,6 +49,11 @@ _LATITUDE = 44.9778  # catlin's, to four places, off ``plan/site.py``
 # §1's table: the clear-sky total on a vertical surface at each orientation's OWN peak hour.
 # These are the numbers the retired weights {N 0.25, E 0.70, S 1.00, W 0.85} get wrong.
 _OWN_PEAK = {"N": (53.5, 18.0), "E": (230.1, 8.0), "S": (161.4, 12.0), "W": (230.1, 16.0)}
+_BEARING = {"N": 0.0, "E": math.pi / 2, "S": math.pi, "W": 3 * math.pi / 2}  # true, radians
+
+
+def _irradiance(hour: float, facade: str) -> float:
+    return vertical_surface_irradiance(_LATITUDE, hour, surface_azimuth(_BEARING[facade]))[0]
 
 
 def _house_glazing(model):
@@ -80,8 +88,7 @@ def test_the_orientation_weights_the_block_load_used_are_nearly_backwards() -> N
     of the peak and east is 1.00. Fails if anyone restores a weight table.
     """
     for facade, (expected, hour) in _OWN_PEAK.items():
-        assert vertical_surface_irradiance(_LATITUDE, hour, facade)[0] == pytest.approx(
-            expected, abs=0.5), facade
+        assert _irradiance(hour, facade) == pytest.approx(expected, abs=0.5), facade
     south = _OWN_PEAK["S"][0]
     east = _OWN_PEAK["E"][0]
     assert south / east == pytest.approx(0.70, abs=0.01)
@@ -91,14 +98,24 @@ def test_a_north_wall_still_gets_diffuse_and_reflected_light() -> None:
     """A north window is not a hole with no gain: it takes sky diffuse and ground bounce all
     day, and direct sun early and late in summer when the azimuth swings past 90°. Fails if
     the direct term is ever allowed to go negative and eat the other two."""
-    at_noon = vertical_surface_irradiance(_LATITUDE, 12.0, "N")[0]
+    at_noon = _irradiance(12.0, "N")
     assert at_noon > 0
     assert at_noon < _OWN_PEAK["S"][0] / 2
 
 
 def test_before_sunrise_nothing_is_incident_anywhere() -> None:
     for facade in "NESW":
-        assert vertical_surface_irradiance(_LATITUDE, 4.0, facade)[0] == 0.0
+        assert _irradiance(4.0, facade) == 0.0
+
+
+def test_surface_azimuth_is_continuous_between_the_cardinals() -> None:
+    """A face at true bearing 135° (SE) is -45° from south, and gets its morning gain
+    between the S and E faces' — not snapped to either."""
+    assert surface_azimuth(math.pi) == pytest.approx(0.0)
+    assert surface_azimuth(math.radians(135)) == pytest.approx(math.radians(-45))
+    assert surface_azimuth(0.0) == pytest.approx(math.pi)
+    se = vertical_surface_irradiance(_LATITUDE, 9.0, surface_azimuth(math.radians(135)))[0]
+    assert _irradiance(9.0, "S") < se < _irradiance(9.0, "E")
 
 
 # --- §2. one peak hour for the whole house --------------------------------------------------

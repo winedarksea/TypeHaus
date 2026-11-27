@@ -66,7 +66,6 @@ def _document_header(
             for item in resolved_canvas_objects(
                 model, lambda tag: _provenance(provenance, tag), types)
         ],
-        "projectNorth": model.plan.project.site.true_north.degrees,
         "findings": _findings_json(findings),
         "project": {
             "name": model.plan.project.name,

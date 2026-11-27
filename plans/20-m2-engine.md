@@ -31,7 +31,6 @@ The UI seam, typed on both sides (pydantic model on the server, generated TS typ
 interface ModelJson {
   revision: string;              // project revision hash — the PATCH /plan precondition (#30)
   units: "imperial" | "metric";
-  projectNorth: number;          // true_north angle, radians — sun indicator/north arrow only
   storeys: StoreyJson[];
   libraries: {
     assemblies: AssemblyJson[];  // incl. resolved R-values + card geometry (→ 12 §Assembly card)

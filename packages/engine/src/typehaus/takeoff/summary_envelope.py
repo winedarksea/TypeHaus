@@ -16,6 +16,7 @@ from typehaus.takeoff.bid_summaries import SummaryInputs, SummaryTable, ft, sqft
 from typehaus.takeoff.labels import _fraction_in
 
 _FACINGS = ("north", "east", "south", "west")
+_LETTERS = ("N", "E", "S", "W")
 #: Ceiling-height bands a drywall sub prices by: lifts and scaffold start over 9' and 10'.
 _BANDS = ((9.0, "up to 9'"), (10.0, "9' to 10'"), (math.inf, "over 10'"))
 
@@ -66,10 +67,11 @@ def roofing_summary(inputs: SummaryInputs) -> list[SummaryTable]:
 def siding_summary(inputs: SummaryInputs) -> list[SummaryTable]:
     model = inputs.model
     names = _material_names(model)
+    site = model.plan.project.site
     areas: dict[tuple[str, str], float] = defaultdict(float)
     for wall, layer, (_scope, function, material, _t), area in _wall_layers(model):
         if function == "cladding":
-            areas[(names.get(material, material), _facing(wall, layer))] += area
+            areas[(names.get(material, material), _facing(wall, layer, site))] += area
     rows = [(material, facing, sqft(area), round(sqft(area) / 100, 2))
             for (material, facing), area in sorted(
                 areas.items(), key=lambda kv: (kv[0][0], _FACINGS.index(kv[0][1])))]
@@ -166,8 +168,9 @@ def _material_names(model) -> dict[str, str]:
     return {m.tag: m.name for m in model.plan.library.materials}
 
 
-def _facing(wall, layer) -> str:
-    """Plan-north compass name of the side ``layer`` is on: the elevation it is drawn in."""
+def _facing(wall, layer, site) -> str:
+    """True-compass name of the side ``layer`` is on: the elevation it is drawn in."""
+    from typehaus.resolve import compass
     from typehaus.resolve.geometry import wall_frame
 
     (x0, y0), _tangent, (nx, ny), _length = wall_frame(wall)
@@ -177,5 +180,4 @@ def _facing(wall, layer) -> str:
         return sum((px - x0) * nx + (py - y0) * ny for px, py in ring) / max(len(ring), 1)
 
     sign = 1.0 if offset(layer.polygon) >= offset(layers[0].polygon) else -1.0
-    angle = math.atan2(nx * sign, ny * sign)  # clockwise from plan north
-    return _FACINGS[int((angle + math.pi / 4) // (math.pi / 2)) % 4]
+    return _FACINGS[_LETTERS.index(compass.facade_name((nx * sign, ny * sign), site))]

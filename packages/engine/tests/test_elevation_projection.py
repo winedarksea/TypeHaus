@@ -53,6 +53,47 @@ def test_the_two_mirrored_views_are_mirrored():
     assert west.depth_of(5.0, 0.0) > west.depth_of(1.0, 0.0)
 
 
+def _rotated(model, degrees: float):
+    import copy
+
+    from typehaus.quantities import deg
+
+    site = model.plan.project.site.model_copy(update={"true_north": deg(degrees)})
+    project = model.plan.project.model_copy(update={"site": site})
+    out = copy.copy(model)
+    out.plan = model.plan.model_copy(update={"project": project})
+    return out
+
+
+def test_elevations_are_named_by_true_compass(catlin_model_ro):
+    """A view key is a project axis; its title is the true cardinal, plus the exact bearing
+    when off-cardinal. At θ = 0 nothing changes (decision #153)."""
+    from typehaus.emit.draw.elevation import (
+        display_bearing,
+        display_facing,
+        elevation_title,
+        keys_by_display,
+    )
+
+    for key in ("north", "south", "east", "west"):
+        assert display_facing(catlin_model_ro, key) == key
+        assert display_bearing(catlin_model_ro, key) is None
+        assert elevation_title(catlin_model_ro, key) == f"{key.title()} exterior elevation"
+    assert list(keys_by_display(catlin_model_ro).values()) == ["north", "south", "east", "west"]
+
+    turned = _rotated(catlin_model_ro, 37.0)
+    # True north is 37° clockwise of project north: the project-north face looks N 37° W.
+    assert display_facing(turned, "north") == "north"
+    assert display_bearing(turned, "north") == "faces N 37° W"
+    assert elevation_title(turned, "east") == "East exterior elevation · faces N 53° E"
+    assert sorted(keys_by_display(turned)) == ["east", "north", "south", "west"]
+
+    quarter = _rotated(catlin_model_ro, 90.0)
+    assert [display_facing(quarter, key) for key in ("north", "south", "east", "west")] == [
+        "west", "east", "north", "south"]
+    assert list(keys_by_display(quarter).values()) == ["east", "west", "south", "north"]
+
+
 def test_unknown_facing_is_rejected():
     with pytest.raises(ValueError, match="unknown elevation facing"):
         view_for("up")

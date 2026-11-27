@@ -2,16 +2,16 @@
 
 ``typehaus/energy.py``'s header documents the precedent for this placement: ``checks/`` has
 no leaf restriction, so a building-science analysis may import ``resolve``/``model``/
-``quantities`` freely. ``_facade_for_wall`` lives here now rather than in ``wwr``, because the
-window-to-wall check and the load are two consumers of one orientation question.
+``quantities`` freely. The sun and irradiance math is in ``solar_geometry``.
 
-**What this replaces.** The block load's cooling term was::
+**Orientation is continuous.** Each glazing carries its face's true azimuth, read off the
+wall's resolved outward normal through ``resolve/compass`` (decision #153), so a house turned
+off axis is graded at its real bearing. The N/E/S/W letter is only the ``by_facade`` report key.
 
-    window_solar += area × shgc × ORIENTATION_WEIGHT[facade] × 164.0
+**What this replaces.** The block load's cooling term was a per-facade weight table
+(``{N 0.25, E 0.70, S 1.00, W 0.85}`` × area × shgc × 164). Two errors, and they compound:
 
-with weights ``{N 0.25, E 0.70, S 1.00, W 0.85}``. Two errors, and they compound:
-
-1. **The weights put south at the peak.** At 45 °N in July the clear-sky totals on a vertical
+1. **The old weights put south at the peak.** At 45 °N in July the clear-sky totals on a vertical
    surface at each orientation's *own* peak hour are N 54 / **E 230** / S 161 / **W 230**
    Btu/h·ft² — so south is about 0.70 of the peak and east and west *are* the peak. The
    weights have it nearly backwards.
@@ -43,27 +43,16 @@ from __future__ import annotations
 import math
 from dataclasses import dataclass
 
+from typehaus.checks.building_science.solar_geometry import (
+    direct_on_surface,
+    solar_position,
+    surface_azimuth,
+    vertical_surface_irradiance,
+)
+from typehaus.resolve import compass
 from typehaus.resolve.model import ResolvedModel, ResolvedWall
 from typehaus.resolve.opening_product_dimensions import opening_product_area_m2
 from typehaus.resolve.solid_categories import in_slab_family
-
-# The four orientations, and the surface azimuth of each measured from SOUTH, positive west.
-# A vertical surface faces outward, so a south-facing wall's surface azimuth is 0.
-_SURFACE_AZIMUTH_DEG = {"S": 0.0, "W": 90.0, "N": 180.0, "E": -90.0}
-
-# ASHRAE clear-sky model coefficients. ``A`` is the apparent extraterrestrial direct normal
-# irradiance (Btu/h·ft²), ``B`` the atmospheric extinction coefficient, ``C`` the diffuse sky
-# factor, all for the 21st of the month — the published table. Only the cooling design month
-# is needed for a design-hour load; July is that month in the northern hemisphere and is the
-# one the ASHRAE residential tables are drawn at.
-_JULY_A = 346.1
-_JULY_B = 0.207
-_JULY_C = 0.136
-# Solar declination on 21 July, degrees.
-_JULY_DECLINATION_DEG = 20.6
-# Ground reflectance. 0.2 is the ASHRAE default for ordinary ground (grass, gravel, asphalt);
-# snow would be 0.7 and is not a cooling-season condition.
-_GROUND_REFLECTANCE = 0.2
 
 # The hours a cooling design day is evaluated over, in SOLAR time. Before 08:00 and after
 # 20:00 the sun is low enough that neither the gain nor the coincident conduction load can
@@ -111,72 +100,6 @@ class SolarResult:
     def design_btu_per_hour(self) -> float:
         """Manual J's glass load: the daily average plus the AED excursion, not the peak."""
         return self.average_btu_per_hour + self.excursion_btu_per_hour
-
-
-def _facade_for_wall(wall: ResolvedWall, model: ResolvedModel) -> str:
-    """Which of N/E/S/W this wall's exterior face looks at, in the project-north frame.
-
-    Moved here from ``wwr.py``: the WWR check and the solar load are two consumers of one
-    orientation question, and the load is now the one that cares which way the normal points
-    rather than only which axis the wall runs along.
-    """
-    from typehaus.checks.building_science.wwr import _facade_for_wall as _wwr_facade
-
-    return _wwr_facade(wall, model)
-
-
-def solar_position(latitude_deg: float, solar_hour: float) -> tuple[float, float]:
-    """``(altitude, azimuth-from-south)`` in radians for the cooling design date.
-
-    ``sin β = cos L cos δ cos H + sin L sin δ`` and
-    ``cos φ = (sin β sin L − sin δ) / (cos β cos L)``, signed by the hour angle so the
-    morning sun is east of south. Standard spherical trigonometry, not a correlation.
-    """
-    latitude = math.radians(latitude_deg)
-    declination = math.radians(_JULY_DECLINATION_DEG)
-    hour_angle = math.radians(15.0 * (solar_hour - 12.0))
-    sin_altitude = (math.cos(latitude) * math.cos(declination) * math.cos(hour_angle)
-                    + math.sin(latitude) * math.sin(declination))
-    sin_altitude = max(-1.0, min(1.0, sin_altitude))
-    altitude = math.asin(sin_altitude)
-    cos_altitude = math.cos(altitude)
-    if abs(cos_altitude) < 1e-9:
-        return altitude, 0.0
-    cos_azimuth = ((sin_altitude * math.sin(latitude) - math.sin(declination))
-                   / (cos_altitude * math.cos(latitude)))
-    cos_azimuth = max(-1.0, min(1.0, cos_azimuth))
-    azimuth = math.acos(cos_azimuth)
-    return altitude, azimuth if solar_hour > 12.0 else -azimuth
-
-
-def vertical_surface_irradiance(latitude_deg: float, solar_hour: float,
-                                facade: str) -> tuple[float, float]:
-    """``(total incident Btu/h·ft², wall-solar azimuth in radians)`` on a vertical surface.
-
-    Direct + diffuse sky + ground-reflected, the three terms of the ASHRAE clear-sky model
-    for a surface tilted 90°::
-
-        E_b = A / exp(B / sin β)                 direct normal
-        E_D = E_b cos θ,   cos θ = cos β cos γ   direct on the surface
-        E_d = C E_b (1 + cos Σ)/2 = 0.5 C E_b    diffuse sky
-        E_r = E_b (C + sin β) ρ (1 − cos Σ)/2    ground-reflected
-
-    The wall-solar azimuth ``γ`` comes back with the total because the overhang shading needs
-    it: a shadow line runs ``P tan β / cos γ`` down the glass, and that is not derivable from
-    the irradiance alone.
-    """
-    altitude, azimuth = solar_position(latitude_deg, solar_hour)
-    sin_altitude = math.sin(altitude)
-    surface_azimuth = math.radians(_SURFACE_AZIMUTH_DEG.get(facade, 0.0))
-    wall_solar_azimuth = azimuth - surface_azimuth
-    if sin_altitude <= 0.01:
-        return 0.0, wall_solar_azimuth
-    direct_normal = _JULY_A / math.exp(_JULY_B / sin_altitude)
-    cos_incidence = math.cos(altitude) * math.cos(wall_solar_azimuth)
-    direct = direct_normal * cos_incidence if cos_incidence > 0 else 0.0
-    diffuse = _JULY_C * direct_normal * 0.5
-    reflected = direct_normal * (_JULY_C + sin_altitude) * _GROUND_REFLECTANCE * 0.5
-    return direct + diffuse + reflected, wall_solar_azimuth
 
 
 # How far out from a wall face to look for something overhead that shades it, and how wide
@@ -270,7 +193,8 @@ class _Glazing:
     """One resolved opening reduced to what the solar walk needs."""
 
     tag: str
-    facade: str
+    facade: str  # report key only; the physics reads ``surface_azimuth_rad``
+    surface_azimuth_rad: float
     area_ft2: float
     shgc: float
     sill_m: float
@@ -406,8 +330,12 @@ def _glazing(model: ResolvedModel, walls: dict[str, ResolvedWall],
             continue
         sill_m = wall.base_ref_z_m + opening.sill_m
         head_m = sill_m + opening.height_m
+        site = model.plan.project.site
+        normal = compass.wall_outward_normal(wall)
+        bearing = compass.true_bearing(normal[0], normal[1], site)
         out.append(_Glazing(
-            tag=opening.tag, facade=_facade_for_wall(wall, model),
+            tag=opening.tag, facade=compass.cardinal(bearing),
+            surface_azimuth_rad=surface_azimuth(bearing),
             area_ft2=opening_product_area_m2(model, opening) * 10.7639104167,
             shgc=product.shgc, sill_m=sill_m, head_m=head_m,
             planes=_shade_planes(model, wall, opening, head_m)))
@@ -431,7 +359,7 @@ def fenestration_gain(model: ResolvedModel, walls: dict[str, ResolvedWall],
         by_facade: dict[str, float] = {}
         for glass in glazing:
             incident, wall_solar_azimuth = vertical_surface_irradiance(
-                latitude, hour, glass.facade)
+                latitude, hour, glass.surface_azimuth_rad)
             if incident <= 0:
                 continue
             shaded = shaded_fraction(glass.planes, glass.sill_m, glass.head_m,
@@ -439,7 +367,7 @@ def fenestration_gain(model: ResolvedModel, walls: dict[str, ResolvedWall],
             # Shading removes the DIRECT share of the total, so the split is needed here;
             # ``vertical_surface_irradiance`` returns the sum because that is what every
             # other consumer wants.
-            direct = _direct_on_surface(altitude, wall_solar_azimuth)
+            direct = direct_on_surface(altitude, wall_solar_azimuth)
             effective = incident - direct * shaded
             by_facade[glass.facade] = by_facade.get(glass.facade, 0.0) + (
                 glass.area_ft2 * glass.shgc * effective)
@@ -452,17 +380,6 @@ def fenestration_gain(model: ResolvedModel, walls: dict[str, ResolvedWall],
     excursion = max(0.0, peak - _AED_DIVERSITY_FACTOR * average)
     return SolarResult(peak_hour, peak, average, excursion, by_facade,
                        tuple(dict.fromkeys(unknown)))
-
-
-def _direct_on_surface(altitude: float, wall_solar_azimuth: float) -> float:
-    """The direct-beam share of a vertical surface's incident total, Btu/h·ft²."""
-    sin_altitude = math.sin(altitude)
-    if sin_altitude <= 0.01:
-        return 0.0
-    cos_incidence = math.cos(altitude) * math.cos(wall_solar_azimuth)
-    if cos_incidence <= 0:
-        return 0.0
-    return (_JULY_A / math.exp(_JULY_B / sin_altitude)) * cos_incidence
 
 
 @dataclass(frozen=True)
@@ -505,21 +422,6 @@ _OUTSIDE_FILM_CONDUCTANCE = 4.0
 # cold sky and loses to it; ASHRAE gives 7 °F for a horizontal surface and 0 for a vertical
 # one, which is why this term appears on the roof and on nothing else here.
 _HORIZONTAL_LONGWAVE_CORRECTION_F = 7.0
-
-
-def horizontal_surface_irradiance(latitude_deg: float, solar_hour: float) -> float:
-    """Total clear-sky irradiance on a HORIZONTAL surface, Btu/h·ft².
-
-    Direct (``E_b sin β``) plus the whole sky's diffuse (``C E_b``, undiminished — a
-    horizontal surface sees all of it) and no ground reflection, because a roof sees no
-    ground.
-    """
-    altitude, _ = solar_position(latitude_deg, solar_hour)
-    sin_altitude = math.sin(altitude)
-    if sin_altitude <= 0.01:
-        return 0.0
-    direct_normal = _JULY_A / math.exp(_JULY_B / sin_altitude)
-    return direct_normal * sin_altitude + _JULY_C * direct_normal
 
 
 def sol_air_temperature_f(outdoor_db_f: float, absorptance: float,

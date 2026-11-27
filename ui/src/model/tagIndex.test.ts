@@ -10,7 +10,6 @@ function model(): Model {
   return {
     revision: "r1",
     units: "imperial",
-    projectNorth: 0,
     findings: [],
     project: { name: "test", uuid: "u" },
     storeys: [],

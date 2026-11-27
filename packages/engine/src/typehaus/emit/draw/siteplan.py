@@ -2,7 +2,7 @@
 
 Real C-101: a GeoJSON survey contour basemap under the parcel ring, setback lines +
 dimensions, utility runs, spot elevations, downhill drainage arrows, and foundation
-grade-away callouts (R401.3), layered on top of the footprint/footing/north-arrow content
+grade-away callouts (R401.3), layered on top of the footprint/footing content
 (→ Permit-ready plan set Phase 4).
 
 This module draws the site's **geometry**. Everything the sheet *says about the parcel* —
@@ -17,13 +17,12 @@ import math
 
 from typehaus.emit.draw._shared import to_in as _in
 from typehaus.emit.draw.grounding_plan import emit_site as emit_site_grounding
-from typehaus.emit.draw.lineweights import CUT, CUT_HEAVY, LIGHT, PROFILE, REFERENCE
+from typehaus.emit.draw.lineweights import CUT, LIGHT, PROFILE, REFERENCE
 from typehaus.emit.draw.scene import (
     Polyline,
     Scene,
     SceneBuilder,
     Symbol,
-    Text,
 )
 from typehaus.emit.draw.schedule_block import BlockMetrics
 from typehaus.emit.draw.siteplan_annotate import emit_site_annotations
@@ -57,7 +56,6 @@ def build_site_plan(model: ResolvedModel, metrics: BlockMetrics | None = None) -
     _emit_spot_elevations_and_drainage(builder, site)
     _emit_foundation_grading(builder, model, site)
     _emit_impervious_grading(builder, model, site)
-    _emit_north_arrow(builder, model)
     return builder.build()
 
 
@@ -296,19 +294,6 @@ def _emit_spot_elevations_and_drainage(builder: SceneBuilder, site) -> None:
         builder.add(Symbol(name="span-arrow", insert=_in(((x + dx) / 2, (y + dy) / 2)),
                            rotation=math.degrees(math.atan2(dy - y, dx - x)), scale=12.0,
                            layer="C-TOPO-ARRW"))
-
-
-def _emit_north_arrow(builder: SceneBuilder, model: ResolvedModel) -> None:
-    points = [point for wall in model.walls for point in wall.axis]
-    if not points:
-        return
-    min_x, max_y = min(point[0] for point in points), max(point[1] for point in points)
-    origin = (min_x - 2.0, max_y - 1.0)
-    radians = model.plan.project.site.true_north.radians
-    tip = (origin[0] + math.sin(radians) * 3.0, origin[1] + math.cos(radians) * 3.0)
-    builder.add(Polyline(points=(_in(origin), _in(tip)), layer="A-SITE-ANNO", lineweight=CUT_HEAVY))
-    builder.add(Text(anchor=_in((tip[0], tip[1] + 0.4)), content="N", height_pt=TEXT_PT,
-                     layer="A-SITE-ANNO", align="center"))
 
 
 def _label(builder: SceneBuilder, key: str, tag: str,

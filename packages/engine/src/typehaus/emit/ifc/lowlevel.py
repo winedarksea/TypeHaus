@@ -67,10 +67,17 @@ def assign_project_units(f: Any) -> None:
     ifcopenshell.api.run("unit.assign_unit", f, units=units)
 
 
-def add_context(f: Any) -> Any:
+def add_context(f: Any, site: Any = None) -> Any:
+    """Model + Body contexts; ``site`` sets the Model context's ``TrueNorth`` (0, 1 if None)."""
+    import math
+
     import ifcopenshell.api
 
+    from typehaus.resolve.compass import true_north_rad
+
     ctx = ifcopenshell.api.run("context.add_context", f, context_type="Model")
+    theta = true_north_rad(site)
+    ctx.TrueNorth = f.createIfcDirection((math.sin(theta), math.cos(theta)))
     body = ifcopenshell.api.run(
         "context.add_context", f, context_type="Model",
         context_identifier="Body", target_view="MODEL_VIEW", parent=ctx,

@@ -304,7 +304,8 @@ class Roof(Element):
     bearing_refs: tuple[str, ...]
     assembly: str
     overhang: Length | None = None
-    edge_overhangs: tuple[tuple[str, Length], ...] = ()  # per-edge overrides
+    # Per-edge overrides; edge names are plan-frame (project north), not true north.
+    edge_overhangs: tuple[tuple[str, Length], ...] = ()
     ridge_direction: str = "x"
     # The published table row that answers this member's span, where one does: a PRESCRIPTIVE
     # read, so authoring one takes the requirement out of the engineering register
