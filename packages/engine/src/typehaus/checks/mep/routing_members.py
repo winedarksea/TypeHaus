@@ -42,11 +42,13 @@ from typehaus.checks._authoring import not_applicable as _na
 from typehaus.checks._authoring import passed as _pass
 from typehaus.checks._authoring import unknown as _unknown
 from typehaus.checks.mep._format import feet_inches
+from typehaus.checks.mep.rim_hole_spacing import RimHole, rim_spacing_findings
 from typehaus.checks.mep.routing_geometry import run_polylines, run_radii
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.mep_crossings import CrossingWindow, member_window
+from typehaus.resolve.mep_envelopes import insulation_thickness_m, run_sections
 from typehaus.resolve.model import EDGE_RIM_PREFIX
 from typehaus.resolve.rim_loads import RimLoad, rim_header_spans, rim_point_loads
 
@@ -80,7 +82,6 @@ def run_member_crossing(ctx: CheckContext) -> list[Finding]:
         return [_unknown(_CID, "this model resolves no floors, so no run crosses a framed "
                                "member anywhere in it")]
 
-    from typehaus.resolve.mep_envelopes import insulation_thickness_m, run_sections
 
     runs = run_polylines(ctx)
     radii = run_radii(ctx)
@@ -109,6 +110,8 @@ def run_member_crossing(ctx: CheckContext) -> list[Finding]:
         # see them. Two 2" drains 1 1/2" apart each fit the window and each clear D/3; the
         # pair is what the section forbids.
         by_member: dict[str, list[tuple[str, float, float]]] = {}
+        rim_holes: dict[str, list[RimHole]] = {}
+        spaced: set = set()
         per_run: dict[str, list] = {}
         oblique: dict[tuple[str, str, float], float] = {}
         for _kind, tag, path, z in runs:
@@ -123,13 +126,22 @@ def run_member_crossing(ctx: CheckContext) -> list[Finding]:
                         path[index], path[index + 1], floor.direction == "x")
                     by_member.setdefault(crossing.member_key, []).append(
                         (tag, crossing.station_m, radius))
+                    if crossing.member_key in rims:
+                        hw, hd, is_round = _rim_hole_dims(sections, tag, radius)
+                        holes = rim_holes.setdefault(crossing.member_key, [])
+                        if not any(h.tag == tag and abs(h.station_m - crossing.station_m) < 1e-6
+                                   for h in holes):
+                            holes.append(RimHole(
+                                _kind, tag, crossing.station_m,
+                                2 * hw * oblique[(tag, crossing.member_key, crossing.station_m)],
+                                is_round, crossing.z_m - hd, crossing.z_m + hd))
 
         for kind, tag, _path, _z in runs:
             crossings = per_run.get(tag)
             if not crossings:
                 continue
             radius = radii.get(tag, 0.0)
-            half_w, half_d, lagging = sections.get(tag, (radius, radius, None))
+            _half_w, half_d, lagging = sections.get(tag, (radius, radius, None))
             # The window must hold the envelope, lagging included, not the bare pipe.
             half_d += insulation_thickness_m(lagging) or 0.0
             tightest: tuple | None = None
@@ -137,12 +149,13 @@ def run_member_crossing(ctx: CheckContext) -> list[Finding]:
             rim_short: Finding | None = None
             rim_loaded: Finding | None = None
             rim_spanned: Finding | None = None
+            hw, hd, is_round = _rim_hole_dims(sections, tag, radius)
             for crossing in crossings:
                 if crossing.member_key in rims:
-                    hole_m = 2 * half_w * oblique[(tag, crossing.member_key, crossing.station_m)]
+                    hole_m = 2 * hw * oblique[(tag, crossing.member_key, crossing.station_m)]
                     rim_short = rim_short or _rim_end_finding(
                         kind, tag, floor, rims[crossing.member_key], crossing.station_m,
-                        hole_m, abs(half_w - half_d) < 1e-9)
+                        hole_m, is_round)
                     rim_loaded = rim_loaded or _rim_load_finding(
                         kind, tag, floor, crossing.member_key, crossing.station_m, hole_m,
                         rim_loads[crossing.member_key])
@@ -160,8 +173,8 @@ def run_member_crossing(ctx: CheckContext) -> list[Finding]:
                 member = webbed.get(crossing.member_key)
                 grade = (web_grade(
                     floor, member, crossing.station_m, crossing.z_m,
-                    2 * half_w * oblique[(tag, crossing.member_key, crossing.station_m)],
-                    2 * half_d, abs(half_w - half_d) < 1e-9) if member is not None else None)
+                    2 * hw * oblique[(tag, crossing.member_key, crossing.station_m)],
+                    2 * hd, is_round) if member is not None else None)
                 if grade is not None and not grade.ok:
                     # The first miss is named; later ones add only the count.
                     count = on_web[0] + 1 if on_web is not None else 1.0
@@ -176,6 +189,11 @@ def run_member_crossing(ctx: CheckContext) -> list[Finding]:
             if on_web is not None:
                 out.append(_web_finding(kind, tag, floor.tag, on_web))
             out.extend(f for f in (rim_short, rim_loaded, rim_spanned) if f is not None)
+            for rim_key in dict.fromkeys(c.member_key for c in crossings if c.member_key in rims):
+                k = 0 if floor.direction == "x" else 1
+                ends = sorted((rims[rim_key].p0[k], rims[rim_key].p1[k]))
+                out.extend(rim_spacing_findings(_CID, floor, rim_key, rim_holes[rim_key],
+                                                rim_windows[rim_key], spaced, tuple(ends)))
             bore = (_ijoist_finding(floor, chart, tag, radius, crossings, by_member,
                                     supports)
                     if chart is not None and window.kind == "i_joist" else
@@ -219,6 +237,14 @@ def _finding(kind: str, tag: str, floor_tag: str, radius_m: float,
         f"{where}: crown {crown_gap / M_PER_IN:+.3f}\", invert "
         f"{invert_gap / M_PER_IN:+.3f}\" ({sizes}) — {window.basis}",
         (tag, floor_tag))
+
+
+def _rim_hole_dims(sections: dict, tag: str, radius: float) -> tuple[float, float, bool]:
+    """(half width, half depth, round?) of the rim hole a run needs: the hole passes the
+    lagged bundle, so lagging adds to both; roundness is the bare section's."""
+    hw, hd, lagging = sections.get(tag, (radius, radius, None))
+    ins = insulation_thickness_m(lagging) or 0.0
+    return hw + ins, hd + ins, abs(hw - hd) < 1e-9
 
 
 def _rim_end_finding(kind: str, tag: str, floor, rim, station_m: float, hole_m: float,

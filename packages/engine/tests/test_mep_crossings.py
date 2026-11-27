@@ -178,3 +178,27 @@ def test_an_open_web_trimmer_is_a_truss_line(catlin_model_ro) -> None:
     lvl = next(m for f in catlin_model_ro.floors for m in f.members
                if m.category == "trimmer" and "LVL" in m.profile)
     assert not is_member_line(lvl)
+
+
+def test_adjacent_rim_holes_keep_twice_the_larger_diameter_apart(catlin_model_ro) -> None:
+    """TJ-8000 p.4: edges of adjacent round holes >= 2x the larger one's diameter, unless
+    the pair is a closely grouped set whose envelope is itself a legal hole."""
+    from typehaus.checks.mep.rim_hole_spacing import RimHole, rim_spacing_findings
+
+    floor = _floor(catlin_model_ro, "FS-S-WEST")
+    rim = next(m for m in floor.members if m.child_key.startswith("edge-rim-"))
+    window = member_window(floor, rim)
+    ends = tuple(sorted((rim.p0[0], rim.p1[0])))
+    mid = sum(ends) / 2.0
+    d = 3.0 * M_PER_IN
+
+    def run(gap_in, dia=d):
+        a = RimHole("conduit", "A", mid, dia, True, window.z0_m, window.z0_m + dia)
+        b = RimHole("duct", "B", mid + dia + gap_in * M_PER_IN, dia, True,
+                    window.z0_m, window.z0_m + dia)
+        return rim_spacing_findings("c", floor, "edge-rim", [a, b], window, set(), ends)
+
+    assert run(6.01) == []
+    (bad,) = run(5.9)  # the pair spans 11.9", more than the 7.9" a single hole may
+    assert bad.result.value == "fail" and "A" in bad.message and "B" in bad.message
+    assert run(1.0, dia=1.0 * M_PER_IN) == []  # envelope 3": a permitted group
