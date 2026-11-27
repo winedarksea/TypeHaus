@@ -2057,7 +2057,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   greenboard. A
   one-piece tub-shower insert takes no niche, screw or accessory: only the valve and spout
   knockouts. Both lit niches are gone. The spec lives on the fixture types' `source` and
-  their price rows (`notes/bath2_shower.md` §6); RM-B-BATH's surround is BATH2's pattern (2026-11-25).
+  their price rows (`notes/bath2_shower.md` §6); RM-B-BATH's surround is STUBATH's QWALL-2 (2026-11-26), glued to glass-mat board.
 - **CCT rule (owner, 2026-10-31): one schedule mark per working CCT.** A selectable (5CCT)
   module is allowed, set once to its mark's `cct_k`; a tunable fixture records its working
   CCT in `cct_k` and its range in `cct_range_k`. BATH2 is 5000 K day / 2700 K evening
@@ -2214,7 +2214,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   1,059 sq in.), the Drake WC (15" off the east leg), a SEKTION 24 lav. The door's 24" front zone
   holds the WC corner by 1.9" (advisory). All drain to one 3" `PR-B-SAUNA-DRAIN` under the wall (individual vents;
   a wet vent would need the WC last), cleanout a floor cap in front of the lav; the head stays
-  3" west of `FT-B-CS`. Solid-surface surround `WP-B-BATH-SURR` (36" on each wall). Mirror and VALLMORA over the
+  3" west of `FT-B-CS`. QWALL-2 acrylic surround `WP-B-BATH-SURR` (the kit's, 36" on each wall, since 2026-11-26). Mirror and VALLMORA over the
   lav, GFCI and hand towel on `W-B-CS3`, TP on the vanity's side, shower towel bar on
   `W-B-BT-N`, can `ED-B-BATH-CAN1` and the switch by the latch on `W-B-BT-N`. Exhaust
   `REG-B-EXH1` is a ceiling valve on its own radial.

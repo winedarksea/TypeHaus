@@ -34,6 +34,17 @@ old bath's footprint, an alcove with a doorless 34" RO from the workshop.
   floor-level opening as an entry (`room_openings.room_passages`), so the alcove passes on its
   switch inside `AO-B-WH-ALCOVE`; to the workshop that mouth is a dead end, like a closet door.
 
+## Basement shower walls: the kit's QWALL-2 in place of solid surface (2026-11-26, owner)
+
+- **Taken.** Owner question (1) of the neo-angle entry below. `WP-B-BATH-SURR` is now
+  `acrylic-shower-panel` (DreamLine QWALL-2, 1/8"), pan top (+2") at the kit's 75 5/8", on the
+  same two 36" legs, glued to the glass-mat board already on those faces; `WP-B-BATH-SURR-CAP`
+  (the TK-105 strip) is gone. Both neo-angles now use one product, `WP-A-STUBATH-SURR`'s pattern.
+- **Cost** (`haus takeoff`, against HEAD). `FX-SHOWER-36-NEO-B-COMBO` bills the attic's full
+  kit row (+$500-$720); `solid-surface-panel` drops 43 SF ordered (-$860-$1,376) and the trim
+  strip 2 SF (-$300-$420). The panel top now takes a reveal bead (+5 LF) and paint a few SF
+  more. Net -$637-$1,034; total with contingency and tax -$767-$1,249.
+
 ## Basement shower goes neo-angle: the door has room to open (2026-11-26)
 
 - **Why.** Decision #152's `code.MN_4714_0408_shower_door` (UPC 408.5, 22" unobstructed)
@@ -66,10 +77,8 @@ old bath's footprint, an alcove with a doorless 34" RO from the workshop.
   on `placeables`, +$6-$10 of floor field where the cut corner returns 0.9 SF; construction
   +$920-$1,066 and the total with contingency and tax +$1,080-$1,262. The row omits the kit's
   QWALL-2 walls because the room keeps its solid-surface surround.
-- **Owner questions.** (1) The kit's own QWALL-2 walls (`acrylic-shower-panel`, $0) in place of
-  `WP-B-BATH-SURR` and its TK-105 strip would bill the attic's full row and drop two sheets and a
-  strip: about $700-$1,400 cheaper and one product for both neo-angles, against yesterday's
-  selection. (2) The pan's real inside dimensions (408.6 above).
+- **Owner questions.** (1) The kit's QWALL-2 walls in place of the solid-surface surround:
+  taken 2026-11-26 (above). (2) The pan's real inside dimensions (408.6 above).
 - Pre-existing reds fixed with this: `test_canvas_placeables` (retired `FX-B-SAUNA-SH`, and the
   WC drag now carries `PR-B-BATH-WC-CW`), `test_drain_cleanouts` (12, `CO-B-BATH` left with the
   replan), and `test_bid_packages::test_framing_golden` (stale since the replan's framing).

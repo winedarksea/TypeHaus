@@ -249,7 +249,7 @@ would retype the whole wall face).
 | STUBATH neo-angle | DreamLine DL-6040C-01: QWALL-2 acrylic/ABS panels (`WP-A-STUBATH-SURR`) glued to greenboard or cement board, base flange to the studs; no membrane (owner, 2026-11-05) | the kit, panels included, is priced on `FX-SHOWER-36-NEO-COMBO` |
 | BATH1, SUITEBATH tub-showers | the one-piece insert IS the wall | **nothing penetrates the insert** but the valve and spout knockouts; use the moulded shelves. Both lit niches are dropped (`notes/superseded/shower_niche.md`) |
 | BATH1's back, exterior `W-S-N3` | insert inside, ccSPF outside: ~0 perm both faces | never penetrate it |
-| basement bath (`FX-B-BATH-SH`; the sauna rinse until 2026-11-25) | 1/4" solid-surface panel (`WP-B-BATH-SURR`, the BATH2 pattern) siliconed to the glass-mat backer on the pan's two closed walls, pan top to 80", painted board above | CLOSED 2026-11-25: the shower left the sauna for an ordinary 2x6 wet wall, so the tile/foam-backer question is gone (`notes/shower_assemblies.md`) |
+| basement bath (`FX-B-BATH-SH`; the sauna rinse until 2026-11-25) | QWALL-2 acrylic kit walls (`WP-B-BATH-SURR`, since 2026-11-26; solid surface 2026-11-25) glued to the glass-mat board on the pan's two closed walls, painted board above | CLOSED 2026-11-25: the shower left the sauna for an ordinary 2x6 wet wall, so the tile/foam-backer question is gone (`notes/shower_assemblies.md`) |
 
 **Backer: the spec above stands** (owner, 2026-10-22, after a reviewer suggested GoBoard).
 Swanstone's shower-wall-kit guide prepares sheetrock/greenboard/cementboard/wood, plaster,

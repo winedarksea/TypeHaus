@@ -230,6 +230,8 @@ branch overlaps, ERV trunk/flex/ERV-R-BATH refusals, wall-hung port stub, WC arm
 - The laundry pocket door omits the openings the selected LG WashTower requires. The schedule specifies a flush hollow-core slab. LG’s closet-installation detail for this ventless model calls for 48 in² of ventilation opening high and 24 in² low. (Note we probably don't need to detail this, the solid core is fine. The ERV system + undercut should maintain airflow)
 - The north hall linen closet as possible laundry closet (plumbing routing might be awkward)
 
+- Can the water heater be exposed in the basement hallway, per code
+
 # Project Management
 
 **Built 2026-09-11** (decision #69, `docs/site-state-format.md`): visits, inspections,

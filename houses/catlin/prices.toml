@@ -3725,14 +3725,10 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 #   labour    set base, glue up two panels, hang enclosure, set trim       380-820
 # The membrane and glass-mat backer are gone: DreamLine glues QWALL to greenboard.
 "FX-SHOWER-36-NEO-COMBO" = { material = { low = 1850, high = 2520 }, labour = { low = 380, high = 820 } }  # 1 ea
-# RM-B-BATH's neo-angle (2026-11-26), turned 180 degrees from the attic's. The same SlimLine base,
-# pivot enclosure and valve, WITHOUT the QWALL-2 corner walls: the room keeps its 1/4" solid-surface
-# surround (WP-B-BATH-SURR, owner 2026-11-25), so the walls are not bought twice. ESTIMATE:
-#   material  NEO-COMBO less the QWALL-2 half (DL-6040C-01 kit $1000-1170 is base + walls)   -450..-600
-#   labour    NEO-COMBO less gluing two panels                                                -50..-120
-# Swapping the surround for the kit's QWALL-2 (acrylic-shower-panel, $0) would bill the row above
-# whole and drop two solid-surface sheets and a TK-105 strip: cheaper, but the owner's call.
-"FX-SHOWER-36-NEO-B-COMBO" = { material = { low = 1400, high = 1920 }, labour = { low = 330, high = 700 } }  # 1 ea
+# RM-B-BATH's neo-angle (2026-11-26), turned 180 degrees from the attic's: the same DL-6040C-01 kit
+# (base + QWALL-2 walls, WP-B-BATH-SURR at $0 since owner 2026-11-26), pivot enclosure and valve,
+# so the row above whole. It replaced the 1/4" solid-surface surround and TK-105 strip.
+"FX-SHOWER-36-NEO-B-COMBO" = { material = { low = 1850, high = 2520 }, labour = { low = 380, high = 820 } }  # 1 ea
 # RM-M-BATH2, 2026-10-12. ESTIMATE, not quoted. Built on FX-SHOWER-36's basis (pan + KIT
 # surround + their labour), so `solid-surface-panel` in [wood_surfaces] stays a delta:
 #   material  FX-SHOWER-36 band                                  300-1000
@@ -5681,7 +5677,7 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 "titanium-gr2-sheet-brushed" = { material = { low = 0, high = 0 }, labour = { low = 15, high = 35 } }  # 12 SF ordered: WP-M-KIT-BACKSPLASH (2026-10-09)
 "marble-look-panel" = { low = 4, high = 11 }  # 0 SF since 2026-11-05 (STUBATH went to acrylic-shower-panel)
 # The QWALL-2 half of DL-6040C-01; bought and set inside FX-SHOWER-36-NEO-COMBO.
-"acrylic-shower-panel" = { low = 0, high = 0 }  # WP-A-STUBATH-SURR
+"acrylic-shower-panel" = { low = 0, high = 0 }  # WP-A-STUBATH-SURR, WP-B-BATH-SURR (both bought in their neo-angle kit rows)
 # WP-M-BATH2-SURR, floor to ceiling, 53.0 SF net since 2026-10-22 (the W-M-TUBDK-S span went
 # to the Corian stall face). 2026-10-29: Swanstone Modern Subway in White (.010), 2 x
 # MSMK-9636-1 (36x96) at $987 list each (swanstone.com) = $1,974, ~$37/SF list; White lists a

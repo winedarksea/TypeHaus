@@ -118,8 +118,8 @@ def test_the_bath2_shower_surround_bills_as_its_own_override(bom):
     """The cast shower surrounds — the second finish-replacing band in this house and the
     first that is not the sauna's tile.
 
-    ``acrylic-shower-panel`` (the DreamLine QWALL-2 backwalls) is RM-A-STUBATH's alone since
-    2026-11-05, replacing ``marble-look-panel``: two 3'-0" x 75 5/8" bands, 37.8 SF net, $0 in
+    ``acrylic-shower-panel`` (the DreamLine QWALL-2 backwalls) is RM-A-STUBATH's since
+    2026-11-05 and RM-B-BATH's since 2026-11-26: two 3'-0" x 75 5/8" bands each, 75.6 SF net, $0 in
     ``[wood_surfaces]`` (the kit is priced on the fixture). RM-M-BATH2 took ``solid-surface-panel``
     floor to ceiling, two 3'-0" x 8'-10" bands, 53.0 SF net (the 4.8 SF knee-wall span went to
     the Corian stall face on 2026-10-22). It is priced in
@@ -134,9 +134,8 @@ def test_the_bath2_shower_surround_bills_as_its_own_override(bom):
     draws at the 1/2" default, which is the panel's actual thickness.
     """
     # Solid surface: BATH2's 47.9 sf net since the 96" panel stops on its base (2026-11-01;
-    # D-M-BATH2's derived RO still takes the west 1/4" up to its head), plus RM-B-BATH's
-    # surround (2026-11-25): two 3'-0" x 78" bands, 39.0 sf.
-    expected = {"acrylic-shower-panel": (37.8, 42.0), "solid-surface-panel": (86.9, 96.0)}
+    # D-M-BATH2's derived RO still takes the west 1/4" up to its head).
+    expected = {"acrylic-shower-panel": (75.6, 84.0), "solid-surface-panel": (47.9, 53.0)}
     for material, (net, ordered) in expected.items():
         row = next(r for r in bom["wood_surfaces"] if r["material"] == material)
         assert row["kind"] == "override"

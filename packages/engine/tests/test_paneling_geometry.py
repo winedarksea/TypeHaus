@@ -189,8 +189,8 @@ def test_band_thickness_comes_from_the_material_stock(bands):
             assert band.thickness_m == pytest.approx(0.75 * _IN, abs=1e-6), \
                 "4/4 walnut wainscot draws at its dressed 3/4in"
         if band.tag == "WP-B-BATH-SURR":
-            assert band.thickness_m == pytest.approx(0.25 * _IN, abs=1e-6), \
-                "the solid-surface panel has an explicit thickness"
+            assert band.thickness_m == pytest.approx(0.125 * _IN, abs=1e-6), \
+                "the acrylic panel has an explicit thickness"
 
 
 def test_the_catlin_bands_are_the_ten_authored_ones(bands, catlin_model):
@@ -198,7 +198,7 @@ def test_the_catlin_bands_are_the_ten_authored_ones(bands, catlin_model):
     by_tag: dict[str, list] = {}
     for band in bands:
         by_tag.setdefault(band.tag, []).append(band)
-    assert set(by_tag) == {"WP-B-BATH-SURR", "WP-B-BATH-SURR-CAP", "WP-M-STUDY-WAINSCOT",
+    assert set(by_tag) == {"WP-B-BATH-SURR", "WP-M-STUDY-WAINSCOT",
                            "WP-M-STUDY-FELT",
                            "WP-M-BATH2-SURR", "WP-M-BATH2-SURR-CAP", "WP-S-SUITE-HEADBOARD",
                            "WP-A-STUBATH-SURR",
@@ -217,15 +217,13 @@ def test_the_catlin_bands_are_the_ten_authored_ones(bands, catlin_model):
         assert band.z0_m == pytest.approx((1.0255906 + 3.5) * _IN, abs=1e-6)
         assert band.z1_m == pytest.approx(72 * _IN, abs=1e-6)
         assert band.thickness_m == pytest.approx(0.75 * _IN, abs=1e-6)
-    # RM-B-BATH's shower surround (2026-11-25): two 3' spans on the pan's closed sides,
-    # pan top (+2") to 80", capped by a 3 7/8" strip.
+    # RM-B-BATH's QWALL-2 surround (2026-11-26): two 3' spans on the pan's closed sides,
+    # pan top (+2") at kit height 75 5/8".
     assert {b.wall_tag for b in by_tag["WP-B-BATH-SURR"]} == {"W-B-SA-N", "W-B-BT-W"}
     for band in by_tag["WP-B-BATH-SURR"]:
         assert band.run_m == pytest.approx(3 * 12 * _IN, abs=1e-6)
-        assert band.z1_m - band.z0_m == pytest.approx(78 * _IN, abs=1e-3)
+        assert band.z1_m - band.z0_m == pytest.approx(75.625 * _IN, abs=1e-3)
         assert band.replaces_wall_finish
-    for cap in by_tag["WP-B-BATH-SURR-CAP"]:
-        assert cap.z1_m - cap.z0_m == pytest.approx(3.875 * _IN, abs=1e-3)
     # North walnut is replaced by the upholstered bench; exposed returns remain.
     assert {b.wall_tag for b in by_tag["WP-M-STUDY-WAINSCOT"]} == {
         "W-M-C3", "W-M-LS", "W-M-CLN2"}
@@ -314,7 +312,7 @@ def test_the_bands_still_bill_what_they_billed(bands):
     # Runs end on finish faces; 27.82 (27.80 before paint took no depth), D-M-STUDY's derived RO is 2 1/4"
     # wider across the 36" band.
     assert walnut == pytest.approx(27.816, abs=0.005)
-    assert surround == pytest.approx(39.0, abs=0.5)  # two 3'-0" x 78" bands
+    assert surround == pytest.approx(37.8, abs=0.5)  # two 3'-0" x 75 5/8" bands
 
 
 # --- a band stops at the ceiling, not at the platform lift --------------------------------

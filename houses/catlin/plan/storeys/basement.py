@@ -834,7 +834,7 @@ WALLS = [
     # The sauna/bath partition (2026-11-25): one wall, x 9'-10"..18'-0", liner south. 2x6
     # because it is the bath's wet wall (WC, lav and the vent rise in it;
     # `advisory.wet_wall_depth`), glass-mat on the bath face the whole run (the shower's
-    # surround panel goes over it, the BATH2 pattern). W-B-SA-N2 retired with the hall tee.
+    # QWALL-2 panels are glued to it). W-B-SA-N2 retired with the hall tee.
     Wall(uid="CBW118AAAA", tag="W-B-SA-N", start_node="N-B-SA-NW",
          end_node="N-B-SA-NE", assembly="SAUNA_2X6", top=ft(7, 6),
          layer_materials=(LayerMaterial(layer="gwb-cold", material="gwb-glass-mat"),),
@@ -1359,20 +1359,15 @@ FLOOR_OPENINGS = [
     # Shower recess is a finish-zone concern; the stair arrives via the slab above.
 ]
 
-# RM-B-BATH's shower surround (2026-11-25; WP-B-SAUNA-SPLASH's tile retired with the sauna
-# shower): the BATH2 pattern, a 1/4" solid-surface panel siliconed to the glass-mat backer
-# on the pan's two closed sides, pan top (+2") to 80", a TK-105 strip capping it, painted
-# board above to the 84" ceiling. W-B-SA-N runs east from x=9'-10" (pan at 2 1/4" along it),
-# W-B-BT-W north from y=7'-11 3/8" (pan at 4 5/8").
+# RM-B-BATH's shower surround: the neo-angle kit's own DreamLine QWALL-2 acrylic/ABS corner walls
+# since 2026-11-26 (owner; WP-A-STUBATH-SURR's pattern, replacing the 2026-11-25 solid-surface panel
+# and its TK-105 strip), glued to the glass-mat board on the pan's two closed sides, pan top (+2")
+# at kit height 75 5/8", painted board above to the 84" ceiling. W-B-SA-N runs east from x=9'-10"
+# (pan at 2 1/4" along it), W-B-BT-W north from y=7'-11 3/8" (pan at 4 5/8").
 PANELING = [
     WallPaneling(uid="DQNG5Z6J7P", tag="WP-B-BATH-SURR", room="RM-B-BATH",
-                 material_ref="solid-surface-panel", offset=inch(2), height=inch(78),
-                 replaces_wall_finish=True, thickness=inch(0.25),
-                 spans=(PanelingSpan(wall_ref="W-B-SA-N", start=inch(2.25), length=ft(3)),
-                        PanelingSpan(wall_ref="W-B-BT-W", start=inch(4.625), length=ft(3)))),
-    WallPaneling(uid="HGZQ78TAEM", tag="WP-B-BATH-SURR-CAP", room="RM-B-BATH",
-                 material_ref="swanstone-trim-strip", offset=inch(80), height=inch(3.875),
-                 replaces_wall_finish=True, thickness=inch(0.25),
+                 material_ref="acrylic-shower-panel", offset=inch(2), height=inch(75.625),
+                 replaces_wall_finish=True, thickness=inch(0.125),
                  spans=(PanelingSpan(wall_ref="W-B-SA-N", start=inch(2.25), length=ft(3)),
                         PanelingSpan(wall_ref="W-B-BT-W", start=inch(4.625), length=ft(3)))),
 ]

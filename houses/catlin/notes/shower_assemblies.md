@@ -59,8 +59,8 @@ The shower left the sauna with the basement replan, so the sauna has no wet wall
 span, packing, valve pocket, stringer (`BK-B-SAUNA-VALVE`), `WP-B-SAUNA-SPLASH` tile or
 sauna-temperature waterproofing question. The blocker is closed by removal, not by
 qualifying the system. The basement bath's shower is an ordinary 2x6 wet wall (`W-B-SA-N`,
-glass-mat board on the bath face) with a 1/4-inch solid-surface surround (`WP-B-BATH-SURR`, the BATH2
-pattern, pan top to 80 inches, `WP-B-BATH-SURR-CAP` strip, painted board above), no valve
+glass-mat board on the bath face) with the neo-angle kit's QWALL-2 acrylic surround (`WP-B-BATH-SURR`,
+since 2026-11-26, pan top at 75 5/8 inches, painted board above), no valve
 pocket and no heat exposure. The 2026-11-09 build-up it replaces: tile, 1/2-inch USG Durock,
 1/4-inch packing, 12 x 10-inch insulated pocket, stringer 2 3/4 inches behind tile.
 
