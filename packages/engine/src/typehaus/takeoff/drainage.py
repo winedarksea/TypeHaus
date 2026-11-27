@@ -21,6 +21,7 @@ import math
 
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.model import ResolvedModel
+from typehaus.takeoff.srw_accessories import add_srw_accessories
 
 _M_TO_FT = 3.280839895
 _M3_TO_CY = 1.30795062
@@ -38,7 +39,7 @@ class _Rows:
         self._rows: dict[tuple, dict[str, object]] = {}
 
     def add(self, category: str, product: str, size_in: float, *, tag: str,
-            length_m: float = 0.0, volume_m3: float = 0.0) -> None:
+            length_m: float = 0.0, volume_m3: float = 0.0, count: int = 1) -> None:
         key = (category, product, round(size_in, 2))
         row = self._rows.get(key)
         if row is None:
@@ -46,7 +47,7 @@ class _Rows:
                 "category": category, "product": product, "size_in": round(size_in, 2),
                 "count": 0, "length_m": 0.0, "volume_m3": 0.0, "tags": [],
             }
-        row["count"] = int(row["count"]) + 1
+        row["count"] = int(row["count"]) + count
         row["length_m"] = float(row["length_m"]) + length_m
         row["volume_m3"] = float(row["volume_m3"]) + volume_m3
         tags = row["tags"]
@@ -123,6 +124,7 @@ def drainage_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
                 _add_area_drain(model, rows, element)
 
     _add_derived_eave_gutters(model, rows)
+    add_srw_accessories(model, rows)
     return rows.finish()
 
 

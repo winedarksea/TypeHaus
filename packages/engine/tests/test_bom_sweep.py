@@ -471,10 +471,14 @@ def test_drainage_bills_the_whole_storm_run_by_the_foot(catlin_model, bom):
         "the garage's derived eave gutter is aluminium somebody has to buy"
 
     for row in rows:
-        if row["category"] == "area_drain":   # a basin is bought by the piece
+        if row["category"] in ("area_drain", "srw_cap_adhesive"):   # bought by the piece
             assert int(row["count"]) > 0, row
             continue
         assert float(row["length_ft"]) > 0 or float(row["aggregate_cubic_yards"]) > 0, row
+    # SRW chart drain: 74.7 LF of leg axes + a stub per outlet column; a tube per 60 LF of cap.
+    srw = {row["category"]: row for row in rows if row["category"].startswith("srw_")}
+    assert 78.0 < float(srw["srw_drain"]["length_ft"]) < 80.0, srw
+    assert srw["srw_cap_adhesive"]["count"] == 2, srw
     leaders = [row for row in rows if row["category"] == "downspout"]
     assert leaders
     # A leader is billed by its drop; its plan run is a point.

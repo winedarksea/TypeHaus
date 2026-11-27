@@ -197,6 +197,8 @@ def fact_trade(section: str, row: Mapping[str, Any]) -> str | None:
         return _wood_surface_trade(row)
     if section in ("interior_trim", "countertops") and row.get("custom_milled"):
         return "millwork"
+    if section == "drainage" and str(row.get("category") or "").startswith("srw_"):
+        return "landscaping"           # files with the SRW block it serves
     if section == "drainage" and solid_trades(str(row.get("category") or ""))[0] == "gutters":
         return "gutters"
     if section == "railings" and str(row.get("style") or "") == "masonry":

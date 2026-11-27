@@ -21,6 +21,8 @@ class SrwDrain(HausModel):
     #: Tag of a FootingBedding whose ``wall_column`` receives it (an underground drainage
     #: system, the AB manual's alternative to daylight).
     outlet_ref: str
+    #: Pipe diameter, for the takeoff (the ``pipe`` string is prose). ``None`` = unbilled.
+    diameter: Length | None = None
 
 
 class SrwChartSection(HausModel):
@@ -41,6 +43,9 @@ class SrwChartSection(HausModel):
     founding_compaction_pct: float
     lift: Length
     drain: SrwDrain | None = None
+    #: Run of capstone one adhesive tube covers (the tube's label, the house's own number);
+    #: ``None`` = the adhesive is not billed.
+    cap_adhesive_coverage: Length | None = None
 
 
 register_constructor("SrwDrain", SrwDrain)

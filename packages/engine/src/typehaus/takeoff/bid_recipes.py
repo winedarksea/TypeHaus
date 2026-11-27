@@ -200,7 +200,8 @@ RECIPES: dict[str, Recipe] = {
                        "extensions, tile, drywells and the sump.",
                        ("drainage", "site", "allowances"), ("S-100", "P-101")),
     "landscaping": Recipe("Landscaping", "Final grade, sod, rootzone and the segmental "
-                          "retaining block.", ("envelope_layers", "wall_structure", "site"),
+                          "retaining block, with its drain pipe and cap adhesive.",
+                          ("envelope_layers", "wall_structure", "site", "drainage"),
                           ("C-101",)),
     "concrete": Recipe("Concrete", "Every pour, by the yard: footings, foundation walls, slabs, "
                        "the cast columns, the reinforcing steel, the cast-in anchors and "

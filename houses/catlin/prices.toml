@@ -5415,8 +5415,7 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 # 2026-11-23: all five legs are 52" (six 8" courses + a 4" AB Capstone, base 4" lower, owner decision 4), so the
 # face is 52/48 of the above: 30.3 + 301.9 = 332.2 SF. The CAPSTONES bill inside that face at the block rate
 # (no separate cap price exists): no separate cap row.
-# NOT BILLED: the 4" perforated drain pipe in its sock (~86 LF: 76.7 LF of legs and returns plus three 3' stubs
-# into the court's wall column) and the capstone adhesive (one 29 oz tube per 60 LF, ~2 tubes).
+# The 4" drain pipe and the capstone adhesive bill in [drainage] (`srw_drain`, `srw_cap_adhesive`).
 "RETAINING_BLOCK_12" = { material = { low = 15, high = 26 }, labour = { low = 10, high = 25 }, unit = "SF" }  # 30.3 SF of face — the two balcony returns only
 "RETAINING_BLOCK_12_WASHED" = { material = { low = 15, high = 26 }, labour = { low = 10, high = 25 }, unit = "SF" }  # 301.9 SF of face — the three perimeter legs; the WASH itself is in [envelope_layers], not here
 # THE NORTH ENTRY SCREEN'S SKIRT (2026-09-11), and it is in this table only because its one
@@ -7294,6 +7293,15 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 # [pipe_runs] 4" DWV rate plus the coupling into the basin outlet.
 "area_drain:NDS 1200 12in square catch basin" = { material = { low = 60, high = 140 }, labour = { low = 60, high = 150 }, unit = "ea" }  # 1 ea
 "area_drain_riser:pvc" = { material = { low = 2.6, high = 5 }, labour = { low = 6.5, high = 15 } }  # 3.5 LF
+# SRW DRAIN AND CAP GLUE, 2026-11-27 (ESTIMATES, retail): the five raised-garden legs' chart drain
+# (`SrwChartSection.drain`, 79.1 LF = 74.7 LF of axes + three stubs to the court's stone columns) and
+# the capstone adhesive (29 oz tubes, 60 LF each, 2 tubes). Both file under landscaping with the
+# RETAINING_BLOCK_12 rows they belong to; neither is in that $/SF rate. 4" perforated, sock-wrapped
+# corrugated pipe is $1.0-1.8/LF in 100' rolls; labour is laying it level in the base trench, in the
+# crew's pass with the wall-rock (judgement). The tube is a masonry/construction adhesive at $8-12;
+# setting a cap is in the block's labour rate, so no labour here.
+"srw_drain:4 in perforated pipe in filter sock" = { material = { low = 1.0, high = 1.8 }, labour = { low = 1.5, high = 3 } }  # 79.1 LF
+"srw_cap_adhesive:AB Capstone" = { material = { low = 8, high = 12 }, labour = { low = 0, high = 0 }, unit = "ea" }  # 2 tubes, one per 60 LF of cap
 # `drywell` is deliberately absent, and STILL should be: those rows carry length_ft 0, and a
 # [drainage] rate would join to that zero and price nothing at all — silently, because a
 # zero-quantity row is not reported as unpriced either. The hydrant pit's 0.10 cy of washed

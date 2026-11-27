@@ -82,6 +82,7 @@ _SECTION_TRADE_CODES: dict[tuple[str, str], CostCode] = {
     ("sheet_goods", "drywall"): CostCode("4300", "09 29 00", "drywall"),
     ("wall_structure", "masonry"): CostCode("1200", "04 21 13", "masonry"),
     ("wall_structure", "landscaping"): CostCode("1100", "32 32 23", "landscaping"),
+    ("drainage", "landscaping"): CostCode("1100", "33 46 00", "landscaping"),  # SRW drain, cap glue
     ("hardware", "roofing"): CostCode("2500", "07 72 00", "roofing"),
     ("hardware", "electrical"): CostCode("3300", "26 31 00", "electrical"),
     ("hardware", "concrete"): CostCode("1000", "03 15 00", "concrete"),

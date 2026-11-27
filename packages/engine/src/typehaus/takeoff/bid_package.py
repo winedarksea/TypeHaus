@@ -91,6 +91,8 @@ def _shaped_quantity(item: BomRow, trade: str, default_unit: str) -> tuple[float
         return item.quantity, str(row.get("unit") or default_unit)
     if item.section == "drainage" and key in ("drywell", "french_drain"):
         return float(row.get("aggregate_cubic_yards") or 0), "cy"
+    if item.section == "drainage" and key.startswith("srw_cap_adhesive"):
+        return float(row.get("count") or 0), "ea"
     if item.section == "solar_modules":
         return float(row.get("panels") or 0), "ea"
     if item.section == "framing" and "truss" in str(row.get("profile") or ""):

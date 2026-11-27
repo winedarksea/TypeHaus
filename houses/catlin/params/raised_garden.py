@@ -355,7 +355,8 @@ def _chart(outlet: str) -> SegmentalWallSpec:
             batter_deg=12.0, soil_phi_deg=27.0, cap_height=inch(4), min_buried=inch(6),
             min_wall_rock=inch(12), founding_compaction_pct=95.0, lift=inch(8),
             drain=SrwDrain(pipe="4 in perforated pipe in filter sock, level at the back of "
-                                "the wall-rock base", outlet_ref=outlet)))
+                                "the wall-rock base", outlet_ref=outlet, diameter=inch(4)),
+            cap_adhesive_coverage=ft(60)))  # one 29 oz tube of masonry adhesive per 60 LF
 
 
 _CAPPED_BASE = BASE - inch(4)
@@ -436,7 +437,7 @@ BEDDINGS = [
         geotextile=True,
         # AB's drain pipe (p.22 Step 3) is NOT the bed's tile: `drain_tile=True` makes the drainage
         # graph demand authored leads and `inlet_refs` on the court beds (L1's band), so the pipe
-        # is `SegmentalWallSpec.chart.drain`, graded by outlet and not yet billed (~86 LF of 4").
+        # is `SegmentalWallSpec.chart.drain`, graded by outlet and billed in [drainage].
         drain_tile=False,
     )
     for i, w in enumerate(WALLS, start=1)
