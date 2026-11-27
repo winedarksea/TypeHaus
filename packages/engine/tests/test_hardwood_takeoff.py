@@ -464,10 +464,10 @@ def test_elm_screen_rough_stock_and_rendered_parts_agree(rows, catlin_model_ro):
     screen = next(t for t in catlin_model_ro.plan.library.furniture_types
                   if t.tag == "FT-LIV-SLAT-ELM-FULL")
     cuts = {cut.part: cut for cut in screen.cut_list}
-    screen_rows = [row for row in rows if row["material"] == "elm-slat-5q"]
+    screen_rows = [row for row in rows if row["material"] == "elm-slat-6q"]
     assert {row["location"]: row["pieces"] for row in screen_rows} == {"slat": 22, "cleat": 2}
     for row in screen_rows:
-        assert row["nominal_stock"] == "5/4"
+        assert row["nominal_stock"] == "6/4"
         assert row["finished_thickness_in"] == 1.0
         assert row["finished_width_in"] == 2.5
         assert row["layup"] == "one board"

@@ -74,15 +74,16 @@ PENINSULA_BACK_PANEL = FurnitureType(
 )
 
 
-# Vertical American elm slats: 5/4 rough dresses to a 1" face; the 2 1/2" depth is
-# ripped. Keep 22 slats on the existing 2 3/4" pitch (1 3/4" clear gaps). Visible top
-# and bottom plates use the same stock. Heights allow 1/4" for scribing below the
+# Vertical American elm slats: 6/4 rough (sawn ~1 5/8" green) dresses to a 1" face, leaving
+# ~1/2" to take out bow over the 104" length; the 2 1/2" depth is ripped. Keep 22 slats
+# on the existing 2 3/4" pitch (1 3/4" clear gaps). Visible top and bottom plates use the
+# same stock. Heights allow 1/4" for scribing below the
 # resolved ceiling underside, measured from the finished floor.
 _SLAT_FINISHED_THICKNESS_IN = 1.0
 _SLAT_DEPTH_IN = 2.5
 _PLATE_FINISHED_THICKNESS_IN = 1.0
 _SLAT_SOURCE = (
-    "Owner-built from American elm 5/4 rough, dressed to 1 inch and ripped to 2 1/2 inches, "
+    "Owner-built from American elm 6/4 rough, dressed to 1 inch and ripped to 2 1/2 inches, "
     "hardwax oil. The ceiling cleat screws "
     "to 2x blocking set between FS-S-EAST's joists at 144\" and 160\" before the board goes "
     "up: y=13'-0\" falls between them and nothing else bills that blocking. The floor cleat "
@@ -96,7 +97,7 @@ def _slats(tag: str, name: str, width_in: float, height_in: float, slats: int,
     return FurnitureType(
         tag=tag, name=name, footprint=(inch(width_in), inch(_SLAT_DEPTH_IN)),
         height=inch(height_in),
-        plan_symbol="slat-partition", wood_material_ref="elm-slat-5q",
+        plan_symbol="slat-partition", wood_material_ref="elm-slat-6q",
         cut_list=(
             FurnitureCut(part="slat", count=slats, thickness=inch(_SLAT_FINISHED_THICKNESS_IN),
                          width=inch(_SLAT_DEPTH_IN),

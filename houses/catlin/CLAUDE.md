@@ -3347,10 +3347,10 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   Purchased stock stays out of the owner mill order. See `notes/suite_headboard.md`.
 - **Elm slat partition (2026-10-20):** `FURN-M-LIV-SLAT-FULL` is one floor-to-ceiling
   piece, 60 1/2" west from the gwb, centred y=12'-11 1/2" over the old
-  deck line (now one LVP field). 22 American elm slats finish 1 x 2 1/2" from **5/4 rough**, on a 2 3/4" pitch
+  deck line (now one LVP field). 22 American elm slats finish 1 x 2 1/2" from **6/4 rough** (2026-11-27), on a 2 3/4" pitch
   (1 3/4" clear gaps); top and bottom plates also finish 1 x 2 1/2". Slats are 104 5/16"
   long within the 106 5/16" overall height. Kiln-dried, rift sticks off the board edges,
-  rip-rest-dress, ~25% overage to reject movers (`elm-slat-5q`). Ceiling plate needs
+  rip-rest-dress, ~25% overage to reject movers (`elm-slat-6q`); logs bucked 10'-0"–10'-6". Ceiling plate needs
   blocking between FS-S-EAST joists 144/160; floor plate fixes to the subfloor (the old
   movement joint is retired, #112). The LVP remains floating with its expansion gap around the plate.
 - **Bar and projecting back panel:**73 1/2 long, end x=376 3/8, leaving25 to the

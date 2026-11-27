@@ -2729,9 +2729,9 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 "FT-KIT-PEN-END-PANEL" = { material = { low = 65, high = 130 }, labour = { low = 30, high = 80 } }  # 1 ea
 "FT-KIT-PEN-BACK-PANEL" = { material = { low = 10, high = 60 }, labour = { low = 120, high = 300 } }  # 1 ea, edge band and fixings; panels and rails itemized
 "FT-KIT-CT-BRACKET-24" = { material = { low = 35, high = 70 }, labour = { low = 20, high = 45 } }  # 5 ea, powder-coated, #12 screws
-# The elm slat partition (5/4 rough since 2026-10-20): slats and plates finish
-# 1 x 2 1/2". The one-piece screen schedules 76.6 rough bf plus ~18.2 bf of slats
-# for straightness selection. Retain the ~$7-12/bf design allowance; labour covers
+# The elm slat partition (6/4 rough since 2026-11-27): slats and plates finish
+# 1 x 2 1/2". The one-piece screen schedules 92.0 rough bf plus ~22 bf of slats
+# for straightness selection; owner-harvested elm, so the bf rate is a buy-in fallback. Retain the ~$7-12/bf design allowance; labour covers
 # ripping, dressing, oiling, plates, scribing and ceiling blocking between FS-S-EAST joists.
 "FT-LIV-SLAT-ELM-FULL" = { material = { low = 665, high = 1140 }, labour = { low = 300, high = 650 } }
 "SEKT-SINK-B36" = { material = { low = 97, high = 112 }, labour = { low = 90, high = 220 } }  # 1 ea, the B36 frame

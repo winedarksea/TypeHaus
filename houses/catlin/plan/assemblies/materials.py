@@ -288,12 +288,13 @@ MATERIALS = [
              species="elm", nominal_quarters=12, milling_profile="S4S",
              requires_custom_milling=True,
              source="RM-M-LIVING fireplace mantel (elm since 2026-10-16, walnut before). 12/4 because the shelf finishes 2 1/4\" — one modular brick bed height, so it reads as a single course pulled proud of the wythe — and 8/4 dresses to 1 1/2\". Matches the elm slat partition."),
-    # Slats and visible plates share 5/4 rough stock, dressed to 1" (2026-10-20).
-    Material(tag="elm-slat-5q", name='American elm slats and plates, 1" x 2 1/2", from 5/4 rough',
+    # Slats and visible plates share 6/4 rough stock, dressed to 1" (2026-11-27; 5/4 left
+    # only ~1/4" to straighten an 8'-8" elm stick).
+    Material(tag="elm-slat-6q", name='American elm slats and plates, 1" x 2 1/2", from 6/4 rough',
              hatch="lumber", density=560.0, color="#bd9975", finish="oak-board",
-             species="elm", nominal_quarters=5, milling_profile="S4S",
+             species="elm", nominal_quarters=6, milling_profile="S4S",
              requires_custom_milling=True,
-             source="5/4 rough elm dressed to 1\" and ripped to 2 1/2\", one piece per slat or plate. Kiln-dried to 6-8% MC; rift sticks off the board edges, no pith; rip oversize, rest indoors a week or two, then dress; mill ~25% extra and reject any stick that moves. Hardwax oil all faces."),
+             source="6/4 rough elm (sawn ~1 5/8\" green) dressed to 1\" and ripped to 2 1/2\", one piece per slat or plate. Saw through-and-through; logs bucked 10'-0\" to 10'-6\" for the 104 5/16\" slats. Kiln-dried to 6-8% MC; rift sticks off the board edges, no pith; rip oversize, rest indoors a week or two, then dress; mill ~25% extra and reject any stick that moves. Hardwax oil all faces."),
     # The booth's acoustic felt, band 36" to 9'-0" on the south and north walls
     # of RM-M-STUDY-CLOSET. ** NO `species`. ** That one field is the gate on `haus millwork`
     # (takeoff/hardwood.py — "a milling schedule is only about wood"); set it and PET felt is

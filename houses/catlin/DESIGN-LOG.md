@@ -1216,6 +1216,18 @@ blocking; the junction box is derived on the next joist.) The shared flood model
 head, lens and visor through the viewer, GLB and IFC. Instances live in
 `plan/porch_lighting.py`; mounting and beam regressions use the shared read-only fixtures.
 
+## Elm screen on 6/4 rough (2026-11-27)
+
+The owner moved the slat stock from 5/4 to 6/4 rough ahead of harvesting a ~24" DBH elm.
+Sawn 5/4 (~1 3/8" green) dries to ~1 1/4" and dressing to 1" leaves only ~1/4" to take out
+bow over a 104 5/16" stick of interlocked elm; 6/4 sawn ~1 5/8" green leaves ~1/2", matching
+the rip margin (2 7/8"-3" to 2 1/2"). Finished sizes are unchanged. `elm-slat-6q` replaces
+`elm-slat-5q`; the milling schedule rises from 76.6 to 92.0 rough bf (87.4 slats + 4.6
+plates), before ~22 bf of extra slats. Saw through-and-through, take rift/quarter sticks
+beside the pith and off the outer boards' edges, and buck logs 10'-0"-10'-6": an 8' log
+yields no slat. One 21-22" small-end x 10'-6" butt log (~205-225 bf gross Int'l 1/4") covers
+the screen and the mantel; the posts need their own 10'+ log.
+
 ## Elm screen on 5/4 rough (2026-10-20)
 
 The owner changed the slat stock to 5/4 rough American elm. Slats and the visible top
