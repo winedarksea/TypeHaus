@@ -27,8 +27,9 @@ _CARDINALS_8 = ("N", "NE", "E", "SE", "S", "SW", "W", "NW")
 
 def true_north_rad(site) -> float:  # noqa: ANN001 — Site; avoids a model import here
     """θ: clockwise angle on the plan from project north (+y) to true north, radians."""
-    angle = getattr(site, "true_north", None)
-    return angle.radians if angle is not None else 0.0
+    if site is None:
+        return 0.0
+    return site.true_north.radians  # a non-Site raises rather than reading as θ = 0
 
 
 def plan_bearing(dx: float, dy: float) -> float:
@@ -72,19 +73,31 @@ def quadrant_bearing_text(bearing: float, *, minutes: bool = True) -> str:
     return f"{ns} {degrees}°{mins:02d}' {ew}"
 
 
-def wall_outward_normal(wall) -> tuple[float, float]:  # noqa: ANN001 — ResolvedWall
-    """Unit plan normal of a resolved wall's exterior face (its last layer's side).
+def wall_outward_normal(wall, model=None) -> tuple[float, float]:  # noqa: ANN001
+    """Unit plan normal of a resolved wall's exterior face.
 
-    Read off the resolved layers (``sill_alignment.outward_sign``), not a centroid guess.
-    A degenerate axis returns ``(0, 0)``.
+    Read off the resolved layers (``sill_alignment.outward_sign``: the last layer's side).
+    With fewer than two thick layers that side is undefined, so the envelope's exterior
+    face probe decides when ``model`` is given. A degenerate axis returns ``(0, 0)``.
     """
     from typehaus.resolve.geometry import wall_frame
     from typehaus.resolve.sill_alignment import outward_sign
 
-    _origin, _tangent, left, axis_length = wall_frame(wall)
+    origin, _tangent, left, axis_length = wall_frame(wall)
     if axis_length <= 1e-9:
         return 0.0, 0.0
     sign = outward_sign(wall)
+    thick = [layer for layer in wall.layers if layer.polygon and layer.thickness_m > 0]
+    if len(thick) < 2 and model is not None:
+        from typehaus.resolve.envelope_geometry import envelope_geometry
+
+        probe = envelope_geometry(model).exterior_face_probe(wall)
+        if probe is not None:
+            (x0, y0), (x1, y1) = probe.coords[0], probe.coords[-1]
+            mid = ((x0 + x1) / 2 - origin[0], (y0 + y1) / 2 - origin[1])
+            off = mid[0] * left[0] + mid[1] * left[1]
+            if abs(off) > 1e-9:
+                sign = 1.0 if off > 0 else -1.0
     return sign * left[0], sign * left[1]
 
 
@@ -158,12 +171,16 @@ def plan_to_grid(x_m: float, y_m: float, site) -> tuple[float, float]:  # noqa: 
     return origin[0] + x_m * c - y_m * s, origin[1] + x_m * s + y_m * c
 
 
-def lonlat_to_plan(lon: float, lat: float, site) -> tuple[float, float]:  # noqa: ANN001
-    """WGS84 lon/lat to plan metres, through ``Site.crs``."""
+@lru_cache(maxsize=8)
+def _from_wgs84(crs: str):  # noqa: ANN202
     import pyproj
 
-    transformer = pyproj.Transformer.from_crs("EPSG:4326", site.crs, always_xy=True)
-    return grid_to_plan(*transformer.transform(lon, lat), site)
+    return pyproj.Transformer.from_crs("EPSG:4326", crs, always_xy=True)
+
+
+def lonlat_to_plan(lon: float, lat: float, site) -> tuple[float, float]:  # noqa: ANN001
+    """WGS84 lon/lat to plan metres, through ``Site.crs`` (a metre-unit grid)."""
+    return grid_to_plan(*_from_wgs84(site.crs).transform(lon, lat), site)
 
 
 def project_east_grid_axis(site) -> tuple[float, float]:  # noqa: ANN001

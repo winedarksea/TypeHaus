@@ -36,7 +36,7 @@ def _wall_length(wall: ResolvedWall) -> float:
 
 def _facade_for_wall(wall: ResolvedWall, model: ResolvedModel) -> str:
     """The true cardinal (N/E/S/W) of the wall's outward face, from its resolved layers."""
-    return compass.facade_name(compass.wall_outward_normal(wall), model.plan.project.site)
+    return compass.facade_name(compass.wall_outward_normal(wall, model), model.plan.project.site)
 
 
 def wwr_summary(model: ResolvedModel) -> dict[str, object]:

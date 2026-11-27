@@ -331,7 +331,7 @@ def _glazing(model: ResolvedModel, walls: dict[str, ResolvedWall],
         sill_m = wall.base_ref_z_m + opening.sill_m
         head_m = sill_m + opening.height_m
         site = model.plan.project.site
-        normal = compass.wall_outward_normal(wall)
+        normal = compass.wall_outward_normal(wall, model)
         bearing = compass.true_bearing(normal[0], normal[1], site)
         out.append(_Glazing(
             tag=opening.tag, facade=compass.cardinal(bearing),

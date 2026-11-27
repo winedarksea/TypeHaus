@@ -15,8 +15,7 @@ from typehaus.resolve import compass
 _SRC = Path(__file__).resolve().parents[1] / "src" / "typehaus"
 # The only modules that may read ``site.true_north`` itself.
 _TRUE_NORTH_READERS = {
-    "resolve/compass.py", "model/project.py", "emit/ifc/site.py", "emit/ifc/lowlevel.py",
-    "server/model_json_document.py",
+    "resolve/compass.py", "model/project.py", "server/model_json_document.py",
 }
 
 
@@ -80,14 +79,15 @@ def test_out_of_domain_site_is_best_effort() -> None:
 
 
 def test_lint_compass_is_the_only_true_north_reader() -> None:
-    reads = re.compile(r"(?<!Site)\.true_north\b")
+    # An attribute, getattr or key read; ``Site.true_north`` in prose is not a read.
+    reads = re.compile(r"(?<!Site\.)\btrue_north\b")
     binning = re.compile(r"//\s*\(?\s*math\.pi\s*/\s*2\s*\)?\s*\)?\s*%\s*4")
     offenders = []
     for path in _SRC.rglob("*.py"):
         rel = path.relative_to(_SRC).as_posix()
         text = path.read_text()
         if rel not in _TRUE_NORTH_READERS and reads.search(text):
-            offenders.append(f"{rel}: reads .true_north")
+            offenders.append(f"{rel}: reads true_north")
         if rel != "resolve/compass.py" and binning.search(text):
             offenders.append(f"{rel}: bins a bearing by hand (use compass.cardinal)")
     assert not offenders, "\n".join(offenders)

@@ -16,11 +16,9 @@ from typehaus.quantities import deg
 pytestmark = pytest.mark.slow
 
 THETA = 37.0
-# Checks whose verdict or numbers honestly depend on where the glass faces.
-_ORIENTATION_CHECKS = (
-    "building_science.window_to_wall_ratio", "building_science.solar",
-    "code.energy_prescriptive", "mep.cooling_capacity", "mep.heat_pump_turndown",
-)
+# The only check whose numbers move at 37°: the cooling load's glass term. WWR and solar
+# are held by their own tests below, so a leak of θ anywhere else fails here.
+_ORIENTATION_CHECKS = ("mep.cooling_capacity",)
 
 
 def _rotated(plan, theta: float):
