@@ -25,7 +25,7 @@ points below are fixtures; the fourth is the root they have to reach.
 |---|---|---|
 | `FX-S-SUITEBATH-WC` | (134.81, 250.625) | its own position (since 2026-10-30 its type's DRAIN port, the 12" rough-in flange at (134.81, 252.406); the gap below is the 09-07 world's). A water closet is the one common fixture with no hot connection, which is the model's only reliable signal that a fixture is floor-drained — `resolve/mep_sleeves._expected_drain_point` |
 | `FX-S-SUITEBATH-LAV` | (165.5, 268.0) | the cabinet stands at (165.5, 254.13) and needs hot water, so the derivation projects it onto `wall_ref` `W-S-SN3`'s axis at y=268 — the wet wall the waste actually turns down in |
-| `FX-S-SUITEBATH-TUBSH` | (197.615, 261.125) | **authored** `drain_position`. Left to the convention it landed on `W-S-C2C`'s axis at x=216, inside a bearing wall's studs. The tub runs y 204.625..264.625 on the x=197.615 centreline; its waste-and-overflow is 3 1/2" in from the north end face |
+| `FX-S-SUITEBATH-TUBSH` | (197.615, 251.875) | **authored** `drain_position`. Left to the convention it landed on `W-S-C2C`'s axis at x=216, inside a bearing wall's studs. Since 2026-11-08 the tub runs y 200.125..260.125 on the x=197.615 centreline and its waste-and-overflow is 8 1/4" in from the north end face, against `W-S-SBF`, at (197.615, 251.875); the gap below is the 09-07 world's (y 204.625..264.625, point at 261.125, 3 1/2" in) |
 | root: `PR-M-S-SUITE-DRAIN` head | (156.0, 202.8) | the stack's top vertex, at elevation 115.5 |
 
 **The gaps, hand-worked.** Straight-line plan distance from each fixture's drain point to the

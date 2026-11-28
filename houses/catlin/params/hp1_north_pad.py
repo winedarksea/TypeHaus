@@ -1,7 +1,7 @@
 """System 1's north-face pad and stand, west of PT-BW-PE under the open-ended canopy.
 
 Owner decision, 2026-10-02: assume Gree accepts this open-ended canopy configuration.
-The north-facing cabinet moved 7'-10" west to x 25'-2"..28'-5", retaining its 6" rear
+The north-facing cabinet moved west to x 24'-10 5/8"..28'-1 5/8", retaining its 6" rear
 gap and leaving 12" to the 14" pier's west face. The garage's northward shift provides
 57 15/16" from the discharge to its south cladding. This is an accepted design assumption,
 not a manufacturer approval obtained by the model; plans/hp1-canopy-siting-study.md
@@ -9,8 +9,8 @@ records the obstruction-table distinction.
 
 The pad and SL-WK-C meet at their west, north and east edges as one continuous pour; the
 heat pump is bolted on afterward. Its northward drainage runs onto the walk, leaving 42 3/4"
-of paved entry beyond the pad. The cabinet overlaps WIN-M-KITCH's west edge by 2 1/2" in
-plan, with 18 3/16" between cabinet top and sill. A pure west translation leaves
+of paved entry beyond the pad. The cabinet stands 5/8" west of WIN-M-KITCH's west edge
+(x 28'-2 1/4") in plan. A pure west translation leaves
 the rear 1 3/8" beyond the canopy's south roof edge; its stand height and pad top remain
 the same as the other two units.
 
@@ -60,7 +60,7 @@ _CX_IN = 26 * 12 + 6.125                                    # 26'-6 1/8"
 _CY_IN = _CLADDING_Y_IN + _BACK_CLEAR_IN + _CAB_D_IN / 2.0  # 37'-8 17/32"
 
 # --- the pad ---------------------------------------------------------------------------
-# x 24'-7 7/8"..28'-4 3/8", y 36'-10"..39'-4" — 9.27 sf, 0.114 cy at 4". Same assembly,
+# x 24'-7 7/8"..28'-4 3/8", y 36'-9 1/2"..39'-3 1/2" — 9.27 sf, 0.114 cy at 4". Same assembly,
 # same top and the same reasoning as the other two: 4" unreinforced on 4" of open-graded
 # stone, no XPS, no vapour retarder, no frost footing under 187 lb of cabinet.
 #

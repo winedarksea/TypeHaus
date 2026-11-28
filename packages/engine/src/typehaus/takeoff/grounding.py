@@ -28,7 +28,7 @@ def _row(model: ResolvedModel, rows: dict[str, dict[str, object]], ref: str, rol
 def grounding_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     """One row per hardware Product: a rod and its acorn clamp each per rod electrode, the
     encased clamp per concrete-encased electrode, one Al-Cu transition and ``ceil(L/spacing)``
-    seam clips per aluminium down-lead."""
+    screw-mounted conductor holders per aluminium down-lead."""
     grounding = model.grounding
     std = getattr(grounding, "standard", None)
     if std is None:

@@ -24,9 +24,16 @@ GND_IBT = Product(tag="GND-IBT", brand="nVent ERICO", model="IBTB",
 GND_TRANSITION = Product(tag="GND-AL-CU-TRANS", brand="TBD",
                          name="Bimetallic Al-Cu parallel connector, 1/0 Al to #2 Cu, UL 96 / "
                               "UL 486A-B", source=_PENDING)
-GND_CLIP = Product(tag="GND-CLIP-S5", brand="TBD",
-                   name="Conductor clip on a standing-seam / trim clamp, aluminium, no "
-                        "penetration of the panel", source=_PENDING)
+# Thompson Lightning Protection A166 (tlpinc.com/products/cable-holders/aluminum-cable-holders/
+# aluminum-cable-holders-fastener-type/A166.html, read 2026-11-27): "5/8" wide aluminum cable
+# support loop ... all main size cables through No. A28" (A28 = 28 x 14 ga Al, 1/2" OD, the 1/0
+# Al lead), "fasteners up to 1/4" in diameter"; page carries the UL 96 mark, catalog: all
+# products UL-labeled. No price published (RFQ). The tag keeps its old "S5": PBR has no seam.
+GND_CLIP = Product(tag="GND-CLIP-S5", brand="Thompson Lightning Protection", model="A166",
+                   name="Screw-mounted conductor holder, 5/8 in aluminum loop for 1/0 Al "
+                        "(No. A28), UL 96; one 316 SS screw with EPDM washer into a PBR flat, "
+                        "loop on a butyl pad off the Galvalume, 36 in o.c.",
+                   source="Thompson Lightning Protection A166 cable loop, tlpinc.com (2026-11-27)")
 # Siemens FirstSurge product overview (supplyhouse.com mirror, read 2026-11-14): "UL 1449
 # Listed, Type 2 ... suitable for use downstream of the service disconnect", 140,000 A surge
 # capacity, UL 1449 3rd ed. VPR; SCCR 100 kA (Siemens Canada datasheet LP-1408-2). Neither

@@ -127,9 +127,15 @@ cabinet, it stays and is renamed for that body.
 
 Fixtures with **no grab course** today, by geometry: `FX-S-BATH1-SH` (on `W-S-N3` /
 `W-S-CH-W`; the course on `W-S-BD-N` was never in front of it and now backs the two vanity
-top rails), `FX-S-SUITEBATH-TUBSH`'s back wall `W-S-C2C` (its end on `W-S-SN3` is covered),
+top rails), `FX-S-SUITEBATH-TUBSH` (back `W-S-C2C`; its end is `W-S-SBF` since 2026-11-08, ahead of `W-S-SN3`'s course, and the insert takes no grab-bar screw),
 `FX-S-BATH1-WC` (`W-S-W1`), `FX-B-BATH-WC` and `FX-B-BATH-SH` (`W-B-SA-N`, since 2026-11-25)
 and `FX-A-STUBATH-SH`. Each is a band to add if a bar is wanted there.
+
+**Tub flange nailers (not grab courses).** `FX-S-BATH1-SH` and `FX-S-SUITEBATH-TUBSH` are the same
+Sterling insert, flange top 74 1/4", so each has a 72"-75 1/2" 2x4 course for it. BATH1's
+(`BK-S-N3-TUB-NAILER`, `BK-S-CH-W-TUB-NAILER`) are furred, the flange standing off the studs; the
+suite's (`BK-S-C2C-TUB-NAILER`, `BK-S-SBF-TUB-NAILER`) are fitted blocks, the flange lying on the board.
+The SBF course starts east of the tub vent riser at x=15'-5 1/2".
 
 **What it gains beyond the flat wall.** A per-bay block can be omitted or shifted at the bay
 a shower valve and its risers occupy. A continuous sheet cannot, and §5 flags that overlap as

@@ -118,8 +118,10 @@ by the coordinated SPDs and single-point entry with an IBT.
   (diagonally opposite).
   - It clears the entry piers (y <= 38'-3"), the garage pads (y >= 41'-6"), both HP pads, the
     sewer (8 ft deep) and the water service (6 ft).
-- **PV down-lead:** 1/0 aluminium on seam clips from SP-A-PV-W9, north to the rake, down the rake
-  and the NW corner trim. It transitions to bare Cu 18" above grade (Al within 18" of earth is not
+- **PV down-lead:** 1/0 aluminium on screw-mounted holders (`GND-CLIP-S5`, Thompson A166 loop,
+  UL 96; PBR has no seam to clamp) from SP-A-PV-W9, north to the rake, down the rake and the NW
+  corner trim. Each holder takes one 316 stainless screw with an EPDM washer into a panel flat, on
+  a butyl pad so the aluminium never touches the Galvalume, at 36" o.c. (NFPA 780 securement). It transitions to bare Cu 18" above grade (Al within 18" of earth is not
   permitted, NFPA 780 4.4.1) and lands on GE-B-ROD-1.
   - Copper is never used on the Galvalume.
   - Confirm the S-5 PVKIT's UL 2703 bonding.

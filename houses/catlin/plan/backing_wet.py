@@ -168,11 +168,11 @@ SECOND_WET_BACKING = [
                 elevation=_HIGH_ELEVATION, height=_HIGH_HEIGHT,
                 profile=_HIGH_PROFILE, material_ref="spf",
                 purpose="FURN-S-VANITY-MIRROR1/2 arch heads; sconce tops"),
-    # The WC's back and the tub-shower's end are 40" apart on W-S-SN3; one run takes both.
+    # The WC's grab course. The tub-shower's end is now W-S-SBF, ahead of this wall (2026-11-08).
     WallBacking(uid="YQESA1JG5K", tag="BK-S-SN3-GRAB", wall_ref="W-S-SN3", face="right",
                 elevation=_GRAB_ELEVATION, datum="finished-floor", height=_GRAB_HEIGHT,
                 profile=_GRAB_PROFILE, material_ref="spf",
-                purpose="FX-S-SUITEBATH-WC grab bar (CRC R328.1.1), FX-S-SUITEBATH-TUBSH end"),
+                purpose="FX-S-SUITEBATH-WC grab bar (CRC R328.1.1)"),
     WallBacking(uid="KHQD8PAMQT", tag="BK-S-SN3-MID", wall_ref="W-S-SN3", face="right",
                 start=inch(29.25), length=inch(46.5),
                 elevation=_MID_ELEVATION, height=_MID_HEIGHT,
@@ -192,6 +192,19 @@ SECOND_WET_BACKING = [
                 start=inch(7.25), length=inch(75.25), elevation=inch(72), height=inch(3.5),
                 profile="2x4", material_ref="spf", furred=True,
                 purpose="FX-S-BATH1-SH top flange, furred 1 1/2 in. to the insert back"),
+    # FX-S-SUITEBATH-TUBSH (the same Sterling 71370116, flange top 74 1/4") lands exactly on
+    # W-S-C2C's finish face and W-S-SBF's, so its flanges lie on the board, not 1 1/2" off the
+    # studs: plain fitted blocks (not furred) give the top flange wood between the studs. Same
+    # 72"-75 1/2" course. C2C's fills the bays behind the tub's 60" (y 200 1/8"..260 1/8") out
+    # to the wall's end; SBF's is its east bay only, the west one holds the tub vent riser (x=15'-5 1/2").
+    WallBacking(uid="PF63H9NWRP", tag="BK-S-C2C-TUB-NAILER", wall_ref="W-S-C2C", face="left",
+                start=inch(1.75), length=inch(75.25), elevation=inch(72), height=inch(3.5),
+                profile="2x4", material_ref="spf",
+                purpose="FX-S-SUITEBATH-TUBSH top flange, back (W-S-C2C)"),
+    WallBacking(uid="XN7KM6JA3R", tag="BK-S-SBF-TUB-NAILER", wall_ref="W-S-SBF", face="right",
+                start=inch(16.755), length=inch(11.75), elevation=inch(72), height=inch(3.5),
+                profile="2x4", material_ref="spf",
+                purpose="FX-S-SUITEBATH-TUBSH top flange, plumbing end (W-S-SBF)"),
     WallBacking(uid="HFF2YZC7BB", tag="BK-S-CH-W-TUB-NAILER", wall_ref="W-S-CH-W", face="right",
                 start=inch(0), length=inch(27.625), elevation=inch(72), height=inch(3.5),
                 profile="1.0x3.5", material_ref="spf", furred=True,

@@ -6753,14 +6753,14 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 # NEW 2026-11-10 (decision #123) — [low, high] $ EACH, split material/labour: electrode
 # hardware off the GroundingStandard (plan/grounding_types.py), keyed on the Product tag. One
 # rod and one acorn clamp per rod electrode, the Ufer clamp per concrete-encased electrode,
-# one Al-Cu transition and ceil(L/spacing) seam clips per aluminium down-lead. The IBT and the
+# one Al-Cu transition and ceil(L/spacing) screw-mounted conductor holders per aluminium down-lead. The IBT and the
 # SPDs price in [placeables] as ED-T-* devices; the galvanized electrode bar in [reinforcement].
 # ALL ESTIMATES, 2026 retail, not quoted. Rod labour is driving 8 ft (the hammer is the cost).
 "GND-ROD-58X8" = { material = { low = 20, high = 30 }, labour = { low = 25, high = 60 } }  # 5/8x8 copper-bonded
 "GND-ACORN-58" = { material = { low = 3, high = 5 }, labour = { low = 5, high = 10 } }  # UL 467 direct-burial acorn
 "GND-UFER-CLAMP" = { material = { low = 10, high = 20 }, labour = { low = 15, high = 30 } }  # listed clamp onto the rebar stub
 "GND-AL-CU-TRANS" = { material = { low = 8, high = 16 }, labour = { low = 15, high = 30 } }  # bimetallic transition connector
-"GND-CLIP-S5" = { material = { low = 2, high = 4 }, labour = { low = 1, high = 3 } }  # down-lead seam clip, each
+"GND-CLIP-S5" = { material = { low = 2, high = 4 }, labour = { low = 1, high = 3 } }  # Thompson A166 holder + 316 screw/EPDM washer + butyl pad, each; ESTIMATE (Thompson publishes no price)
 
 [grounding_conductors]
 # NEW 2026-11-10 (decision #123) — [low, high] $/LF, split material/labour, keyed

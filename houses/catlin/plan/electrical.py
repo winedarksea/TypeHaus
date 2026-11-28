@@ -1556,8 +1556,8 @@ MAIN_DATA_TRUNKS = [
                            ft(9, 2.25)),
                from_ref="ED-B-NET-PATCH", to_ref="ED-M-KITCH-AP"),
     # PORCH goes SOUTH first and turns east at y=1'-0", well below the void, then out under
-    # the balcony deck to the porch soffit — still sharing SP-SG-PORCH-ELEC with the ceiling
-    # fan's supply, one hole and two raceways, at the same exit point x=17'-6". **This costs
+    # the balcony deck to the porch soffit, exiting at x=17'-6" through the framed south wall
+    # (no deck penetration, no sleeve; see "No porch deck penetration" below). **This costs
     # nothing extra**: 33'-6" + 15'-6" + 5'-10" south-then-east-then-south is the same
     # 54'-10" of plan run as the void-crossing alternative's 15'-6" + 39'-4", so 55.33 LF
     # developed either way, at identical cost. The long x=2'-0" leg rides FS-S-WEST, which
@@ -1665,8 +1665,7 @@ MAIN_DATA_DEVICES = [
 # 725.136 forbid communications and Class 2 circuits sharing a raceway with power conductors,
 # and the model already encodes it — ``ConduitRun.service`` is one value, never a set. So
 # CD-B-DATA-SHOP runs beside the west wall, in its own pipe. The E-603 sheet's own note
-# draws the same line: shared *penetrations* are permitted, shared raceways are not, which is
-# the precedent CD-M-DATA-PORCH already sets by sharing SP-SG-PORCH-ELEC with a supply.
+# draws the same line: shared *penetrations* are permitted, shared raceways are not.
 #
 # No ``circuit=`` on any of the three: a passive jack names no circuit, which is the
 # documented pattern (takeoff/data.py) and what keeps the PoE budget honest.
