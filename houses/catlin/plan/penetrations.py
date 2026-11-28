@@ -8,10 +8,13 @@
 # wall inlet, a hydrant's own escutcheon, or the block a device stands on. Urethane bead
 # (colour tube) at the panel; neutral-cure silicone only where a boot maker requires it.
 # The engine finds every crossing and mount by geometry (resolve/wall_penetrations.py).
+# A device 5" wide or less that sits 1" inside one rigid flat, its mid-height line in a girt
+# course, mounts direct on the pan (butyl, two 316 screws into the girt): no block (#155).
 
 from typehaus import (
     BondSleeveRow,
     BootRow,
+    FlatMountRow,
     LinesetInletRow,
     Material,
     MountBlockRow,
@@ -59,6 +62,9 @@ PENETRATION_PRODUCTS = (
     Product(tag="PROD-SS316-WOOD-SCREW-6", brand="(retail)", model="#14 x 6 in. 316 SS",
             name="316 stainless wood screw, #14 x 6 in., EPDM-washered",
             source="plan/mep_vent_clamps.py: 6 in. through block, panel and ~1 in. into the 1 1/2 in. KDAT girt or rake nailer."),
+    Product(tag="PROD-SS316-SEALING-SCREW-14X2", brand="Aspen Fasteners", model="#14 x 2 in. Type A 316 SS",
+            name="316 stainless sheet-metal screw, #14 x 2 in., hex indented washer head, bonded neoprene sealing washer",
+            source="aspenfasteners.com #14 X 2\" Type A hex indented washer head with sealing washer, AISI 316 (50/box, checked 2026-11-27). Flat-mounted devices: ~1.5 in. into the girt. The washer is neoprene, not EPDM: it sits under the device ear, out of the sun."),
     Product(tag="PROD-BUTYL-TAPE-1", brand="(retail)", model="Butyl tape, 1 in.",
             name="Butyl sealant tape, 1 in. x 1/8 in. x 30 ft",
             source="Sleeve flanges to the sheathing, boot bases and block holes to the panel."),
@@ -98,6 +104,7 @@ PENETRATION_STANDARD = [
         strap_block=StrapBlockRow(depth=inch(5), max_width=inch(5), height=inch(7), batten_clearance=inch(1), rake_hem_drop=inch(0.83), rake_clearance=inch(0.25), material_ref="pvc-trim", product_ref="PROD-CELLULAR-PVC-SHEET-3-4", screw_ref="PROD-SS316-WOOD-SCREW-6", screws_per_block=2),
         lineset_inlet=LinesetInletRow(product_ref="PROD-LINESET-WALL-INLET", cover_size=inch(4), flange_width=inch(5.5), flange_height=inch(5.5), projection=inch(3), material_ref="pvc-opening-flashing"),
         mount_block=MountBlockRow(thickness=inch(0.75), margin=inch(1), material_ref="pvc-trim", product_ref="PROD-CELLULAR-PVC-SHEET-3-4"),
+        flat_mount=FlatMountRow(max_width=inch(5), edge_clearance=inch(1), screw_edge=inch(0.75), screws=2, screw_ref="PROD-SS316-SEALING-SCREW-14X2"),
         strut=StrutRow(product_ref="PROD-UNISTRUT-P1000-PG", spring_nut_ref="PROD-UNISTRUT-P1006", end_margin=inch(2), side_inset=inch(2), material_ref="strut-pregalvanized"),
         sleeve_lip=inch(0.25),
         sleeve_material_ref="pvc-opening-flashing",

@@ -201,7 +201,7 @@ def _record(model: Any, standard: Any, wall: Any, kind: str, tag: str, system: s
     authored = _authored_sleeve(model, wall, xy=_xy(origin, tangent, station), z=z)
     opening = _opening(model, wall, tag, station, z)
     mount = next((m for m in model.mount_blocks if m.wall_tag == wall.tag
-                  and m.kind in ("block", "strut")
+                  and m.kind in ("block", "flat", "strut")
                   and m.station_lo_m - 1e-6 <= station <= m.station_hi_m + 1e-6
                   and m.z0_m - 1e-6 <= z <= m.z1_m + 1e-6), None)
     fixture = _fixture_over(model, wall, station, z)

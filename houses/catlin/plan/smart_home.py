@@ -71,7 +71,7 @@ MAIN_ELEMENTS = [
     # Latch side of D-M-ENTRY, x=10'-3 1/2" in W-M-N2's first bay, between the strike blocks.
     ElectricalDevice(uid="ZRZEAYW6SG", tag="ED-M-DOORBELL", kind=DeviceKind.DATA_OUTLET,
                      type_ref="ED-T-DOORBELL-POE",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(45.5)),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(47)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-M-N2", face="right", distance_from_start=inch(92.5),
                          normal_gap=inch(0), rotation_offset=deg(0)))),

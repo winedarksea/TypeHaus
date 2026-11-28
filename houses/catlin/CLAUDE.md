@@ -2767,6 +2767,13 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 
 ### Sunken garden court
 
+- **The court's way out is a ladder (2026-11-27, `plan/court_ladder.py`, `notes/court_escape_ladder.md`).**
+  D-B-SUNKEN opens 75" below grade into a walled court, so `code.R310_1_storey_egress` follows the
+  door to a route (`checks/.../egress_route.py`): `LAD-SG-ESCAPE` (Tri-Arc WLA6SS on W-SG-E1's face,
+  9 rungs at 12", 18" wide) side-steps north through `RL-SG-PORCH-GATE` (`Railing.gate`) onto
+  FS-SG-PORCH, then ST-SG-PORCH to grade. Move the ladder off the plank corner or drop the gate
+  and the check FAILs. Climbing holds alone do not meet R310.3.2.1's 12" rung rule.
+
 - **Every interior face of the court is washed white, and that is a daylighting device.** An
   untinted white mineral silicate wash (`silicate-wash-white` in `library/materials/`, LRV 90)
   on: the five court walls' **court face**, full height (`SUNKEN_GARDEN_WALL` layer 0); all six

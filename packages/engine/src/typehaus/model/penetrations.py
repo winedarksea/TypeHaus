@@ -92,6 +92,22 @@ class MountBlockRow(HausModel):
     product_ref: str | None = None
 
 
+class FlatMountRow(HausModel):
+    """A device set direct on one rigid flat (no block): butyl under its back, ``screws``
+    through the pan into a girt, one at each side of the body on its mid-height line.
+
+    The cover must sit ``edge_clearance`` inside the flat and be no wider than ``max_width``
+    (wider enclosures take the block); the girt course must hold the screw line
+    ``screw_edge`` clear of its edges.
+    """
+
+    max_width: Length = inch(5)
+    edge_clearance: Length = inch(1)
+    screw_edge: Length = inch(0.75)
+    screws: int = 2
+    screw_ref: str | None = None
+
+
 class StrutRow(HausModel):
     """Vertical strut pair a heavy enclosure (the meter-main) is hung on."""
 
@@ -114,6 +130,8 @@ class PenetrationStandard(Element):
     strap_block: StrapBlockRow | None = None
     lineset_inlet: LinesetInletRow | None = None
     mount_block: MountBlockRow | None = None
+    #: A device that fits one flat and fastens into a girt skips the block (needs a block row).
+    flat_mount: FlatMountRow | None = None
     strut: StrutRow | None = None
     #: The sleeve's lip proud of the panel (all a crew sees of it).
     sleeve_lip: Length = inch(0.25)
@@ -152,6 +170,7 @@ class PenetrationStandard(Element):
 for _name, _obj in (("PenetrationSleeveRow", PenetrationSleeveRow),
                     ("BondSleeveRow", BondSleeveRow), ("BootRow", BootRow),
                     ("StrapBlockRow", StrapBlockRow), ("LinesetInletRow", LinesetInletRow),
-                    ("MountBlockRow", MountBlockRow), ("StrutRow", StrutRow),
+                    ("MountBlockRow", MountBlockRow), ("FlatMountRow", FlatMountRow),
+                    ("StrutRow", StrutRow),
                     ("PenetrationStandard", PenetrationStandard)):
     register_constructor(_name, _obj)

@@ -2027,8 +2027,14 @@ _BASE_HOLE_HALF_IN = (RAILING_EXT_ALUMINUM_SURFACE.surface_mount.display_hole_sp
 PORCH_GUARD_INSET_IN = _BASE_HOLE_HALF_IN + 0.75  # plus half a 1 1/2" edge member
 PORCH_GUARD_S_Y = _y_ax_front + PORCH_GUARD_INSET_IN / 12.0
 PORCH_GUARD_S_X = (_x_in_w + PORCH_GUARD_INSET_IN / 12.0, _x_in_e - PORCH_GUARD_INSET_IN / 12.0)
-_PORCH_GUARD_S_STATIONS = [x for x, _y in _guard_post_stations(
-    [(PORCH_GUARD_S_X[0], PORCH_GUARD_S_Y), (PORCH_GUARD_S_X[1], PORCH_GUARD_S_Y)], 60.0 / 12.0)]
+# The south leg is two railings since the court ladder's exit gate (2026-11-27): RL-SG-PORCH
+# to the gate's hinge post, then RL-SG-PORCH-GATE (36", ending at the east post). They share
+# the post at PORCH_GUARD_GATE_X0, so the block stations are the union of both legs'.
+PORCH_GUARD_GATE_X0 = PORCH_GUARD_S_X[1] - 3.0
+_PORCH_GUARD_S_STATIONS = sorted({round(x, 6) for ends in (
+    (PORCH_GUARD_S_X[0], PORCH_GUARD_GATE_X0), (PORCH_GUARD_GATE_X0, PORCH_GUARD_S_X[1]))
+    for x, _y in _guard_post_stations(
+        [(ends[0], PORCH_GUARD_S_Y), (ends[1], PORCH_GUARD_S_Y)], 60.0 / 12.0)})
 # One block under each inner screw column; the ledgers (1 1/2" in from each end) carry the rest.
 _PORCH_GUARD_BLOCK_XS = [
     x + side * _BASE_HOLE_HALF_IN / 12.0 for x in _PORCH_GUARD_S_STATIONS for side in (-1, 1)

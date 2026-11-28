@@ -2,9 +2,10 @@
 
 Sleeves, boots and inlets each by product; blocks by the SF of 3/4" sheet they use (a strap
 block is laminated, so its face times its plies); strut by the foot and its spring nuts each;
-the panel urethane by the tube, butyl by the roll and annulus foam by the can, converted on
-the standard's own figures. Priced keyed on ``product``; a strut row says ``unit = "LF"``, a
-block row ``unit = "SF"``. The lineset cover stays in [linesets]' allowance.
+a flat-mounted device by its screws (its butyl ring joins the roll); the panel urethane by the
+tube, butyl by the roll and annulus foam by the can, converted on the standard's own figures.
+Priced keyed on ``product``; a strut row says ``unit = "LF"``, a block row ``unit = "SF"``.
+The lineset cover stays in [linesets]' allowance.
 """
 
 from __future__ import annotations
@@ -61,6 +62,11 @@ def wall_penetration_takeoff(model: Any) -> list[dict[str, Any]]:
             add("strut", mount.product, tag, len(mount.channels), mount.strut_lf_m)
             add("spring nut", standard.strut.spring_nut_ref, tag,
                 2 * len(mount.channels) * len(mount.holds))
+            continue
+        if mount.kind == "flat":  # butyl ring under the body, a screw each side
+            row = standard.flat_mount
+            add("flat-mount screw", row.screw_ref, tag, row.screws)
+            butyl += 2 * (mount.width_m + mount.z1_m - mount.z0_m)
             continue
         height = (mount.z1_m - mount.z0_m if mount.top_z is None
                   else (sum(mount.top_z) / 2 - mount.z0_m))

@@ -87,16 +87,16 @@ SECOND_LIGHTING = [
     # outdoor fitting: the exterior classifiers place them geometrically.
     ElectricalDevice(uid="VA4Z7YCQDQ", tag="ED-S-BALCONY-RC1", kind=DeviceKind.RECEPTACLE_GFCI,
                      type_ref="ED-T-LEV-GFCI-WR", circuit="CKT-RC-SECOND",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(18)),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(22.5)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-S-S2", face="right", distance_from_start=inch(82),
+                         wall_ref="W-S-S2", face="right", distance_from_start=inch(78),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="9MMKJPKNEW", tag="ED-S-BALCONY-LT", kind=DeviceKind.LIGHT,
                      type_ref="ED-T-LT-SCONCE-EXT", circuit="CKT-LT-UPPER",
                      controlled_by=("ED-S-STUDY2-SW-BALCONY",),
-                     mount=Mount(kind=MountKind.WALL, elevation=ft(7)),
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(6)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-S-S2", face="right", distance_from_start=inch(83),
+                         wall_ref="W-S-S2", face="right", distance_from_start=inch(78),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
     ElectricalDevice(uid="YJJ1BVX3AZ", tag="ED-S-STUDY2-SW-BALCONY", kind=DeviceKind.SWITCH,
                      type_ref="ED-T-LEV-SW1", circuit="CKT-LT-UPPER", room="RM-S-STUDY2",

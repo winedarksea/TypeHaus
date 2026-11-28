@@ -555,13 +555,16 @@ ATTIC_DEVICES = [
 #   * Fed on CKT-RC-ATTIC (15 A AFCI, slot 47) by NM off ED-A-POCKET-RC1's run in RM-A-POCKET,
 #     through a short sealed nipple behind the box: ccSPF and sheathing foamed, the panel
 #     hole under the block. Not modelled, like every NM branch.
-# Mount elevation is storey-relative (attic datum 20'): 24 1/4" is the 3" box's bottom.
+# Mount elevation is storey-relative (attic datum 20'). The radon outlet (3.6" x 6.7" cover)
+# is 5" wide or less, so it stands direct on a BBD75 flat, no block (#155): station 18" is the
+# flat's centre, and 22 1/2" puts the cover's mid-line in the 22'-0" girt course for its two
+# screws. (The block paragraph above is the PV box's, which straddles a batten and stays one.)
 NEMA_BOX = [
     ElectricalDevice(uid="CEJ901AAAA", tag="ED-A-RADON-RC", kind=DeviceKind.RECEPTACLE_GFCI,
                      type_ref="ED-T-LEV-GFCI-WR-15", circuit="CKT-RC-ATTIC",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(24.25)),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(22.5)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-A-N2", face="right", distance_from_start=inch(14),
+                         wall_ref="W-A-N2", face="right", distance_from_start=inch(18),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
 ]
 # No clamp: the block's two gasketed screws per enclosure are inside the field-grid count

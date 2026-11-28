@@ -35,6 +35,7 @@ from typehaus.model.enums import (
 from typehaus.model.exterior_door import DoorCatalogDimensions
 from typehaus.model.fascia_mount import FasciaMountSpec
 from typehaus.model.furniture_cut import FurnitureCut
+from typehaus.model.ladder import LadderSpec
 from typehaus.model.led import LedController, LedStrip
 from typehaus.model.linesets import RefrigerantLimits
 from typehaus.model.opening_size import OpeningSize
@@ -513,6 +514,8 @@ class FurnitureType(HausModel):
     built_in_bench: BuiltInBenchSpec | None = None
     # A curtain track: the envelope is the CLOSED curtain, the model draws it open.
     curtain_track: CurtainTrackSpec | None = None
+    # A permanently affixed escape ladder (model/ladder.py); graded by R310.1's well route.
+    ladder: LadderSpec | None = None
     # The catalog ``Material`` its generic ``wood`` parts are made of (a shelf, a side, every
     # board of a built-in, or a sauna symbol's seat/supports). Colour and 3D texture follow
     # that material; ``wood-dark`` backs keep their shadow tone. ``None`` draws generic wood.
@@ -1090,8 +1093,10 @@ class ElectricalDeviceType(FurnitureType, DeviceElectricalFacts):
     # A blank-face (deadfront) GFCI: protects what its load side feeds (`gfci_ref`) and is
     # no receptacle, so no 210.52 rule counts it.
     deadfront: bool = False
-    # On a metal wall's cladding face (decision #142): a derived cellular-PVC block, or a
-    # strut pair for a heavy enclosure (the meter-main and what rides it).
+    # On a metal wall's cladding face (decision #142): the derived mount. "block" is a
+    # cellular-PVC block, or direct on one rigid flat when the cover fits it and its screw
+    # line lands in a girt (#155, ``FlatMountRow``); "strut" is a pair for a heavy enclosure
+    # (the meter-main and what rides it).
     exterior_mount: Literal["block", "strut"] = "block"
     # Connected load in volt-amps; summed per circuit by the panel-schedule takeoff.
     load_va: float | None = None

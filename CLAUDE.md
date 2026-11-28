@@ -160,7 +160,8 @@ a release or for exhaustive local verification.
   #142): `resolve/wall_penetrations.py` finds every run/bond crossing a profiled-metal wall
   (sleeve at the foam plane, then a boot, the lineset inlet, a hydrant escutcheon or the block)
   into `ResolvedModel.wall_penetrations`; an exterior device stands off on a derived block or
-  strut pair (`ElectricalDeviceType.exterior_mount`, `resolve/mount_blocks.py`, `.mount_blocks`).
+  strut pair (`ElectricalDeviceType.exterior_mount`, `resolve/mount_blocks.py`, `.mount_blocks`);
+  a small device on one rigid flat over a girt sits direct on the pan (`FlatMountRow`, #155).
   Flats come from `resolve/panel_flats.py`. Graded by `integrity.wall_penetration_closure`,
   billed in `[wall_penetrations]`. Never author a `normal_gap` for a metal-wall device.
 - **A shower's door is `FixtureType.shower_enclosure`** (decision #152, `model/shower_enclosure.py`): `placeable_symbols/_shower_door.py` holds the one leaf-sector function (glyph, `resolve/shower_enclosures.py` record, BATH2's `door_swing_outline`); the record's `free_angle_degrees` (room face or body below the head) is graded by `code.MN_4714_0408_shower_door` against UPC 408.5's 22" opening, never IRC P2708.1 (struck in MN). A shower with no spec is UNKNOWN, a curtain N/A; the zone in front is `advisory.shower_door_swing`, since UPC 402.5 names only WCs and bidets.

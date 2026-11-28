@@ -1070,6 +1070,10 @@ class Railing(Element):
     post_material: str | None = None
     rail_material: str | None = None
     infill_material: str | None = None
+    # A self-closing leaf in a guard line, drawn closed so R312 still reads a continuous guard.
+    # It opens toward the surface it serves, so a push from the far side needs no tool or key
+    # (R310.4); a ladder's exit through a guard must land on one (code.R310_1_storey_egress).
+    gate: bool = False
 
 
 @register_element

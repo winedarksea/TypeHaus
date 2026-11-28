@@ -26,17 +26,11 @@ Note that many of the pinned decisions in the code base here aren't as fixed as 
 - **Sheet layout (decision #146).** D-M-ENTRY's flat head has no cripples above it. Gypsum is
   not laid sheet by sheet.
 
-- **Partition-top crossings read the node-to-node axis, not the top plate** (`resolve/partition_fasteners.classify`):
-  W-M-MECH-E is billed a crossing of FS-S-WEST's north LSL rim its plate never reaches (109, one
-  phantom). Clipping to the plate fixes it but reclassifies ~25 walls; take it as its own re-pin.
 
 ### Left out of decision #142 (metal-wall penetrations)
 
 - **The utility lateral** ends 11'-9" south of the meter-main with no riser modelled.
-- **`GND-CLIP-S5`** is a seam clamp, but PBR has no seam to close on.
 - **The SER feeders** have no element, so the meter's nipples and their boots are not derived.
-- **HP1's outdoor unit** overlaps WIN-M-KITCH by 2.5" in plan.
-- **`CD-M-DATA-PORCH`** cites a deleted `SP-SG-PORCH-ELEC`.
 - **Through-panel strap fasteners** (strap to block, block-to-device) stay in the field-grid count; only the strap block's two 6" through-screws bill in `[wall_penetrations]`.
 - **Dektite #2** has no row: no published US listing for it was found (2026-11-20), so a pipe
   between #1 and #3 takes the #3.
@@ -214,17 +208,24 @@ branch overlaps, ERV trunk/flex/ERV-R-BATH refusals, wall-hung port stub, WC arm
 - Should the A35Z onto concrete from the joists actually be HGAM10 or something else?
 - The flashing plan had failures (I see PVC flashing over the linesets for a long ways not just through the wall, perhaps it meant pipe insulation?)
 - Sump discharge should be through concrete?
-- May have gone a bit too far with the cellular PVC backing for the siding mounted electrical items. Receptacles and lights shouldn't normally need that.
-- The furring/orientation/shelf placement around FX-S-SUITEBATH-TUBSH
+- FX-S-SUITEBATH-TUBSH: flange nailers done 2026-11-27. Open: (a) the drain/vent tee is in the
+  floor bay 3.7" under W-S-SBF's plate, so FURN-S-SUITEBATH-AP (SN3 hall face, x=200") reaches
+  neither it nor the riser; access the trap from the main-floor ceiling (BATH1's pattern), or move
+  the panel + BK-S-SN3-AP to the x 177..191 bay for the riser only? (b) shelf at 84" vs the 74 1/4"
+  flange: owner.
 
 - If in st paul, and if the north side is the street, then the current garage is not set back far enough. Also if north is the "street" side, then the north street façade has about 6% openings against a 15% requirement.
-- The basement escape door leads into a court with no route up to the yard.
-- The ERV outdoor-air intake is only about 7.1 feet from the detached garage. Minnesota specifies 10 feet to another building on the same lot.
-- The sunken court’s claimed flood reserve uses the wrong storm depth. The design uses 4.3 inches for a 100-year, 24-hour storm. Saint Paul lists 7.4 inches. On the design’s 442 ft² failed-drain catchment, that produces about 273 ft³ against 267 ft³ below the door threshold. The open court alone contributes only about 171 ft³. The design decision is where balcony water goes if its gutter backs up.
+- **ERV intake 7.0 ft from the garage wall** (Minn. R. 1346.0401, IMC 401.4 item A: 10 ft to lot lines and
+  buildings on the lot; 1322 R403.5.11 sends dwelling intakes there). Owner: no roof intake, ignore lot
+  lines for now, garage wall not canopy. The north face cannot reach 10 ft; the whole west face can, but
+  the OA duct cannot reach the ERV through the packed basement ceiling (best drop 0.04' short of
+  CD-B-PLAY-SPARE); the intake/exhaust swap needs a header redesign and passes only in 3-D. The graded
+  check (plan distance, enclosed buildings only, lot lines split out as `mep.erv_terminal_lot_lines`) is
+  ready in out/lane-b/erv_terminals.adjusted.py, unapplied (it FAILs catlin today). Owner to pick.
+- Court storm reserve (owner, 2026-11-27): not pursued. The 7.4" St Paul 100-yr/24-hr depth only overruns the threshold reserve (273 vs 267 ft³) when a blocked balcony gutter also dumps into the court: two edge cases at once.
 - The laundry pocket door omits the openings the selected LG WashTower requires. The schedule specifies a flush hollow-core slab. LG’s closet-installation detail for this ventless model calls for 48 in² of ventilation opening high and 24 in² low. (Note we probably don't need to detail this, the solid core is fine. The ERV system + undercut should maintain airflow)
 - The north hall linen closet as possible laundry closet (plumbing routing might be awkward)
 
-- Can the water heater be exposed in the basement hallway, per code
 
 # Project Management
 

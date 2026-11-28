@@ -2383,6 +2383,10 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 "electric" = { material = { low = 2.3, high = 3.3 }, labour = { low = 1.5, high = 3.25 } }
 
 [placeables]
+# Court escape ladder (Tri-Arc WLA6SS, 10 steps): retail range read 2026-11-27 (PartsSource
+# $351.72-398.93; Zoro listing ~$241 seen in search, its page 403s). Wall anchors and the
+# gate's hardware are not priced: gate leaf + self-closing hinges TBD (no matching product read).
+"FT-COURT-LADDER-WLA6SS" = { low = 241, high = 399 }
 # Plant reservoir 2026-11-11: manual fill, itemized hardware. USD before tax/shipping/labour.
 # Prices are provisional unless identified in notes/plant_reservoir_procurement.csv.
 # Rack and sensor parents are zero to prevent double billing their separately counted parts.
@@ -6615,6 +6619,8 @@ PROD-CLOSER-HOLD-OPEN = { low = 35, high = 90 }  # estimate
 "PROD-UNISTRUT-P1000-PG" = { low = 4.25, high = 11.40, unit = "LF" }
 "PROD-UNISTRUT-P1006" = { low = 0.60, high = 1.50 }
 "PROD-SS316-WOOD-SCREW-6" = { low = 1.00, high = 2.50 }
+# Flat-mounted devices (decision #155): Aspen Fasteners #14 x 2" Type A 316, $247.67 per 50 (2026-11-27), 20% off at 10+ boxes.
+"PROD-SS316-SEALING-SCREW-14X2" = { low = 3.95, high = 5.00 }
 "PROD-URETHANE-SEALANT" = { low = 9.00, high = 16.00 }
 "PROD-BUTYL-TAPE-1" = { low = 8.00, high = 18.00 }
 "PROD-AIR-WALL-SEAL-FOAM" = { low = 8.00, high = 15.00 }

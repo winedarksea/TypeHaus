@@ -23,6 +23,7 @@ from typehaus.checks.code.mn_residential._common import (
     _wall_is_exterior,
 )
 from typehaus.checks.code.mn_residential.egress_door import designated_egress_doors
+from typehaus.checks.code.mn_residential.egress_route import door_well_verdict
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding
 from typehaus.model.enums import SLEEPING_OCCUPANCIES
@@ -181,22 +182,41 @@ def basement_storey_egress(ctx: CheckContext) -> list[Finding]:
         # is the axis the storey key stopped carrying (→ PlanModel.level_of).
         here = set(ctx.plan.level_of(storey.tag))
         found = None
+        door_notes: list[tuple[str, str]] = []
         for opening in ctx.model.openings:
             wall = ctx.model.wall(opening.host_wall)
             if wall is None or wall.storey not in here:
                 continue
             if not _wall_is_exterior(ctx, wall, rooms_by_storey):
                 continue
-            # An exterior door out of the storey is an escape route by itself; R310.1 asks
-            # for an opening "opening directly into a public way, yard or court".
-            if opening.is_door or _meets_r310_2_1(
-                    opening, grade_floor=True, window_type=_window_type(ctx, opening)):
+            if not opening.is_door:
+                if _meets_r310_2_1(opening, grade_floor=True,
+                                   window_type=_window_type(ctx, opening)):
+                    found = opening
+                    break
+                continue
+            # An exterior door opens onto a floor, and R310.1 asks that floor to reach "a
+            # public way, yard or court": a door into a deep walled court needs a route out.
+            result, text = door_well_verdict(ctx, opening, wall, rooms_by_storey)
+            if result == "pass":
                 found = opening
+                door_notes = [("pass", text)]
                 break
+            door_notes.append((result, text))
         if found is not None:
             kind = "door" if found.is_door else "opening"
+            extra = f"; {door_notes[0][1]}" if door_notes and found.is_door else ""
             out.append(_pass(cid, f"basement storey {storey.tag} escapes through exterior "
-                             f"{kind} {found.tag}", code))
+                             f"{kind} {found.tag}{extra}", code))
+        elif door_notes:
+            joined = "; ".join(text for _result, text in door_notes)
+            if any(result == "fail" for result, _text in door_notes):
+                out.append(_fail(cid, f"basement storey {storey.tag}: no exterior door reaches "
+                                 f"grade: {joined}", (storey.tag, *sorted(room_tags)),
+                                 "R310.3.2.1"))
+            else:
+                out.append(_unknown(cid, f"basement storey {storey.tag}: {joined}",
+                                    (storey.tag,), "R310.3.2.1"))
         else:
             out.append(_fail(cid, f"basement storey {storey.tag} holds habitable space "
                              f"({', '.join(sorted(room_tags))}) with no exterior escape "

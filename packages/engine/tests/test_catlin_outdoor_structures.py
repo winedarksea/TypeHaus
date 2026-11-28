@@ -280,8 +280,10 @@ def test_the_porch_deck_is_unbroken_and_blocks_only_its_guard_posts(catlin_model
     blocks = [m for m in floor.members if m.category == "blocking"]
     from typehaus.resolve.railings.guard_line import guard_post_stations
 
-    guard = catlin_model.plan.by_tag("RL-SG-PORCH")
-    posts = [x for x, _y in guard_post_stations(catlin_model.plan.library, guard)]
+    # The south leg is RL-SG-PORCH plus its gate leaf (2026-11-27), sharing one post.
+    posts = [x for tag in ("RL-SG-PORCH", "RL-SG-PORCH-GATE")
+             for x, _y in guard_post_stations(catlin_model.plan.library,
+                                              catlin_model.plan.by_tag(tag))]
     columns = [x + side * 1.875 * INCH for x in posts for side in (-1, 1)]
     assert len(blocks) == 8
     for block in blocks:

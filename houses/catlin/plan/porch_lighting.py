@@ -45,8 +45,8 @@ PORCH_LIGHTING = [
     ElectricalDevice(uid="QTM001GAAA", tag="ED-M-STAIR-LT", kind=DeviceKind.LIGHT,
                      type_ref="ED-T-LT-SCONCE-EXT",
                      circuit="CKT-LT-MAIN", controlled_by=("ED-M-PORCH-SW",),
-                     mount=Mount(kind=MountKind.WALL, elevation=ft(7)),
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(6)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-S2", face="right", distance_from_start=inch(83),
+                         wall_ref="W-M-S2", face="right", distance_from_start=inch(78),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
 ]

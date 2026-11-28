@@ -20,6 +20,7 @@ import math
 
 from params.sunken_garden import (
     PILLARS,
+    PORCH_GUARD_GATE_X0,
     PORCH_GUARD_HEAD_X_FT,
     PORCH_GUARD_S_X,
     PORCH_GUARD_S_Y,
@@ -45,6 +46,7 @@ _HOLE_HALF_IN = RAILING_EXT_ALUMINUM_SURFACE.surface_mount.display_hole_spacing.
 #: The house-end post, on the 1/8" south of where its anchor row is 3" off the wall's end.
 _HOUSE_POST_Y_FT = math.floor((WALL_N_END_Y_FT * 12.0 - 3.0 - _HOLE_HALF_IN) * 8.0) / 8.0 / 12.0
 _EAST_X_FT = PORCH_GUARD_HEAD_X_FT
+_GATE_X0 = PORCH_GUARD_GATE_X0  # the gate leaf is 36" wide, ending at the east post
 _WALL_TOP = ft(0)
 
 
@@ -66,7 +68,7 @@ def _stations(points) -> int:
 
 
 def _guard(uid, tag, points, substrate, *, start=None, end=None, base=PORCH_WALKING_SURFACE,
-           bearing=_WALL_TOP):
+           bearing=_WALL_TOP, gate=False):
     mounts = tuple(SurfacePostMount(elevation=bearing, substrate=substrate)
                    for _ in range(_stations(points)))
     return Railing(uid=uid, tag=tag, type_ref="RAILING-EXT-ALUMINUM-SURFACE",
@@ -75,7 +77,8 @@ def _guard(uid, tag, points, substrate, *, start=None, end=None, base=PORCH_WALK
                    base_elevation=base, post_spacing=inch(_SPACING_FT * 12.0),
                    post_size="3x3", rail_count=2, mount="surface",
                    assembly="RAILING_DARK_METAL", start_post_ref=start, end_post_ref=end,
-                   surface_post_mounts=mounts, infill="balusters", baluster_spacing=inch(4))
+                   surface_post_mounts=mounts, infill="balusters", baluster_spacing=inch(4),
+                   gate=gate)
 
 
 _W, _E = WALL_W_AXIS_X_FT, _EAST_X_FT
@@ -89,8 +92,12 @@ PORCH_GUARDS = [
            "concrete", start="PT-SG-BR1", end="PT-SG-BF1"),
     # The south leg, on the plank: posts 2 3/4" clear of BF1/BF3, under R312.1.3's 4".
     _guard("SGRA02AAAA", "RL-SG-PORCH",
-           [(PORCH_GUARD_S_X[0], PORCH_GUARD_S_Y), (PORCH_GUARD_S_X[1], PORCH_GUARD_S_Y)],
+           [(PORCH_GUARD_S_X[0], PORCH_GUARD_S_Y), (_GATE_X0, PORCH_GUARD_S_Y)],
            "wood", bearing=PORCH_WALKING_SURFACE),
+    # The escape ladder's exit (LAD-SG-ESCAPE): a 36" self-closing leaf swinging onto the plank.
+    _guard("31R1ETB0WV", "RL-SG-PORCH-GATE",
+           [(_GATE_X0, PORCH_GUARD_S_Y), (PORCH_GUARD_S_X[1], PORCH_GUARD_S_Y)],
+           "wood", start="RL-SG-PORCH", bearing=PORCH_WALKING_SURFACE, gate=True),
     _guard("CGG2R40NMP", "RL-SG-PORCH-SE",
            [(_E, STAIR_GUARD_Y_FT[0]), (_E, _face_y("PT-SG-BF3", _E, north=True))],
            "concrete", end="PT-SG-BF3"),

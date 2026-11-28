@@ -48,19 +48,20 @@ STAIR_ATTIC = [
 
 # No room=: an exterior placeable names none (the wet-location checks rely on it).
 EXTERIOR_MAIN = [
-    # Front: north face of W-M-N2 on the entry bridge side of D-M-ENTRY, 18" up.
+    # Front: north face of W-M-N2 on the entry bridge side of D-M-ENTRY. 22 1/2" up puts the
+    # box's mid-line in the 24" girt course; the BBD75 flat is its centre (#155: no block).
     ElectricalDevice(uid="1XK99YN2KR", tag="ED-M-FRONT-RC1", kind=DeviceKind.RECEPTACLE_GFCI,
                      type_ref="ED-T-LEV-GFCI-WR", circuit="CKT-RC-MAIN",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(18)),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(22.5)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-M-N2", face="right", distance_from_start=inch(18),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
-    # Rear: south face of W-M-S2 between D-M-PORCH and WIN-M-LIV-S2, x=24'-10": its derived
-    # block clears the door's jamb trim (decision #142).
+    # Rear: south face of W-M-S2 between D-M-PORCH and WIN-M-LIV-S2, x=24'-6", on the flat's
+    # centre and the same girt course as the front one (#155).
     ElectricalDevice(uid="7QVNCGSY39", tag="ED-M-REAR-RC1", kind=DeviceKind.RECEPTACLE_GFCI,
                      type_ref="ED-T-LEV-GFCI-WR", circuit="CKT-RC-MAIN",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(18)),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(22.5)),
                      location=Location(attachment=WallAttachment(
-                         wall_ref="W-M-S2", face="right", distance_from_start=inch(82),
+                         wall_ref="W-M-S2", face="right", distance_from_start=inch(78),
                          normal_gap=inch(0), rotation_offset=deg(0)))),
 ]

@@ -9,6 +9,7 @@ Reads ``model.wall_penetrations`` / ``mount_blocks`` (``resolve/wall_penetration
 * a sleeve clears the girts (``STRAPPING_CATEGORY`` members);
 * a strap block sits within one flat, ``batten_clearance`` off its edges, no wider than its
   row;
+* a direct-on-flat device sits on one rigid flat and its screw line lands in a girt;
 * a block or strut clears the base, band, corner and opening trim.
 """
 
@@ -166,11 +167,35 @@ def _mount_findings(model: Any, standard: Any, mount: Any,
             out.append(failed(_CID, f"{mount.tag}: not on one flat {_in(clear)} off its "
                                     "battens", tags=tags,
                               fix="narrow the block or move the strap onto a flat"))
+    elif mount.kind == "flat":
+        out.extend(_flat_findings(model, standard, mount, flats, tags))
     trim = _trim_hit(model, mount)
     if trim is not None:
         out.append(failed(_CID, f"{mount.tag}: its {mount.kind} runs into trim {trim}",
                           tags=(*tags, trim), fix="move the device clear of the trim"))
     return out
+
+
+def _flat_findings(model: Any, standard: Any, mount: Any, flats: _FlatCache,
+                   tags: tuple[str, ...]) -> list[Finding]:
+    """A direct-on-flat device: one rigid flat clear of its edges, screws in a girt (#155)."""
+    from typehaus.resolve.mount_blocks import girt_holds
+    from typehaus.resolve.panel_flats import flat_holding
+
+    row, wall = standard.flat_mount, model.wall(mount.wall_tag)
+    if row is None or wall is None:
+        return [failed(_CID, f"{mount.tag}: a flat mount with no FlatMountRow", tags=tags)]
+    lo, hi, clear = mount.station_lo_m, mount.station_hi_m, row.edge_clearance.meters
+    if hi - lo > row.max_width.meters + _TOL_M:
+        return [failed(_CID, f"{mount.tag}: {_in(hi - lo)} wide, over the flat row's "
+                             f"{_in(row.max_width.meters)}", tags=tags, fix="give it a block")]
+    if flat_holding(flats.get(mount.wall_tag, False), lo - clear, hi + clear) is None:
+        return [failed(_CID, f"{mount.tag}: not on one rigid flat {_in(clear)} off its ribs",
+                       tags=tags, fix="move the device onto a flat's centre")]
+    if not girt_holds(wall, lo, hi, (mount.z0_m + mount.z1_m) / 2, row.screw_edge.meters):
+        return [failed(_CID, f"{mount.tag}: its screw line misses a girt course", tags=tags,
+                       fix="set its height so the mid-line lands in a girt")]
+    return []
 
 
 def _trim_hit(model: Any, mount: Any) -> str | None:

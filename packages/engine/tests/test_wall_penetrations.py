@@ -53,3 +53,34 @@ def test_the_derived_block_stands_the_device_off(catlin_model_ro):
     back = min((x - block.origin[0]) * block.normal[0] + (y - block.origin[1]) * block.normal[1]
                for x, y in obj.footprint)
     assert back == pytest.approx(block.depth_m, abs=1e-4)
+
+
+def test_a_narrow_device_on_a_flat_with_its_screws_in_a_girt_takes_no_block(catlin_model_ro):
+    kinds = {t: m.kind for m in catlin_model_ro.mount_blocks if m.kind != "strap_block"
+             for t in m.holds}
+    flat = {"ED-M-FRONT-RC1", "ED-M-REAR-RC1", "ED-A-RADON-RC", "ED-M-ENTRY-LT",
+            "ED-M-STAIR-LT", "ED-S-BALCONY-LT", "ED-S-BALCONY-RC1", "ED-M-DOORBELL"}
+    assert {t for t, k in kinds.items() if k == "flat"} == flat
+    # Too wide, on a PBR pan's narrow flats, or on corrugated: the block stays.
+    assert {"ED-M-HP1-DISC", "ED-A-PV-JB", "ED-M-IBT", "ED-G-EXT-LT-E"} <= {
+        t for t, k in kinds.items() if k == "block"}
+    mount = next(m for m in catlin_model_ro.mount_blocks if "ED-M-FRONT-RC1" in m.holds)
+    obj = next(o for o in catlin_model_ro.canvas_objects if o.tag == "ED-M-FRONT-RC1")
+    back = min((x - mount.origin[0]) * mount.normal[0] + (y - mount.origin[1]) * mount.normal[1]
+               for x, y in obj.footprint)
+    assert back == pytest.approx(-(0.75 - 0.0239) * _IN, abs=2e-4)  # on the pan, behind the crowns
+
+
+def test_a_flat_mount_off_its_flat_or_girt_fails(catlin_model_ro):
+    from typehaus.checks.integrity.wall_penetration_closure import _FlatCache, _mount_findings
+    from typehaus.resolve.mount_blocks import penetration_standard
+
+    standard = penetration_standard(catlin_model_ro.plan)
+    flats = _FlatCache(catlin_model_ro, standard.bridgeable_rib_height.meters)
+    mount = next(m for m in catlin_model_ro.mount_blocks if "ED-M-FRONT-RC1" in m.holds)
+    assert not _mount_findings(catlin_model_ro, standard, mount, flats)
+    on_batten = replace(mount, station_lo_m=mount.station_lo_m + 5 * _IN,
+                        station_hi_m=mount.station_hi_m + 5 * _IN)
+    assert "rigid flat" in _mount_findings(catlin_model_ro, standard, on_batten, flats)[0].message
+    low = replace(mount, z0_m=mount.z0_m - 10 * _IN, z1_m=mount.z1_m - 10 * _IN)
+    assert "girt" in _mount_findings(catlin_model_ro, standard, low, flats)[0].message

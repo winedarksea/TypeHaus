@@ -254,16 +254,16 @@ def test_the_porch_stair_has_its_R303_8_top_landing_light(catlin_model):
     assert light.room is None
     assert light.controlled_by == ("ED-M-PORCH-SW",)
     x_ft, y_ft = (c / 0.3048 for c in placed_xy(catlin_model, light))
-    # 4" GRÖNSPRÖT body, footprint CENTRED, back on its derived 3/4" block (#142) on
-    # W-M-S2's cladding.
-    assert y_ft == pytest.approx(-9.5 / 12.0)
-    assert light.mount.elevation.inches == pytest.approx(84.0)
+    # 4" GRÖNSPRÖT body, footprint CENTRED, its back on the pan between the battens (#155):
+    # 3/4" block off the crowns less the pan's 0.726" recess, behind them.
+    assert y_ft == pytest.approx((-9.5 + 0.75 + 0.726) / 12.0, abs=2e-4)
+    assert light.mount.elevation.inches == pytest.approx(72.0)  # mid-line in a girt course
     # Clear of both openings' ROs, and on the half of the lane that is over the porch.
     assert 23.0 + 10.0 / 12.0 < x_ft < 27.5
 
     deck = next(f for f in catlin_model.floors if f.tag == "FS-SG-PORCH")
     outline = Polygon([p.xy_m if hasattr(p, "xy_m") else p for p in deck.deck_outline])
-    assert outline.distance(Point(*placed_xy(catlin_model, light))) < 0.0254, \
+    assert outline.distance(Point(*placed_xy(catlin_model, light))) < 2 * 0.0254, \
         "the fitting must stand at the landing R303.8 names, not merely near the flight"
 
 

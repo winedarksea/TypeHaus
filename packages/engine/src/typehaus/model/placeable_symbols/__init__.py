@@ -40,6 +40,7 @@ from typehaus.model.placeable_symbols._ceramic_fan_heater import ceramic_fan_hea
 from typehaus.model.placeable_symbols._eg4_storage import eg4_12kpv, eg4_wallmount_indoor
 from typehaus.model.placeable_symbols._erv_wall_hood import erv_wall_hood
 from typehaus.model.placeable_symbols._fireplace_insert import fireplace_insert
+from typehaus.model.placeable_symbols._fixed_ladder import fixed_ladder
 from typehaus.model.placeable_symbols._frame import (
     PART_COLORS,
     Part,
@@ -121,6 +122,7 @@ _REGISTRY: dict[str, Builder] = {**FURNITURE_SYMBOLS, **APPLIANCE_SYMBOLS, **PLU
                                      badger_disposal_with_dearborn_trap,
                                  "broan-bwp1304ss-recirculating": broan_recirculating_hood,
                                  "fireplace-insert": fireplace_insert,
+                                 "fixed-ladder": fixed_ladder,
                                  "gree-flexx-ultra-24-horizontal": gree_flexx_horizontal,
                                  "gree-flexx-ultra-24-outdoor": gree_flexx_outdoor,
                                  "sunnersta-frame": sunnersta_frame,
@@ -162,7 +164,7 @@ SYMBOL_NAMES = (UNIFI_ACCESS_POINT_SYMBOLS
     "dining-table", "rounded-dining-table", "round-table", "coffee-table", "end-table",
     "chess-table", "hammock-chair", "hanging-daybed", "curtain-rod",
     "tapestry-rod-clips", "cellular-blind",
-    "desk", "wall-desk", "footrest",
+    "desk", "wall-desk", "footrest", "fixed-ladder",
     "drawer-desk", "sit-stand-desk",
     "sektion-drawer-base", "dresser", "chest", "nightstand", "media-console", "bookcase",
     "rolling-cart",

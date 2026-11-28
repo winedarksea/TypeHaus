@@ -70,13 +70,13 @@ ENTRY_LIGHTING = [
     # tee at N-M-N2 where W-M-STRW's bearing stack lands, and 1'-10" east of the door's RO.
     # y is the fixture's CENTRE: the cladding face is 36'-7 1/4" (params/north_entry_frame.py
     # ::HOUSE_CLADDING_Y_FT) and the 5" body owes it half its depth, so 36'-9 3/4". 6'-4" is
-    # storey-relative on `main` (datum = top of joists), so the 9" housing runs 6'-4"..7'-1"
-    # beside a 6'-8" door head; the canopy's truss chords are at +7'-4" at the headers and
-    # rise toward the ridge, so nothing is overhead within 1'-0".
+    # storey-relative on `main` (datum = top of joists). 6'-0" puts its mid-line in the 6'-0" girt
+    # course, so it stands direct on its BBD75 flat on two screws, no block (#155); nothing
+    # is overhead within 1'-0" (the canopy chords are at +7'-4" at the headers).
     ElectricalDevice(uid="NGK4BKKT48", tag="ED-M-ENTRY-LT", kind=DeviceKind.LIGHT,
                      type_ref="ED-T-LT-SCONCE-EXT",
                      circuit="CKT-LT-MAIN", controlled_by=("ED-M-ENTRY-SW",),
-                     mount=Mount(kind=MountKind.WALL, elevation=ft(6, 4)),
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(6)),
                      location=Location(attachment=WallAttachment(
                          wall_ref="W-M-N2", face="right", distance_from_start=inch(80),
                          normal_gap=inch(0), rotation_offset=deg(0)))),

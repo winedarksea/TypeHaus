@@ -54,6 +54,8 @@ def penetration_solids(model: Any, standard: Any) -> None:
                            pen.outside_d_m), pen.closure_product, pen.wall_tag,
                 row.material_ref)
     for mount in model.mount_blocks:
+        if mount.kind == "flat":
+            continue  # the device itself stands on the pan: no solid of its own
         frame = Frame(mount.origin, mount.tangent, mount.normal)
         if mount.kind == "strut":
             clamps = tuple(z for obj in model.canvas_objects if obj.tag in mount.holds

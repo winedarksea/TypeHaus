@@ -170,10 +170,12 @@ MN_2020 = JurisdictionProfile(
         # R310.1 is two requirements, and only the room-level one was encoded: a basement
         # with habitable space needs its own escape opening whether or not anyone sleeps in
         # it. The storey-level rule joins this line rather than opening a new one — a plan
-        # reviewer asks "can you get out" once.
+        # reviewer asks "can you get out" once. A door into a well deeper than 44" is graded on its
+        # route to grade (stair, or a ladder on R310.3.2.1's rung rules): `egress_route.py`.
         PermitItemSpec("Emergency escape and rescue openings",
                        ("code.R310_egress", "code.R310_1_storey_egress",
-                        "code.R310_2_3_window_well"), ("IRC R310",), blocking=False),
+                        "code.R310_2_3_window_well"), ("IRC R310", "IRC R310.3.2.1"),
+                       blocking=False),
         # R311.1: which door is the egress door is a designation (``Door.egress``), and the
         # R311.2 line below grades only that door.
         PermitItemSpec("Egress door", ("code.R311_1_egress_door",), ("IRC R311.1",)),

@@ -168,7 +168,12 @@ def wall_mount_on_face(ctx: CheckContext) -> list[Finding]:
             continue
         body = Polygon(obj.footprint)
         # Positions are authored to 1/8": grade how far the body reaches past the face.
-        reach = host.overlap_m2 / math.sqrt(body.area) if body.area > 0 else 0.0
+        overlap = host.overlap_m2
+        flat = next((m for m in ctx.model.mount_blocks
+                     if m.kind == "flat" and obj.tag in m.holds), None)
+        if flat is not None:  # direct on the pan: its back is behind the crowns (#155)
+            overlap = max(0.0, overlap - flat.depth_m * flat.width_m)
+        reach = overlap / math.sqrt(body.area) if body.area > 0 else 0.0
         recessed = obj.mount.recessed_into_host_surface
         if reach > _TOL_M and not recessed:
             out.append(failed(

@@ -39,7 +39,8 @@ from plan import (air_terminal_types, appliance_types, assemblies, bath_finish, 
                   bed_reading_corner_types, window_covering_types, window_coverings,
                   study_bookcase_types, lamps, lamp_types,
                   bedroom_wardrobes, braced_walls,
-                  circuits, closet, closet_types, countertops, court_daybed, panel_types,
+                  circuits, closet, closet_types, countertops, court_daybed, court_ladder,
+                  court_ladder_types, panel_types,
                   veneer_materials, dry_fire_lane, panel_working_space, device_boxes, led_construction, mep_linesets, pipe_insulation, penetrations, device_types, drywall, ducts, earthwork, framing_standards, electrical, electrical_attic, electrical_branches, electrical_grounding, electrical_labels, grounding_types, electrical_stair_ext, electrical_floor_types, equipment_types,
                   dining_types, door_types, interior_door_products, interior_door_types, fixture_types, fixtures, furniture_types, kitchen_casework, kitchen_deep_cabinets, kitchen_front_types,
                   landscape, lighting_basement, lighting_entry, lighting_garage,
@@ -81,7 +82,8 @@ _library = Library(
               *window_covering_types.WINDOW_COVERING_PRODUCTS, *smart_home_types.SMART_HOME_PRODUCTS,
               *workshop_fume_types.WORKSHOP_FUME_PRODUCTS,
               *media_types.MEDIA_PRODUCTS, *plant_reservoir_types.PLANT_RESERVOIR_PRODUCTS,
-              *lamp_types.LAMP_PRODUCTS, *RAILING_PRODUCTS),
+              *lamp_types.LAMP_PRODUCTS, *RAILING_PRODUCTS,
+              *court_ladder_types.COURT_LADDER_PRODUCTS),
     # The catalog carries what the house hangs, not the whole library ladder (2026-09-12).
     # The 36" pocket is bought as an Eclisse steel cassette (notes/pocket_frame_eclisse.md).
     # Interior types (function, core, seals) since 2026-11-03: plan/interior_door_types.py,
@@ -109,6 +111,7 @@ _library = Library(
                      *bedroom_wardrobe_types.BEDROOM_WARDROBE_TYPES,
                      *bath1_storage_types.BATH1_STORAGE_TYPES,
                      *study_nook_types.STUDY_NOOK_TYPES,
+                     *court_ladder_types.COURT_LADDER_TYPES,
                      *study_bookcase_types.STUDY_BOOKCASE_TYPES,
                      *study_bridge.STUDY_BRIDGE_TYPES,
                      *bed_reading_corner_types.BED_READING_CORNER_TYPES, *lamp_types.LAMP_TYPES,
@@ -513,7 +516,7 @@ PLAN = (
     # --- court (sunken garden / porch / balcony) --------------------------------------------
     .with_elements("court-low", [*sunken_garden.BASEMENT_ELEMENTS,
                                  *sunken_garden_drainage.BASEMENT_ELEMENTS,
-                                 *court_daybed.COURT_DAYBED])
+                                 *court_daybed.COURT_DAYBED, *court_ladder.COURT_LADDER])
     .with_elements("court-main", [*sunken_garden.MAIN_ELEMENTS, *porch_guards.MAIN_ELEMENTS])
     .with_elements("court-upper", [*sunken_garden.SECOND_ELEMENTS])
     # --- entry (north bridge) --------------------------------------------------------------
