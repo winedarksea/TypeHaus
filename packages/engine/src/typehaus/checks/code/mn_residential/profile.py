@@ -395,6 +395,9 @@ MN_2020 = JurisdictionProfile(
         PermitItemSpec("Condensate overflow protection", ("mep.condensate_overflow",),
                        ("MN Mechanical Code (Minn. R. 1346.0050, IMC 2018) 307.2.3",),
                        blocking=True),
+        PermitItemSpec("Attic appliance access", ("mep.attic_appliance_access",),
+                       ("MN Mechanical Code (Minn. R. 1346.0050, IMC 2018) 306.3",),
+                       blocking=True),
         # Linesets against the outdoor unit's published piping table (decision #139). Not
         # blocking while catlin's tables hold unread rows and its port stations are schematic.
         PermitItemSpec("Refrigerant linesets", ("mep.lineset_limits", "mep.lineset_reach"),
