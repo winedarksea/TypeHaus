@@ -389,8 +389,8 @@ def test_handrail_not_required_under_four_risers():
     assert [f.result for f in stair_handrail(_ctx(stub))] == [Result.PASS]
 
 
-_PORCH_PIECES = ("RL-SG-PORCH", "RL-SG-PORCH-E-HOUSE", "RL-SG-PORCH-NE", "RL-SG-PORCH-SE",
-                 "RL-SG-PORCH-W", "RL-SG-PORCH-W-HOUSE")
+_PORCH_PIECES = ("RL-SG-PORCH", "RL-SG-PORCH-E-HOUSE", "RL-SG-PORCH-GATE", "RL-SG-PORCH-NE",
+                 "RL-SG-PORCH-SE", "RL-SG-PORCH-W", "RL-SG-PORCH-W-HOUSE")
 
 
 def test_catlin_guards_pass_the_four_inch_sphere_rule(catlin_ctx):

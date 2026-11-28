@@ -149,12 +149,14 @@ def test_basement_egress_is_unknown_without_a_grade_datum():
     assert _results(basement_storey_egress(ctx)) == [Result.UNKNOWN]
 
 
-def test_basement_egress_accepts_an_exterior_door_and_an_untyped_opening():
-    """A walkout basement complies through its door, and this house's sunken-garden
-    archways are RoughOpenings with no window type at all. A rule that filtered on a
-    resolved window type would report a false FAIL against 64 sf of open wall."""
+def test_basement_egress_follows_a_door_to_its_landing():
+    """An exterior door no longer passes by itself (decision #156): the check follows it to the
+    floor it lands on. With no modelled landing that is UNKNOWN, never a FAIL against a door
+    it cannot see, nor the old free PASS (catlin's court route: test_egress_route.py)."""
     door = _egress_ctx(grade_ft=0.0, opening_w=0.9, opening_h=2.0, is_door=True)
-    assert _results(basement_storey_egress(door)) == [Result.PASS]
+    door.model.solids, door.model.floors, door.model.stairs = [], [], []
+    door.model.walls[0].base_ref_z_m = ft(-9).meters
+    assert _results(basement_storey_egress(door)) == [Result.UNKNOWN]
 
 
 # --- R314.3 / R315.3 alarms --------------------------------------------------------------
