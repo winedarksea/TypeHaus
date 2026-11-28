@@ -230,19 +230,29 @@ def test_the_three_count_rules_are_three_rows(sdpw_rows) -> None:
     # 109/12/72 -> 119/14/73 (2026-11-25, basement replan): the bath band's W-B-BT-N/-N2/-W and
     # the alcove's W-B-CL-E are new partitions under the main-floor joists, and the reshaped
     # W-B-BA-E now has wood over it (billed, no longer refused).
+    # 119/14/73 -> 91/20/180 (2026-11-27, plate extent): `classify` reads the top plate's own
+    # extent, not the node-to-node axis, so a crossing past the plate's end is no screw (27
+    # walls move; every drop is 0.1-8.9" beyond the plate, a rim/block over the abutting wall).
+    # A wall whose only "crossing" was such a phantom falls to its parallel-member scope:
+    # W-B-BT-N2, W-B-CE, W-M-BDN1/-BDN2, W-M-CLN2, W-M-HS1, W-M-MUDC-N, W-M-PAN-S, W-M-STOS,
+    # W-S-BD-N/-BD1/-BD2, W-S-CH-S, W-S-CLN, W-S-PS1, W-S-SN1 -> blocked bays (+107 screws);
+    # W-B-ESS-S, W-M-MECH-S -> under a parallel member. Walls that lose one real-count
+    # phantom and stay perpendicular: W-A-BA-E, W-B-CW, W-B-ESS-W, W-M-PAN-E, W-S-BW1/-BW4,
+    # W-S-CH-W (-1 each); W-M-MECH-E 3 -> 1 (north LSL rim and ERV-chase trimmer dropped).
     assert counts == {
-        "partition top plate, perpendicular framing above": 119,
-        "partition top plate, under a parallel member": 14,
-        "partition top plate, blocking between parallel members": 73,
+        "partition top plate, perpendicular framing above": 91,
+        "partition top plate, under a parallel member": 20,
+        "partition top plate, blocking between parallel members": 180,
     }
 
 
-def test_the_attic_bills_ten_crossings_and_only_because_the_plates_came_down(
+def test_the_attic_bills_nine_crossings_and_only_because_the_plates_came_down(
         sdpw_rows) -> None:
     """Before Part 1 the attic gap read -11 7/8" and every one of these was a refusal."""
     row = next(r for r in sdpw_rows
                if r["scope"] == "partition top plate, perpendicular framing above")
-    assert row["by_storey"]["attic"] == 10
+    # 10 -> 9 (2026-11-27): W-A-BA-E's rafter-036 sits 4.8" past its plate's end.
+    assert row["by_storey"]["attic"] == 9
 
 
 def test_a_partition_under_a_sip_soffit_is_refused_and_says_so(sdpw_rows) -> None:

@@ -67,6 +67,9 @@ PLATE_SINGLE = "single 2x top plate"
 PLATE_BUILT_UP = "built-up top plate to 2-1/4 in"
 PLATE_DOUBLE = "double 2x top plate"
 
+#: Slack on the plate-extent test, metres: a crossing at the plate's end still lands.
+_PLATE_EPS_M = 1e-6
+
 
 @dataclass(frozen=True)
 class SupportSection:
@@ -152,6 +155,13 @@ def plate_top_at(wall: Any, fraction: float) -> float:
     return framing_top_z_m(wall)
 
 
+def _top_plates(wall: Any) -> list:
+    """The wall's non-bottom plate members (the courses a screw passes through)."""
+    return [member for member in wall.members
+            if member.category in ("plate", "raked_plate")
+            and not member.child_key.startswith("plate-bottom")]
+
+
 def top_plate_through_in(wall: Any) -> float | None:
     """How much plate a screw crosses before it reaches the member above.
 
@@ -159,9 +169,7 @@ def top_plate_through_in(wall: Any) -> float | None:
     that later sets ``advanced_framing=True`` frames a single top plate and follows this
     rule without the rule knowing. ``None`` where the wall frames no top plate at all.
     """
-    courses = [member for member in wall.members
-               if member.category in ("plate", "raked_plate")
-               and not member.child_key.startswith("plate-bottom")]
+    courses = _top_plates(wall)
     return sum(member.z1_m - member.z0_m for member in courses) / M_PER_IN if courses else None
 
 
@@ -264,6 +272,12 @@ def classify(wall: Any, members: tuple, spacing_in: float | None,
     ux, uy, run = _unit(wall.axis[0], wall.axis[1])
     if run <= 0.0:
         return ([], [], [])
+    # The plate, not the node-to-node axis, is what a screw can reach; no plate members
+    # (nothing to read) keeps the axis extent.
+    plate_stations = [(point[0] - ax) * ux + (point[1] - ay) * uy
+                      for member in _top_plates(wall) for point in (member.p0, member.p1)]
+    plate_lo, plate_hi = ((min(plate_stations), max(plate_stations)) if plate_stations
+                          else (0.0, run))
     plate_half_in = _plate_plan_width_in(wall) / 2.0
     bay_reach_in = plate_half_in + (spacing_in if spacing_in else 0.0)
     crossings: list[_Hit] = []
@@ -279,6 +293,8 @@ def classify(wall: Any, members: tuple, spacing_in: float | None,
             if hit is None:
                 continue
             _point, along_member, along_wall = hit
+            if not plate_lo - _PLATE_EPS_M <= along_wall * run <= plate_hi + _PLATE_EPS_M:
+                continue  # the axis reaches it, the plate does not
             # The screw stands where the wall crosses: its distance to the nearer end of
             # the member it lands in is a real number the model can hand a guard.
             end_in = ((min(along_member, 1.0 - along_member) * member_run) / M_PER_IN
@@ -291,7 +307,7 @@ def classify(wall: Any, members: tuple, spacing_in: float | None,
         # Parallel. How much of it shares the wall's run, and how far off its line is it?
         stations = sorted(((point[0] - ax) * ux + (point[1] - ay) * uy)
                           for point in (member.p0, member.p1))
-        lo, hi = max(stations[0], 0.0), min(stations[1], run)
+        lo, hi = max(stations[0], plate_lo), min(stations[1], plate_hi)
         if hi - lo <= 1e-9:
             continue
         offset_in = abs(-uy * (member.p0[0] - ax) + ux * (member.p0[1] - ay)) / M_PER_IN

@@ -3,7 +3,7 @@
 **House:** Catlin House  
 **Trade:** Framing  
 **Engine:** 0.1.2  
-**Model hash:** ba5f8814e3bf8004  
+**Model hash:** 0ba573dee0c447c5  
 **Lines:** 276
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks and their boards, and the tape on every member top. Trusses and engineered wood are called out by the profile. Set the windows and exterior doors (supplied under Windows and doors).
@@ -23,14 +23,14 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 1 1/4" x 11 7/8" LSL rim board 1.3E, 14' (1.25x11.875 rim) | 2 | pc | rim board | 28 LF | building |
 | 1 1/4" x 11 7/8" LSL rim board 1.3E, 16' (1.25x11.875 rim) | 4 | pc | rim board | 64 LF | building |
 | 1 1/4" x 11 7/8" LSL rim board 1.3E, 20' (1.25x11.875 rim) | 13 | pc | rim board | 260 LF | building |
-| 1.5x11.875 SPF No. 2 & Btr framing lumber, 8' (1.5x11.875:spf) | 5 | pc | blocking | 40 LF | building |
+| 1.5x11.875 SPF No. 2 & Btr framing lumber, 8' (1.5x11.875:spf) | 9 | pc | blocking | 72 LF | building |
 | 1 1/2" x 14" LSL, 8' (1.5x14 LSL) | 5 | pc | blocking | 40 LF | building |
 | 1 3/4" x 11 7/8" LSL 1.55E, 16' (1.75x11.875 LSL) | 2 | pc | rim board | 32 LF | building |
 | 1 3/4" x 11 7/8" LSL 1.55E, 20' (1.75x11.875 LSL) | 2 | pc | rim board | 40 LF | building |
 | 1 3/4" x 11 7/8" LVL 2.0E, 8' (1.75x11.875 LVL) | 11 | pc | sister joist, trimmer | 88 LF | building |
 | 1 3/4" x 11 7/8" LVL 2.0E, 10' (1.75x11.875 LVL) | 2 | pc | trimmer | 20 LF | building |
 | 1 3/4" x 11 7/8" LVL 2.0E, 20' (1.75x11.875 LVL) | 4 | pc | trimmer | 80 LF | building |
-| 11 7/8" TJI 230, 8' (11.875 TJI 230) | 22 | pc | blocking, joist | 176 LF | building |
+| 11 7/8" TJI 230, 8' (11.875 TJI 230) | 27 | pc | blocking, joist | 216 LF | building |
 | 11 7/8" TJI 230, 10' (11.875 TJI 230) | 19 | pc | joist | 190 LF | building |
 | 11 7/8" TJI 230, 20' (11.875 TJI 230) | 99 | pc | joist, sister joist | 1980 LF | building |
 | 11 7/8" TJI 230, 22' (11.875 TJI 230) | 38 | pc | rafter | 836 LF | building |
@@ -79,9 +79,9 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2x4 KDAT southern yellow pine No. 2 (treated exterior framing), 16' (2x4:kdat) | 7 | pc | girt strapping | 112 LF | building |
 | 2x4 KDAT southern yellow pine No. 2 (treated exterior framing), 20' (2x4:kdat) | 22 | pc | girt strapping | 440 LF | building |
 | 2x4 Pressure-treated southern yellow pine No. 2 (sill plate), 8' (2x4:pt-syp) | 4 | pc | plate | 32 LF | building |
-| 2x4 SPF No. 2 & Btr framing lumber, 8' (2x4:spf) | 16 | pc | blocking, ceiling furring, girt strapping | 128 LF | building |
+| 2x4 SPF No. 2 & Btr framing lumber, 8' (2x4:spf) | 17 | pc | blocking, ceiling furring, girt strapping | 136 LF | building |
 | 2x6 SPF No. 2 & Btr framing lumber, 92 5/8" PET (2x6) | 120 | pc | corner stud, king stud, stud | 926.2 LF | building |
-| 2x6 SPF No. 2 & Btr framing lumber, 8' (2x6) | 385 | pc | blocking, corner stud, cripple stud, door blocking, header, jack stud, king stud, plate, raked top plate, sill, strongback, stud | 3080 LF | building |
+| 2x6 SPF No. 2 & Btr framing lumber, 8' (2x6) | 392 | pc | blocking, corner stud, cripple stud, door blocking, header, jack stud, king stud, plate, raked top plate, sill, strongback, stud | 3136 LF | building |
 | 2x6 SPF No. 2 & Btr framing lumber, 104 5/8" PET (2x6) | 208 | pc | corner stud, king stud, stud | 1813.5 LF | building |
 | 2x6 SPF No. 2 & Btr framing lumber, 116 5/8" PET (2x6) | 6 | pc | king stud, stud | 58.3 LF | building |
 | 2x6 SPF No. 2 & Btr framing lumber, 10' (2x6) | 46 | pc | plate, raked top plate, strongback | 460 LF | building |
@@ -230,9 +230,9 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | HDG steel U-saddle on a 4 1/2 in (3-ply 2x) joist line, two 5/8 in through-bolts (SADDLE-4.5-2x58-HDG:suspension anchor) | 4 | ea |  | basement |
 | Strong-Drive SD connector screw, #10 x 1-1/2in (SD10112:connector fasteners) | 48 | ea |  | building |
 | Strong-Drive SD connector screw, #9 x 1-1/2in (SD9112:connector fasteners) | 1,544 | ea |  | building |
-| Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600:partition top plate, blocking between parallel members) | 73 | ea |  | building |
-| Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600:partition top plate, perpendicular framing above) | 119 | ea |  | building |
-| Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600:partition top plate, under a parallel member) | 14 | ea |  | building |
+| Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600:partition top plate, blocking between parallel members) | 180 | ea |  | building |
+| Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600:partition top plate, perpendicular framing above) | 91 | ea |  | building |
+| Strong-Drive SDPW DEFLECTOR screw (0.195 in shank) (SDPW19600:partition top plate, under a parallel member) | 20 | ea |  | building |
 | slat brace plate screw (SDWS22400DB:slat brace plate screw) | 16 | ea |  | main |
 | SDWS Timber Screw (0.220 in shank), ridge plate to wall top plates (SDWS22600DB:ridge plate) | 36 | ea |  | building |
 | SDWS Timber Screw (0.220 in shank), stringer through spacer to stud (SDWS22600DB:stair stringer spacers) | 8 | ea |  | building |

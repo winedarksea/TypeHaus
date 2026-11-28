@@ -21519,6 +21519,790 @@
       "node": "polyline",
       "points": [
         [
+          216.25,
+          -11.875
+        ],
+        [
+          217.75,
+          -11.875
+        ],
+        [
+          217.75,
+          0.0
+        ],
+        [
+          216.25,
+          0.0
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "Q3ZJD83QVD",
+      "tag": "partition-block-W-B-CE-000"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          216.25,
+          -11.875
+        ],
+        [
+          217.75,
+          -11.875
+        ],
+        [
+          217.75,
+          0.0
+        ],
+        [
+          216.25,
+          0.0
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": null
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          232.25,
+          -11.875
+        ],
+        [
+          233.75,
+          -11.875
+        ],
+        [
+          233.75,
+          0.0
+        ],
+        [
+          232.25,
+          0.0
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "Q3ZJD83QVD",
+      "tag": "partition-block-W-B-CE-001"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          232.25,
+          -11.875
+        ],
+        [
+          233.75,
+          -11.875
+        ],
+        [
+          233.75,
+          0.0
+        ],
+        [
+          232.25,
+          0.0
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": null
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          248.25000000000003,
+          -11.875
+        ],
+        [
+          249.75000000000003,
+          -11.875
+        ],
+        [
+          249.75000000000003,
+          0.0
+        ],
+        [
+          248.25000000000003,
+          0.0
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "Q3ZJD83QVD",
+      "tag": "partition-block-W-B-CE-002"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          248.25000000000003,
+          -11.875
+        ],
+        [
+          249.75000000000003,
+          -11.875
+        ],
+        [
+          249.75000000000003,
+          0.0
+        ],
+        [
+          248.25000000000003,
+          0.0
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": null
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          264.25,
+          -11.875
+        ],
+        [
+          265.75,
+          -11.875
+        ],
+        [
+          265.75,
+          0.0
+        ],
+        [
+          264.25,
+          0.0
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "Q3ZJD83QVD",
+      "tag": "partition-block-W-B-CE-003"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          264.25,
+          -11.875
+        ],
+        [
+          265.75,
+          -11.875
+        ],
+        [
+          265.75,
+          0.0
+        ],
+        [
+          264.25,
+          0.0
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": null
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          280.25,
+          -11.875
+        ],
+        [
+          281.75,
+          -11.875
+        ],
+        [
+          281.75,
+          0.0
+        ],
+        [
+          280.25,
+          0.0
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "Q3ZJD83QVD",
+      "tag": "partition-block-W-B-CE-004"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          280.25,
+          -11.875
+        ],
+        [
+          281.75,
+          -11.875
+        ],
+        [
+          281.75,
+          0.0
+        ],
+        [
+          280.25,
+          0.0
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": null
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          296.25,
+          -11.875
+        ],
+        [
+          297.75,
+          -11.875
+        ],
+        [
+          297.75,
+          0.0
+        ],
+        [
+          296.25,
+          0.0
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "Q3ZJD83QVD",
+      "tag": "partition-block-W-B-CE-005"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          296.25,
+          -11.875
+        ],
+        [
+          297.75,
+          -11.875
+        ],
+        [
+          297.75,
+          0.0
+        ],
+        [
+          296.25,
+          0.0
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": null
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          312.25,
+          -11.875
+        ],
+        [
+          313.75,
+          -11.875
+        ],
+        [
+          313.75,
+          0.0
+        ],
+        [
+          312.25,
+          0.0
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "Q3ZJD83QVD",
+      "tag": "partition-block-W-B-CE-006"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          312.25,
+          -11.875
+        ],
+        [
+          313.75,
+          -11.875
+        ],
+        [
+          313.75,
+          0.0
+        ],
+        [
+          312.25,
+          0.0
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": null
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          328.25,
+          -11.875
+        ],
+        [
+          329.75,
+          -11.875
+        ],
+        [
+          329.75,
+          0.0
+        ],
+        [
+          328.25,
+          0.0
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "Q3ZJD83QVD",
+      "tag": "partition-block-W-B-CE-007"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          328.25,
+          -11.875
+        ],
+        [
+          329.75,
+          -11.875
+        ],
+        [
+          329.75,
+          0.0
+        ],
+        [
+          328.25,
+          0.0
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": null
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          344.25,
+          -11.875
+        ],
+        [
+          345.75,
+          -11.875
+        ],
+        [
+          345.75,
+          0.0
+        ],
+        [
+          344.25,
+          0.0
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "Q3ZJD83QVD",
+      "tag": "partition-block-W-B-CE-008"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          344.25,
+          -11.875
+        ],
+        [
+          345.75,
+          -11.875
+        ],
+        [
+          345.75,
+          0.0
+        ],
+        [
+          344.25,
+          0.0
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": null
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          360.25,
+          -11.875
+        ],
+        [
+          361.75,
+          -11.875
+        ],
+        [
+          361.75,
+          0.0
+        ],
+        [
+          360.25,
+          0.0
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "Q3ZJD83QVD",
+      "tag": "partition-block-W-B-CE-009"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          360.25,
+          -11.875
+        ],
+        [
+          361.75,
+          -11.875
+        ],
+        [
+          361.75,
+          0.0
+        ],
+        [
+          360.25,
+          0.0
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": null
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          376.25,
+          -11.875
+        ],
+        [
+          377.75,
+          -11.875
+        ],
+        [
+          377.75,
+          0.0
+        ],
+        [
+          376.25,
+          0.0
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "Q3ZJD83QVD",
+      "tag": "partition-block-W-B-CE-010"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          376.25,
+          -11.875
+        ],
+        [
+          377.75,
+          -11.875
+        ],
+        [
+          377.75,
+          0.0
+        ],
+        [
+          376.25,
+          0.0
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": null
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          392.25000000000006,
+          -11.875
+        ],
+        [
+          393.75000000000006,
+          -11.875
+        ],
+        [
+          393.75000000000006,
+          0.0
+        ],
+        [
+          392.25000000000006,
+          0.0
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "Q3ZJD83QVD",
+      "tag": "partition-block-W-B-CE-011"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          392.25000000000006,
+          -11.875
+        ],
+        [
+          393.75000000000006,
+          -11.875
+        ],
+        [
+          393.75000000000006,
+          0.0
+        ],
+        [
+          392.25000000000006,
+          0.0
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": null
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          408.25,
+          -11.875
+        ],
+        [
+          409.75,
+          -11.875
+        ],
+        [
+          409.75,
+          0.0
+        ],
+        [
+          408.25,
+          0.0
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "Q3ZJD83QVD",
+      "tag": "partition-block-W-B-CE-012"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          408.25,
+          -11.875
+        ],
+        [
+          409.75,
+          -11.875
+        ],
+        [
+          409.75,
+          0.0
+        ],
+        [
+          408.25,
+          0.0
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": null
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          424.25,
+          -11.875
+        ],
+        [
+          425.75,
+          -11.875
+        ],
+        [
+          425.75,
+          0.0
+        ],
+        [
+          424.25,
+          0.0
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "Q3ZJD83QVD",
+      "tag": "partition-block-W-B-CE-013"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          424.25,
+          -11.875
+        ],
+        [
+          425.75,
+          -11.875
+        ],
+        [
+          425.75,
+          0.0
+        ],
+        [
+          424.25,
+          0.0
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": null
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
           0.5,
           108.125
         ],
@@ -21911,6 +22695,174 @@
       "node": "polyline",
       "points": [
         [
+          158.25,
+          118.5
+        ],
+        [
+          163.75,
+          118.5
+        ],
+        [
+          163.75,
+          120.0
+        ],
+        [
+          158.25,
+          120.0
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "1JXQ975X9E",
+      "tag": "partition-block-W-M-CLN2-000-rail-top"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          158.25,
+          118.5
+        ],
+        [
+          163.75,
+          118.5
+        ],
+        [
+          163.75,
+          120.0
+        ],
+        [
+          158.25,
+          120.0
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": null
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          158.25,
+          108.125
+        ],
+        [
+          163.75,
+          108.125
+        ],
+        [
+          163.75,
+          109.625
+        ],
+        [
+          158.25,
+          109.625
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "1JXQ975X9E",
+      "tag": "partition-block-W-M-CLN2-000-rail-bottom"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          158.25,
+          108.125
+        ],
+        [
+          163.75,
+          108.125
+        ],
+        [
+          163.75,
+          109.625
+        ],
+        [
+          158.25,
+          109.625
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": null
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          208.25000000000003,
+          108.125
+        ],
+        [
+          209.75000000000003,
+          108.125
+        ],
+        [
+          209.75000000000003,
+          120.0
+        ],
+        [
+          208.25000000000003,
+          120.0
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "1JXQ975X9E",
+      "tag": "partition-block-W-M-CLN2-003"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          208.25000000000003,
+          108.125
+        ],
+        [
+          209.75000000000003,
+          108.125
+        ],
+        [
+          209.75000000000003,
+          120.0
+        ],
+        [
+          208.25000000000003,
+          120.0
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": null
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
           430.25,
           108.125
         ],
@@ -22281,6 +23233,1110 @@
       "layer": "A-WALL-PATT",
       "uid": null,
       "material": null
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          260.25,
+          238.5
+        ],
+        [
+          265.75,
+          238.5
+        ],
+        [
+          265.75,
+          240.0
+        ],
+        [
+          260.25,
+          240.0
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CAF602AAAA",
+      "tag": "partition-block-W-S-BD1-000-rail-top"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          260.25,
+          238.5
+        ],
+        [
+          265.75,
+          238.5
+        ],
+        [
+          265.75,
+          240.0
+        ],
+        [
+          260.25,
+          240.0
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": null
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          260.25,
+          228.12500000000003
+        ],
+        [
+          265.75,
+          228.12500000000003
+        ],
+        [
+          265.75,
+          229.62500000000003
+        ],
+        [
+          260.25,
+          229.62500000000003
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CAF602AAAA",
+      "tag": "partition-block-W-S-BD1-000-rail-bottom"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          260.25,
+          228.12500000000003
+        ],
+        [
+          265.75,
+          228.12500000000003
+        ],
+        [
+          265.75,
+          229.62500000000003
+        ],
+        [
+          260.25,
+          229.62500000000003
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": null
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          276.25,
+          238.5
+        ],
+        [
+          281.75,
+          238.5
+        ],
+        [
+          281.75,
+          240.0
+        ],
+        [
+          276.25,
+          240.0
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CAF602AAAA",
+      "tag": "partition-block-W-S-BD1-001-rail-top"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          276.25,
+          238.5
+        ],
+        [
+          281.75,
+          238.5
+        ],
+        [
+          281.75,
+          240.0
+        ],
+        [
+          276.25,
+          240.0
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": null
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          276.25,
+          228.12500000000003
+        ],
+        [
+          281.75,
+          228.12500000000003
+        ],
+        [
+          281.75,
+          229.62500000000003
+        ],
+        [
+          276.25,
+          229.62500000000003
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CAF602AAAA",
+      "tag": "partition-block-W-S-BD1-001-rail-bottom"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          276.25,
+          228.12500000000003
+        ],
+        [
+          281.75,
+          228.12500000000003
+        ],
+        [
+          281.75,
+          229.62500000000003
+        ],
+        [
+          276.25,
+          229.62500000000003
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": null
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          292.25,
+          238.5
+        ],
+        [
+          297.75,
+          238.5
+        ],
+        [
+          297.75,
+          240.0
+        ],
+        [
+          292.25,
+          240.0
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CAF602AAAA",
+      "tag": "partition-block-W-S-BD1-002-rail-top"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          292.25,
+          238.5
+        ],
+        [
+          297.75,
+          238.5
+        ],
+        [
+          297.75,
+          240.0
+        ],
+        [
+          292.25,
+          240.0
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": null
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          292.25,
+          228.12500000000003
+        ],
+        [
+          297.75,
+          228.12500000000003
+        ],
+        [
+          297.75,
+          229.62500000000003
+        ],
+        [
+          292.25,
+          229.62500000000003
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CAF602AAAA",
+      "tag": "partition-block-W-S-BD1-002-rail-bottom"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          292.25,
+          228.12500000000003
+        ],
+        [
+          297.75,
+          228.12500000000003
+        ],
+        [
+          297.75,
+          229.62500000000003
+        ],
+        [
+          292.25,
+          229.62500000000003
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": null
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          309.84375,
+          228.12500000000003
+        ],
+        [
+          312.15625,
+          228.12500000000003
+        ],
+        [
+          312.15625,
+          240.0
+        ],
+        [
+          309.84375,
+          240.0
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CAF602AAAA",
+      "tag": "partition-block-W-S-BD1-003"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          309.84375,
+          228.12500000000003
+        ],
+        [
+          312.15625,
+          228.12500000000003
+        ],
+        [
+          312.15625,
+          240.0
+        ],
+        [
+          309.84375,
+          240.0
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": null
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          309.84375,
+          229.37500000000003
+        ],
+        [
+          312.15625,
+          229.37500000000003
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.13,
+      "linetype": "CONTINUOUS",
+      "closed": false,
+      "uid": "CAF602AAAA",
+      "tag": "partition-block-W-S-BD1-003/flange"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          309.84375,
+          238.75000000000003
+        ],
+        [
+          312.15625,
+          238.75000000000003
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.13,
+      "linetype": "CONTINUOUS",
+      "closed": false,
+      "uid": "CAF602AAAA",
+      "tag": "partition-block-W-S-BD1-003/flange"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          325.84375,
+          228.12500000000003
+        ],
+        [
+          328.15625,
+          228.12500000000003
+        ],
+        [
+          328.15625,
+          240.0
+        ],
+        [
+          325.84375,
+          240.0
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CAF602AAAA",
+      "tag": "partition-block-W-S-BD1-004"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          325.84375,
+          228.12500000000003
+        ],
+        [
+          328.15625,
+          228.12500000000003
+        ],
+        [
+          328.15625,
+          240.0
+        ],
+        [
+          325.84375,
+          240.0
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": null
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          325.84375,
+          229.37500000000003
+        ],
+        [
+          328.15625,
+          229.37500000000003
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.13,
+      "linetype": "CONTINUOUS",
+      "closed": false,
+      "uid": "CAF602AAAA",
+      "tag": "partition-block-W-S-BD1-004/flange"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          325.84375,
+          238.75000000000003
+        ],
+        [
+          328.15625,
+          238.75000000000003
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.13,
+      "linetype": "CONTINUOUS",
+      "closed": false,
+      "uid": "CAF602AAAA",
+      "tag": "partition-block-W-S-BD1-004/flange"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          341.84375,
+          228.12500000000003
+        ],
+        [
+          344.15625000000006,
+          228.12500000000003
+        ],
+        [
+          344.15625000000006,
+          240.0
+        ],
+        [
+          341.84375,
+          240.0
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CAF602AAAA",
+      "tag": "partition-block-W-S-BD1-005"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          341.84375,
+          228.12500000000003
+        ],
+        [
+          344.15625000000006,
+          228.12500000000003
+        ],
+        [
+          344.15625000000006,
+          240.0
+        ],
+        [
+          341.84375,
+          240.0
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": null
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          341.84375,
+          229.37500000000003
+        ],
+        [
+          344.15625000000006,
+          229.37500000000003
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.13,
+      "linetype": "CONTINUOUS",
+      "closed": false,
+      "uid": "CAF602AAAA",
+      "tag": "partition-block-W-S-BD1-005/flange"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          341.84375,
+          238.75000000000003
+        ],
+        [
+          344.15625000000006,
+          238.75000000000003
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.13,
+      "linetype": "CONTINUOUS",
+      "closed": false,
+      "uid": "CAF602AAAA",
+      "tag": "partition-block-W-S-BD1-005/flange"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          357.84375,
+          228.12500000000003
+        ],
+        [
+          360.15625000000006,
+          228.12500000000003
+        ],
+        [
+          360.15625000000006,
+          240.0
+        ],
+        [
+          357.84375,
+          240.0
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CAF602AAAA",
+      "tag": "partition-block-W-S-BD1-006"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          357.84375,
+          228.12500000000003
+        ],
+        [
+          360.15625000000006,
+          228.12500000000003
+        ],
+        [
+          360.15625000000006,
+          240.0
+        ],
+        [
+          357.84375,
+          240.0
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": null
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          357.84375,
+          229.37500000000003
+        ],
+        [
+          360.15625000000006,
+          229.37500000000003
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.13,
+      "linetype": "CONTINUOUS",
+      "closed": false,
+      "uid": "CAF602AAAA",
+      "tag": "partition-block-W-S-BD1-006/flange"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          357.84375,
+          238.75000000000003
+        ],
+        [
+          360.15625000000006,
+          238.75000000000003
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.13,
+      "linetype": "CONTINUOUS",
+      "closed": false,
+      "uid": "CAF602AAAA",
+      "tag": "partition-block-W-S-BD1-006/flange"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          373.84375000000006,
+          228.12500000000003
+        ],
+        [
+          376.15625,
+          228.12500000000003
+        ],
+        [
+          376.15625,
+          240.0
+        ],
+        [
+          373.84375000000006,
+          240.0
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CAF602AAAA",
+      "tag": "partition-block-W-S-BD1-007"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          373.84375000000006,
+          228.12500000000003
+        ],
+        [
+          376.15625,
+          228.12500000000003
+        ],
+        [
+          376.15625,
+          240.0
+        ],
+        [
+          373.84375000000006,
+          240.0
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": null
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          373.84375000000006,
+          229.37500000000003
+        ],
+        [
+          376.15625,
+          229.37500000000003
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.13,
+      "linetype": "CONTINUOUS",
+      "closed": false,
+      "uid": "CAF602AAAA",
+      "tag": "partition-block-W-S-BD1-007/flange"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          373.84375000000006,
+          238.75000000000003
+        ],
+        [
+          376.15625,
+          238.75000000000003
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.13,
+      "linetype": "CONTINUOUS",
+      "closed": false,
+      "uid": "CAF602AAAA",
+      "tag": "partition-block-W-S-BD1-007/flange"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          389.84375,
+          228.12500000000003
+        ],
+        [
+          392.15625,
+          228.12500000000003
+        ],
+        [
+          392.15625,
+          240.0
+        ],
+        [
+          389.84375,
+          240.0
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CAF602AAAA",
+      "tag": "partition-block-W-S-BD1-008"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          389.84375,
+          228.12500000000003
+        ],
+        [
+          392.15625,
+          228.12500000000003
+        ],
+        [
+          392.15625,
+          240.0
+        ],
+        [
+          389.84375,
+          240.0
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": null
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          389.84375,
+          229.37500000000003
+        ],
+        [
+          392.15625,
+          229.37500000000003
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.13,
+      "linetype": "CONTINUOUS",
+      "closed": false,
+      "uid": "CAF602AAAA",
+      "tag": "partition-block-W-S-BD1-008/flange"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          389.84375,
+          238.75000000000003
+        ],
+        [
+          392.15625,
+          238.75000000000003
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.13,
+      "linetype": "CONTINUOUS",
+      "closed": false,
+      "uid": "CAF602AAAA",
+      "tag": "partition-block-W-S-BD1-008/flange"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          405.84375,
+          228.12500000000003
+        ],
+        [
+          408.15625,
+          228.12500000000003
+        ],
+        [
+          408.15625,
+          240.0
+        ],
+        [
+          405.84375,
+          240.0
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CAF602AAAA",
+      "tag": "partition-block-W-S-BD1-009"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          405.84375,
+          228.12500000000003
+        ],
+        [
+          408.15625,
+          228.12500000000003
+        ],
+        [
+          408.15625,
+          240.0
+        ],
+        [
+          405.84375,
+          240.0
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": null
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          405.84375,
+          229.37500000000003
+        ],
+        [
+          408.15625,
+          229.37500000000003
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.13,
+      "linetype": "CONTINUOUS",
+      "closed": false,
+      "uid": "CAF602AAAA",
+      "tag": "partition-block-W-S-BD1-009/flange"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          405.84375,
+          238.75000000000003
+        ],
+        [
+          408.15625,
+          238.75000000000003
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.13,
+      "linetype": "CONTINUOUS",
+      "closed": false,
+      "uid": "CAF602AAAA",
+      "tag": "partition-block-W-S-BD1-009/flange"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          421.84375,
+          228.12500000000003
+        ],
+        [
+          424.15625000000006,
+          228.12500000000003
+        ],
+        [
+          424.15625000000006,
+          240.0
+        ],
+        [
+          421.84375,
+          240.0
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CAF602AAAA",
+      "tag": "partition-block-W-S-BD1-010"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          421.84375,
+          228.12500000000003
+        ],
+        [
+          424.15625000000006,
+          228.12500000000003
+        ],
+        [
+          424.15625000000006,
+          240.0
+        ],
+        [
+          421.84375,
+          240.0
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": null
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          421.84375,
+          229.37500000000003
+        ],
+        [
+          424.15625000000006,
+          229.37500000000003
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.13,
+      "linetype": "CONTINUOUS",
+      "closed": false,
+      "uid": "CAF602AAAA",
+      "tag": "partition-block-W-S-BD1-010/flange"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          421.84375,
+          238.75000000000003
+        ],
+        [
+          424.15625000000006,
+          238.75000000000003
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.13,
+      "linetype": "CONTINUOUS",
+      "closed": false,
+      "uid": "CAF602AAAA",
+      "tag": "partition-block-W-S-BD1-010/flange"
     },
     {
       "space": "model",

@@ -5555,6 +5555,156 @@
 8,
 "3c4d41a19688"
 ],
+"geometry/1JXQ975X9E::framing/member:partition-block-W-M-BDN1-000": [
+2.746375,
+3.048,
+8,
+"3c4d41a19688"
+],
+"geometry/1JXQ975X9E::framing/member:partition-block-W-M-BDN1-001": [
+2.746375,
+3.048,
+8,
+"3c4d41a19688"
+],
+"geometry/1JXQ975X9E::framing/member:partition-block-W-M-BDN1-002": [
+2.746375,
+3.048,
+8,
+"3c4d41a19688"
+],
+"geometry/1JXQ975X9E::framing/member:partition-block-W-M-BDN1-003": [
+2.746375,
+3.048,
+8,
+"3c4d41a19688"
+],
+"geometry/1JXQ975X9E::framing/member:partition-block-W-M-BDN2-001-cheek-hi": [
+2.784475,
+3.0099,
+8,
+"8445039a1102"
+],
+"geometry/1JXQ975X9E::framing/member:partition-block-W-M-BDN2-001-rail-bottom": [
+2.746375,
+2.784475,
+8,
+"c4d4967e8585"
+],
+"geometry/1JXQ975X9E::framing/member:partition-block-W-M-BDN2-001-rail-top": [
+3.0099,
+3.048,
+8,
+"a10a5d0008e8"
+],
+"geometry/1JXQ975X9E::framing/member:partition-block-W-M-BDN2-002-cheek-hi": [
+2.784475,
+3.0099,
+8,
+"8445039a1102"
+],
+"geometry/1JXQ975X9E::framing/member:partition-block-W-M-BDN2-002-rail-bottom": [
+2.746375,
+2.784475,
+8,
+"c4d4967e8585"
+],
+"geometry/1JXQ975X9E::framing/member:partition-block-W-M-BDN2-002-rail-top": [
+3.0099,
+3.048,
+8,
+"a10a5d0008e8"
+],
+"geometry/1JXQ975X9E::framing/member:partition-block-W-M-BDN2-003-cheek-hi": [
+2.784475,
+3.0099,
+8,
+"8445039a1102"
+],
+"geometry/1JXQ975X9E::framing/member:partition-block-W-M-BDN2-003-rail-bottom": [
+2.746375,
+2.784475,
+8,
+"c4d4967e8585"
+],
+"geometry/1JXQ975X9E::framing/member:partition-block-W-M-BDN2-003-rail-top": [
+3.0099,
+3.048,
+8,
+"a10a5d0008e8"
+],
+"geometry/1JXQ975X9E::framing/member:partition-block-W-M-BDN2-004-cheek-hi": [
+2.784475,
+3.0099,
+8,
+"8445039a1102"
+],
+"geometry/1JXQ975X9E::framing/member:partition-block-W-M-BDN2-004-rail-bottom": [
+2.746375,
+2.784475,
+8,
+"c4d4967e8585"
+],
+"geometry/1JXQ975X9E::framing/member:partition-block-W-M-BDN2-004-rail-top": [
+3.0099,
+3.048,
+8,
+"a10a5d0008e8"
+],
+"geometry/1JXQ975X9E::framing/member:partition-block-W-M-BDN2-005-cheek-hi": [
+2.784475,
+3.0099,
+8,
+"8445039a1102"
+],
+"geometry/1JXQ975X9E::framing/member:partition-block-W-M-BDN2-005-rail-bottom": [
+2.746375,
+2.784475,
+8,
+"c4d4967e8585"
+],
+"geometry/1JXQ975X9E::framing/member:partition-block-W-M-BDN2-005-rail-top": [
+3.0099,
+3.048,
+8,
+"a10a5d0008e8"
+],
+"geometry/1JXQ975X9E::framing/member:partition-block-W-M-BDN2-006-cheek-hi": [
+2.784475,
+3.0099,
+8,
+"8445039a1102"
+],
+"geometry/1JXQ975X9E::framing/member:partition-block-W-M-BDN2-006-rail-bottom": [
+2.746375,
+2.784475,
+8,
+"c4d4967e8585"
+],
+"geometry/1JXQ975X9E::framing/member:partition-block-W-M-BDN2-006-rail-top": [
+3.0099,
+3.048,
+8,
+"a10a5d0008e8"
+],
+"geometry/1JXQ975X9E::framing/member:partition-block-W-M-BDN2-007-cheek-hi": [
+2.784475,
+3.0099,
+8,
+"8445039a1102"
+],
+"geometry/1JXQ975X9E::framing/member:partition-block-W-M-BDN2-007-rail-bottom": [
+2.746375,
+2.784475,
+8,
+"c4d4967e8585"
+],
+"geometry/1JXQ975X9E::framing/member:partition-block-W-M-BDN2-007-rail-top": [
+3.0099,
+3.048,
+8,
+"a10a5d0008e8"
+],
 "geometry/1JXQ975X9E::framing/member:partition-block-W-M-CLN-000": [
 2.746375,
 3.048,
@@ -5608,6 +5758,210 @@
 3.048,
 8,
 "a10a5d0008e8"
+],
+"geometry/1JXQ975X9E::framing/member:partition-block-W-M-CLN2-000-cheek-hi": [
+2.784475,
+3.0099,
+8,
+"8445039a1102"
+],
+"geometry/1JXQ975X9E::framing/member:partition-block-W-M-CLN2-000-cheek-lo": [
+2.784475,
+3.0099,
+8,
+"8445039a1102"
+],
+"geometry/1JXQ975X9E::framing/member:partition-block-W-M-CLN2-000-rail-bottom": [
+2.746375,
+2.784475,
+8,
+"c4d4967e8585"
+],
+"geometry/1JXQ975X9E::framing/member:partition-block-W-M-CLN2-000-rail-top": [
+3.0099,
+3.048,
+8,
+"a10a5d0008e8"
+],
+"geometry/1JXQ975X9E::framing/member:partition-block-W-M-CLN2-001-cheek-hi": [
+2.784475,
+3.0099,
+8,
+"8445039a1102"
+],
+"geometry/1JXQ975X9E::framing/member:partition-block-W-M-CLN2-001-cheek-lo": [
+2.784475,
+3.0099,
+8,
+"8445039a1102"
+],
+"geometry/1JXQ975X9E::framing/member:partition-block-W-M-CLN2-001-p1-rail-bottom": [
+2.746375,
+2.784475,
+8,
+"c4d4967e8585"
+],
+"geometry/1JXQ975X9E::framing/member:partition-block-W-M-CLN2-001-p1-rail-top": [
+3.0099,
+3.048,
+8,
+"a10a5d0008e8"
+],
+"geometry/1JXQ975X9E::framing/member:partition-block-W-M-CLN2-001-rail-bottom": [
+2.746375,
+2.784475,
+8,
+"c4d4967e8585"
+],
+"geometry/1JXQ975X9E::framing/member:partition-block-W-M-CLN2-001-rail-top": [
+3.0099,
+3.048,
+8,
+"a10a5d0008e8"
+],
+"geometry/1JXQ975X9E::framing/member:partition-block-W-M-CLN2-003": [
+2.746375,
+3.048,
+8,
+"3c4d41a19688"
+],
+"geometry/1JXQ975X9E::framing/member:partition-block-W-M-HS1-000": [
+2.746375,
+3.048,
+8,
+"3c4d41a19688"
+],
+"geometry/1JXQ975X9E::framing/member:partition-block-W-M-HS1-001": [
+2.746375,
+3.048,
+8,
+"3c4d41a19688"
+],
+"geometry/1JXQ975X9E::framing/member:partition-block-W-M-HS1-002-cheek-hi": [
+2.746375,
+3.0099,
+8,
+"701fa9bdb074"
+],
+"geometry/1JXQ975X9E::framing/member:partition-block-W-M-HS1-002-cheek-lo": [
+2.746375,
+3.0099,
+8,
+"701fa9bdb074"
+],
+"geometry/1JXQ975X9E::framing/member:partition-block-W-M-HS1-002-rail-top": [
+3.0099,
+3.048,
+8,
+"a10a5d0008e8"
+],
+"geometry/1JXQ975X9E::framing/member:partition-block-W-M-HS1-003-cheek-hi": [
+2.746375,
+3.0099,
+8,
+"701fa9bdb074"
+],
+"geometry/1JXQ975X9E::framing/member:partition-block-W-M-HS1-003-cheek-lo": [
+2.746375,
+3.0099,
+8,
+"701fa9bdb074"
+],
+"geometry/1JXQ975X9E::framing/member:partition-block-W-M-HS1-003-rail-top": [
+3.0099,
+3.048,
+8,
+"a10a5d0008e8"
+],
+"geometry/1JXQ975X9E::framing/member:partition-block-W-M-MUDC-N-000": [
+2.746375,
+3.048,
+8,
+"3c4d41a19688"
+],
+"geometry/1JXQ975X9E::framing/member:partition-block-W-M-MUDC-N-002-cheek-hi": [
+2.784475,
+3.0099,
+8,
+"8445039a1102"
+],
+"geometry/1JXQ975X9E::framing/member:partition-block-W-M-MUDC-N-002-cheek-lo": [
+2.784475,
+3.0099,
+8,
+"8445039a1102"
+],
+"geometry/1JXQ975X9E::framing/member:partition-block-W-M-MUDC-N-002-rail-bottom": [
+2.746375,
+2.784475,
+8,
+"c4d4967e8585"
+],
+"geometry/1JXQ975X9E::framing/member:partition-block-W-M-MUDC-N-002-rail-top": [
+3.0099,
+3.048,
+8,
+"a10a5d0008e8"
+],
+"geometry/1JXQ975X9E::framing/member:partition-block-W-M-MUDC-N-003-cheek-hi": [
+2.784475,
+3.0099,
+8,
+"8445039a1102"
+],
+"geometry/1JXQ975X9E::framing/member:partition-block-W-M-MUDC-N-003-cheek-lo": [
+2.784475,
+3.0099,
+8,
+"8445039a1102"
+],
+"geometry/1JXQ975X9E::framing/member:partition-block-W-M-MUDC-N-003-rail-bottom": [
+2.746375,
+2.784475,
+8,
+"c4d4967e8585"
+],
+"geometry/1JXQ975X9E::framing/member:partition-block-W-M-MUDC-N-003-rail-top": [
+3.0099,
+3.048,
+8,
+"a10a5d0008e8"
+],
+"geometry/1JXQ975X9E::framing/member:partition-block-W-M-STOS-000": [
+2.746375,
+3.048,
+8,
+"3c4d41a19688"
+],
+"geometry/1JXQ975X9E::framing/member:partition-block-W-M-STOS-001-cheek-lo": [
+2.784475,
+3.0099,
+8,
+"8445039a1102"
+],
+"geometry/1JXQ975X9E::framing/member:partition-block-W-M-STOS-001-rail-bottom": [
+2.746375,
+2.784475,
+8,
+"c4d4967e8585"
+],
+"geometry/1JXQ975X9E::framing/member:partition-block-W-M-STOS-001-rail-top": [
+3.0099,
+3.048,
+8,
+"a10a5d0008e8"
+],
+"geometry/1JXQ975X9E::framing/member:partition-block-W-M-STOS-002": [
+2.746375,
+3.048,
+8,
+"3c4d41a19688"
+],
+"geometry/1JXQ975X9E::framing/member:partition-block-W-M-STOS-003": [
+2.746375,
+3.048,
+8,
+"3c4d41a19688"
 ],
 "geometry/1JXQ975X9E::framing/member:partition-block-W-M-STOS2-000-cheek-hi": [
 2.784475,
@@ -13235,6 +13589,186 @@
 8,
 "be15a1710151"
 ],
+"geometry/CAF602AAAA::framing/member:partition-block-W-S-BD1-000-cheek-hi": [
+5.832475,
+6.0579,
+8,
+"d89b30a50f4b"
+],
+"geometry/CAF602AAAA::framing/member:partition-block-W-S-BD1-000-cheek-lo": [
+5.832475,
+6.0579,
+8,
+"d89b30a50f4b"
+],
+"geometry/CAF602AAAA::framing/member:partition-block-W-S-BD1-000-rail-bottom": [
+5.794375,
+5.832475,
+8,
+"28aa1cfa4289"
+],
+"geometry/CAF602AAAA::framing/member:partition-block-W-S-BD1-000-rail-top": [
+6.0579,
+6.096,
+8,
+"68c3cbb6391b"
+],
+"geometry/CAF602AAAA::framing/member:partition-block-W-S-BD1-001-cheek-hi": [
+5.832475,
+6.0579,
+8,
+"d89b30a50f4b"
+],
+"geometry/CAF602AAAA::framing/member:partition-block-W-S-BD1-001-cheek-lo": [
+5.832475,
+6.0579,
+8,
+"d89b30a50f4b"
+],
+"geometry/CAF602AAAA::framing/member:partition-block-W-S-BD1-001-rail-bottom": [
+5.794375,
+5.832475,
+8,
+"28aa1cfa4289"
+],
+"geometry/CAF602AAAA::framing/member:partition-block-W-S-BD1-001-rail-top": [
+6.0579,
+6.096,
+8,
+"68c3cbb6391b"
+],
+"geometry/CAF602AAAA::framing/member:partition-block-W-S-BD1-002-cheek-hi": [
+5.832475,
+6.0579,
+8,
+"d89b30a50f4b"
+],
+"geometry/CAF602AAAA::framing/member:partition-block-W-S-BD1-002-cheek-lo": [
+5.832475,
+6.0579,
+8,
+"d89b30a50f4b"
+],
+"geometry/CAF602AAAA::framing/member:partition-block-W-S-BD1-002-rail-bottom": [
+5.794375,
+5.832475,
+8,
+"28aa1cfa4289"
+],
+"geometry/CAF602AAAA::framing/member:partition-block-W-S-BD1-002-rail-top": [
+6.0579,
+6.096,
+8,
+"68c3cbb6391b"
+],
+"geometry/CAF602AAAA::framing/member:partition-block-W-S-BD1-003": [
+5.794375,
+6.096,
+8,
+"be15a1710151"
+],
+"geometry/CAF602AAAA::framing/member:partition-block-W-S-BD1-004": [
+5.794375,
+6.096,
+8,
+"be15a1710151"
+],
+"geometry/CAF602AAAA::framing/member:partition-block-W-S-BD1-005": [
+5.794375,
+6.096,
+8,
+"be15a1710151"
+],
+"geometry/CAF602AAAA::framing/member:partition-block-W-S-BD1-006": [
+5.794375,
+6.096,
+8,
+"be15a1710151"
+],
+"geometry/CAF602AAAA::framing/member:partition-block-W-S-BD1-007": [
+5.794375,
+6.096,
+8,
+"be15a1710151"
+],
+"geometry/CAF602AAAA::framing/member:partition-block-W-S-BD1-008": [
+5.794375,
+6.096,
+8,
+"be15a1710151"
+],
+"geometry/CAF602AAAA::framing/member:partition-block-W-S-BD1-009": [
+5.794375,
+6.096,
+8,
+"be15a1710151"
+],
+"geometry/CAF602AAAA::framing/member:partition-block-W-S-BD1-010": [
+5.794375,
+6.096,
+8,
+"be15a1710151"
+],
+"geometry/CAF602AAAA::framing/member:partition-block-W-S-CH-S-000": [
+5.794375,
+6.096,
+8,
+"be15a1710151"
+],
+"geometry/CAF602AAAA::framing/member:partition-block-W-S-CH-S-001": [
+5.794375,
+6.096,
+8,
+"be15a1710151"
+],
+"geometry/CAF602AAAA::framing/member:partition-block-W-S-CH-S-002": [
+5.794375,
+6.096,
+8,
+"be15a1710151"
+],
+"geometry/CAF602AAAA::framing/member:partition-block-W-S-CLN-000": [
+5.794375,
+6.096,
+8,
+"be15a1710151"
+],
+"geometry/CAF602AAAA::framing/member:partition-block-W-S-CLN-001": [
+5.794375,
+6.096,
+8,
+"be15a1710151"
+],
+"geometry/CAF602AAAA::framing/member:partition-block-W-S-CLN-002": [
+5.794375,
+6.096,
+8,
+"be15a1710151"
+],
+"geometry/CAF602AAAA::framing/member:partition-block-W-S-CLN-003": [
+5.794375,
+6.096,
+8,
+"be15a1710151"
+],
+"geometry/CAF602AAAA::framing/member:partition-block-W-S-CLN-004": [
+5.794375,
+6.096,
+8,
+"be15a1710151"
+],
+"geometry/CAF602AAAA::framing/member:partition-block-W-S-CLN-005": [
+5.794375,
+6.096,
+8,
+"be15a1710151"
+],
+"geometry/CAF602AAAA::framing/member:partition-block-W-S-CLN-006": [
+5.794375,
+6.096,
+8,
+"be15a1710151"
+],
 "geometry/CAF602AAAA::framing/member:partition-block-W-S-CLN-S-001": [
 5.794375,
 6.096,
@@ -13242,6 +13776,54 @@
 "be15a1710151"
 ],
 "geometry/CAF602AAAA::framing/member:partition-block-W-S-CLN-S-002": [
+5.794375,
+6.096,
+8,
+"be15a1710151"
+],
+"geometry/CAF602AAAA::framing/member:partition-block-W-S-PS1-000": [
+5.794375,
+6.096,
+8,
+"be15a1710151"
+],
+"geometry/CAF602AAAA::framing/member:partition-block-W-S-PS1-001": [
+5.794375,
+6.096,
+8,
+"be15a1710151"
+],
+"geometry/CAF602AAAA::framing/member:partition-block-W-S-PS1-002": [
+5.794375,
+6.096,
+8,
+"be15a1710151"
+],
+"geometry/CAF602AAAA::framing/member:partition-block-W-S-PS1-003": [
+5.794375,
+6.096,
+8,
+"be15a1710151"
+],
+"geometry/CAF602AAAA::framing/member:partition-block-W-S-PS1-004": [
+5.794375,
+6.096,
+8,
+"be15a1710151"
+],
+"geometry/CAF602AAAA::framing/member:partition-block-W-S-PS1-005": [
+5.794375,
+6.096,
+8,
+"be15a1710151"
+],
+"geometry/CAF602AAAA::framing/member:partition-block-W-S-PS1-006": [
+5.794375,
+6.096,
+8,
+"be15a1710151"
+],
+"geometry/CAF602AAAA::framing/member:partition-block-W-S-PS1-007": [
 5.794375,
 6.096,
 8,
@@ -13266,6 +13848,30 @@
 "2b1516083fda"
 ],
 "geometry/CAF602AAAA::framing/member:partition-block-W-S-SBF-001-rail-top": [
+6.0579,
+6.096,
+8,
+"68c3cbb6391b"
+],
+"geometry/CAF602AAAA::framing/member:partition-block-W-S-SN1-000": [
+5.794375,
+6.096,
+8,
+"be15a1710151"
+],
+"geometry/CAF602AAAA::framing/member:partition-block-W-S-SN1-001-cheek-hi": [
+5.794375,
+6.0579,
+8,
+"2b1516083fda"
+],
+"geometry/CAF602AAAA::framing/member:partition-block-W-S-SN1-001-cheek-lo": [
+5.794375,
+6.0579,
+8,
+"2b1516083fda"
+],
+"geometry/CAF602AAAA::framing/member:partition-block-W-S-SN1-001-rail-top": [
 6.0579,
 6.096,
 8,
@@ -33461,6 +34067,24 @@
 8,
 "80db91a70531"
 ],
+"geometry/CMFS01AAAA::framing/member:partition-block-W-B-BT-N2-000": [
+-0.301625,
+0.0,
+8,
+"80db91a70531"
+],
+"geometry/CMFS01AAAA::framing/member:partition-block-W-B-BT-N2-001": [
+-0.301625,
+0.0,
+8,
+"80db91a70531"
+],
+"geometry/CMFS01AAAA::framing/member:partition-block-W-B-BT-N2-002": [
+-0.301625,
+0.0,
+8,
+"80db91a70531"
+],
 "geometry/CMFS01AAAA::framing/member:partition-block-W-B-CW2-000": [
 -0.301625,
 0.0,
@@ -50849,6 +51473,36 @@
 8,
 "3c4d41a19688"
 ],
+"geometry/CSF603AAAA::framing/member:partition-block-W-M-PAN-S-000": [
+2.746375,
+3.048,
+8,
+"3c4d41a19688"
+],
+"geometry/CSF603AAAA::framing/member:partition-block-W-M-PAN-S-001": [
+2.746375,
+3.048,
+8,
+"3c4d41a19688"
+],
+"geometry/CSF603AAAA::framing/member:partition-block-W-M-PAN-S-002": [
+2.746375,
+3.048,
+8,
+"3c4d41a19688"
+],
+"geometry/CSF603AAAA::framing/member:partition-block-W-M-PAN-S-003": [
+2.746375,
+3.048,
+8,
+"3c4d41a19688"
+],
+"geometry/CSF603AAAA::framing/member:partition-block-W-M-PAN-S-004": [
+2.746375,
+3.048,
+8,
+"3c4d41a19688"
+],
 "geometry/CSF603AAAA::framing/member:rim-1": [
 2.746375,
 3.048,
@@ -63869,6 +64523,36 @@
 2,
 "7981cbeae3a4"
 ],
+"geometry/CSW139AAAA::framing/member:backing-0-000": [
+4.8768,
+4.9657,
+8,
+"a99d17a7266a"
+],
+"geometry/CSW139AAAA::framing/member:backing-0-001": [
+4.8768,
+4.9657,
+8,
+"a99d17a7266a"
+],
+"geometry/CSW139AAAA::framing/member:backing-0-002": [
+4.8768,
+4.9657,
+8,
+"a99d17a7266a"
+],
+"geometry/CSW139AAAA::framing/member:backing-0-003": [
+4.8768,
+4.9657,
+8,
+"a99d17a7266a"
+],
+"geometry/CSW139AAAA::framing/member:backing-0-004": [
+4.8768,
+4.9657,
+8,
+"a99d17a7266a"
+],
 "geometry/CSW139AAAA::framing/member:corner-end": [
 3.10515,
 5.718175,
@@ -76151,6 +76835,90 @@
 8,
 "80db91a70531"
 ],
+"geometry/Q3ZJD83QVD::framing/member:partition-block-W-B-CE-000": [
+-0.301625,
+0.0,
+8,
+"80db91a70531"
+],
+"geometry/Q3ZJD83QVD::framing/member:partition-block-W-B-CE-001": [
+-0.301625,
+0.0,
+8,
+"80db91a70531"
+],
+"geometry/Q3ZJD83QVD::framing/member:partition-block-W-B-CE-002": [
+-0.301625,
+0.0,
+8,
+"80db91a70531"
+],
+"geometry/Q3ZJD83QVD::framing/member:partition-block-W-B-CE-003": [
+-0.301625,
+0.0,
+8,
+"80db91a70531"
+],
+"geometry/Q3ZJD83QVD::framing/member:partition-block-W-B-CE-004": [
+-0.301625,
+0.0,
+8,
+"80db91a70531"
+],
+"geometry/Q3ZJD83QVD::framing/member:partition-block-W-B-CE-005": [
+-0.301625,
+0.0,
+8,
+"80db91a70531"
+],
+"geometry/Q3ZJD83QVD::framing/member:partition-block-W-B-CE-006": [
+-0.301625,
+0.0,
+8,
+"80db91a70531"
+],
+"geometry/Q3ZJD83QVD::framing/member:partition-block-W-B-CE-007": [
+-0.301625,
+0.0,
+8,
+"80db91a70531"
+],
+"geometry/Q3ZJD83QVD::framing/member:partition-block-W-B-CE-008": [
+-0.301625,
+0.0,
+8,
+"80db91a70531"
+],
+"geometry/Q3ZJD83QVD::framing/member:partition-block-W-B-CE-009": [
+-0.301625,
+0.0,
+8,
+"80db91a70531"
+],
+"geometry/Q3ZJD83QVD::framing/member:partition-block-W-B-CE-010": [
+-0.301625,
+0.0,
+8,
+"80db91a70531"
+],
+"geometry/Q3ZJD83QVD::framing/member:partition-block-W-B-CE-011": [
+-0.301625,
+0.0,
+8,
+"80db91a70531"
+],
+"geometry/Q3ZJD83QVD::framing/member:partition-block-W-B-CE-012": [
+-0.301625,
+0.0,
+8,
+"80db91a70531"
+],
+"geometry/Q3ZJD83QVD::framing/member:partition-block-W-B-CE-013": [
+-0.301625,
+0.0,
+8,
+"80db91a70531"
+],
 "geometry/Q3ZJD83QVD::framing/member:rim-1": [
 -0.301625,
 0.0,
@@ -81515,6 +82283,12 @@
 2,
 "b7b31aff550e"
 ],
+"geometry/SH0353BNAG::framing/member:backing-0-000": [
+4.8768,
+4.9657,
+8,
+"a99d17a7266a"
+],
 "geometry/SH0353BNAG::framing/member:plate-bottom": [
 3.06705,
 3.10515,
@@ -86718,6 +87492,156 @@
 2,
 "e76b7cb538bf"
 ],
+"member/1JXQ975X9E/partition-block-W-M-BDN1-000": [
+2.746375,
+3.048,
+2,
+"e76b7cb538bf"
+],
+"member/1JXQ975X9E/partition-block-W-M-BDN1-001": [
+2.746375,
+3.048,
+2,
+"e76b7cb538bf"
+],
+"member/1JXQ975X9E/partition-block-W-M-BDN1-002": [
+2.746375,
+3.048,
+2,
+"e76b7cb538bf"
+],
+"member/1JXQ975X9E/partition-block-W-M-BDN1-003": [
+2.746375,
+3.048,
+2,
+"e76b7cb538bf"
+],
+"member/1JXQ975X9E/partition-block-W-M-BDN2-001-cheek-hi": [
+2.784475,
+3.0099,
+2,
+"7033f5ae779f"
+],
+"member/1JXQ975X9E/partition-block-W-M-BDN2-001-rail-bottom": [
+2.746375,
+2.784475,
+2,
+"a34fd765ec76"
+],
+"member/1JXQ975X9E/partition-block-W-M-BDN2-001-rail-top": [
+3.0099,
+3.048,
+2,
+"4f5bebcd882e"
+],
+"member/1JXQ975X9E/partition-block-W-M-BDN2-002-cheek-hi": [
+2.784475,
+3.0099,
+2,
+"7033f5ae779f"
+],
+"member/1JXQ975X9E/partition-block-W-M-BDN2-002-rail-bottom": [
+2.746375,
+2.784475,
+2,
+"a34fd765ec76"
+],
+"member/1JXQ975X9E/partition-block-W-M-BDN2-002-rail-top": [
+3.0099,
+3.048,
+2,
+"4f5bebcd882e"
+],
+"member/1JXQ975X9E/partition-block-W-M-BDN2-003-cheek-hi": [
+2.784475,
+3.0099,
+2,
+"7033f5ae779f"
+],
+"member/1JXQ975X9E/partition-block-W-M-BDN2-003-rail-bottom": [
+2.746375,
+2.784475,
+2,
+"a34fd765ec76"
+],
+"member/1JXQ975X9E/partition-block-W-M-BDN2-003-rail-top": [
+3.0099,
+3.048,
+2,
+"4f5bebcd882e"
+],
+"member/1JXQ975X9E/partition-block-W-M-BDN2-004-cheek-hi": [
+2.784475,
+3.0099,
+2,
+"7033f5ae779f"
+],
+"member/1JXQ975X9E/partition-block-W-M-BDN2-004-rail-bottom": [
+2.746375,
+2.784475,
+2,
+"a34fd765ec76"
+],
+"member/1JXQ975X9E/partition-block-W-M-BDN2-004-rail-top": [
+3.0099,
+3.048,
+2,
+"4f5bebcd882e"
+],
+"member/1JXQ975X9E/partition-block-W-M-BDN2-005-cheek-hi": [
+2.784475,
+3.0099,
+2,
+"7033f5ae779f"
+],
+"member/1JXQ975X9E/partition-block-W-M-BDN2-005-rail-bottom": [
+2.746375,
+2.784475,
+2,
+"a34fd765ec76"
+],
+"member/1JXQ975X9E/partition-block-W-M-BDN2-005-rail-top": [
+3.0099,
+3.048,
+2,
+"4f5bebcd882e"
+],
+"member/1JXQ975X9E/partition-block-W-M-BDN2-006-cheek-hi": [
+2.784475,
+3.0099,
+2,
+"7033f5ae779f"
+],
+"member/1JXQ975X9E/partition-block-W-M-BDN2-006-rail-bottom": [
+2.746375,
+2.784475,
+2,
+"a34fd765ec76"
+],
+"member/1JXQ975X9E/partition-block-W-M-BDN2-006-rail-top": [
+3.0099,
+3.048,
+2,
+"4f5bebcd882e"
+],
+"member/1JXQ975X9E/partition-block-W-M-BDN2-007-cheek-hi": [
+2.784475,
+3.0099,
+2,
+"7033f5ae779f"
+],
+"member/1JXQ975X9E/partition-block-W-M-BDN2-007-rail-bottom": [
+2.746375,
+2.784475,
+2,
+"a34fd765ec76"
+],
+"member/1JXQ975X9E/partition-block-W-M-BDN2-007-rail-top": [
+3.0099,
+3.048,
+2,
+"4f5bebcd882e"
+],
 "member/1JXQ975X9E/partition-block-W-M-CLN-000": [
 2.746375,
 3.048,
@@ -86771,6 +87695,210 @@
 3.048,
 2,
 "4f5bebcd882e"
+],
+"member/1JXQ975X9E/partition-block-W-M-CLN2-000-cheek-hi": [
+2.784475,
+3.0099,
+2,
+"7033f5ae779f"
+],
+"member/1JXQ975X9E/partition-block-W-M-CLN2-000-cheek-lo": [
+2.784475,
+3.0099,
+2,
+"7033f5ae779f"
+],
+"member/1JXQ975X9E/partition-block-W-M-CLN2-000-rail-bottom": [
+2.746375,
+2.784475,
+2,
+"a34fd765ec76"
+],
+"member/1JXQ975X9E/partition-block-W-M-CLN2-000-rail-top": [
+3.0099,
+3.048,
+2,
+"4f5bebcd882e"
+],
+"member/1JXQ975X9E/partition-block-W-M-CLN2-001-cheek-hi": [
+2.784475,
+3.0099,
+2,
+"7033f5ae779f"
+],
+"member/1JXQ975X9E/partition-block-W-M-CLN2-001-cheek-lo": [
+2.784475,
+3.0099,
+2,
+"7033f5ae779f"
+],
+"member/1JXQ975X9E/partition-block-W-M-CLN2-001-p1-rail-bottom": [
+2.746375,
+2.784475,
+2,
+"a34fd765ec76"
+],
+"member/1JXQ975X9E/partition-block-W-M-CLN2-001-p1-rail-top": [
+3.0099,
+3.048,
+2,
+"4f5bebcd882e"
+],
+"member/1JXQ975X9E/partition-block-W-M-CLN2-001-rail-bottom": [
+2.746375,
+2.784475,
+2,
+"a34fd765ec76"
+],
+"member/1JXQ975X9E/partition-block-W-M-CLN2-001-rail-top": [
+3.0099,
+3.048,
+2,
+"4f5bebcd882e"
+],
+"member/1JXQ975X9E/partition-block-W-M-CLN2-003": [
+2.746375,
+3.048,
+2,
+"e76b7cb538bf"
+],
+"member/1JXQ975X9E/partition-block-W-M-HS1-000": [
+2.746375,
+3.048,
+2,
+"e76b7cb538bf"
+],
+"member/1JXQ975X9E/partition-block-W-M-HS1-001": [
+2.746375,
+3.048,
+2,
+"e76b7cb538bf"
+],
+"member/1JXQ975X9E/partition-block-W-M-HS1-002-cheek-hi": [
+2.746375,
+3.0099,
+2,
+"a94982780d39"
+],
+"member/1JXQ975X9E/partition-block-W-M-HS1-002-cheek-lo": [
+2.746375,
+3.0099,
+2,
+"a94982780d39"
+],
+"member/1JXQ975X9E/partition-block-W-M-HS1-002-rail-top": [
+3.0099,
+3.048,
+2,
+"4f5bebcd882e"
+],
+"member/1JXQ975X9E/partition-block-W-M-HS1-003-cheek-hi": [
+2.746375,
+3.0099,
+2,
+"a94982780d39"
+],
+"member/1JXQ975X9E/partition-block-W-M-HS1-003-cheek-lo": [
+2.746375,
+3.0099,
+2,
+"a94982780d39"
+],
+"member/1JXQ975X9E/partition-block-W-M-HS1-003-rail-top": [
+3.0099,
+3.048,
+2,
+"4f5bebcd882e"
+],
+"member/1JXQ975X9E/partition-block-W-M-MUDC-N-000": [
+2.746375,
+3.048,
+2,
+"e76b7cb538bf"
+],
+"member/1JXQ975X9E/partition-block-W-M-MUDC-N-002-cheek-hi": [
+2.784475,
+3.0099,
+2,
+"7033f5ae779f"
+],
+"member/1JXQ975X9E/partition-block-W-M-MUDC-N-002-cheek-lo": [
+2.784475,
+3.0099,
+2,
+"7033f5ae779f"
+],
+"member/1JXQ975X9E/partition-block-W-M-MUDC-N-002-rail-bottom": [
+2.746375,
+2.784475,
+2,
+"a34fd765ec76"
+],
+"member/1JXQ975X9E/partition-block-W-M-MUDC-N-002-rail-top": [
+3.0099,
+3.048,
+2,
+"4f5bebcd882e"
+],
+"member/1JXQ975X9E/partition-block-W-M-MUDC-N-003-cheek-hi": [
+2.784475,
+3.0099,
+2,
+"7033f5ae779f"
+],
+"member/1JXQ975X9E/partition-block-W-M-MUDC-N-003-cheek-lo": [
+2.784475,
+3.0099,
+2,
+"7033f5ae779f"
+],
+"member/1JXQ975X9E/partition-block-W-M-MUDC-N-003-rail-bottom": [
+2.746375,
+2.784475,
+2,
+"a34fd765ec76"
+],
+"member/1JXQ975X9E/partition-block-W-M-MUDC-N-003-rail-top": [
+3.0099,
+3.048,
+2,
+"4f5bebcd882e"
+],
+"member/1JXQ975X9E/partition-block-W-M-STOS-000": [
+2.746375,
+3.048,
+2,
+"e76b7cb538bf"
+],
+"member/1JXQ975X9E/partition-block-W-M-STOS-001-cheek-lo": [
+2.784475,
+3.0099,
+2,
+"7033f5ae779f"
+],
+"member/1JXQ975X9E/partition-block-W-M-STOS-001-rail-bottom": [
+2.746375,
+2.784475,
+2,
+"a34fd765ec76"
+],
+"member/1JXQ975X9E/partition-block-W-M-STOS-001-rail-top": [
+3.0099,
+3.048,
+2,
+"4f5bebcd882e"
+],
+"member/1JXQ975X9E/partition-block-W-M-STOS-002": [
+2.746375,
+3.048,
+2,
+"e76b7cb538bf"
+],
+"member/1JXQ975X9E/partition-block-W-M-STOS-003": [
+2.746375,
+3.048,
+2,
+"e76b7cb538bf"
 ],
 "member/1JXQ975X9E/partition-block-W-M-STOS2-000-cheek-hi": [
 2.784475,
@@ -88884,6 +90012,186 @@
 2,
 "ee0eeebd4433"
 ],
+"member/CAF602AAAA/partition-block-W-S-BD1-000-cheek-hi": [
+5.832475,
+6.0579,
+2,
+"afa7fad6631e"
+],
+"member/CAF602AAAA/partition-block-W-S-BD1-000-cheek-lo": [
+5.832475,
+6.0579,
+2,
+"afa7fad6631e"
+],
+"member/CAF602AAAA/partition-block-W-S-BD1-000-rail-bottom": [
+5.794375,
+5.832475,
+2,
+"12ceeb91b6df"
+],
+"member/CAF602AAAA/partition-block-W-S-BD1-000-rail-top": [
+6.0579,
+6.096,
+2,
+"c0916300b024"
+],
+"member/CAF602AAAA/partition-block-W-S-BD1-001-cheek-hi": [
+5.832475,
+6.0579,
+2,
+"afa7fad6631e"
+],
+"member/CAF602AAAA/partition-block-W-S-BD1-001-cheek-lo": [
+5.832475,
+6.0579,
+2,
+"afa7fad6631e"
+],
+"member/CAF602AAAA/partition-block-W-S-BD1-001-rail-bottom": [
+5.794375,
+5.832475,
+2,
+"12ceeb91b6df"
+],
+"member/CAF602AAAA/partition-block-W-S-BD1-001-rail-top": [
+6.0579,
+6.096,
+2,
+"c0916300b024"
+],
+"member/CAF602AAAA/partition-block-W-S-BD1-002-cheek-hi": [
+5.832475,
+6.0579,
+2,
+"afa7fad6631e"
+],
+"member/CAF602AAAA/partition-block-W-S-BD1-002-cheek-lo": [
+5.832475,
+6.0579,
+2,
+"afa7fad6631e"
+],
+"member/CAF602AAAA/partition-block-W-S-BD1-002-rail-bottom": [
+5.794375,
+5.832475,
+2,
+"12ceeb91b6df"
+],
+"member/CAF602AAAA/partition-block-W-S-BD1-002-rail-top": [
+6.0579,
+6.096,
+2,
+"c0916300b024"
+],
+"member/CAF602AAAA/partition-block-W-S-BD1-003": [
+5.794375,
+6.096,
+2,
+"ee0eeebd4433"
+],
+"member/CAF602AAAA/partition-block-W-S-BD1-004": [
+5.794375,
+6.096,
+2,
+"ee0eeebd4433"
+],
+"member/CAF602AAAA/partition-block-W-S-BD1-005": [
+5.794375,
+6.096,
+2,
+"ee0eeebd4433"
+],
+"member/CAF602AAAA/partition-block-W-S-BD1-006": [
+5.794375,
+6.096,
+2,
+"ee0eeebd4433"
+],
+"member/CAF602AAAA/partition-block-W-S-BD1-007": [
+5.794375,
+6.096,
+2,
+"ee0eeebd4433"
+],
+"member/CAF602AAAA/partition-block-W-S-BD1-008": [
+5.794375,
+6.096,
+2,
+"ee0eeebd4433"
+],
+"member/CAF602AAAA/partition-block-W-S-BD1-009": [
+5.794375,
+6.096,
+2,
+"ee0eeebd4433"
+],
+"member/CAF602AAAA/partition-block-W-S-BD1-010": [
+5.794375,
+6.096,
+2,
+"ee0eeebd4433"
+],
+"member/CAF602AAAA/partition-block-W-S-CH-S-000": [
+5.794375,
+6.096,
+2,
+"ee0eeebd4433"
+],
+"member/CAF602AAAA/partition-block-W-S-CH-S-001": [
+5.794375,
+6.096,
+2,
+"ee0eeebd4433"
+],
+"member/CAF602AAAA/partition-block-W-S-CH-S-002": [
+5.794375,
+6.096,
+2,
+"ee0eeebd4433"
+],
+"member/CAF602AAAA/partition-block-W-S-CLN-000": [
+5.794375,
+6.096,
+2,
+"ee0eeebd4433"
+],
+"member/CAF602AAAA/partition-block-W-S-CLN-001": [
+5.794375,
+6.096,
+2,
+"ee0eeebd4433"
+],
+"member/CAF602AAAA/partition-block-W-S-CLN-002": [
+5.794375,
+6.096,
+2,
+"ee0eeebd4433"
+],
+"member/CAF602AAAA/partition-block-W-S-CLN-003": [
+5.794375,
+6.096,
+2,
+"ee0eeebd4433"
+],
+"member/CAF602AAAA/partition-block-W-S-CLN-004": [
+5.794375,
+6.096,
+2,
+"ee0eeebd4433"
+],
+"member/CAF602AAAA/partition-block-W-S-CLN-005": [
+5.794375,
+6.096,
+2,
+"ee0eeebd4433"
+],
+"member/CAF602AAAA/partition-block-W-S-CLN-006": [
+5.794375,
+6.096,
+2,
+"ee0eeebd4433"
+],
 "member/CAF602AAAA/partition-block-W-S-CLN-S-001": [
 5.794375,
 6.096,
@@ -88891,6 +90199,54 @@
 "ee0eeebd4433"
 ],
 "member/CAF602AAAA/partition-block-W-S-CLN-S-002": [
+5.794375,
+6.096,
+2,
+"ee0eeebd4433"
+],
+"member/CAF602AAAA/partition-block-W-S-PS1-000": [
+5.794375,
+6.096,
+2,
+"ee0eeebd4433"
+],
+"member/CAF602AAAA/partition-block-W-S-PS1-001": [
+5.794375,
+6.096,
+2,
+"ee0eeebd4433"
+],
+"member/CAF602AAAA/partition-block-W-S-PS1-002": [
+5.794375,
+6.096,
+2,
+"ee0eeebd4433"
+],
+"member/CAF602AAAA/partition-block-W-S-PS1-003": [
+5.794375,
+6.096,
+2,
+"ee0eeebd4433"
+],
+"member/CAF602AAAA/partition-block-W-S-PS1-004": [
+5.794375,
+6.096,
+2,
+"ee0eeebd4433"
+],
+"member/CAF602AAAA/partition-block-W-S-PS1-005": [
+5.794375,
+6.096,
+2,
+"ee0eeebd4433"
+],
+"member/CAF602AAAA/partition-block-W-S-PS1-006": [
+5.794375,
+6.096,
+2,
+"ee0eeebd4433"
+],
+"member/CAF602AAAA/partition-block-W-S-PS1-007": [
 5.794375,
 6.096,
 2,
@@ -88915,6 +90271,30 @@
 "4414f72e66fc"
 ],
 "member/CAF602AAAA/partition-block-W-S-SBF-001-rail-top": [
+6.0579,
+6.096,
+2,
+"c0916300b024"
+],
+"member/CAF602AAAA/partition-block-W-S-SN1-000": [
+5.794375,
+6.096,
+2,
+"ee0eeebd4433"
+],
+"member/CAF602AAAA/partition-block-W-S-SN1-001-cheek-hi": [
+5.794375,
+6.0579,
+2,
+"4414f72e66fc"
+],
+"member/CAF602AAAA/partition-block-W-S-SN1-001-cheek-lo": [
+5.794375,
+6.0579,
+2,
+"4414f72e66fc"
+],
+"member/CAF602AAAA/partition-block-W-S-SN1-001-rail-top": [
 6.0579,
 6.096,
 2,
@@ -97807,6 +99187,24 @@
 "07a4d7ea6917"
 ],
 "member/CMFS01AAAA/partition-block-W-B-BT-N-003": [
+-0.301625,
+0.0,
+2,
+"07a4d7ea6917"
+],
+"member/CMFS01AAAA/partition-block-W-B-BT-N2-000": [
+-0.301625,
+0.0,
+2,
+"07a4d7ea6917"
+],
+"member/CMFS01AAAA/partition-block-W-B-BT-N2-001": [
+-0.301625,
+0.0,
+2,
+"07a4d7ea6917"
+],
+"member/CMFS01AAAA/partition-block-W-B-BT-N2-002": [
 -0.301625,
 0.0,
 2,
@@ -109254,6 +110652,36 @@
 2,
 "e76b7cb538bf"
 ],
+"member/CSF603AAAA/partition-block-W-M-PAN-S-000": [
+2.746375,
+3.048,
+2,
+"e76b7cb538bf"
+],
+"member/CSF603AAAA/partition-block-W-M-PAN-S-001": [
+2.746375,
+3.048,
+2,
+"e76b7cb538bf"
+],
+"member/CSF603AAAA/partition-block-W-M-PAN-S-002": [
+2.746375,
+3.048,
+2,
+"e76b7cb538bf"
+],
+"member/CSF603AAAA/partition-block-W-M-PAN-S-003": [
+2.746375,
+3.048,
+2,
+"e76b7cb538bf"
+],
+"member/CSF603AAAA/partition-block-W-M-PAN-S-004": [
+2.746375,
+3.048,
+2,
+"e76b7cb538bf"
+],
 "member/CSF603AAAA/rim-1": [
 2.746375,
 3.048,
@@ -119874,6 +121302,36 @@
 2,
 "dea94eae887a"
 ],
+"member/CSW139AAAA/backing-0-000": [
+4.8768,
+4.9657,
+2,
+"cd75a1598fe8"
+],
+"member/CSW139AAAA/backing-0-001": [
+4.8768,
+4.9657,
+2,
+"cd75a1598fe8"
+],
+"member/CSW139AAAA/backing-0-002": [
+4.8768,
+4.9657,
+2,
+"cd75a1598fe8"
+],
+"member/CSW139AAAA/backing-0-003": [
+4.8768,
+4.9657,
+2,
+"cd75a1598fe8"
+],
+"member/CSW139AAAA/backing-0-004": [
+4.8768,
+4.9657,
+2,
+"cd75a1598fe8"
+],
 "member/CSW139AAAA/corner-end": [
 3.10515,
 5.718175,
@@ -122304,6 +123762,90 @@
 2,
 "07a4d7ea6917"
 ],
+"member/Q3ZJD83QVD/partition-block-W-B-CE-000": [
+-0.301625,
+0.0,
+2,
+"07a4d7ea6917"
+],
+"member/Q3ZJD83QVD/partition-block-W-B-CE-001": [
+-0.301625,
+0.0,
+2,
+"07a4d7ea6917"
+],
+"member/Q3ZJD83QVD/partition-block-W-B-CE-002": [
+-0.301625,
+0.0,
+2,
+"07a4d7ea6917"
+],
+"member/Q3ZJD83QVD/partition-block-W-B-CE-003": [
+-0.301625,
+0.0,
+2,
+"07a4d7ea6917"
+],
+"member/Q3ZJD83QVD/partition-block-W-B-CE-004": [
+-0.301625,
+0.0,
+2,
+"07a4d7ea6917"
+],
+"member/Q3ZJD83QVD/partition-block-W-B-CE-005": [
+-0.301625,
+0.0,
+2,
+"07a4d7ea6917"
+],
+"member/Q3ZJD83QVD/partition-block-W-B-CE-006": [
+-0.301625,
+0.0,
+2,
+"07a4d7ea6917"
+],
+"member/Q3ZJD83QVD/partition-block-W-B-CE-007": [
+-0.301625,
+0.0,
+2,
+"07a4d7ea6917"
+],
+"member/Q3ZJD83QVD/partition-block-W-B-CE-008": [
+-0.301625,
+0.0,
+2,
+"07a4d7ea6917"
+],
+"member/Q3ZJD83QVD/partition-block-W-B-CE-009": [
+-0.301625,
+0.0,
+2,
+"07a4d7ea6917"
+],
+"member/Q3ZJD83QVD/partition-block-W-B-CE-010": [
+-0.301625,
+0.0,
+2,
+"07a4d7ea6917"
+],
+"member/Q3ZJD83QVD/partition-block-W-B-CE-011": [
+-0.301625,
+0.0,
+2,
+"07a4d7ea6917"
+],
+"member/Q3ZJD83QVD/partition-block-W-B-CE-012": [
+-0.301625,
+0.0,
+2,
+"07a4d7ea6917"
+],
+"member/Q3ZJD83QVD/partition-block-W-B-CE-013": [
+-0.301625,
+0.0,
+2,
+"07a4d7ea6917"
+],
 "member/Q3ZJD83QVD/rim-1": [
 -0.301625,
 0.0,
@@ -123617,6 +125159,12 @@
 -0.1485392,
 2,
 "66b0dd583d20"
+],
+"member/SH0353BNAG/backing-0-000": [
+4.8768,
+4.9657,
+2,
+"cd75a1598fe8"
 ],
 "member/SH0353BNAG/plate-bottom": [
 3.06705,
